@@ -1,0 +1,25 @@
+-- UT_owlperson.lua
+-- Reduces stress at night, increases stress during day
+
+local TRAIT_ID = "UniversalTraits:UT_owlperson"
+
+local function onEveryMinute()
+    local player = getPlayer()
+    if not player then return end
+    if not UTCore.hasTrait(player, TRAIT_ID) then return end
+
+    local timeOfDay = getGameTime():getTimeOfDay()
+    local stats = player:getStats()
+    local stress = stats:getStress()
+
+    -- Night is roughly 6pm-6am (timeOfDay < 0.25 or timeOfDay > 0.75)
+    if timeOfDay < 0.25 or timeOfDay > 0.75 then
+        -- Night: reduce stress
+        stats:setStress(math.max(0, stress - 0.02))
+    else
+        -- Day: increase stress
+        stats:setStress(math.min(1, stress + 0.01))
+    end
+end
+
+Events.EveryOneMinute.Add(onEveryMinute)

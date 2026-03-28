@@ -63,5 +63,66 @@ test("setModData/getModData round-trip", function()
     assert_eq(UTCore.getModData(p, "testval", nil), "hello")
 end)
 
+-- applyCarryWeight
+test("applyCarryWeight adds delta to base weight", function()
+    local p = MockPlayer()
+    UTCore.applyCarryWeight(p, 4)
+    assert_eq(p:getMaxWeightBase(), 12)
+end)
+
+-- applyBleedRate
+test("applyBleedRate stores multiplier in moddata", function()
+    local p = MockPlayer()
+    UTCore.applyBleedRate(p, 1.5)
+    assert_eq(p:getModData()["UT_bleedMult"], 1.5)
+end)
+
+-- applyXPMultiplier
+test("applyXPMultiplier stores in moddata", function()
+    local p = MockPlayer()
+    UTCore.applyXPMultiplier(p, "Aiming", 2.0)
+    assert_eq(p:getModData()["UT_xpMult_Aiming"], 2.0)
+end)
+
+-- disableXP
+test("disableXP stores flag in moddata", function()
+    local p = MockPlayer()
+    UTCore.disableXP(p, "Shotgun")
+    assert_eq(p:getModData()["UT_xpDisable_Shotgun"], true)
+end)
+
+-- applySpawnStats
+test("applySpawnStats sets panic via stats", function()
+    local p = MockPlayer()
+    UTCore.applySpawnStats(p, { panic = 0.75 })
+    assert_eq(p:getStats():getPanic(), 0.75)
+end)
+
+-- registerPeriodicHandler
+test("registerPeriodicHandler stores handler", function()
+    UTCore._periodicHandlers = {}
+    UTCore.registerPeriodicHandler("test_trait", "EveryOneMinute", function(player) end)
+    assert_eq(UTCore._periodicHandlers["test_trait"] ~= nil, true)
+end)
+
+-- registerPeriodicHandler idempotent
+test("registerPeriodicHandler is idempotent", function()
+    UTCore._periodicHandlers = {}
+    local fn = function(player) end
+    UTCore.registerPeriodicHandler("test_trait", "EveryOneMinute", fn)
+    UTCore.registerPeriodicHandler("test_trait", "EveryOneMinute", fn)
+    local count = 0
+    for _ in pairs(UTCore._periodicHandlers) do count = count + 1 end
+    assert_eq(count, 1)
+end)
+
+-- unregisterPeriodicHandler
+test("unregisterPeriodicHandler removes handler", function()
+    UTCore._periodicHandlers = {}
+    UTCore.registerPeriodicHandler("test_trait2", "EveryTenMinutes", function(player) end)
+    UTCore.unregisterPeriodicHandler("test_trait2")
+    assert_eq(UTCore._periodicHandlers["test_trait2"], nil)
+end)
+
 print(string.format("\n%d passed, %d failed", passed, failed))
 if failed > 0 then os.exit(1) end

@@ -322,4 +322,352 @@ UI_EN = {
 
     UI_UT_staunch               = "Staunch",
     UI_UT_staunchDesc           = "You have an unusually high pain tolerance and recover from injuries well.",
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: SPAWN / INVENTORY
+    -- ============================================================
+    UI_UT_preparedpack          = "Prepared: Pack",
+    UI_UT_preparedpackDesc      = "You packed your bag with obsessive care before everything fell apart. You start with extra inventory capacity.",
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: MOVEMENT
+    -- ============================================================
+    UI_UT_fast                  = "Fast",
+    UI_UT_fastDesc              = "Light on your feet, you cover ground quicker than most. Your movement speed is noticeably higher.",
+
+    UI_UT_noodlelegs            = "Noodle Legs",
+    UI_UT_noodlelegsDesc        = "Your legs never quite cooperate. You move slower than everyone else and tire of it daily.",
+
+    UI_UT_pacer                 = "Pacer",
+    UI_UT_pacerDesc             = "You have always had a brisk, purposeful walk. Your base walking speed is a cut above average.",
+
+    UI_UT_lurcher               = "Lurcher",
+    UI_UT_lurcherDesc           = "You move with a lumbering, uncoordinated gait. Your overall movement is sluggish and awkward.",
+
+    UI_UT_sorelegs              = "Sore Legs",
+    UI_UT_sorelegsDesc          = "Chronic aches run from hip to heel. Your speed and physical fitness are both reduced.",
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: WORK SPEED
+    -- ============================================================
+    UI_UT_quickworker           = "Quick Worker",
+    UI_UT_quickworkerDesc       = "You always got the job done ahead of schedule. Your work speed is significantly faster than normal.",
+
+    UI_UT_slowworker            = "Slow Worker",
+    UI_UT_slowworkerDesc        = "You take your sweet time with everything. Your work speed is considerably below average.",
+
+    UI_UT_slack                 = "Slack",
+    UI_UT_slackDesc             = "Effort was never really your thing. You work slower than most, and it shows.",
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: COMBAT & PHYSICAL
+    -- ============================================================
+    UI_UT_batteringram          = "Battering Ram",
+    UI_UT_batteringramDesc      = "You hit like a freight train. Your shoves and pushes send zombies flying with tremendous force.",
+
+    UI_UT_fitted                = "Fitted",
+    UI_UT_fittedDesc            = "Everything you carry sits snug and balanced. Your effective encumbrance is reduced.",
+
+    UI_UT_glassbody             = "Glass Body",
+    UI_UT_glassbodyDesc         = "Your body feels like it was built to break. You take significantly more damage from every hit.",
+
+    UI_UT_brittle               = "Brittle",
+    UI_UT_brittleDesc           = "Your bones are fragile and snap under stress. Your chance of sustaining fractures is much higher.",
+
+    UI_UT_flailer               = "Flailer",
+    UI_UT_flailerDesc           = "Your swings are wild and undisciplined. Your combat accuracy leaves a lot to be desired.",
+
+    UI_UT_fasthands             = "Fast Hands",
+    UI_UT_fasthandsDesc         = "Your hands move with fluid precision. Item handling, reloading, and interaction speed are all improved.",
+
+    UI_UT_analgesia             = "Analgesia",
+    UI_UT_analgesiaDesc         = "Your nervous system simply does not register pain the way others do. Pain has no effect on your performance.",
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: BLEEDING
+    -- ============================================================
+    UI_UT_thickblood            = "Thick Blooded",
+    UI_UT_thickbloodDesc        = "Your blood clots unusually fast. Wounds stop bleeding more quickly than they would for most people.",
+
+    UI_UT_heavilybleedingwounds = "Heavily Bleeding Wounds",
+    UI_UT_heavilybleedingwoundsDesc = "Even minor cuts refuse to close. Your wounds bleed at an accelerated rate.",
+
+    UI_UT_weaklybleedingwounds  = "Weakly Bleeding Wounds",
+    UI_UT_weaklybleedingwoundsDesc = "Your wounds seal up almost before you notice them. Bleeding from injuries is significantly reduced.",
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: SLEEP & REST
+    -- ============================================================
+    UI_UT_restfulsleeper        = "Restful Sleeper",
+    UI_UT_restfulsleeperDesc    = "You drop into a deep sleep the moment your head hits the pillow. The quality of your rest is far above average.",
+
+    UI_UT_quickrest             = "Quick Rest",
+    UI_UT_quickrestDesc         = "Your body bounces back from exhaustion fast. Rest and recovery actions are more effective for you.",
+
+    UI_UT_snorer                = "Snorer",
+    UI_UT_snorerDesc            = "You rattle the walls when you sleep. The noise you make at night may attract unwanted attention.",
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: PSYCHOLOGY & MODIFIERS
+    -- ============================================================
+    UI_UT_unwavering            = "Unwavering",
+    UI_UT_unwaveringDesc        = "Fear never really got its hooks into you. You have a strong natural resistance to panic.",
+
+    UI_UT_idealweight           = "Ideal Weight",
+    UI_UT_idealweightDesc       = "You are in the kind of shape most people only dream about. Your physical stats benefit across the board.",
+
+    UI_UT_mundane               = "Mundane",
+    UI_UT_mundaneDesc           = "You were never exceptional at anything, and that has not changed. You gain XP across all skills at a reduced rate.",
+
+    UI_UT_incomprehensive       = "Incomprehensive",
+    UI_UT_incomprehensiveDesc   = "Complex ideas just do not stick for you. Your maximum skill levels are capped lower than normal.",
+
+    UI_UT_photographicmemory    = "Photographic Memory",
+    UI_UT_photographicmemoryDesc = "You retain everything you read or learn with uncanny accuracy. Reading speed and skill gain are substantially increased.",
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: XP PENALTIES
+    -- ============================================================
+    UI_UT_antigun               = "Anti-Gun Activist",
+    UI_UT_antigunDesc           = "You spent years campaigning against firearms and never touched one. Firearms XP comes to you much more slowly.",
+
+    UI_UT_flatearther            = "Flat Earther",
+    UI_UT_flateartherDesc        = "You distrust books, science, and anything written down. Your reading speed is drastically reduced.",
+
+    UI_UT_luddite               = "Luddite",
+    UI_UT_ludditeDesc           = "Technology has always been your enemy. Electrical skills advance at a reduced rate.",
+
+    UI_UT_onetrickpony          = "One Trick Pony",
+    UI_UT_onetrickponyDesc      = "You excel only in what you know best. Branching out into new skills costs you more than it should.",
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: NO-XP SERIES
+    -- ============================================================
+    UI_UT_noxpshooter           = "No XP: Shooting",
+    UI_UT_noxpshooterDesc       = "You have already mastered firearms and no longer learn from using them. Shooting grants no XP.",
+
+    UI_UT_noxptechnician        = "No XP: Tech",
+    UI_UT_noxptechnicianDesc    = "Electrical work holds no more lessons for you. Tech skills grant no XP.",
+
+    UI_UT_noxpaxe               = "No XP: Axe",
+    UI_UT_noxpaxeDesc           = "The axe is second nature to you. Using one no longer teaches you anything new.",
+
+    UI_UT_noxpfirstaid          = "No XP: First Aid",
+    UI_UT_noxpfirstaidDesc      = "You know medicine as well as you ever will. First Aid actions grant no XP.",
+
+    UI_UT_noxpmaintenance       = "No XP: Maintenance",
+    UI_UT_noxpmaintenanceDesc   = "Tool upkeep is routine. You gain no XP from maintenance tasks.",
+
+    UI_UT_noxpsneaky            = "No XP: Sneaky",
+    UI_UT_noxpsneakyDesc        = "Moving quietly is just how you walk. Stealth and Lightfoot grant no XP.",
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: TIMED / CIRCADIAN
+    -- ============================================================
+    UI_UT_owlperson             = "Night Owl",
+    UI_UT_owlpersonDesc         = "You come alive after dark. You gain bonuses at night but feel sluggish and unfocused during the day.",
+
+    UI_UT_larkperson            = "Early Bird",
+    UI_UT_larkpersonDesc        = "You rise with the sun and hit the ground running. You perform better during the day but struggle once night falls.",
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: VEHICLE
+    -- ============================================================
+    UI_UT_leadfoot              = "Lead Foot",
+    UI_UT_leadfootDesc          = "You always pushed vehicles past their limits. Your top speed while driving is noticeably higher.",
+
+    UI_UT_expertdriver          = "Expert Driver",
+    UI_UT_expertdriverDesc      = "Years behind the wheel have made you one of the best. You handle vehicles with exceptional control and efficiency.",
+
+    UI_UT_poordriver            = "Student Driver",
+    UI_UT_poordriverDesc        = "You never quite got the hang of driving. Your vehicle handling is slow and error-prone.",
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: ITEM / CONSUMPTION
+    -- ============================================================
+    UI_UT_ironliver             = "Iron Liver",
+    UI_UT_ironliverDesc         = "Alcohol affects you about as much as water. You can drink heavily with minimal impairment.",
+
+    UI_UT_durability            = "Durability",
+    UI_UT_durabilityDesc        = "You treat your gear with care and know how to make it last. Items you use degrade more slowly.",
+
+    UI_UT_gourmand              = "Gourmand",
+    UI_UT_gourmandDesc          = "Food is one of life's great pleasures, and you intend to keep it that way. You gain extra benefits when eating.",
+
+    UI_UT_ascetic               = "Ascetic",
+    UI_UT_asceticDesc           = "You subsist on the bare minimum and have made peace with it. Your diet is strictly limited by principle.",
+
+    -- ============================================================
+    -- PHASE 3a — SPAWN-WITH-CONDITION
+    -- ============================================================
+    UI_UT_injured_I             = "Lightly Injured",
+    UI_UT_injured_IDesc         = "You did not make it out clean. You begin with minor cuts and bruises that will need tending before things get worse.",
+
+    UI_UT_injured_II            = "Seriously Injured",
+    UI_UT_injured_IIDesc        = "Something went very wrong before the end. You start with serious wounds and every step reminds you of it.",
+
+    UI_UT_broke                 = "Broken",
+    UI_UT_brokeDesc             = "Your leg snapped before you even got started. You spawn with a broken leg and will need to find help — or a splint — fast.",
+
+    UI_UT_burned                = "Burned",
+    UI_UT_burnedDesc            = "Fire got to you before you got away. You spawn with severe burns covering part of your body, and the pain is constant.",
+
+    -- ============================================================
+    -- PHASE 3b — PERIODIC-CHECK TRAITS
+    -- ============================================================
+    UI_UT_depressive            = "Depressive",
+    UI_UT_depressiveDesc        = "A heavy sadness follows you everywhere. You struggle to find motivation, and dark thoughts creep in when you are alone.",
+
+    UI_UT_paranoia              = "Paranoia",
+    UI_UT_paranoiaDesc          = "Every shadow hides something. Every sound is a warning. Your mind manufactures threats even when none exist.",
+
+    UI_UT_selfdestructive       = "Self-Destructive",
+    UI_UT_selfdestructiveDesc   = "You have always been your own worst enemy. You act against your own interests in ways that are hard to explain, even to yourself.",
+
+    UI_UT_melancholic           = "Melancholic",
+    UI_UT_melancholicDesc       = "The world feels muted and grey. You manage to function, but a quiet sadness colors everything you do.",
+
+    UI_UT_immuneresponse        = "Immune Response",
+    UI_UT_immuneresponseDesc    = "Your body fights back hard and fast. When illness takes hold, your immune system kicks into overdrive and burns it out sooner.",
+
+    UI_UT_ravenous              = "Ravenous",
+    UI_UT_ravenousDesc          = "Your appetite is relentless. You burn through food faster than most, and the hunger never really goes away.",
+
+    UI_UT_optimist              = "Optimist",
+    UI_UT_optimistDesc          = "You genuinely believe things will work out. That outlook keeps your spirits higher than circumstances probably warrant.",
+
+    UI_UT_pessimist             = "Pessimist",
+    UI_UT_pessimistDesc         = "You expect the worst and, frankly, you are usually right. The constant low-level gloom drags on your mood over time.",
+
+    UI_UT_mstoptimist           = "Silver Lining",
+    UI_UT_mstoptimistDesc       = "Even at the end of the world, you find something to be glad about. Your mood lifts a little when others would give up.",
+
+    UI_UT_adaptivemetabolism    = "Adaptive Metabolism",
+    UI_UT_adaptivemetabolismDesc = "Your body is remarkably good at making do with what it has. Your metabolism adjusts efficiently to changing conditions.",
+
+    UI_UT_accmetabolism         = "Accelerated Metabolism",
+    UI_UT_accmetabolismDesc     = "Everything runs fast inside you. Your body burns food quickly and your weight shifts with your diet more than most people experience.",
+
+    UI_UT_albino                = "Albino",
+    UI_UT_albinoDesc            = "You lack melanin and sunlight has always been your enemy. Prolonged outdoor exposure causes real physical harm.",
+
+    UI_UT_fibromyalgia          = "Fibromyalgia",
+    UI_UT_fibromyalgiaDesc      = "Chronic pain is your constant companion. Everyday exertion costs more than it should, and bad days can be genuinely debilitating.",
+
+    UI_UT_bigorexia             = "Bigorexia",
+    UI_UT_bigorexiaDesc         = "You are never big enough, never strong enough, never enough. Your mood suffers whenever your body does not match the image in your head.",
+
+    UI_UT_weathersensitive      = "Weather Sensitive",
+    UI_UT_weathersensitiveDesc  = "Your mood shifts with the sky. Storms drag you down; clear days lift you up more than they should.",
+
+    UI_UT_panicattacks          = "Panic Attacks",
+    UI_UT_panicattacksDesc      = "Without warning, your body convinces itself that death is seconds away. The attacks pass, but they leave you shaken.",
+
+    UI_UT_fearofthedark         = "Fear of the Dark",
+    UI_UT_fearofthedarkDesc     = "Darkness is not just inconvenient for you, it is genuinely frightening. Being in the dark wears away at your composure.",
+
+    UI_UT_coldsensitive         = "Cold Sensitive",
+    UI_UT_coldsensitiveDesc     = "Cold cuts through you faster than it should. Even mild temperature drops affect your body and your focus.",
+
+    UI_UT_heatsensitive         = "Heat Sensitive",
+    UI_UT_heatsensitiveDesc     = "Heat hits you harder than most. High temperatures sap your strength and leave you struggling when others are merely warm.",
+
+    UI_UT_sedentary             = "Sedentary",
+    UI_UT_sedentaryDesc         = "Your body has grown accustomed to doing as little as possible. Fitness fades faster for you without consistent effort.",
+
+    UI_UT_alcoholic_I           = "Alcoholic (Mild)",
+    UI_UT_alcoholic_IDesc       = "You enjoy a drink more than most. A craving nags at you occasionally, but you can manage it most of the time.",
+
+    UI_UT_alcoholic_II          = "Alcoholic (Moderate)",
+    UI_UT_alcoholic_IIDesc      = "Alcohol is a regular need rather than a want. The cravings come more often now and they are harder to ignore.",
+
+    UI_UT_alcoholic_III         = "Alcoholic (Severe)",
+    UI_UT_alcoholic_IIIDesc     = "Your body demands alcohol. The cravings hit hard and often, and going without is a genuine ordeal.",
+
+    UI_UT_addictedtocaffeine    = "Caffeine Addict",
+    UI_UT_addictedtocaffeineDesc = "Coffee is not a luxury, it is a necessity. Without caffeine, your focus crumbles and the headaches begin.",
+
+    UI_UT_immunocompromised     = "Immunocompromised",
+    UI_UT_immunocompromisedDesc = "Your immune system is not up to the task. Infections take hold more easily and your body struggles to fight back.",
+
+    -- ============================================================
+    -- PHASE 3c — EVENT-DRIVEN TRAITS
+    -- ============================================================
+    UI_UT_fearful               = "Fearful",
+    UI_UT_fearfulDesc           = "Fear comes quickly and hits hard. When danger appears, your body's panic response is significantly amplified.",
+
+    UI_UT_nervouswreck          = "Nervous Wreck",
+    UI_UT_nervouswreckDesc      = "Your nerves are always close to the edge. Any trigger sends your anxiety spiking well past what is normal.",
+
+    UI_UT_scardycat             = "Scaredy Cat",
+    UI_UT_scardycatDesc         = "You startle easily and panic often. It is not something you can fully control, and it shows.",
+
+    UI_UT_maniac                = "Maniac",
+    UI_UT_maniacDesc            = "Combat wakes something up in you. Every kill sends a rush through your system that sharpens your focus and lifts your mood.",
+
+    UI_UT_anorexy               = "Anorexia",
+    UI_UT_anorexyDesc           = "Your relationship with food is deeply complicated. Eating feels wrong, and your body pays the price for every meal.",
+
+    UI_UT_pillsallergy          = "Pill Allergy",
+    UI_UT_pillsallergyDesc      = "Medicine that helps others can hurt you. Certain pills trigger an adverse reaction instead of the relief they promise.",
+
+    UI_UT_wildplantsallergy     = "Wild Plant Allergy",
+    UI_UT_wildplantsallergyDesc = "Foraged plants that others eat without concern leave you feeling ill. Wild food carries real risk for you.",
+
+    UI_UT_allergic              = "Allergic",
+    UI_UT_allergicDesc          = "Your body reacts badly to things that others tolerate fine. Food allergies can turn a meal into a medical event.",
+
+    UI_UT_competitiveeater      = "Competitive Eater",
+    UI_UT_competitiveeaterDesc  = "You eat with purpose and efficiency. Every meal is an event you approach with genuine enthusiasm and unusual results.",
+
+    UI_UT_sensitivestomach      = "Sensitive Stomach",
+    UI_UT_sensitivestomachDesc  = "Your digestive system does not take kindly to stress or poor food. Meals that others handle fine can leave you miserable.",
+
+    UI_UT_butterfingers         = "Butterfingers",
+    UI_UT_butterfingersdesc     = "Things slip out of your hands at the worst moments. No matter how careful you try to be, stuff just ends up on the floor.",
+
+    UI_UT_acrophobic            = "Acrophobic",
+    UI_UT_acrophobicdesc        = "Heights make your stomach drop and your hands shake. The higher up you are, the harder it is to function.",
+
+    UI_UT_vehophobic            = "Vehophobic",
+    UI_UT_vehophobicdesc        = "Getting behind the wheel or into a vehicle fills you with dread. The fear is irrational but it is very real.",
+
+    UI_UT_motionsickness        = "Motion Sickness",
+    UI_UT_motionsicknessdesc    = "Vehicles do not agree with you. Even short drives leave you nauseous and desperate for still ground.",
+
+    UI_UT_physicallyactive      = "Physically Active",
+    UI_UT_physicallyactivedesc  = "You have always pushed your body and it pays off. Exercise yields more fitness gains for you than it does for others.",
+
+    UI_UT_humanhamster          = "Human Hamster",
+    UI_UT_humanhamsterdesc      = "You have an overwhelming compulsion to hoard. Every container you pass demands to be checked and filled.",
+
+    UI_UT_superimmune           = "Super Immune",
+    UI_UT_superimmunedesc       = "Your immune system is exceptional. Infections that would lay others low barely register with your body.",
+
+    UI_UT_bouncer_I             = "Bouncer",
+    UI_UT_bouncer_IDesc         = "Years working the door taught you how to handle yourself. You gain bonus XP across all melee weapon categories.",
+
+    UI_UT_bouncer_II            = "Bruiser",
+    UI_UT_bouncer_IIDesc        = "Raw power is your trademark. You gain bonus XP in Strength and Small Blunt weapons.",
+
+    UI_UT_gunspecialist_I       = "Gun Specialist I",
+    UI_UT_gunspecialist_IDesc   = "Hours at the range paid off. You gain bonus XP in Aiming and Reloading.",
+
+    UI_UT_gunspecialist_II      = "Gun Specialist II",
+    UI_UT_gunspecialist_IIDesc  = "You know firearms inside and out. You gain double bonus XP in Aiming and Reloading, and a bonus in Nimble.",
+
+    UI_UT_gunspecialist_III     = "Gun Specialist III",
+    UI_UT_gunspecialist_IIIDesc = "Firearms are an extension of yourself. You gain double bonus XP in both Aiming and Reloading.",
+
+    -- ============================================================
+    -- PHASE 3d — COMPLEX STATE TRAITS
+    -- ============================================================
+    UI_UT_indefatigable         = "Indefatigable",
+    UI_UT_indefatigableDesc     = "You do not know the meaning of worn out. Your stamina recovers with a system all its own, outlasting what most people think is possible.",
+
+    UI_UT_hardy                 = "Hardy",
+    UI_UT_hardyDesc             = "You endure. Pain, exhaustion, and hardship all hit you, but your body tracks the punishment and bounces back harder than expected.",
+
+    UI_UT_secondwind            = "Second Wind",
+    UI_UT_secondwindDesc        = "Just when you think you are done, something kicks in. A burst of recovered stamina can arrive at the moment you need it most.",
 }

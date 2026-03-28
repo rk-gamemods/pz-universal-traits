@@ -65,7 +65,49 @@ test("UT_staunch registered", function()
     assert_eq(UTTraitsRegistries.UT_staunch, "UniversalTraits:UT_staunch")
 end)
 
--- Verify all 96 expected trait IDs are registered in CharacterTrait._registered
+-- Phase 2 spot-checks
+test("UT_fast registered", function()
+    assert_eq(UTTraitsRegistries.UT_fast, "UniversalTraits:UT_fast")
+end)
+
+test("UT_analgesia registered", function()
+    assert_eq(UTTraitsRegistries.UT_analgesia, "UniversalTraits:UT_analgesia")
+end)
+
+test("UT_noxpshooter registered", function()
+    assert_eq(UTTraitsRegistries.UT_noxpshooter, "UniversalTraits:UT_noxpshooter")
+end)
+
+test("UT_photographicmemory registered", function()
+    assert_eq(UTTraitsRegistries.UT_photographicmemory, "UniversalTraits:UT_photographicmemory")
+end)
+
+test("UT_gourmand registered", function()
+    assert_eq(UTTraitsRegistries.UT_gourmand, "UniversalTraits:UT_gourmand")
+end)
+
+-- Phase 3 spot-checks
+test("UT_depressive registered", function()
+    assert_eq(UTTraitsRegistries.UT_depressive, "UniversalTraits:UT_depressive")
+end)
+
+test("UT_alcoholic_II registered", function()
+    assert_eq(UTTraitsRegistries.UT_alcoholic_II, "UniversalTraits:UT_alcoholic_II")
+end)
+
+test("UT_gunspecialist_II registered", function()
+    assert_eq(UTTraitsRegistries.UT_gunspecialist_II, "UniversalTraits:UT_gunspecialist_II")
+end)
+
+test("UT_superimmune registered", function()
+    assert_eq(UTTraitsRegistries.UT_superimmune, "UniversalTraits:UT_superimmune")
+end)
+
+test("UT_indefatigable registered", function()
+    assert_eq(UTTraitsRegistries.UT_indefatigable, "UniversalTraits:UT_indefatigable")
+end)
+
+-- Verify all 199 expected trait IDs are registered in CharacterTrait._registered
 local expected_ids = {
     -- Prepared series (8)
     "UniversalTraits:UT_preparedfood", "UniversalTraits:UT_preparedammo",
@@ -127,9 +169,80 @@ local expected_ids = {
     "UniversalTraits:UT_cangrabmore", "UniversalTraits:UT_cangrabless",
     "UniversalTraits:UT_backpacker", "UniversalTraits:UT_topheavy",
     "UniversalTraits:UT_sore", "UniversalTraits:UT_staunch",
+    -- Phase 2 — Spawn / Inventory (1)
+    "UniversalTraits:UT_preparedpack",
+    -- Phase 2 — Movement (5)
+    "UniversalTraits:UT_fast", "UniversalTraits:UT_noodlelegs",
+    "UniversalTraits:UT_pacer", "UniversalTraits:UT_lurcher",
+    "UniversalTraits:UT_sorelegs",
+    -- Phase 2 — Work Speed (3)
+    "UniversalTraits:UT_quickworker", "UniversalTraits:UT_slowworker",
+    "UniversalTraits:UT_slack",
+    -- Phase 2 — Combat & Physical (7)
+    "UniversalTraits:UT_batteringram", "UniversalTraits:UT_fitted",
+    "UniversalTraits:UT_glassbody", "UniversalTraits:UT_brittle",
+    "UniversalTraits:UT_flailer", "UniversalTraits:UT_fasthands",
+    "UniversalTraits:UT_analgesia",
+    -- Phase 2 — Bleeding (3)
+    "UniversalTraits:UT_thickblood", "UniversalTraits:UT_heavilybleedingwounds",
+    "UniversalTraits:UT_weaklybleedingwounds",
+    -- Phase 2 — Sleep & Rest (3)
+    "UniversalTraits:UT_restfulsleeper", "UniversalTraits:UT_quickrest",
+    "UniversalTraits:UT_snorer",
+    -- Phase 2 — Psychology & Modifiers (5)
+    "UniversalTraits:UT_unwavering", "UniversalTraits:UT_idealweight",
+    "UniversalTraits:UT_mundane", "UniversalTraits:UT_incomprehensive",
+    "UniversalTraits:UT_photographicmemory",
+    -- Phase 2 — XP Penalties (4)
+    "UniversalTraits:UT_antigun", "UniversalTraits:UT_flatearther",
+    "UniversalTraits:UT_luddite", "UniversalTraits:UT_onetrickpony",
+    -- Phase 2 — No-XP Series (6)
+    "UniversalTraits:UT_noxpshooter", "UniversalTraits:UT_noxptechnician",
+    "UniversalTraits:UT_noxpaxe", "UniversalTraits:UT_noxpfirstaid",
+    "UniversalTraits:UT_noxpmaintenance", "UniversalTraits:UT_noxpsneaky",
+    -- Phase 2 — Timed / Circadian (2)
+    "UniversalTraits:UT_owlperson", "UniversalTraits:UT_larkperson",
+    -- Phase 2 — Vehicle (3)
+    "UniversalTraits:UT_leadfoot", "UniversalTraits:UT_expertdriver",
+    "UniversalTraits:UT_poordriver",
+    -- Phase 2 — Item / Consumption (4)
+    "UniversalTraits:UT_ironliver", "UniversalTraits:UT_durability",
+    "UniversalTraits:UT_gourmand", "UniversalTraits:UT_ascetic",
+    -- Phase 3a — Spawn-With-Condition (4)
+    "UniversalTraits:UT_injured_I", "UniversalTraits:UT_injured_II",
+    "UniversalTraits:UT_broke", "UniversalTraits:UT_burned",
+    -- Phase 3b — Periodic-Check (25)
+    "UniversalTraits:UT_depressive", "UniversalTraits:UT_paranoia",
+    "UniversalTraits:UT_selfdestructive", "UniversalTraits:UT_melancholic",
+    "UniversalTraits:UT_immuneresponse", "UniversalTraits:UT_ravenous",
+    "UniversalTraits:UT_optimist", "UniversalTraits:UT_pessimist",
+    "UniversalTraits:UT_mstoptimist", "UniversalTraits:UT_adaptivemetabolism",
+    "UniversalTraits:UT_accmetabolism", "UniversalTraits:UT_albino",
+    "UniversalTraits:UT_fibromyalgia", "UniversalTraits:UT_bigorexia",
+    "UniversalTraits:UT_weathersensitive", "UniversalTraits:UT_panicattacks",
+    "UniversalTraits:UT_fearofthedark", "UniversalTraits:UT_coldsensitive",
+    "UniversalTraits:UT_heatsensitive", "UniversalTraits:UT_sedentary",
+    "UniversalTraits:UT_alcoholic_I", "UniversalTraits:UT_alcoholic_II",
+    "UniversalTraits:UT_alcoholic_III", "UniversalTraits:UT_addictedtocaffeine",
+    "UniversalTraits:UT_immunocompromised",
+    -- Phase 3c — Event-Driven (22)
+    "UniversalTraits:UT_fearful", "UniversalTraits:UT_nervouswreck",
+    "UniversalTraits:UT_scardycat", "UniversalTraits:UT_maniac",
+    "UniversalTraits:UT_anorexy", "UniversalTraits:UT_pillsallergy",
+    "UniversalTraits:UT_wildplantsallergy", "UniversalTraits:UT_allergic",
+    "UniversalTraits:UT_competitiveeater", "UniversalTraits:UT_sensitivestomach",
+    "UniversalTraits:UT_butterfingers", "UniversalTraits:UT_acrophobic",
+    "UniversalTraits:UT_vehophobic", "UniversalTraits:UT_motionsickness",
+    "UniversalTraits:UT_physicallyactive", "UniversalTraits:UT_humanhamster",
+    "UniversalTraits:UT_superimmune", "UniversalTraits:UT_bouncer_I",
+    "UniversalTraits:UT_bouncer_II", "UniversalTraits:UT_gunspecialist_I",
+    "UniversalTraits:UT_gunspecialist_II", "UniversalTraits:UT_gunspecialist_III",
+    -- Phase 3d — Complex State (3)
+    "UniversalTraits:UT_indefatigable", "UniversalTraits:UT_hardy",
+    "UniversalTraits:UT_secondwind",
 }
 
-test("all 99 trait IDs registered with CharacterTrait", function()
+test("all 199 trait IDs registered with CharacterTrait", function()
     local missing = {}
     for _, id in ipairs(expected_ids) do
         if not CharacterTrait._registered[id] then
@@ -141,10 +254,10 @@ test("all 99 trait IDs registered with CharacterTrait", function()
     end
 end)
 
-test("total registration count is 99", function()
+test("total registration count is 199", function()
     local count = 0
     for _ in pairs(CharacterTrait._registered) do count = count + 1 end
-    assert_eq(count, 99, "registration count")
+    assert_eq(count, 199, "registration count")
 end)
 
 print(string.format("\n%d passed, %d failed", passed, failed))

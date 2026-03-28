@@ -1142,4 +1142,1116 @@ module UniversalTraits
         UIDescription = UI_UT_staunchdesc,
     }
 
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: SPAWN / INVENTORY
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_preparedpack
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_preparedpack,
+        Cost = 1,
+        UIName = UI_UT_preparedpack,
+        UIDescription = UI_UT_preparedpackdesc,
+    }
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: MOVEMENT
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_fast
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_fast,
+        Cost = 6,
+        UIName = UI_UT_fast,
+        UIDescription = UI_UT_fastdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_noodlelegs;UniversalTraits:UT_lurcher,
+    }
+
+    character_trait_definition UniversalTraits:UT_noodlelegs
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_noodlelegs,
+        Cost = -6,
+        UIName = UI_UT_noodlelegs,
+        UIDescription = UI_UT_noodlelegsdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_fast;UniversalTraits:UT_pacer,
+    }
+
+    character_trait_definition UniversalTraits:UT_pacer
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_pacer,
+        Cost = 4,
+        UIName = UI_UT_pacer,
+        UIDescription = UI_UT_pacerdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_noodlelegs,
+    }
+
+    character_trait_definition UniversalTraits:UT_lurcher
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_lurcher,
+        Cost = -5,
+        UIName = UI_UT_lurcher,
+        UIDescription = UI_UT_lurcherdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_fast,
+    }
+
+    character_trait_definition UniversalTraits:UT_sorelegs
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_sorelegs,
+        Cost = -8,
+        UIName = UI_UT_sorelegs,
+        UIDescription = UI_UT_sorelegsdesc,
+    }
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: WORK SPEED
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_quickworker
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_quickworker,
+        Cost = 9,
+        UIName = UI_UT_quickworker,
+        UIDescription = UI_UT_quickworkerdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_slowworker;UniversalTraits:UT_slack,
+    }
+
+    character_trait_definition UniversalTraits:UT_slowworker
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_slowworker,
+        Cost = -9,
+        UIName = UI_UT_slowworker,
+        UIDescription = UI_UT_slowworkerdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_quickworker;UniversalTraits:UT_slack,
+    }
+
+    character_trait_definition UniversalTraits:UT_slack
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_slack,
+        Cost = -6,
+        UIName = UI_UT_slack,
+        UIDescription = UI_UT_slackdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_quickworker;UniversalTraits:UT_slowworker,
+    }
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: COMBAT & PHYSICAL
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_batteringram
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_batteringram,
+        Cost = 7,
+        UIName = UI_UT_batteringram,
+        UIDescription = UI_UT_batteringramdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_fitted
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_fitted,
+        Cost = 4,
+        UIName = UI_UT_fitted,
+        UIDescription = UI_UT_fitteddesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_glassbody
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_glassbody,
+        Cost = -10,
+        UIName = UI_UT_glassbody,
+        UIDescription = UI_UT_glassbodydesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_analgesia,
+    }
+
+    character_trait_definition UniversalTraits:UT_brittle
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_brittle,
+        Cost = -6,
+        UIName = UI_UT_brittle,
+        UIDescription = UI_UT_brittledesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_flailer
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_flailer,
+        Cost = -4,
+        UIName = UI_UT_flailer,
+        UIDescription = UI_UT_flailerdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_fasthands
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_fasthands,
+        Cost = 12,
+        UIName = UI_UT_fasthands,
+        UIDescription = UI_UT_fasthandsdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_analgesia
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_analgesia,
+        Cost = 10,
+        UIName = UI_UT_analgesia,
+        UIDescription = UI_UT_analgesiadesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_glassbody,
+    }
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: BLEEDING
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_thickblood
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_thickblood,
+        Cost = 4,
+        UIName = UI_UT_thickblood,
+        UIDescription = UI_UT_thickblooddesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavilybleedingwounds,
+    }
+
+    character_trait_definition UniversalTraits:UT_heavilybleedingwounds
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_heavilybleedingwounds,
+        Cost = -4,
+        UIName = UI_UT_heavilybleedingwounds,
+        UIDescription = UI_UT_heavilybleedingwoundsdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_thickblood;UniversalTraits:UT_weaklybleedingwounds,
+    }
+
+    character_trait_definition UniversalTraits:UT_weaklybleedingwounds
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_weaklybleedingwounds,
+        Cost = 3,
+        UIName = UI_UT_weaklybleedingwounds,
+        UIDescription = UI_UT_weaklybleedingwoundsdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavilybleedingwounds,
+    }
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: SLEEP & REST
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_restfulsleeper
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_restfulsleeper,
+        Cost = 6,
+        UIName = UI_UT_restfulsleeper,
+        UIDescription = UI_UT_restfulsleeperdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_quickrest
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_quickrest,
+        Cost = 3,
+        UIName = UI_UT_quickrest,
+        UIDescription = UI_UT_quickrestdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_snorer
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_snorer,
+        Cost = -2,
+        UIName = UI_UT_snorer,
+        UIDescription = UI_UT_snorerdesc,
+    }
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: PSYCHOLOGY & MODIFIERS
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_unwavering
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_unwavering,
+        Cost = 6,
+        UIName = UI_UT_unwavering,
+        UIDescription = UI_UT_unwaveringdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_idealweight
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_idealweight,
+        Cost = 4,
+        UIName = UI_UT_idealweight,
+        UIDescription = UI_UT_idealweightdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_mundane
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_mundane,
+        Cost = -9,
+        UIName = UI_UT_mundane,
+        UIDescription = UI_UT_mundanedesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_incomprehensive
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_incomprehensive,
+        Cost = -10,
+        UIName = UI_UT_incomprehensive,
+        UIDescription = UI_UT_incomprehensivedesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_photographicmemory
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_photographicmemory,
+        Cost = 20,
+        UIName = UI_UT_photographicmemory,
+        UIDescription = UI_UT_photographicmemorydesc,
+    }
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: XP PENALTIES
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_antigun
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_antigun,
+        Cost = -6,
+        UIName = UI_UT_antigun,
+        UIDescription = UI_UT_antigundesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_noxpshooter,
+    }
+
+    character_trait_definition UniversalTraits:UT_flatearther
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_flatearther,
+        Cost = -4,
+        UIName = UI_UT_flatearther,
+        UIDescription = UI_UT_flateartherdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_luddite
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_luddite,
+        Cost = -4,
+        UIName = UI_UT_luddite,
+        UIDescription = UI_UT_ludditeDesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_onetrickpony
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_onetrickpony,
+        Cost = -4,
+        UIName = UI_UT_onetrickpony,
+        UIDescription = UI_UT_onetrickponydesc,
+    }
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: NO-XP SERIES
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_noxpshooter
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_noxpshooter,
+        Cost = 3,
+        UIName = UI_UT_noxpshooter,
+        UIDescription = UI_UT_noxpshooterdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_antigun,
+    }
+
+    character_trait_definition UniversalTraits:UT_noxptechnician
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_noxptechnician,
+        Cost = 3,
+        UIName = UI_UT_noxptechnician,
+        UIDescription = UI_UT_noxptechniciandesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_noxpaxe
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_noxpaxe,
+        Cost = 3,
+        UIName = UI_UT_noxpaxe,
+        UIDescription = UI_UT_noxpaxedesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_noxpfirstaid
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_noxpfirstaid,
+        Cost = 3,
+        UIName = UI_UT_noxpfirstaid,
+        UIDescription = UI_UT_noxpfirstaiddesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_noxpmaintenance
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_noxpmaintenance,
+        Cost = 3,
+        UIName = UI_UT_noxpmaintenance,
+        UIDescription = UI_UT_noxpmaintenancedesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_noxpsneaky
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_noxpsneaky,
+        Cost = 3,
+        UIName = UI_UT_noxpsneaky,
+        UIDescription = UI_UT_noxpsneakydesc,
+    }
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: TIMED / CIRCADIAN
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_owlperson
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_owlperson,
+        Cost = -1,
+        UIName = UI_UT_owlperson,
+        UIDescription = UI_UT_owlpersondesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_larkperson,
+    }
+
+    character_trait_definition UniversalTraits:UT_larkperson
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_larkperson,
+        Cost = -1,
+        UIName = UI_UT_larkperson,
+        UIDescription = UI_UT_larkpersondesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_owlperson,
+    }
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: VEHICLE
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_leadfoot
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_leadfoot,
+        Cost = 2,
+        UIName = UI_UT_leadfoot,
+        UIDescription = UI_UT_leadfootdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_expertdriver
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_expertdriver,
+        Cost = 5,
+        UIName = UI_UT_expertdriver,
+        UIDescription = UI_UT_expertdriverdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_poordriver,
+    }
+
+    character_trait_definition UniversalTraits:UT_poordriver
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_poordriver,
+        Cost = -5,
+        UIName = UI_UT_poordriver,
+        UIDescription = UI_UT_poordriverdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_expertdriver,
+    }
+
+    -- ============================================================
+    -- PHASE 2 — LUA-DRIVEN: ITEM / CONSUMPTION
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_ironliver
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_ironliver,
+        Cost = 3,
+        UIName = UI_UT_ironliver,
+        UIDescription = UI_UT_ironliverdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_durability
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_durability,
+        Cost = 3,
+        UIName = UI_UT_durability,
+        UIDescription = UI_UT_durabilitydesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_gourmand
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_gourmand,
+        Cost = 4,
+        UIName = UI_UT_gourmand,
+        UIDescription = UI_UT_gourmanddesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_ascetic,
+    }
+
+    character_trait_definition UniversalTraits:UT_ascetic
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_ascetic,
+        Cost = -4,
+        UIName = UI_UT_ascetic,
+        UIDescription = UI_UT_asceticdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_gourmand,
+    }
+
+    -- ============================================================
+    -- PHASE 3a — SPAWN-WITH-CONDITION
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_injured_I
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_injured_I,
+        Cost = -4,
+        UIName = UI_UT_injured_I,
+        UIDescription = UI_UT_injured_Idesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_injured_II,
+    }
+
+    character_trait_definition UniversalTraits:UT_injured_II
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_injured_II,
+        Cost = -8,
+        UIName = UI_UT_injured_II,
+        UIDescription = UI_UT_injured_IIdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_injured_I,
+    }
+
+    character_trait_definition UniversalTraits:UT_broke
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_broke,
+        Cost = -10,
+        UIName = UI_UT_broke,
+        UIDescription = UI_UT_brokedesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_burned
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_burned,
+        Cost = -8,
+        UIName = UI_UT_burned,
+        UIDescription = UI_UT_burneddesc,
+    }
+
+    -- ============================================================
+    -- PHASE 3b — PERIODIC-CHECK TRAITS
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_depressive
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_depressive,
+        Cost = -4,
+        UIName = UI_UT_depressive,
+        UIDescription = UI_UT_depressivedesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_optimist,
+    }
+
+    character_trait_definition UniversalTraits:UT_paranoia
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_paranoia,
+        Cost = -4,
+        UIName = UI_UT_paranoia,
+        UIDescription = UI_UT_paranoiadesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_selfdestructive
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_selfdestructive,
+        Cost = -6,
+        UIName = UI_UT_selfdestructive,
+        UIDescription = UI_UT_selfdestructivedesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_melancholic
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_melancholic,
+        Cost = -3,
+        UIName = UI_UT_melancholic,
+        UIDescription = UI_UT_melancholicdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_optimist,
+    }
+
+    character_trait_definition UniversalTraits:UT_immuneresponse
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_immuneresponse,
+        Cost = 6,
+        UIName = UI_UT_immuneresponse,
+        UIDescription = UI_UT_immuneresponsedesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_ravenous
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_ravenous,
+        Cost = -6,
+        UIName = UI_UT_ravenous,
+        UIDescription = UI_UT_ravenousdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_optimist
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_optimist,
+        Cost = 2,
+        UIName = UI_UT_optimist,
+        UIDescription = UI_UT_optimistdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_pessimist;UniversalTraits:UT_depressive;UniversalTraits:UT_melancholic,
+    }
+
+    character_trait_definition UniversalTraits:UT_pessimist
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_pessimist,
+        Cost = -2,
+        UIName = UI_UT_pessimist,
+        UIDescription = UI_UT_pessimistdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_optimist;UniversalTraits:UT_mstoptimist,
+    }
+
+    character_trait_definition UniversalTraits:UT_mstoptimist
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_mstoptimist,
+        Cost = 3,
+        UIName = UI_UT_mstoptimist,
+        UIDescription = UI_UT_mstoptimistdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_pessimist,
+    }
+
+    character_trait_definition UniversalTraits:UT_adaptivemetabolism
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_adaptivemetabolism,
+        Cost = 4,
+        UIName = UI_UT_adaptivemetabolism,
+        UIDescription = UI_UT_adaptivemetabolismdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_accmetabolism
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_accmetabolism,
+        Cost = -3,
+        UIName = UI_UT_accmetabolism,
+        UIDescription = UI_UT_accmetabolismdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_albino
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_albino,
+        Cost = -4,
+        UIName = UI_UT_albino,
+        UIDescription = UI_UT_albinodesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_fibromyalgia
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_fibromyalgia,
+        Cost = -8,
+        UIName = UI_UT_fibromyalgia,
+        UIDescription = UI_UT_fibromyalgiadesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_bigorexia
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_bigorexia,
+        Cost = -4,
+        UIName = UI_UT_bigorexia,
+        UIDescription = UI_UT_bigorexiadesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_weathersensitive
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_weathersensitive,
+        Cost = -2,
+        UIName = UI_UT_weathersensitive,
+        UIDescription = UI_UT_weathersensitivedesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_panicattacks
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_panicattacks,
+        Cost = -6,
+        UIName = UI_UT_panicattacks,
+        UIDescription = UI_UT_panicattacksdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_fearofthedark
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_fearofthedark,
+        Cost = -4,
+        UIName = UI_UT_fearofthedark,
+        UIDescription = UI_UT_fearofthedarkdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_coldsensitive
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_coldsensitive,
+        Cost = -4,
+        UIName = UI_UT_coldsensitive,
+        UIDescription = UI_UT_coldsensitivedesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_heatsensitive
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_heatsensitive,
+        Cost = -4,
+        UIName = UI_UT_heatsensitive,
+        UIDescription = UI_UT_heatsensitivedesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_sedentary
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_sedentary,
+        Cost = -3,
+        UIName = UI_UT_sedentary,
+        UIDescription = UI_UT_sedentarydesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_alcoholic_I
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_alcoholic_I,
+        Cost = -4,
+        UIName = UI_UT_alcoholic_I,
+        UIDescription = UI_UT_alcoholic_Idesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_alcoholic_II;UniversalTraits:UT_alcoholic_III,
+    }
+
+    character_trait_definition UniversalTraits:UT_alcoholic_II
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_alcoholic_II,
+        Cost = -7,
+        UIName = UI_UT_alcoholic_II,
+        UIDescription = UI_UT_alcoholic_IIdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_alcoholic_I;UniversalTraits:UT_alcoholic_III,
+    }
+
+    character_trait_definition UniversalTraits:UT_alcoholic_III
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_alcoholic_III,
+        Cost = -10,
+        UIName = UI_UT_alcoholic_III,
+        UIDescription = UI_UT_alcoholic_IIIdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_alcoholic_I;UniversalTraits:UT_alcoholic_II,
+    }
+
+    character_trait_definition UniversalTraits:UT_addictedtocaffeine
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_addictedtocaffeine,
+        Cost = -3,
+        UIName = UI_UT_addictedtocaffeine,
+        UIDescription = UI_UT_addictedtocaffeinedesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_immunocompromised
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_immunocompromised,
+        Cost = -6,
+        UIName = UI_UT_immunocompromised,
+        UIDescription = UI_UT_immunocompromiseddesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_superimmune,
+    }
+
+    -- ============================================================
+    -- PHASE 3c — EVENT-DRIVEN TRAITS
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_fearful
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_fearful,
+        Cost = -4,
+        UIName = UI_UT_fearful,
+        UIDescription = UI_UT_fearfuldesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_nervouswreck
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_nervouswreck,
+        Cost = -4,
+        UIName = UI_UT_nervouswreck,
+        UIDescription = UI_UT_nervouswreckdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_scardycat
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_scardycat,
+        Cost = -3,
+        UIName = UI_UT_scardycat,
+        UIDescription = UI_UT_scardycatdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_maniac
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_maniac,
+        Cost = 4,
+        UIName = UI_UT_maniac,
+        UIDescription = UI_UT_maniacdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_anorexy
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_anorexy,
+        Cost = -6,
+        UIName = UI_UT_anorexy,
+        UIDescription = UI_UT_anorexydesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_gourmand;UniversalTraits:UT_competitiveeater,
+    }
+
+    character_trait_definition UniversalTraits:UT_pillsallergy
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_pillsallergy,
+        Cost = -4,
+        UIName = UI_UT_pillsallergy,
+        UIDescription = UI_UT_pillsallergydesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_wildplantsallergy
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_wildplantsallergy,
+        Cost = -3,
+        UIName = UI_UT_wildplantsallergy,
+        UIDescription = UI_UT_wildplantsallergydesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_allergic
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_allergic,
+        Cost = -4,
+        UIName = UI_UT_allergic,
+        UIDescription = UI_UT_allergicdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_competitiveeater
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_competitiveeater,
+        Cost = 3,
+        UIName = UI_UT_competitiveeater,
+        UIDescription = UI_UT_competitiveeaterdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_anorexy,
+    }
+
+    character_trait_definition UniversalTraits:UT_sensitivestomach
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_sensitivestomach,
+        Cost = -4,
+        UIName = UI_UT_sensitivestomach,
+        UIDescription = UI_UT_sensitivestomachdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_butterfingers
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_butterfingers,
+        Cost = -4,
+        UIName = UI_UT_butterfingers,
+        UIDescription = UI_UT_butterfingersdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_acrophobic
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_acrophobic,
+        Cost = -4,
+        UIName = UI_UT_acrophobic,
+        UIDescription = UI_UT_acrophobicdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_vehophobic
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_vehophobic,
+        Cost = -4,
+        UIName = UI_UT_vehophobic,
+        UIDescription = UI_UT_vehophobicdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_expertdriver,
+    }
+
+    character_trait_definition UniversalTraits:UT_motionsickness
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_motionsickness,
+        Cost = -4,
+        UIName = UI_UT_motionsickness,
+        UIDescription = UI_UT_motionsicknessdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_physicallyactive
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_physicallyactive,
+        Cost = 4,
+        UIName = UI_UT_physicallyactive,
+        UIDescription = UI_UT_physicallyactivedesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_humanhamster
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_humanhamster,
+        Cost = -3,
+        UIName = UI_UT_humanhamster,
+        UIDescription = UI_UT_humanhamsterdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_superimmune
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_superimmune,
+        Cost = 8,
+        UIName = UI_UT_superimmune,
+        UIDescription = UI_UT_superimmunedesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_immunocompromised,
+    }
+
+    character_trait_definition UniversalTraits:UT_bouncer_I
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_bouncer_I,
+        Cost = 4,
+        UIName = UI_UT_bouncer_I,
+        UIDescription = UI_UT_bouncer_Idesc,
+        XPBoosts = Axe=1;LongBlade=1;LongBlunt=1;SmallBlade=1;SmallBlunt=1;Spear=1,
+        MutuallyExclusiveTraits = UniversalTraits:UT_bouncer_II,
+    }
+
+    character_trait_definition UniversalTraits:UT_bouncer_II
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_bouncer_II,
+        Cost = 6,
+        UIName = UI_UT_bouncer_II,
+        UIDescription = UI_UT_bouncer_IIdesc,
+        XPBoosts = Strength=2;SmallBlunt=2,
+        MutuallyExclusiveTraits = UniversalTraits:UT_bouncer_I,
+    }
+
+    character_trait_definition UniversalTraits:UT_gunspecialist_I
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_gunspecialist_I,
+        Cost = 4,
+        UIName = UI_UT_gunspecialist_I,
+        UIDescription = UI_UT_gunspecialist_Idesc,
+        XPBoosts = Aiming=1;Reloading=1,
+        MutuallyExclusiveTraits = UniversalTraits:UT_gunspecialist_II;UniversalTraits:UT_gunspecialist_III;UniversalTraits:UT_specguns,
+    }
+
+    character_trait_definition UniversalTraits:UT_gunspecialist_II
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_gunspecialist_II,
+        Cost = 8,
+        UIName = UI_UT_gunspecialist_II,
+        UIDescription = UI_UT_gunspecialist_IIdesc,
+        XPBoosts = Aiming=2;Reloading=2;Nimble=1,
+        MutuallyExclusiveTraits = UniversalTraits:UT_gunspecialist_I;UniversalTraits:UT_gunspecialist_III;UniversalTraits:UT_specguns,
+    }
+
+    character_trait_definition UniversalTraits:UT_gunspecialist_III
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_gunspecialist_III,
+        Cost = 10,
+        UIName = UI_UT_gunspecialist_III,
+        UIDescription = UI_UT_gunspecialist_IIIdesc,
+        XPBoosts = Aiming=2;Reloading=2,
+        MutuallyExclusiveTraits = UniversalTraits:UT_gunspecialist_I;UniversalTraits:UT_gunspecialist_II;UniversalTraits:UT_specguns,
+    }
+
+    -- ============================================================
+    -- PHASE 3d — COMPLEX STATE TRAITS
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_indefatigable
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_indefatigable,
+        Cost = 10,
+        UIName = UI_UT_indefatigable,
+        UIDescription = UI_UT_indefatigabledesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_hardy;UniversalTraits:UT_secondwind,
+    }
+
+    character_trait_definition UniversalTraits:UT_hardy
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_hardy,
+        Cost = 8,
+        UIName = UI_UT_hardy,
+        UIDescription = UI_UT_hardydesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_indefatigable;UniversalTraits:UT_secondwind,
+    }
+
+    character_trait_definition UniversalTraits:UT_secondwind
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_secondwind,
+        Cost = 6,
+        UIName = UI_UT_secondwind,
+        UIDescription = UI_UT_secondwinddesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_indefatigable;UniversalTraits:UT_hardy,
+    }
+
 }
