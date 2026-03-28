@@ -1,0 +1,1145 @@
+module UniversalTraits
+{
+
+    -- ============================================================
+    -- PHASE 1 — XP BOOST: PREPARED SERIES
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_preparedfood
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_preparedfood,
+        Cost = 1,
+        UIName = UI_UT_preparedfood,
+        UIDescription = UI_UT_preparedfooddesc,
+        XPBoosts = Cooking=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_preparedammo
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_preparedammo,
+        Cost = 1,
+        UIName = UI_UT_preparedammo,
+        UIDescription = UI_UT_preparedammodesc,
+        XPBoosts = Aiming=1;Reloading=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_preparedmedical
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_preparedmedical,
+        Cost = 1,
+        UIName = UI_UT_preparedmedical,
+        UIDescription = UI_UT_preparedmedicaldesc,
+        XPBoosts = Doctor=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_preparedcarpentry
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_preparedcarpentry,
+        Cost = 1,
+        UIName = UI_UT_preparedcarpentry,
+        UIDescription = UI_UT_preparedcarpentrydesc,
+        XPBoosts = Woodwork=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_preparedcamp
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_preparedcamp,
+        Cost = 1,
+        UIName = UI_UT_preparedcamp,
+        UIDescription = UI_UT_preparedcampdesc,
+        XPBoosts = Fishing=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_preparedweapons
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_preparedweapons,
+        Cost = 1,
+        UIName = UI_UT_preparedweapons,
+        UIDescription = UI_UT_preparedweaponsdesc,
+        XPBoosts = Maintenance=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_preparedcars
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_preparedcars,
+        Cost = 1,
+        UIName = UI_UT_preparedcars,
+        UIDescription = UI_UT_preparedcarsdesc,
+        XPBoosts = Mechanics=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_preparedcartography
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_preparedcartography,
+        Cost = 1,
+        UIName = UI_UT_preparedcartography,
+        UIDescription = UI_UT_preparedcartographydesc,
+        XPBoosts = Cartography=1,
+    }
+
+    -- ============================================================
+    -- PHASE 1 — XP BOOST: MOVEMENT & STEALTH
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_swift
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_swift,
+        Cost = 2,
+        UIName = UI_UT_swift,
+        UIDescription = UI_UT_swiftdesc,
+        XPBoosts = Lightfoot=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_flexible
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_flexible,
+        Cost = 3,
+        UIName = UI_UT_flexible,
+        UIDescription = UI_UT_flexibledesc,
+        XPBoosts = Nimble=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_quiet
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_quiet,
+        Cost = 2,
+        UIName = UI_UT_quiet,
+        UIDescription = UI_UT_quietdesc,
+        XPBoosts = Sneak=1;Lightfoot=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_olympian
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_olympian,
+        Cost = 5,
+        UIName = UI_UT_olympian,
+        UIDescription = UI_UT_olympiandesc,
+        XPBoosts = Sprinting=1;Fitness=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_evasive
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_evasive,
+        Cost = 8,
+        UIName = UI_UT_evasive,
+        UIDescription = UI_UT_evasivedesc,
+        XPBoosts = Nimble=1;Sprinting=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_marathonrunner
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_marathonrunner,
+        Cost = 5,
+        UIName = UI_UT_marathonrunner,
+        UIDescription = UI_UT_marathonrunnerdesc,
+        XPBoosts = Sprinting=2,
+    }
+
+    character_trait_definition UniversalTraits:UT_strongnimble
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_strongnimble,
+        Cost = 7,
+        UIName = UI_UT_strongnimble,
+        UIDescription = UI_UT_strongnimbledesc,
+        XPBoosts = Nimble=2;Strength=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_taut
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_taut,
+        Cost = 6,
+        UIName = UI_UT_taut,
+        UIDescription = UI_UT_tautdesc,
+        XPBoosts = Fitness=2,
+    }
+
+    character_trait_definition UniversalTraits:UT_ninjaway
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_ninjaway,
+        Cost = 5,
+        UIName = UI_UT_ninjaway,
+        UIDescription = UI_UT_ninjawaydesc,
+        XPBoosts = Sneak=2;Lightfoot=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_gymgoer
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_gymgoer,
+        Cost = 5,
+        UIName = UI_UT_gymgoer,
+        UIDescription = UI_UT_gymgoerdesc,
+        XPBoosts = Fitness=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_sprintdemon
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_sprintdemon,
+        Cost = 1,
+        UIName = UI_UT_sprintdemon,
+        UIDescription = UI_UT_sprintdemondesc,
+        XPBoosts = Sprinting=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_trekker
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_trekker,
+        Cost = 4,
+        UIName = UI_UT_trekker,
+        UIDescription = UI_UT_trekkerdesc,
+        XPBoosts = Fitness=1;Sprinting=1,
+    }
+
+    -- ============================================================
+    -- PHASE 1 — XP BOOST: COMBAT (MELEE)
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_martial
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_martial,
+        Cost = 5,
+        UIName = UI_UT_martial,
+        UIDescription = UI_UT_martialdesc,
+        XPBoosts = Fitness=1;SmallBlunt=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_bladetwirl
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_bladetwirl,
+        Cost = 5,
+        UIName = UI_UT_bladetwirl,
+        UIDescription = UI_UT_bladetwirldesc,
+        XPBoosts = LongBlade=1;SmallBlade=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_blunttwirl
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_blunttwirl,
+        Cost = 5,
+        UIName = UI_UT_blunttwirl,
+        UIDescription = UI_UT_blunttwirldesc,
+        XPBoosts = LongBlunt=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_tavernbrawler
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_tavernbrawler,
+        Cost = 3,
+        UIName = UI_UT_tavernbrawler,
+        UIDescription = UI_UT_tavernbrawlerdesc,
+        XPBoosts = SmallBlunt=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_grunt
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_grunt,
+        Cost = 4,
+        UIName = UI_UT_grunt,
+        UIDescription = UI_UT_gruntdesc,
+        XPBoosts = Woodwork=1;SmallBlunt=1;Masonry=1;Blacksmith=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_actionhero
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_actionhero,
+        Cost = 8,
+        UIName = UI_UT_actionhero,
+        UIDescription = UI_UT_actionherodesc,
+        XPBoosts = Axe=1;LongBlade=1;LongBlunt=1;SmallBlade=1;SmallBlunt=1;Spear=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_cruelty
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_cruelty,
+        Cost = 4,
+        UIName = UI_UT_cruelty,
+        UIDescription = UI_UT_crueltydesc,
+        XPBoosts = Axe=1;LongBlade=1;LongBlunt=1;SmallBlade=1;SmallBlunt=1;Spear=1;Aiming=1;Reloading=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_sharpshooter
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_sharpshooter,
+        Cost = 6,
+        UIName = UI_UT_sharpshooter,
+        UIDescription = UI_UT_sharpshooterdesc,
+        XPBoosts = Aiming=2,
+    }
+
+    -- ============================================================
+    -- PHASE 1 — XP BOOST: COMBAT (PROWESS SERIES)
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_problunt
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_problunt,
+        Cost = 7,
+        UIName = UI_UT_problunt,
+        UIDescription = UI_UT_probluntdesc,
+        XPBoosts = LongBlunt=2;SmallBlunt=2,
+    }
+
+    character_trait_definition UniversalTraits:UT_problade
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_problade,
+        Cost = 7,
+        UIName = UI_UT_problade,
+        UIDescription = UI_UT_probladedesc,
+        XPBoosts = LongBlade=2;SmallBlade=2,
+    }
+
+    character_trait_definition UniversalTraits:UT_progun
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_progun,
+        Cost = 7,
+        UIName = UI_UT_progun,
+        UIDescription = UI_UT_progunsdesc,
+        XPBoosts = Aiming=2;Reloading=2,
+    }
+
+    character_trait_definition UniversalTraits:UT_prospear
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_prospear,
+        Cost = 7,
+        UIName = UI_UT_prospear,
+        UIDescription = UI_UT_prospeardesc,
+        XPBoosts = Spear=2,
+    }
+
+    -- ============================================================
+    -- PHASE 1 — XP BOOST: COMBAT (SPECIALIZATION SERIES)
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_specweapons
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_specweapons,
+        Cost = 12,
+        UIName = UI_UT_specweapons,
+        UIDescription = UI_UT_specweaponsdesc,
+        XPBoosts = Axe=4;LongBlade=4;LongBlunt=4;SmallBlade=4;SmallBlunt=4;Spear=4,
+        MutuallyExclusiveTraits = UniversalTraits:UT_speccrafting;UniversalTraits:UT_specfood;UniversalTraits:UT_specguns;UniversalTraits:UT_specmove;UniversalTraits:UT_specaid,
+    }
+
+    character_trait_definition UniversalTraits:UT_speccrafting
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_speccrafting,
+        Cost = 12,
+        UIName = UI_UT_speccrafting,
+        UIDescription = UI_UT_speccraftingdesc,
+        XPBoosts = Woodwork=4;Metalworking=4;Masonry=4;Tailoring=4;Electricity=4,
+        MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_specfood;UniversalTraits:UT_specguns;UniversalTraits:UT_specmove;UniversalTraits:UT_specaid,
+    }
+
+    character_trait_definition UniversalTraits:UT_specfood
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_specfood,
+        Cost = 12,
+        UIName = UI_UT_specfood,
+        UIDescription = UI_UT_specfooddesc,
+        XPBoosts = Cooking=4;Farming=4;Fishing=4;PlantScavenging=4,
+        MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting;UniversalTraits:UT_specguns;UniversalTraits:UT_specmove;UniversalTraits:UT_specaid,
+    }
+
+    character_trait_definition UniversalTraits:UT_specguns
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_specguns,
+        Cost = 12,
+        UIName = UI_UT_specguns,
+        UIDescription = UI_UT_specgunsdesc,
+        XPBoosts = Aiming=4;Reloading=4,
+        MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting;UniversalTraits:UT_specfood;UniversalTraits:UT_specmove;UniversalTraits:UT_specaid;UniversalTraits:UT_gunspecialist_I;UniversalTraits:UT_gunspecialist_II;UniversalTraits:UT_gunspecialist_III,
+    }
+
+    character_trait_definition UniversalTraits:UT_specmove
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_specmove,
+        Cost = 12,
+        UIName = UI_UT_specmove,
+        UIDescription = UI_UT_specmovedesc,
+        XPBoosts = Sprinting=4;Nimble=4;Lightfoot=4;Sneak=4,
+        MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting;UniversalTraits:UT_specfood;UniversalTraits:UT_specguns;UniversalTraits:UT_specaid,
+    }
+
+    character_trait_definition UniversalTraits:UT_specaid
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_specaid,
+        Cost = 12,
+        UIName = UI_UT_specaid,
+        UIDescription = UI_UT_specaiddesc,
+        XPBoosts = Doctor=8,
+        MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting;UniversalTraits:UT_specfood;UniversalTraits:UT_specguns;UniversalTraits:UT_specmove,
+    }
+
+    character_trait_definition UniversalTraits:UT_terminator
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_terminator,
+        Cost = 14,
+        UIName = UI_UT_terminator,
+        UIDescription = UI_UT_terminatordesc,
+        XPBoosts = Axe=4;LongBlade=4;LongBlunt=4;SmallBlade=4;SmallBlunt=4;Spear=4;Aiming=4;Reloading=4,
+    }
+
+    -- ============================================================
+    -- PHASE 1 — XP BOOST: COMBATTRAITS WEAPON TREE
+    -- All weapon tree traits are mutually exclusive with each other.
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_heavyswing
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_heavyswing,
+        Cost = 8,
+        UIName = UI_UT_heavyswing,
+        UIDescription = UI_UT_heavyswingdesc,
+        XPBoosts = Axe=2;LongBlade=2;LongBlunt=2;SmallBlade=2;SmallBlunt=2;Spear=2,
+        MutuallyExclusiveTraits = UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+    }
+
+    character_trait_definition UniversalTraits:UT_twohanded
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_twohanded,
+        Cost = 8,
+        UIName = UI_UT_twohanded,
+        UIDescription = UI_UT_twohandeddesc,
+        XPBoosts = Axe=2;LongBlade=2;LongBlunt=2;Spear=2,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+    }
+
+    character_trait_definition UniversalTraits:UT_onehanded
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_onehanded,
+        Cost = 8,
+        UIName = UI_UT_onehanded,
+        UIDescription = UI_UT_onehandeddesc,
+        XPBoosts = SmallBlade=2;SmallBlunt=2,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+    }
+
+    character_trait_definition UniversalTraits:UT_axes
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_axes,
+        Cost = 6,
+        UIName = UI_UT_axes,
+        UIDescription = UI_UT_axesdesc,
+        XPBoosts = Axe=2,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+    }
+
+    character_trait_definition UniversalTraits:UT_twohanded_axes
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_twohanded_axes,
+        Cost = 5,
+        UIName = UI_UT_twohanded_axes,
+        UIDescription = UI_UT_twohanded_axesdesc,
+        XPBoosts = Axe=2,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+    }
+
+    character_trait_definition UniversalTraits:UT_onehanded_axes
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_onehanded_axes,
+        Cost = 5,
+        UIName = UI_UT_onehanded_axes,
+        UIDescription = UI_UT_onehanded_axesdesc,
+        XPBoosts = Axe=1,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+    }
+
+    character_trait_definition UniversalTraits:UT_blunts
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_blunts,
+        Cost = 7,
+        UIName = UI_UT_blunts,
+        UIDescription = UI_UT_bluntsdesc,
+        XPBoosts = LongBlunt=2;SmallBlunt=2,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+    }
+
+    character_trait_definition UniversalTraits:UT_twohanded_blunts
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_twohanded_blunts,
+        Cost = 5,
+        UIName = UI_UT_twohanded_blunts,
+        UIDescription = UI_UT_twohanded_bluntsdesc,
+        XPBoosts = LongBlunt=2,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+    }
+
+    character_trait_definition UniversalTraits:UT_onehanded_blunts
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_onehanded_blunts,
+        Cost = 5,
+        UIName = UI_UT_onehanded_blunts,
+        UIDescription = UI_UT_onehanded_bluntsdesc,
+        XPBoosts = SmallBlunt=2,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+    }
+
+    character_trait_definition UniversalTraits:UT_long_blunts
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_long_blunts,
+        Cost = 6,
+        UIName = UI_UT_long_blunts,
+        UIDescription = UI_UT_long_bluntsdesc,
+        XPBoosts = LongBlunt=2,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+    }
+
+    character_trait_definition UniversalTraits:UT_short_blunts
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_short_blunts,
+        Cost = 4,
+        UIName = UI_UT_short_blunts,
+        UIDescription = UI_UT_short_bluntsdesc,
+        XPBoosts = SmallBlunt=2,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+    }
+
+    character_trait_definition UniversalTraits:UT_blades
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_blades,
+        Cost = 7,
+        UIName = UI_UT_blades,
+        UIDescription = UI_UT_bladesdesc,
+        XPBoosts = LongBlade=2;SmallBlade=2,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+    }
+
+    character_trait_definition UniversalTraits:UT_twohanded_blades
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_twohanded_blades,
+        Cost = 5,
+        UIName = UI_UT_twohanded_blades,
+        UIDescription = UI_UT_twohanded_bladesdesc,
+        XPBoosts = LongBlade=2,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+    }
+
+    character_trait_definition UniversalTraits:UT_onehanded_blades
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_onehanded_blades,
+        Cost = 5,
+        UIName = UI_UT_onehanded_blades,
+        UIDescription = UI_UT_onehanded_bladesdesc,
+        XPBoosts = SmallBlade=2,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+    }
+
+    character_trait_definition UniversalTraits:UT_long_blades
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_long_blades,
+        Cost = 6,
+        UIName = UI_UT_long_blades,
+        UIDescription = UI_UT_long_bladesdesc,
+        XPBoosts = LongBlade=2,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+    }
+
+    character_trait_definition UniversalTraits:UT_short_blades
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_short_blades,
+        Cost = 4,
+        UIName = UI_UT_short_blades,
+        UIDescription = UI_UT_short_bladesdesc,
+        XPBoosts = SmallBlade=2,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_spears,
+    }
+
+    character_trait_definition UniversalTraits:UT_spears
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_spears,
+        Cost = 6,
+        UIName = UI_UT_spears,
+        UIDescription = UI_UT_spearsdesc,
+        XPBoosts = Spear=2,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades,
+    }
+
+    -- ============================================================
+    -- PHASE 1 — XP BOOST: CRAFTING & KNOWLEDGE
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_ingenuitive
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_ingenuitive,
+        Cost = 9,
+        UIName = UI_UT_ingenuitive,
+        UIDescription = UI_UT_ingenuitivedesc,
+        XPBoosts = Electricity=2;MetalWelding=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_generator
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_generator,
+        Cost = 2,
+        UIName = UI_UT_generator,
+        UIDescription = UI_UT_generatordesc,
+        XPBoosts = Electricity=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_tinkerer
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_tinkerer,
+        Cost = 5,
+        UIName = UI_UT_tinkerer,
+        UIDescription = UI_UT_tinkererdesc,
+        XPBoosts = Electricity=1;Mechanics=1;Tailoring=1;FlintKnapping=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_scrapper
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_scrapper,
+        Cost = 3,
+        UIName = UI_UT_scrapper,
+        UIDescription = UI_UT_scrapperdesc,
+        XPBoosts = Scavenging=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_scrounger
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_scrounger,
+        Cost = 5,
+        UIName = UI_UT_scrounger,
+        UIDescription = UI_UT_scroungerdesc,
+        XPBoosts = Scavenging=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_natural
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_natural,
+        Cost = 4,
+        UIName = UI_UT_natural,
+        UIDescription = UI_UT_naturaldesc,
+        XPBoosts = Cooking=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_wildsman
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_wildsman,
+        Cost = 8,
+        UIName = UI_UT_wildsman,
+        UIDescription = UI_UT_wildsmandesc,
+        XPBoosts = PlantScavenging=1;Fishing=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_mushroomer
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_mushroomer,
+        Cost = 4,
+        UIName = UI_UT_mushroomer,
+        UIDescription = UI_UT_mushroomerdesc,
+        XPBoosts = PlantScavenging=2,
+    }
+
+    character_trait_definition UniversalTraits:UT_antique
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_antique,
+        Cost = 6,
+        UIName = UI_UT_antique,
+        UIDescription = UI_UT_antiquedesc,
+        XPBoosts = Scavenging=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_blissful
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_blissful,
+        Cost = 3,
+        UIName = UI_UT_blissful,
+        UIDescription = UI_UT_blisfuldesc,
+        XPBoosts = Fitness=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_gordanite
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_gordanite,
+        Cost = 6,
+        UIName = UI_UT_gordanite,
+        UIDescription = UI_UT_gordanitedesc,
+        XPBoosts = Cooking=2,
+    }
+
+    character_trait_definition UniversalTraits:UT_graverobber
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_graverobber,
+        Cost = 7,
+        UIName = UI_UT_graverobber,
+        UIDescription = UI_UT_graverobberDesc,
+        XPBoosts = Scavenging=2,
+    }
+
+    character_trait_definition UniversalTraits:UT_vagabond
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_vagabond,
+        Cost = 3,
+        UIName = UI_UT_vagabond,
+        UIDescription = UI_UT_vagabonddesc,
+        XPBoosts = Sprinting=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_crafty
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_crafty,
+        Cost = 5,
+        UIName = UI_UT_crafty,
+        UIDescription = UI_UT_craftydesc,
+        XPBoosts = Woodwork=1;Mechanics=1;Tailoring=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_paramedic
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_paramedic,
+        Cost = 5,
+        UIName = UI_UT_paramedic,
+        UIDescription = UI_UT_paramedicdesc,
+        XPBoosts = Doctor=2,
+    }
+
+    character_trait_definition UniversalTraits:UT_pitcrew
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_pitcrew,
+        Cost = 5,
+        UIName = UI_UT_pitcrew,
+        UIDescription = UI_UT_pitcrewdesc,
+        XPBoosts = Mechanics=2,
+    }
+
+    character_trait_definition UniversalTraits:UT_prodigy
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_prodigy,
+        Cost = 6,
+        UIName = UI_UT_prodigy,
+        UIDescription = UI_UT_prodigydesc,
+        XPBoosts = Cooking=1;Woodwork=1;Mechanics=1;Doctor=1;Fitness=1;Sprinting=1;Tailoring=1;Electricity=1;Aiming=1;Reloading=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_driver
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_driver,
+        Cost = 2,
+        UIName = UI_UT_driver,
+        UIDescription = UI_UT_driverdesc,
+        XPBoosts = Driving=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_amateurelectrician
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_amateurelectrician,
+        Cost = 1,
+        UIName = UI_UT_amateurelectrician,
+        UIDescription = UI_UT_amateurelectriciandesc,
+        XPBoosts = Electricity=1,
+    }
+
+    -- ============================================================
+    -- PHASE 1 — XP BOOST: FILLERTRAITS
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_trackman
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_trackman,
+        Cost = 6,
+        UIName = UI_UT_trackman,
+        UIDescription = UI_UT_trackmandesc,
+        XPBoosts = Trapping=2,
+    }
+
+    character_trait_definition UniversalTraits:UT_cleaver
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_cleaver,
+        Cost = 4,
+        UIName = UI_UT_cleaver,
+        UIDescription = UI_UT_cleaverdesc,
+        XPBoosts = LongBlade=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_woodsplitter
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_woodsplitter,
+        Cost = 4,
+        UIName = UI_UT_woodsplitter,
+        UIDescription = UI_UT_woodsplitterdesc,
+        XPBoosts = Axe=1,
+    }
+
+    character_trait_definition UniversalTraits:UT_improviser
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_improviser,
+        Cost = 4,
+        UIName = UI_UT_improviser,
+        UIDescription = UI_UT_improviserdesc,
+        XPBoosts = Maintenance=1,
+    }
+
+    -- ============================================================
+    -- PHASE 1 — STAT MODIFIERS (SIMPLE)
+    -- NOTE: These have no XPBoosts. Their effects (carry weight,
+    -- speed, etc.) are handled by PZ engine stat fields if
+    -- supported, otherwise they will be promoted to Phase 2
+    -- (simple OnNewGame Lua) during implementation verification.
+    -- ============================================================
+
+    character_trait_definition UniversalTraits:UT_packmule
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_packmule,
+        Cost = 7,
+        UIName = UI_UT_packmule,
+        UIDescription = UI_UT_packmuledesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_packmouse
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_packmouse,
+        Cost = -7,
+        UIName = UI_UT_packmouse,
+        UIDescription = UI_UT_packmousedesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_packmule;UniversalTraits:UT_squirrel;UniversalTraits:UT_backpacker,
+    }
+
+    character_trait_definition UniversalTraits:UT_gimp
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_gimp,
+        Cost = -8,
+        UIName = UI_UT_gimp,
+        UIDescription = UI_UT_gimpdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_anemic
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_anemic,
+        Cost = -4,
+        UIName = UI_UT_anemic,
+        UIDescription = UI_UT_anemicdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_badteeth
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_badteeth,
+        Cost = -3,
+        UIName = UI_UT_badteeth,
+        UIDescription = UI_UT_badteethdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_deprived
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_deprived,
+        Cost = -6,
+        UIName = UI_UT_deprived,
+        UIDescription = UI_UT_depriveddesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_couchdweller
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_couchdweller,
+        Cost = 2,
+        UIName = UI_UT_couchdweller,
+        UIDescription = UI_UT_couchdwellerdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_sloth
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_sloth,
+        Cost = 2,
+        UIName = UI_UT_sloth,
+        UIDescription = UI_UT_slothdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_squirrel
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_squirrel,
+        Cost = 2,
+        UIName = UI_UT_squirrel,
+        UIDescription = UI_UT_squirreldesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy,
+    }
+
+    character_trait_definition UniversalTraits:UT_antivaxxer
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_antivaxxer,
+        Cost = -3,
+        UIName = UI_UT_antivaxxer,
+        UIDescription = UI_UT_antivaxxerdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_flimsy
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_flimsy,
+        Cost = -4,
+        UIName = UI_UT_flimsy,
+        UIDescription = UI_UT_flimsydesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_sundayrunner
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_sundayrunner,
+        Cost = -1,
+        UIName = UI_UT_sundayrunner,
+        UIDescription = UI_UT_sundayrunnerdesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_lesssweaty
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_lesssweaty,
+        Cost = 2,
+        UIName = UI_UT_lesssweaty,
+        UIDescription = UI_UT_lesssweatydesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_highsweaty,
+    }
+
+    character_trait_definition UniversalTraits:UT_highsweaty
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_highsweaty,
+        Cost = -3,
+        UIName = UI_UT_highsweaty,
+        UIDescription = UI_UT_highsweatydesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_lesssweaty,
+    }
+
+    character_trait_definition UniversalTraits:UT_cangrabmore
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_cangrabmore,
+        Cost = 2,
+        UIName = UI_UT_cangrabmore,
+        UIDescription = UI_UT_cangrabmoredesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_cangrabless,
+    }
+
+    character_trait_definition UniversalTraits:UT_cangrabless
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_cangrabless,
+        Cost = -2,
+        UIName = UI_UT_cangrabless,
+        UIDescription = UI_UT_cangrablessdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_cangrabmore,
+    }
+
+    character_trait_definition UniversalTraits:UT_backpacker
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_backpacker,
+        Cost = 8,
+        UIName = UI_UT_backpacker,
+        UIDescription = UI_UT_backpackerdesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy,
+    }
+
+    character_trait_definition UniversalTraits:UT_topheavy
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_topheavy,
+        Cost = -4,
+        UIName = UI_UT_topheavy,
+        UIDescription = UI_UT_topheavydesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_squirrel;UniversalTraits:UT_backpacker;UniversalTraits:UT_packmule,
+    }
+
+    character_trait_definition UniversalTraits:UT_sore
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_sore,
+        Cost = -6,
+        UIName = UI_UT_sore,
+        UIDescription = UI_UT_soredesc,
+    }
+
+    character_trait_definition UniversalTraits:UT_staunch
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = true,
+        CharacterTrait = UniversalTraits:UT_staunch,
+        Cost = 10,
+        UIName = UI_UT_staunch,
+        UIDescription = UI_UT_staunchdesc,
+    }
+
+}
