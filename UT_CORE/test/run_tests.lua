@@ -15,6 +15,8 @@ dofile(base .. "../media/lua/shared/UTCore/UTCore_StatModifiers.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_SpawnEffects.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_XPHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_SpeedHook.lua")
+dofile(base .. "../media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua")
+dofile(base .. "../media/lua/shared/UTCore/UTCore_BleedHook.lua")
 
 local passed, failed = 0, 0
 local function test(name, fn)
@@ -248,7 +250,6 @@ test("SpeedHook teleport guard skips adjustment when delta > 5", function()
 end)
 
 -- WorkSpeedHook
-dofile(base .. "../media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua")
 -- Note: patchTimedActions fires here as it would in-game, but has no global table targets
 -- in this test environment. The three tests below exercise applyWorkDuration directly.
 Events.OnGameBoot.fire()  -- triggers getDuration override
@@ -279,9 +280,8 @@ test("WorkSpeedHook applies readSpeedMod to ISReadABook", function()
 end)
 
 -- BleedHook
-dofile(base .. "../media/lua/shared/UTCore/UTCore_BleedHook.lua")
-
 test("BleedHook calls AddHealth for bleedMult < 1.0", function()
+    UTCore._bleedTickCounter = 0
     local p = MockPlayer({})
     p:getModData()["UT_bleedMult"] = 0.4
     local torso = MockBodyPart("Torso_Upper", true, false)
@@ -293,6 +293,7 @@ test("BleedHook calls AddHealth for bleedMult < 1.0", function()
 end)
 
 test("BleedHook calls ReduceHealth for bleedMult > 1.0", function()
+    UTCore._bleedTickCounter = 0
     local p = MockPlayer({})
     p:getModData()["UT_bleedMult"] = 2.0
     local torso = MockBodyPart("Torso_Upper", true, false)

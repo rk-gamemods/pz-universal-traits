@@ -8,14 +8,14 @@
 UTCore = UTCore or {}
 
 local THROTTLE = 30
-local _tickCounter = 0
+UTCore._bleedTickCounter = 0
 
 local function onPlayerUpdate(player)
     if not player then return end
 
-    _tickCounter = _tickCounter + 1
-    if _tickCounter < THROTTLE then return end
-    _tickCounter = 0
+    UTCore._bleedTickCounter = UTCore._bleedTickCounter + 1
+    if UTCore._bleedTickCounter < THROTTLE then return end
+    UTCore._bleedTickCounter = 0
 
     local md = player:getModData()
     local mult = md["UT_bleedMult"]
