@@ -44,6 +44,7 @@ function MockPlayer(traits)
         getMaxWeightBase    = function(self) return maxWeight end,
         setMaxWeightBase    = function(self, v) maxWeight = v end,
         getStats            = function(self) return stats end,
+        -- Note: returns a new table each call; AddXP captures xpCalls via closure so recording still works.
         getXp               = function(self)
             return {
                 AddXP = function(_, perk, amount)
@@ -73,22 +74,7 @@ local function _makeEventTable()
     }
 end
 
-do
-    local _addXPHandlers = {}
-    Events.AddXP = {
-        Add  = function(fn) table.insert(_addXPHandlers, fn) end,
-        Remove = function(fn)
-            for i, v in ipairs(_addXPHandlers) do
-                if v == fn then table.remove(_addXPHandlers, i) return end
-            end
-        end,
-        fire = function(player, perk, amount)
-            for _, fn in ipairs(_addXPHandlers) do
-                fn(player, perk, amount)
-            end
-        end,
-    }
-end
+Events.AddXP = _makeEventTable()
 
 Events.EveryOneMinute  = _makeEventTable()
 Events.EveryTenMinutes = _makeEventTable()

@@ -127,15 +127,15 @@ end)
 
 -- XPHook: XP multiplier
 test("XPHook applies XP multiplier", function()
-    local p = MockPlayer()
-    p:getModData()["UT_xpMult_Aiming"] = 2.0
+    local p = MockPlayer({})
+    p:getModData()["UT_xpMult_Aiming"] = 1.5
     Events.AddXP.fire(p, "Aiming", 10)
     local calls = p:getXpCalls()
-    local found = false
+    local bonus = nil
     for _, c in ipairs(calls) do
-        if c.perk == "Aiming" and c.amount == 10 then found = true end
+        if c.perk == "Aiming" then bonus = c.amount end
     end
-    assert_eq(found, true, "expected +10 bonus correction for 2x multiplier ")
+    assert_eq(bonus, 5, "XP multiplier 1.5x on 10 should add +5 bonus")
 end)
 
 -- XPHook: XP disable
@@ -153,7 +153,7 @@ end)
 
 -- XPHook: multi-skill penalty fires for 2nd perk
 test("XPHook multi-skill penalty fires for 2nd perk", function()
-    Events.EveryOneMinute.fire()  -- reset module-level tracking
+    UTCore._xpPerksThisMinute = {}  -- reset module-level tracking
     local p = MockPlayer()
     p:getModData()["UT_multiSkillPenalty"] = true
     Events.AddXP.fire(p, "Aiming", 10)
@@ -168,7 +168,7 @@ end)
 
 -- XPHook: multi-skill penalty skips single perk
 test("XPHook multi-skill penalty skips single perk", function()
-    Events.EveryOneMinute.fire()  -- reset module-level tracking
+    UTCore._xpPerksThisMinute = {}  -- reset module-level tracking
     local p = MockPlayer()
     p:getModData()["UT_multiSkillPenalty"] = true
     Events.AddXP.fire(p, "Aiming", 10)
@@ -178,6 +178,30 @@ test("XPHook multi-skill penalty skips single perk", function()
         if c.perk == "Aiming" and c.amount < 0 then foundNeg = true end
     end
     assert_eq(foundNeg, false, "expected no negative correction for single perk ")
+end)
+
+-- XPHook: mult and multi-skill penalty are independent
+test("XPHook mult and multi-skill penalty are independent", function()
+    UTCore._xpPerksThisMinute = {}  -- reset state
+    local p = MockPlayer({})
+    p:getModData()["UT_xpMult_Aiming"] = 2.0      -- +10 bonus
+    p:getModData()["UT_multiSkillPenalty"] = true
+    Events.AddXP.fire(p, "Aiming", 10)    -- first perk, no penalty yet
+    Events.AddXP.fire(p, "Reloading", 10) -- second perk, penalty fires
+    -- Net for Reloading: original 10 + no mult for Reloading + -5 penalty
+    local reloadingNet = 0
+    for _, c in ipairs(p:getXpCalls()) do
+        if c.perk == "Reloading" then reloadingNet = reloadingNet + c.amount end
+    end
+    assert_eq(reloadingNet, -5, "penalty on 2nd perk should be -5 (50% of 10)")
+end)
+
+-- XPHook: amount <= 0 guard
+test("XPHook ignores zero or negative XP events", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_xpMult_Aiming"] = 2.0
+    Events.AddXP.fire(p, "Aiming", 0)
+    assert_eq(#p:getXpCalls(), 0, "zero XP event should produce no corrections")
 end)
 
 print(string.format("\n%d passed, %d failed", passed, failed))

@@ -3,11 +3,17 @@
 
 UTCore = UTCore or {}
 
-local _xpPerksThisMinute = {}
+UTCore._xpPerksThisMinute = {}
+
+local function resetXPTracking()
+    for k in pairs(UTCore._xpPerksThisMinute) do
+        UTCore._xpPerksThisMinute[k] = nil
+    end
+end
 
 -- Reset tracking every in-game minute
 if Events and Events.EveryOneMinute then
-    Events.EveryOneMinute.Add(function() _xpPerksThisMinute = {} end)
+    Events.EveryOneMinute.Add(resetXPTracking)
 end
 
 local function onAddXP(player, perk, amount)
@@ -32,8 +38,8 @@ local function onAddXP(player, perk, amount)
     -- 3. Multi-skill penalty (UT_onetrickpony): 50% penalty on 2nd+ perk per minute
     if md["UT_multiSkillPenalty"] then
         local pid = tostring(player)
-        if not _xpPerksThisMinute[pid] then _xpPerksThisMinute[pid] = {} end
-        local seen = _xpPerksThisMinute[pid]
+        if not UTCore._xpPerksThisMinute[pid] then UTCore._xpPerksThisMinute[pid] = {} end
+        local seen = UTCore._xpPerksThisMinute[pid]
         seen[perk] = true
         local count = 0
         for _ in pairs(seen) do count = count + 1 end
