@@ -584,5 +584,87 @@ test("martial skips when weapon is not BareHands", function()
         "expected health unchanged when weapon is not BareHands")
 end)
 
+-- ===== Task 7: SomewhatTraits behavior ports =====
+-- Load the four ported trait files
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_flailer.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_lurcher.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_scardycat.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_pacer.lua")
+
+-- Helper: build a player with getSpottedList support
+local function MockUpdatePlayer(traitList, opts)
+    opts = opts or {}
+    local p = MockPlayer(traitList)
+    p._sprinting = opts.sprinting or false
+    p._moving    = opts.moving    or false
+    p._indoors   = opts.indoors   or false
+    if opts.spottedSize then
+        p.getSpottedList = function(self)
+            return { size = function() return opts.spottedSize end }
+        end
+    end
+    if opts.endurance ~= nil then
+        p:getStats()._endurance = opts.endurance
+    end
+    if opts.panicLevel ~= nil then
+        p:getBodyDamage()._panicLevel = opts.panicLevel
+    end
+    if opts.nimble ~= nil then
+        p:setPerkLevel(Perks.Nimble, opts.nimble)
+    end
+    if opts.indoorTicks ~= nil then
+        p:getModData()["UT_pacer_indoor_ticks"] = opts.indoorTicks
+    end
+    return p
+end
+
+test("flailer stumble fires when panicked and sprinting", function()
+    local player = MockUpdatePlayer(
+        { "UniversalTraits:UT_flailer" },
+        { sprinting = true, panicLevel = 2 }
+    )
+    -- cooldown starts nil (=> 0), ZombRand returns 0 (< 5) => stumble fires
+    Events.OnPlayerUpdate:fire(player)
+    assert_true(player._bumpFallDown == true,
+        "expected _bumpFallDown=true after flailer stumble, got " .. tostring(player._bumpFallDown))
+end)
+
+test("lurcher stumble fires when fatigued and moving", function()
+    local player = MockUpdatePlayer(
+        { "UniversalTraits:UT_lurcher" },
+        { moving = true, endurance = 0.2, nimble = 0 }
+    )
+    -- cooldown starts nil (=> 0), ZombRand returns 0 (< 3) => stumble fires
+    Events.OnPlayerUpdate:fire(player)
+    assert_true(player._bumpFallDown == true,
+        "expected _bumpFallDown=true after lurcher stumble, got " .. tostring(player._bumpFallDown))
+end)
+
+test("scardycat screams when 10 zombies spotted", function()
+    local player = MockUpdatePlayer(
+        { "UniversalTraits:UT_scardycat" },
+        { spottedSize = 10 }
+    )
+    -- cooldown starts nil (=> 0), ZombRand returns 0 (< 3) => scream fires
+    Events.OnPlayerUpdate:fire(player)
+    -- ShouldBeShouting fires first via pcall and sets _shouted=true
+    assert_true(player._shouted == true or player._said ~= nil,
+        "expected player to scream (_shouted=true or _said set), got _shouted="
+        .. tostring(player._shouted) .. " _said=" .. tostring(player._said))
+end)
+
+test("pacer applies unhappiness after 600 indoor ticks", function()
+    local player = MockUpdatePlayer(
+        { "UniversalTraits:UT_pacer" },
+        { indoors = true, indoorTicks = 599 }
+    )
+    local bd = player:getBodyDamage()
+    local startUnhappiness = bd._unhappinessLevel  -- 50
+    Events.OnPlayerUpdate:fire(player)
+    assert_true(bd._unhappinessLevel > startUnhappiness,
+        "expected unhappiness to increase after 600 indoor ticks, got "
+        .. tostring(bd._unhappinessLevel))
+end)
+
 print(string.format("\n%d passed, %d failed", passed, failed))
 if failed > 0 then os.exit(1) end

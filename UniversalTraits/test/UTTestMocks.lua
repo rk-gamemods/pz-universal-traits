@@ -35,35 +35,60 @@ function MockPlayer(traitList)
     -- Mutable stats object (shared across getStats() calls)
     local stats = {
         _endurance = 1.0,
+        _panic     = 0.0,
         setStress    = function() end, setHunger  = function() end,
         setThirst    = function() end, setFatigue = function() end,
-        setPanic     = function() end,
+        setPanic     = function(self, v) self._panic = v end,
+        getPanic     = function(self) return self._panic end,
         setEndurance = function(self, v) self._endurance = v end,
         getEndurance    = function(self) return self._endurance end,
         getMaxEndurance = function(self) return 1.0 end,
+    }
+    -- Mutable bodyDamage object (shared across getBodyDamage() calls)
+    local bodyDamage = {
+        _panicLevel      = 0,
+        _unhappinessLevel = 50,
+        getPanicLevel         = function(self) return self._panicLevel end,
+        setPanicLevel         = function(self, v) self._panicLevel = v end,
+        getUnhappinessLevel   = function(self) return self._unhappinessLevel end,
+        setUnhappinessLevel   = function(self, v) self._unhappinessLevel = v end,
     }
     -- Mutable xp object
     local xp = {
         _log = {},
         AddXP = function(self, perk, amount) table.insert(self._log, { perk=perk, amount=amount }) end,
     }
-    return {
+    local player = {
+        _bumpFallDown = false,
+        _said         = nil,
+        _shouted      = false,
+        _sprinting    = false,
+        _moving       = false,
+        _indoors      = false,
         getModData = function(self) return moddata end,
         getTraits  = function(self)
             return { contains = function(_, id) return traits[id] == true end }
         end,
-        getStats   = function(self) return stats end,
-        getXp      = function(self) return xp end,
-        getPerkLevel = function(self, perk)
+        getStats      = function(self) return stats end,
+        getBodyDamage = function(self) return bodyDamage end,
+        getXp         = function(self) return xp end,
+        getPerkLevel  = function(self, perk)
             return moddata["_perkLevel_" .. tostring(perk)] or 0
         end,
-        setPerkLevel = function(self, perk, level)
+        setPerkLevel  = function(self, perk, level)
             moddata["_perkLevel_" .. tostring(perk)] = level
         end,
-        getBodyDamage    = function(self) return nil end,
         setMaxWeightBase = function(self, v) moddata["_maxWeight"] = v end,
         getMaxWeightBase = function(self) return moddata["_maxWeight"] or 8 end,
+        -- Runtime-behavior mocks
+        setBumpFallDown   = function(self, v) self._bumpFallDown = v end,
+        isSprinting       = function(self) return self._sprinting end,
+        isMoving          = function(self) return self._moving end,
+        isIndoors         = function(self) return self._indoors end,
+        Say               = function(self, text) self._said = text end,
+        ShouldBeShouting  = function(self, v) self._shouted = v end,
     }
+    return player
 end
 
 -- UTCore stub for trait tests
@@ -133,7 +158,20 @@ if not _G.ZombRand then
     _G.ZombRand = function(n) return 0 end
 end
 
--- Perks stub: provides SmallBlunt sentinel used by martial and other combat traits
+-- Perks stub: provides SmallBlunt and Nimble sentinels
 if not _G.Perks then
-    _G.Perks = { SmallBlunt = "SmallBlunt" }
+    _G.Perks = { SmallBlunt = "SmallBlunt", Nimble = "Nimble" }
+else
+    _G.Perks.Nimble = _G.Perks.Nimble or "Nimble"
+end
+
+-- Events.OnPanic stub
+if not _G.Events.OnPanic then
+    local _panicHandlers = {}
+    _G.Events.OnPanic = {
+        Add  = function(fn) table.insert(_panicHandlers, fn) end,
+        fire = function(self, player)
+            for _, fn in ipairs(_panicHandlers) do fn(player) end
+        end,
+    }
 end
