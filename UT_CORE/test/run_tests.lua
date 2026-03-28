@@ -278,5 +278,30 @@ test("WorkSpeedHook applies readSpeedMod to ISReadABook", function()
     assert(math.abs(result - 130) < 1, "expected ~130, got " .. tostring(result))
 end)
 
+-- BleedHook
+dofile(base .. "../media/lua/shared/UTCore/UTCore_BleedHook.lua")
+
+test("BleedHook calls AddHealth for bleedMult < 1.0", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_bleedMult"] = 0.4
+    local torso = MockBodyPart("Torso_Upper", true, false)
+    p:setBodyDamage(MockBodyDamage({ torso }))
+    _G.getPlayer = function() return p end
+    for i = 1, 60 do Events.OnPlayerUpdate.fire(p) end
+    _G.getPlayer = function() return nil end
+    assert(torso:getAddHealthCalls() >= 1, "expected AddHealth call for mult 0.4")
+end)
+
+test("BleedHook calls ReduceHealth for bleedMult > 1.0", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_bleedMult"] = 2.0
+    local torso = MockBodyPart("Torso_Upper", true, false)
+    p:setBodyDamage(MockBodyDamage({ torso }))
+    _G.getPlayer = function() return p end
+    for i = 1, 60 do Events.OnPlayerUpdate.fire(p) end
+    _G.getPlayer = function() return nil end
+    assert(torso:getReduceHealthCalls() >= 1, "expected ReduceHealth call for mult 2.0")
+end)
+
 print(string.format("\n%d passed, %d failed", passed, failed))
 if failed > 0 then os.exit(1) end

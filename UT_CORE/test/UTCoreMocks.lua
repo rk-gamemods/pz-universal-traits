@@ -30,6 +30,7 @@ function MockPlayer(traits)
     }
     local x, y = 0, 0
     local xpCalls = {}
+    local bodyDamage = nil
     return {
         getTraits = function(self)
             return {
@@ -60,6 +61,8 @@ function MockPlayer(traits)
         setY                = function(self, v) y = v end,
         isLocalPlayer       = function(self) return true end,
         moveTo              = function(self, nx, ny) x = nx; y = ny end,
+        getBodyDamage       = function(self) return bodyDamage end,
+        setBodyDamage       = function(self, bd) bodyDamage = bd end,
     }
 end
 
@@ -91,6 +94,53 @@ Events.OnPlayerMove    = _makeEventTable()
 Events.OnGameBoot      = _makeEventTable()
 
 _G.getPlayer = function() return nil end  -- tests override this
+
+-- BodyPartType global (needed by BleedHook)
+if not _G.BodyPartType then
+    _G.BodyPartType = { Neck = "Neck" }
+end
+
+-- MockBodyPart: simulates a PZ IsoBodyPart
+function MockBodyPart(partType, isBleeding, isStemmed)
+    local _type = partType or "Torso_Upper"
+    local _bleeding = isBleeding or false
+    local _stemmed = isStemmed or false
+    local _health = 1.0
+    local addHealthCalls = 0
+    local reduceHealthCalls = 0
+    return {
+        getType              = function(self) return _type end,
+        bleeding             = function(self) return _bleeding end,
+        IsBleedingStemmed    = function(self) return _stemmed end,
+        getHealth            = function(self) return _health end,
+        AddHealth            = function(self, v) addHealthCalls = addHealthCalls + 1; _health = _health + v end,
+        ReduceHealth         = function(self, v) reduceHealthCalls = reduceHealthCalls + 1; _health = _health - v end,
+        getAddHealthCalls    = function(self) return addHealthCalls end,
+        getReduceHealthCalls = function(self) return reduceHealthCalls end,
+    }
+end
+
+-- MockBodyPartsList: Java-like ArrayList with 0-indexed get(i) and size()
+function MockBodyPartsList(parts)
+    local _parts = parts or {}
+    return {
+        size = function(self) return #_parts end,
+        get  = function(self, i) return _parts[i + 1] end,  -- 0-indexed like Java
+    }
+end
+
+-- MockBodyDamage: simulates player:getBodyDamage()
+function MockBodyDamage(parts)
+    local list = MockBodyPartsList(parts)
+    local bleedingCount = 0
+    for _, p in ipairs(parts or {}) do
+        if p:bleeding() then bleedingCount = bleedingCount + 1 end
+    end
+    return {
+        getBodyParts        = function(self) return list end,
+        getNumPartsBleeding = function(self) return bleedingCount end,
+    }
+end
 
 -- MockTimedAction: simulates a PZ TimedAction for WorkSpeedHook tests
 function MockTimedAction(player, actionType, baseDuration)
