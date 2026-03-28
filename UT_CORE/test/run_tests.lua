@@ -247,5 +247,34 @@ test("SpeedHook teleport guard skips adjustment when delta > 5", function()
     _G.getPlayer = function() return nil end
 end)
 
+-- WorkSpeedHook
+dofile(base .. "../media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua")
+Events.OnGameBoot.fire()  -- triggers getDuration override
+
+test("WorkSpeedHook shortens duration for negative workSpeedMod", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_workSpeedMod"] = -0.5
+    local action = MockTimedAction(p, "ISCraftItem", 100)
+    local result = UTCore.applyWorkDuration(action, 100)
+    assert(math.abs(result - 50) < 1, "expected ~50, got " .. tostring(result))
+end)
+
+test("WorkSpeedHook lengthens duration for positive workSpeedMod", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_workSpeedMod"] = 0.5
+    local action = MockTimedAction(p, "ISCraftItem", 100)
+    local result = UTCore.applyWorkDuration(action, 100)
+    assert(math.abs(result - 150) < 1, "expected ~150, got " .. tostring(result))
+end)
+
+test("WorkSpeedHook applies readSpeedMod to ISReadABook", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_workSpeedMod"] = 0
+    p:getModData()["UT_readSpeedMod"] = 0.3
+    local action = MockTimedAction(p, "ISReadABook", 100)
+    local result = UTCore.applyWorkDuration(action, 100)
+    assert(math.abs(result - 130) < 1, "expected ~130, got " .. tostring(result))
+end)
+
 print(string.format("\n%d passed, %d failed", passed, failed))
 if failed > 0 then os.exit(1) end

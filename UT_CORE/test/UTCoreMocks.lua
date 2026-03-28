@@ -88,5 +88,18 @@ Events.EveryTenMinutes = _makeEventTable()
 Events.EveryHours      = _makeEventTable()
 Events.OnPlayerUpdate  = _makeEventTable()
 Events.OnPlayerMove    = _makeEventTable()
+Events.OnGameBoot      = _makeEventTable()
 
 _G.getPlayer = function() return nil end  -- tests override this
+
+-- MockTimedAction: simulates a PZ TimedAction for WorkSpeedHook tests
+function MockTimedAction(player, actionType, baseDuration)
+    local character = player
+    local Type = actionType or "ISCraftItem"
+    local maxTime = baseDuration or 100
+    return {
+        character = character,
+        Type = Type,
+        getDuration = function(self) return maxTime end,
+    }
+end
