@@ -461,5 +461,72 @@ test("bouncer stagger does NOT fire during cooldown", function()
     assert_eq(player:getModData()["UT_bouncer_cooldown"], 29, "cooldown should decrement to 29")
 end)
 
+-- ===== UT_vagabond loot mechanic tests =====
+-- Load the trait file so handleContainerInspect is exposed as a global.
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_vagabond.lua")
+
+local vagabondItems = {
+    "Base.Tuna", "Base.BakedBeans", "Base.SoupCan",
+    "Base.Socks", "Base.Tshirt",
+    "Base.RoadMap1", "Base.RoadMap2",
+    "Base.Screwdriver", "Base.WoodGlue",
+}
+
+test("vagabond loot: adds item from loot table to container on first inspect (guaranteed roll)", function()
+    -- ZombRand is already stubbed to return 0:
+    --   ZombRand(100) → 0 < 33, so roll succeeds
+    --   ZombRand(9)   → 0 + 1 = 1, so picks vagabondItems[1] = "Base.Tuna"
+    local player = MockPlayer({ "UniversalTraits:UT_vagabond" })
+
+    local addedItem = nil
+    local container = {
+        getObject = function(self) return nil end,
+        AddItem   = function(self, itemType) addedItem = itemType end,
+    }
+
+    UT_vagabond_handleContainerInspect(player, container)
+
+    -- Verify an item was added and it belongs to the loot table
+    assert_true(addedItem ~= nil, "expected AddItem to be called, but it was not")
+    local valid = false
+    for _, v in ipairs(vagabondItems) do
+        if v == addedItem then valid = true; break end
+    end
+    assert_true(valid, "added item '" .. tostring(addedItem) .. "' is not in vagabondItems loot table")
+
+    -- Verify container is marked as looted
+    local lootedKey = "UT_vagabond_looted_" .. tostring(container)
+    assert_true(player:getModData()[lootedKey] == true, "container should be marked as looted")
+end)
+
+test("vagabond loot: skips already-looted container", function()
+    local player = MockPlayer({ "UniversalTraits:UT_vagabond" })
+    local callCount = 0
+    local container = {
+        getObject = function(self) return nil end,
+        AddItem   = function(self, itemType) callCount = callCount + 1 end,
+    }
+    -- Pre-mark this container as looted
+    local lootedKey = "UT_vagabond_looted_" .. tostring(container)
+    player:getModData()[lootedKey] = true
+
+    UT_vagabond_handleContainerInspect(player, container)
+
+    assert_eq(callCount, 0, "AddItem should not be called for an already-looted container")
+end)
+
+test("vagabond loot: skips player without vagabond trait", function()
+    local player = MockPlayer({})  -- no traits
+    local callCount = 0
+    local container = {
+        getObject = function(self) return nil end,
+        AddItem   = function(self, itemType) callCount = callCount + 1 end,
+    }
+
+    UT_vagabond_handleContainerInspect(player, container)
+
+    assert_eq(callCount, 0, "AddItem should not be called when player lacks vagabond trait")
+end)
+
 print(string.format("\n%d passed, %d failed", passed, failed))
 if failed > 0 then os.exit(1) end
