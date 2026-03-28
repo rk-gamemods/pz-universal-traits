@@ -260,5 +260,72 @@ test("total registration count is 199", function()
     assert_eq(count, 199, "registration count")
 end)
 
+-- ===== Per-trait moddata spot checks =====
+-- Trait files use UTCore.hasTrait, UTCore.apply*, and Events.OnNewGame.
+-- All stubs are already provided by UTTestMocks.lua above.
+
+-- Helper: create a player that has the given traitId, fire OnNewGame, return player
+local function fireNewGame(traitId)
+    local p = MockPlayer({ traitId })
+    Events.OnNewGame:fire(p)
+    return p
+end
+
+-- Load the 7 gap traits (registers their OnNewGame handlers at load time)
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_onetrickpony.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_flatearther.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_fast.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_noodlelegs.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_quickworker.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_thickblood.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_heavilybleedingwounds.lua")
+
+test("UT_onetrickpony sets UT_multiSkillPenalty=true", function()
+    local p = fireNewGame("UniversalTraits:UT_onetrickpony")
+    assert_eq(p:getModData()["UT_multiSkillPenalty"], true, "UT_onetrickpony")
+end)
+
+-- UT_flatearther writes UT_readSpeedMod = -0.3 (a negative modifier, meaning -30% read speed)
+test("UT_flatearther sets UT_readSpeedMod ~= nil", function()
+    local p = fireNewGame("UniversalTraits:UT_flatearther")
+    local v = p:getModData()["UT_readSpeedMod"]
+    assert_true(type(v) == "number", "expected UT_readSpeedMod to be a number, got " .. tostring(v))
+end)
+
+-- UT_fast writes UT_speedBoost = 0.3 directly into moddata (positive boost)
+test("UT_fast sets UT_speedBoost > 0", function()
+    local p = fireNewGame("UniversalTraits:UT_fast")
+    local v = p:getModData()["UT_speedBoost"]
+    assert_true(type(v) == "number" and v > 0, "expected UT_speedBoost > 0, got " .. tostring(v))
+end)
+
+-- UT_noodlelegs writes UT_speedMod = -0.2 directly into moddata (negative penalty)
+test("UT_noodlelegs sets UT_speedMod < 0", function()
+    local p = fireNewGame("UniversalTraits:UT_noodlelegs")
+    local v = p:getModData()["UT_speedMod"]
+    assert_true(type(v) == "number" and v < 0, "expected UT_speedMod < 0, got " .. tostring(v))
+end)
+
+-- UT_quickworker calls UTCore.applyWorkSpeed(player, 0.3) -> UT_workSpeedMod = 0.3 (positive boost)
+test("UT_quickworker sets UT_workSpeedMod > 0", function()
+    local p = fireNewGame("UniversalTraits:UT_quickworker")
+    local v = p:getModData()["UT_workSpeedMod"]
+    assert_true(type(v) == "number" and v > 0, "expected UT_workSpeedMod > 0, got " .. tostring(v))
+end)
+
+-- UT_thickblood calls UTCore.applyBleedRate(player, 0.5) -> UT_bleedMult = 0.5 (reduced bleed)
+test("UT_thickblood sets UT_bleedMult < 1.0", function()
+    local p = fireNewGame("UniversalTraits:UT_thickblood")
+    local v = p:getModData()["UT_bleedMult"]
+    assert_true(type(v) == "number" and v < 1.0, "expected UT_bleedMult < 1.0, got " .. tostring(v))
+end)
+
+-- UT_heavilybleedingwounds calls UTCore.applyBleedRate(player, 2.0) -> UT_bleedMult = 2.0 (increased bleed)
+test("UT_heavilybleedingwounds sets UT_bleedMult > 1.0", function()
+    local p = fireNewGame("UniversalTraits:UT_heavilybleedingwounds")
+    local v = p:getModData()["UT_bleedMult"]
+    assert_true(type(v) == "number" and v > 1.0, "expected UT_bleedMult > 1.0, got " .. tostring(v))
+end)
+
 print(string.format("\n%d passed, %d failed", passed, failed))
 if failed > 0 then os.exit(1) end
