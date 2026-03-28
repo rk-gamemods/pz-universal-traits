@@ -90,11 +90,15 @@ if not _G.Events.OnNewGame then
     }
 end
 
--- Events.OnPlayerUpdate stub (trait files register update handlers at load time)
--- Called as Events.OnPlayerUpdate.Add(fn) — dot notation, fn is first arg.
+-- Events.OnPlayerUpdate stub
+-- Stores registered handlers so tests can fire them directly via :fire(player).
 if not _G.Events.OnPlayerUpdate then
+    local _updateHandlers = {}
     _G.Events.OnPlayerUpdate = {
-        Add = function(fn) end,  -- no-op: update handlers not tested here
+        Add  = function(fn) table.insert(_updateHandlers, fn) end,
+        fire = function(self, player)
+            for _, fn in ipairs(_updateHandlers) do fn(player) end
+        end,
     }
 end
 

@@ -395,5 +395,71 @@ test("actionhero skipped when player has UT_mundane", function()
         "expected health unchanged when UT_mundane is active")
 end)
 
+-- ===== UT_bouncer_I stagger mechanic tests =====
+-- Load the trait file so its Events.OnPlayerUpdate.Add() fires.
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_bouncer_I.lua")
+
+-- Helper: build an enemy mock with mutable staggerBack flag
+local function MockEnemy(dist)
+    return {
+        _dist        = dist,
+        _staggerBack = false,
+        setStaggerBack = function(self, v) self._staggerBack = v end,
+    }
+end
+
+-- Helper: build a spotted-list mock from an explicit enemy array
+local function MockSpottedListFromEnemies(enemies)
+    return {
+        size = function(self) return #enemies end,
+        get  = function(self, i) return enemies[i + 1] end,
+    }
+end
+
+-- Helper: extend MockPlayer with the methods bouncer needs
+local function MockBouncerPlayer(traitList, spottedList)
+    local p = MockPlayer(traitList)
+    p.getSpottedList = function(self) return spottedList end
+    p.DistTo = function(self, enemy) return enemy._dist end
+    return p
+end
+
+test("bouncer stagger fires when >=3 close enemies and cooldown=0", function()
+    local enemies = {
+        MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5),
+    }
+    local spotted = MockSpottedListFromEnemies(enemies)
+    local player  = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, spotted)
+    -- Cooldown starts at 0 (nil → initialized to 0 in handler)
+
+    Events.OnPlayerUpdate:fire(player)
+
+    -- ZombRand is stubbed to always return 0, so 0 < 5 is true → stagger fires
+    local staggered = false
+    for _, e in ipairs(enemies) do
+        if e._staggerBack then staggered = true end
+    end
+    assert_true(staggered, "expected at least one enemy to be staggered")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 60, "cooldown should be set to 60")
+end)
+
+test("bouncer stagger does NOT fire during cooldown", function()
+    local enemies = {
+        MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5),
+    }
+    local spotted = MockSpottedListFromEnemies(enemies)
+    local player  = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, spotted)
+    player:getModData()["UT_bouncer_cooldown"] = 30
+
+    Events.OnPlayerUpdate:fire(player)
+
+    local staggered = false
+    for _, e in ipairs(enemies) do
+        if e._staggerBack then staggered = true end
+    end
+    assert_true(not staggered, "expected no enemy to be staggered during cooldown")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 29, "cooldown should decrement to 29")
+end)
+
 print(string.format("\n%d passed, %d failed", passed, failed))
 if failed > 0 then os.exit(1) end
