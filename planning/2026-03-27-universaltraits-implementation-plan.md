@@ -29,8 +29,11 @@ cp -r UT_CORE/release/UT_CORE/. "C:/Users/Admin/Zomboid/mods/UT_CORE/"
 | Phase | Status | Traits |
 |-------|--------|--------|
 | Phase 1 | ✅ Complete | 99 traits (script-only) |
-| Phase 2 | ⏳ Not started | ~45 traits (stat modifiers + hasTrait checks) |
-| Phase 3 | ⏳ Not started | ~55 traits (event-driven) |
+| Phase 2 | ✅ Complete (2026-03-28) | 46 traits (stat modifiers + hasTrait checks) |
+| Phase 3 | ✅ Complete (2026-03-28) | 54 traits (event-driven); UT_amputee deferred |
+| **Total registered** | ✅ **199 traits** | 36 tests passing |
+
+> See [AGENTS.md](../AGENTS.md) for full project knowledge, API reference, and known gaps.
 
 ---
 
