@@ -13,6 +13,7 @@ dofile(base .. "../media/lua/shared/UTCore/UTCore_TraitChecks.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_Events.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_StatModifiers.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_SpawnEffects.lua")
+dofile(base .. "../media/lua/shared/UTCore/UTCore_XPHook.lua")
 
 local passed, failed = 0, 0
 local function test(name, fn)
@@ -122,6 +123,61 @@ test("unregisterPeriodicHandler removes handler", function()
     UTCore.registerPeriodicHandler("test_trait2", "EveryTenMinutes", function(player) end)
     UTCore.unregisterPeriodicHandler("test_trait2")
     assert_eq(UTCore._periodicHandlers["test_trait2"], nil)
+end)
+
+-- XPHook: XP multiplier
+test("XPHook applies XP multiplier", function()
+    local p = MockPlayer()
+    p:getModData()["UT_xpMult_Aiming"] = 2.0
+    Events.AddXP.fire(p, "Aiming", 10)
+    local calls = p:getXpCalls()
+    local found = false
+    for _, c in ipairs(calls) do
+        if c.perk == "Aiming" and c.amount == 10 then found = true end
+    end
+    assert_eq(found, true, "expected +10 bonus correction for 2x multiplier ")
+end)
+
+-- XPHook: XP disable
+test("XPHook cancels XP when disabled", function()
+    local p = MockPlayer()
+    p:getModData()["UT_xpDisable_Aiming"] = true
+    Events.AddXP.fire(p, "Aiming", 10)
+    local calls = p:getXpCalls()
+    local found = false
+    for _, c in ipairs(calls) do
+        if c.perk == "Aiming" and c.amount == -10 then found = true end
+    end
+    assert_eq(found, true, "expected -10 cancellation for disabled XP ")
+end)
+
+-- XPHook: multi-skill penalty fires for 2nd perk
+test("XPHook multi-skill penalty fires for 2nd perk", function()
+    Events.EveryOneMinute.fire()  -- reset module-level tracking
+    local p = MockPlayer()
+    p:getModData()["UT_multiSkillPenalty"] = true
+    Events.AddXP.fire(p, "Aiming", 10)
+    Events.AddXP.fire(p, "Reloading", 10)
+    local calls = p:getXpCalls()
+    local foundNeg = false
+    for _, c in ipairs(calls) do
+        if c.perk == "Reloading" and c.amount < 0 then foundNeg = true end
+    end
+    assert_eq(foundNeg, true, "expected negative XP correction on 2nd perk ")
+end)
+
+-- XPHook: multi-skill penalty skips single perk
+test("XPHook multi-skill penalty skips single perk", function()
+    Events.EveryOneMinute.fire()  -- reset module-level tracking
+    local p = MockPlayer()
+    p:getModData()["UT_multiSkillPenalty"] = true
+    Events.AddXP.fire(p, "Aiming", 10)
+    local calls = p:getXpCalls()
+    local foundNeg = false
+    for _, c in ipairs(calls) do
+        if c.perk == "Aiming" and c.amount < 0 then foundNeg = true end
+    end
+    assert_eq(foundNeg, false, "expected no negative correction for single perk ")
 end)
 
 print(string.format("\n%d passed, %d failed", passed, failed))

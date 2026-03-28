@@ -28,6 +28,7 @@ function MockPlayer(traits)
         getEndurance = function(self) return statsData.endurance end,
         setEndurance = function(self, v) statsData.endurance = v end,
     }
+    local xpCalls = {}
     return {
         getTraits = function(self)
             return {
@@ -43,5 +44,53 @@ function MockPlayer(traits)
         getMaxWeightBase    = function(self) return maxWeight end,
         setMaxWeightBase    = function(self, v) maxWeight = v end,
         getStats            = function(self) return stats end,
+        getXp               = function(self)
+            return {
+                AddXP = function(_, perk, amount)
+                    table.insert(xpCalls, {perk = perk, amount = amount})
+                end
+            }
+        end,
+        getXpCalls          = function(self) return xpCalls end,
     }
 end
+
+-- Mock Events global
+Events = Events or {}
+
+local function _makeEventTable()
+    local handlers = {}
+    return {
+        Add    = function(fn) table.insert(handlers, fn) end,
+        Remove = function(fn)
+            for i, v in ipairs(handlers) do
+                if v == fn then table.remove(handlers, i) return end
+            end
+        end,
+        fire   = function(...)
+            for _, fn in ipairs(handlers) do fn(...) end
+        end,
+    }
+end
+
+do
+    local _addXPHandlers = {}
+    Events.AddXP = {
+        Add  = function(fn) table.insert(_addXPHandlers, fn) end,
+        Remove = function(fn)
+            for i, v in ipairs(_addXPHandlers) do
+                if v == fn then table.remove(_addXPHandlers, i) return end
+            end
+        end,
+        fire = function(player, perk, amount)
+            for _, fn in ipairs(_addXPHandlers) do
+                fn(player, perk, amount)
+            end
+        end,
+    }
+end
+
+Events.EveryOneMinute  = _makeEventTable()
+Events.EveryTenMinutes = _makeEventTable()
+Events.EveryHours      = _makeEventTable()
+Events.OnPlayerUpdate  = _makeEventTable()
