@@ -657,7 +657,7 @@ UI_EN = {
     UI_UT_gunspecialist_IIDesc  = "You know firearms inside and out. You gain double bonus XP in Aiming and Reloading, and a bonus in Nimble.",
 
     UI_UT_gunspecialist_III     = "Gun Specialist III",
-    UI_UT_gunspecialist_IIIDesc = "Firearms are an extension of yourself. You gain double bonus XP in both Aiming and Reloading.",
+    UI_UT_gunspecialist_IIIDesc = "Firearms are an extension of yourself. You gain double XP in Aiming and Reloading, a bonus in Nimble, +10% reload and aim speed, and your weapons never jam.",
 
     -- ============================================================
     -- PHASE 3d — COMPLEX STATE TRAITS
