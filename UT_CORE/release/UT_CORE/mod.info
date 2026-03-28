@@ -3,4 +3,4 @@ poster=poster.png
 id=UT_CORE
 description=Shared infrastructure library for Universal Traits. Required dependency — enable alongside UniversalTraits.
 modversion=1.0
-pzversion=42.0
+pzversion=42
