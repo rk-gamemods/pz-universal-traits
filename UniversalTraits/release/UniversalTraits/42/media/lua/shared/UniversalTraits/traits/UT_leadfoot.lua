@@ -12,5 +12,5 @@ local function onVehicleExit(player, vehicle)
     player:getModData()["UT_vehicleSpeedBoost"] = nil
 end
 
-Events.OnVehicleEnter.Add(onVehicleEnter)
-Events.OnVehicleExit.Add(onVehicleExit)
+Events.OnEnterVehicle.Add(onVehicleEnter)
+Events.OnExitVehicle.Add(onVehicleExit)

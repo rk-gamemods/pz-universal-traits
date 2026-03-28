@@ -10,4 +10,4 @@ local function onVehicleEnter(player, vehicle)
     stats:setStress(math.min(1, stats:getStress() + 0.2))
 end
 
-Events.OnVehicleEnter.Add(onVehicleEnter)
+Events.OnEnterVehicle.Add(onVehicleEnter)

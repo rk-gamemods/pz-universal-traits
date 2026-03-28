@@ -9,4 +9,4 @@ local function onKill(player, zombie)
     player:getStats():setBoredom(math.max(0, player:getStats():getBoredom() - 0.2))
 end
 
-Events.OnZombieKilled.Add(onKill)
+Events.OnZombieDead.Add(onKill)

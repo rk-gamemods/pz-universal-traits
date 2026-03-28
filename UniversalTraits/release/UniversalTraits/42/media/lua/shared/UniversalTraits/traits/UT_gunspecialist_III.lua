@@ -29,8 +29,8 @@ local function onPlayerUpdate(player)
     -- Jam immunity: unjam any currently equipped firearm
     local primary   = player:getPrimaryHandItem()
     local secondary = player:getSecondaryHandItem()
-    if primary   and primary:isJammed   and primary:isJammed()   then primary:setJammed(false)   end
-    if secondary and secondary:isJammed and secondary:isJammed() then secondary:setJammed(false) end
+    if primary   then pcall(function() if primary:isJammed()   then primary:setJammed(false)   end end) end
+    if secondary then pcall(function() if secondary:isJammed() then secondary:setJammed(false) end end) end
 end
 
 Events.OnNewGame.Add(onNewGame)

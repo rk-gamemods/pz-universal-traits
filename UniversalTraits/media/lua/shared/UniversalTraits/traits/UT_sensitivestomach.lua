@@ -1,12 +1,15 @@
 -- UT_sensitivestomach.lua
--- Sensitive stomach: food reaction
+-- Sensitive stomach: slow ongoing stress increase.
+-- No OnEat event in B42; effect applied via EveryTenMinutes.
 
 local TRAIT_ID = "UniversalTraits:UT_sensitivestomach"
 
-local function onEat(player, food)
+local function onEveryTenMinutes()
+    local player = getPlayer()
+    if not player then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
     local stats = player:getStats()
-    stats:setStress(stats:getStress() + 0.05)
+    stats:setStress(math.min(1, stats:getStress() + 0.05))
 end
 
-Events.OnEat.Add(onEat)
+Events.EveryTenMinutes.Add(onEveryTenMinutes)
