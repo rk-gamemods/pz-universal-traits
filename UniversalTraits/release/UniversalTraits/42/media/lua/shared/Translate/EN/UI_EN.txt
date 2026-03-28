@@ -57,25 +57,25 @@ UI_EN = {
     UI_UT_ninjawayDesc          = "You trained in the art of silent movement. Gain ×3 XP in Sneaking and ×2 XP in Sprinting.",
 
     UI_UT_gymgoer               = "Gym-Goer",
-    UI_UT_gymgoerDesc           = "Regular gym sessions have made you strong. Gain ×2 XP in Fitness.",
+    UI_UT_gymgoerDesc           = "Regular gym sessions built both muscle and endurance. Start at Strength 6 and Fitness 6.",
 
     UI_UT_sprintdemon           = "Sprint Demon",
-    UI_UT_sprintdemonDesc       = "Explosive speed when it matters most. Gain ×2 XP in Sprinting.",
+    UI_UT_sprintdemonDesc       = "You were born to run. Start at Sprinting level 1.",
 
     UI_UT_trekker               = "Trekker",
-    UI_UT_trekkerDesc           = "Long hikes across rugged terrain are second nature to you. Gain ×2 XP in Fitness and Sprinting.",
+    UI_UT_trekkerDesc           = "Long-distance endurance training. Start at Fitness 6 and Sprinting level 1.",
 
     -- ============================================================
     -- PHASE 1 — XP BOOST: COMBAT (MELEE)
     -- ============================================================
     UI_UT_martial               = "Martial Artist",
-    UI_UT_martialDesc           = "Trained in unarmed combat disciplines. Gain ×2 XP in Fitness and Short Blunt.",
+    UI_UT_martialDesc           = "Your hands are lethal weapons. Bare-hand strikes have a chance to land a critical hit dealing 4× damage, scaled by your endurance. Grants Short Blunt experience on each hit.",
 
     UI_UT_bladetwirl            = "Blade Twirl",
     UI_UT_bladetwirlDesc        = "You handle bladed weapons with a practised flourish. Gain ×2 XP in Long Blade and Short Blade.",
 
     UI_UT_blunttwirl            = "Blunt Twirl",
-    UI_UT_blunttwirlDesc        = "You swing blunt weapons with practiced momentum. Gain ×2 XP in Long Blunt.",
+    UI_UT_blunttwirlDesc        = "You swing blunt weapons with practiced momentum. Start at Short Blunt level 1 and Long Blunt level 1.",
 
     UI_UT_tavernbrawler         = "Tavern Brawler",
     UI_UT_tavernbrawlerDesc     = "Countless barroom fights have sharpened your fists and improvised weapon skills. Gain ×2 XP in Short Blunt.",
@@ -84,10 +84,10 @@ UI_EN = {
     UI_UT_gruntDesc             = "Raw power and aggression drive your fighting style. Gain ×2 XP in Carpentry, Short Blunt, Masonry, and Blacksmith.",
 
     UI_UT_actionhero            = "Action Hero",
-    UI_UT_actionheroDesc        = "You fight like the hero of your own action movie. Gain ×2 XP in Axe, Long Blade, Long Blunt, Short Blade, Short Blunt, and Spear.",
+    UI_UT_actionheroDesc        = "You fight like the hero of your own action movie. The more zombies surround you, the harder you hit — bonus damage scales with nearby enemy count.",
 
     UI_UT_cruelty               = "Cruelty",
-    UI_UT_crueltyDesc           = "You strike without mercy or hesitation. Gain ×2 XP in Axe, Long Blade, Long Blunt, Short Blade, Short Blunt, Spear, Aiming, and Reloading.",
+    UI_UT_crueltyDesc           = "You strike without mercy or hesitation. Start at level 1 in every melee weapon skill.",
 
     UI_UT_sharpshooter          = "Sharpshooter",
     UI_UT_sharpshooterDesc      = "Cool under fire, you aim before you shoot. Gain ×3 XP in Aiming.",
@@ -126,7 +126,7 @@ UI_EN = {
     UI_UT_specmoveDesc          = "Your body is a finely tuned machine. Gain ×5 XP in Sprinting, Nimbleness, Lightfoot, and Sneaking. Mutually exclusive with other Specialist traits.",
 
     UI_UT_specaid               = "Specialist: First Aid",
-    UI_UT_specaidDesc           = "Medical training was your calling. Gain ×9 XP in First Aid. Mutually exclusive with other Specialist traits.",
+    UI_UT_specaidDesc           = "A dedicated medical professional. Start at First Aid level 9.",
 
     UI_UT_terminator            = "Terminator",
     UI_UT_terminatorDesc        = "Nothing will stop you. Gain ×5 XP in Axe, Long Blade, Long Blunt, Short Blade, Short Blunt, Spear, Aiming, and Reloading. Mutually exclusive with other Specialist traits.",
@@ -150,7 +150,7 @@ UI_EN = {
     UI_UT_twohanded_axesDesc    = "Nothing compares to the power of a great axe. Gain ×3 XP in Axe.",
 
     UI_UT_onehanded_axes        = "One-Handed Axe Fighter",
-    UI_UT_onehanded_axesDesc    = "Quick, brutal chops from a hand axe. Gain ×2 XP in Axe.",
+    UI_UT_onehanded_axesDesc    = "Proficiency with one-handed axes. Start at Axe level 1.",
 
     UI_UT_blunts                = "Blunt Fighter",
     UI_UT_bluntsDesc            = "You trust a solid bludgeon over any blade. Gain ×3 XP in Long Blunt and Short Blunt.",
@@ -159,10 +159,10 @@ UI_EN = {
     UI_UT_twohanded_bluntsDesc  = "You wield heavy two-handed bludgeons with authority. Gain ×3 XP in Long Blunt.",
 
     UI_UT_onehanded_blunts      = "One-Handed Blunt Fighter",
-    UI_UT_onehanded_bluntsDesc  = "Fast, compact strikes with one-handed blunt weapons. Gain ×3 XP in Short Blunt.",
+    UI_UT_onehanded_bluntsDesc  = "Proficiency with one-handed blunt weapons. Start at Short Blunt level 2.",
 
     UI_UT_long_blunts           = "Long Blunt Specialist",
-    UI_UT_long_bluntsDesc       = "Your reach and power with long blunt weapons is unmatched. Gain ×3 XP in Long Blunt.",
+    UI_UT_long_bluntsDesc       = "Skill with long blunt weapons. Start at Long Blunt level 2.",
 
     UI_UT_short_blunts          = "Short Blunt Specialist",
     UI_UT_short_bluntsDesc      = "You excel with compact, quick-striking blunt weapons. Gain ×3 XP in Short Blunt.",
@@ -174,10 +174,10 @@ UI_EN = {
     UI_UT_twohanded_bladesDesc  = "You wield great swords and machetes with skill. Gain ×3 XP in Long Blade.",
 
     UI_UT_onehanded_blades      = "One-Handed Blade Fighter",
-    UI_UT_onehanded_bladesDesc  = "Fast, precise cuts with a one-handed blade. Gain ×3 XP in Short Blade.",
+    UI_UT_onehanded_bladesDesc  = "Proficiency with one-handed bladed weapons. Start at Short Blade level 2.",
 
     UI_UT_long_blades           = "Long Blade Specialist",
-    UI_UT_long_bladesDesc       = "Sweeping cuts with long bladed weapons are second nature. Gain ×3 XP in Long Blade.",
+    UI_UT_long_bladesDesc       = "Skill with long bladed weapons. Start at Long Blade level 2.",
 
     UI_UT_short_blades          = "Short Blade Specialist",
     UI_UT_short_bladesDesc      = "Close-quarters knife work is your speciality. Gain ×3 XP in Short Blade.",
@@ -198,7 +198,7 @@ UI_EN = {
     UI_UT_tinkererDesc          = "You love taking things apart and putting them back together. Gain ×2 XP in Electrical, Mechanics, Tailoring, and Flint Knapping.",
 
     UI_UT_scrapper              = "Scrapper",
-    UI_UT_scrapperDesc          = "You see value in every broken-down machine or scrap pile. Gain ×2 XP in Scavenging.",
+    UI_UT_scrapperDesc          = "You see value in broken machinery and scrap. Start at Metalworking level 1, Maintenance level 1, and Blacksmithing level 1.",
 
     UI_UT_scrounger             = "Scrounger",
     UI_UT_scroungerDesc         = "You have an eye for overlooked resources. Gain ×2 XP in Scavenging.",
@@ -225,7 +225,7 @@ UI_EN = {
     UI_UT_graverobberDesc       = "You have no qualms looting the dead. Gain ×3 XP in Scavenging.",
 
     UI_UT_vagabond              = "Vagabond",
-    UI_UT_vagabondDesc          = "A life on the road taught you to move fast and light. Gain ×2 XP in Sprinting.",
+    UI_UT_vagabondDesc          = "A life on the road taught you where to look and what to grab. Chance to find a bonus useful item when looting containers and corpses.",
 
     UI_UT_crafty                = "Crafty",
     UI_UT_craftyDesc            = "Your hands know how to make something from nothing. Gain ×2 XP in Carpentry, Mechanics, and Tailoring.",
@@ -237,7 +237,7 @@ UI_EN = {
     UI_UT_pitcrewDesc           = "Fast hands and mechanical intuition from years of motorsport. Gain ×3 XP in Mechanics.",
 
     UI_UT_prodigy               = "Prodigy",
-    UI_UT_prodigyDesc           = "You pick up new skills at an extraordinary rate. Gain ×2 XP in Cooking, Carpentry, Mechanics, First Aid, Fitness, Sprinting, Tailoring, Electrical, Aiming, and Reloading.",
+    UI_UT_prodigyDesc           = "You pick up new skills at an extraordinary rate. Start at level 1 in Cooking, Carpentry, Mechanics, First Aid, Fitness, Sprinting, Tailoring, Electrical, Aiming, and Reloading.",
 
     UI_UT_driver                = "Driver",
     UI_UT_driverDesc            = "Countless hours behind the wheel have made you a natural. Gain ×2 XP in Driving.",
@@ -339,13 +339,13 @@ UI_EN = {
     UI_UT_noodlelegsDesc        = "Your legs never quite cooperate. -20% movement speed.",
 
     UI_UT_pacer                 = "Pacer",
-    UI_UT_pacerDesc             = "You have always had a brisk, purposeful walk. +15% movement speed.",
+    UI_UT_pacerDesc             = "You have always had a brisk, purposeful walk. +15% movement speed. Staying indoors for extended periods makes you restless and unhappy.",
 
     UI_UT_lurcher               = "Lurcher",
-    UI_UT_lurcherDesc           = "You move with a lumbering, uncoordinated gait. -15% movement speed and -15% work speed.",
+    UI_UT_lurcherDesc           = "You move with a lumbering, uncoordinated gait. -15% movement speed and -15% work speed. When exhausted and moving, you may lose your footing.",
 
     UI_UT_sorelegs              = "Sore Legs",
-    UI_UT_sorelegsDesc          = "Chronic aches run from hip to heel. -20% movement speed and -2 carry weight.",
+    UI_UT_sorelegsDesc          = "Your legs are weak and prone to fatigue. -20% movement speed and reduced carry weight.",
 
     -- ============================================================
     -- PHASE 2 — LUA-DRIVEN: WORK SPEED
@@ -375,13 +375,13 @@ UI_EN = {
     UI_UT_brittleDesc           = "Your bones are fragile and snap under stress. Fracture chance is increased by +50%.",
 
     UI_UT_flailer               = "Flailer",
-    UI_UT_flailerDesc           = "Your swings are wild and undisciplined. Combat accuracy is reduced by -15%.",
+    UI_UT_flailerDesc           = "Your swings are wild and undisciplined. Combat accuracy is reduced by -15%. While panicking and running, you may stumble and fall.",
 
     UI_UT_fasthands             = "Fast Hands",
     UI_UT_fasthandsDesc         = "Your hands move with fluid precision. Item transfers and reload actions complete 40% faster (transfer time multiplier: ×0.6).",
 
     UI_UT_analgesia             = "Analgesia",
-    UI_UT_analgesiaDesc         = "Your nervous system does not register pain. The pain immunity flag is set permanently — pain has no effect on your performance or stats.",
+    UI_UT_analgesiaDesc         = "You feel no pain. All pain is permanently suppressed regardless of injuries.",
 
     -- ============================================================
     -- PHASE 2 — LUA-DRIVEN: BLEEDING
@@ -450,7 +450,7 @@ UI_EN = {
     UI_UT_noxptechnicianDesc    = "Electrical work holds no more lessons for you. Electrical and Mechanics grant no XP.",
 
     UI_UT_noxpaxe               = "No XP: Axe",
-    UI_UT_noxpaxeDesc           = "The axe is second nature to you. Using one no longer teaches you anything new. Axe grants no XP.",
+    UI_UT_noxpaxeDesc           = "You'll never get any better with axes. Disables XP gain in Axe.",
 
     UI_UT_noxpfirstaid          = "No XP: First Aid",
     UI_UT_noxpfirstaidDesc      = "You know medicine as well as you ever will. First Aid actions grant no XP.",
@@ -459,7 +459,7 @@ UI_EN = {
     UI_UT_noxpmaintenanceDesc   = "Tool upkeep is routine. Maintenance grants no XP.",
 
     UI_UT_noxpsneaky            = "No XP: Sneaky",
-    UI_UT_noxpsneakyDesc        = "Moving quietly is just how you walk. Sneaking and Lightfoot grant no XP.",
+    UI_UT_noxpsneakyDesc        = "You will never improve at moving silently, no matter how much you practice. Disables XP gain in Sneaking and Lightfoot.",
 
     -- ============================================================
     -- PHASE 2 — LUA-DRIVEN: TIMED / CIRCADIAN
@@ -600,7 +600,7 @@ UI_EN = {
     UI_UT_nervouswreckDesc      = "Your nerves are always close to the edge. Each panic event adds +0.3 to panic. Additionally, every 10 in-game minutes while stress is above 0.7, panic increases by +0.05.",
 
     UI_UT_scardycat             = "Scaredy Cat",
-    UI_UT_scardycatDesc         = "You startle easily and panic often. Each time a panic event fires, panic is increased by an additional +0.15.",
+    UI_UT_scardycatDesc         = "You startle easily and panic often. Each time a panic event fires, panic is increased by an additional +0.15. When surrounded by many zombies, you may involuntarily scream and attract attention.",
 
     UI_UT_maniac                = "Maniac",
     UI_UT_maniacDesc            = "Combat wakes something up in you. Each time you kill a zombie, stress decreases by −0.15 and boredom decreases by −0.2.",
@@ -645,7 +645,7 @@ UI_EN = {
     UI_UT_superimmunedesc       = "Your immune system is exceptional. Infections that would lay others low barely register with your body.",
 
     UI_UT_bouncer_I             = "Bouncer",
-    UI_UT_bouncer_IDesc         = "Years working the door taught you how to handle yourself. Gain ×2 XP in Axe, Long Blade, Long Blunt, Short Blade, Short Blunt, and Spear.",
+    UI_UT_bouncer_IDesc         = "Years working the door taught you how to handle yourself. Start at Strength 6 and Short Blunt level 1. When surrounded by 3 or more zombies, chance to automatically stagger one back.",
 
     UI_UT_bouncer_II            = "Bruiser",
     UI_UT_bouncer_IIDesc        = "Raw power is your trademark. Gain ×3 XP in Strength and ×3 XP in Short Blunt.",
