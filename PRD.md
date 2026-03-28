@@ -96,10 +96,12 @@ UniversalTraits/
 
 ### 2.3 Key Layout Rules (from AGENTS.md)
 
-- `media/` at project root is the single source of truth for code
-- `release/ModName/42.0/` is the deployable package — PZ reads `42.0/media/` at startup
+- `media/` inside each sub-mod is the **single source of truth** for code
+- `release/` inside each sub-mod is **empty during development** — only populated when building a distribution package (Workshop upload / zip)
+- For in-game testing, deploy directly from `media/` to `C:\Users\Admin\Zomboid\mods\` — do NOT use `release/` as a staging area
+- `release/ModName/42.0/media/` is the deployable package structure — PZ reads `42.0/media/` at startup
+- There is NO `release/` folder at the repo root — each sub-mod owns its own `release/`
 - Root-level `media/`, `mod.info`, and `poster.png` are NOT loaded by PZ B42 directly
-- `release/` is built from source via sync; deployed via `robocopy /MIR` to `C:\Users\Admin\Zomboid\mods\`
 - No symlinks or junctions — plain files only
 
 ---

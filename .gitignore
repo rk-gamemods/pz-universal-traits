@@ -3,6 +3,10 @@
 # Live mods dir is NOT tracked
 C:/Users/Admin/Zomboid/mods/
 
+# Research/reference material — dev-only, not part of the mod
+# (large subtree; excluding prevents index bloat)
+research/installed-mods/
+
 # OS
 Thumbs.db
 .DS_Store
