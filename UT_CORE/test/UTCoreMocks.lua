@@ -28,6 +28,7 @@ function MockPlayer(traits)
         getEndurance = function(self) return statsData.endurance end,
         setEndurance = function(self, v) statsData.endurance = v end,
     }
+    local x, y = 0, 0
     local xpCalls = {}
     return {
         getTraits = function(self)
@@ -53,6 +54,12 @@ function MockPlayer(traits)
             }
         end,
         getXpCalls          = function(self) return xpCalls end,
+        getX                = function(self) return x end,
+        getY                = function(self) return y end,
+        setX                = function(self, v) x = v end,
+        setY                = function(self, v) y = v end,
+        isLocalPlayer       = function(self) return true end,
+        moveTo              = function(self, nx, ny) x = nx; y = ny end,
     }
 end
 
@@ -80,3 +87,6 @@ Events.EveryOneMinute  = _makeEventTable()
 Events.EveryTenMinutes = _makeEventTable()
 Events.EveryHours      = _makeEventTable()
 Events.OnPlayerUpdate  = _makeEventTable()
+Events.OnPlayerMove    = _makeEventTable()
+
+_G.getPlayer = function() return nil end  -- tests override this

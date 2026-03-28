@@ -14,6 +14,7 @@ dofile(base .. "../media/lua/shared/UTCore/UTCore_Events.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_StatModifiers.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_SpawnEffects.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_XPHook.lua")
+dofile(base .. "../media/lua/shared/UTCore/UTCore_SpeedHook.lua")
 
 local passed, failed = 0, 0
 local function test(name, fn)
@@ -202,6 +203,48 @@ test("XPHook ignores zero or negative XP events", function()
     p:getModData()["UT_xpMult_Aiming"] = 2.0
     Events.AddXP.fire(p, "Aiming", 0)
     assert_eq(#p:getXpCalls(), 0, "zero XP event should produce no corrections")
+end)
+
+-- SpeedHook: positive speedMod amplifies movement
+test("SpeedHook positive speedMod amplifies movement", function()
+    local player = MockPlayer({})
+    player:getModData()["UT_speedMod"] = 0.5
+    _G.getPlayer = function() return player end
+    player:moveTo(0, 0)
+    Events.OnPlayerMove.fire()   -- stores prevX/prevY
+    player:moveTo(2, 0)
+    Events.OnPlayerMove.fire()   -- should amplify: 0 + 2*1.5 = 3.0
+    local result = player:getX()
+    assert(math.abs(result - 3.0) < 0.01, "expected X ~3.0, got " .. tostring(result))
+    _G.getPlayer = function() return nil end
+end)
+
+-- SpeedHook: negative speedMod reduces movement
+test("SpeedHook negative speedMod reduces movement", function()
+    local player = MockPlayer({})
+    player:getModData()["UT_speedMod"] = -0.3
+    _G.getPlayer = function() return player end
+    player:moveTo(0, 0)
+    Events.OnPlayerMove.fire()   -- stores prevX/prevY
+    player:moveTo(2, 0)
+    Events.OnPlayerMove.fire()   -- should reduce: 0 + 2*0.7 = 1.4
+    local result = player:getX()
+    assert(math.abs(result - 1.4) < 0.01, "expected X ~1.4, got " .. tostring(result))
+    _G.getPlayer = function() return nil end
+end)
+
+-- SpeedHook: teleport guard skips adjustment when delta > 5
+test("SpeedHook teleport guard skips adjustment when delta > 5", function()
+    local player = MockPlayer({})
+    player:getModData()["UT_speedMod"] = 0.5
+    _G.getPlayer = function() return player end
+    player:moveTo(0, 0)
+    Events.OnPlayerMove.fire()   -- stores prevX/prevY
+    player:moveTo(10, 0)
+    Events.OnPlayerMove.fire()   -- delta=10 > 5, should skip
+    local result = player:getX()
+    assert(math.abs(result - 10.0) < 0.01, "expected X ~10.0 (no amplification), got " .. tostring(result))
+    _G.getPlayer = function() return nil end
 end)
 
 print(string.format("\n%d passed, %d failed", passed, failed))
