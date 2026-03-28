@@ -1,13 +1,28 @@
 -- UT_vehophobic.lua
--- Vehicle phobic: panic and stress on vehicle enter
+-- Vehicle phobic: raises panic and stress while the player is driving.
+-- Applied via OnPlayerUpdate + isDriving() check (no OnVehicleEnter event in B42).
 
 local TRAIT_ID = "UniversalTraits:UT_vehophobic"
 
-local function onVehicleEnter(player, vehicle)
+local function onPlayerUpdate(player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
+    if not player:isDriving() then return end
+
+    local md = player:getModData()
+    if md["UT_vehophobic_cooldown"] == nil then
+        md["UT_vehophobic_cooldown"] = 0
+    end
+    if md["UT_vehophobic_cooldown"] > 0 then
+        md["UT_vehophobic_cooldown"] = md["UT_vehophobic_cooldown"] - 1
+        return
+    end
+
     local stats = player:getStats()
-    stats:setPanic(math.min(1, stats:getPanic() + 0.3))
-    stats:setStress(math.min(1, stats:getStress() + 0.2))
+    pcall(function()
+        stats:setPanic(math.min(1, stats:getPanic() + 0.01))
+        stats:setStress(math.min(1, stats:getStress() + 0.005))
+    end)
+    md["UT_vehophobic_cooldown"] = 30
 end
 
-Events.OnEnterVehicle.Add(onVehicleEnter)
+Events.OnPlayerUpdate.Add(onPlayerUpdate)

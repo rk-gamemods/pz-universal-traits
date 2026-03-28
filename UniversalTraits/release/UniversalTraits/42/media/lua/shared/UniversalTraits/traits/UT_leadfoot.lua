@@ -1,16 +1,28 @@
 -- UT_leadfoot.lua
--- Grants 20% vehicle speed boost when driving
+-- Increases stomp power on equipped shoes (match MoreTraits LeadFoot pattern).
 
 local TRAIT_ID = "UniversalTraits:UT_leadfoot"
 
-local function onVehicleEnter(player, vehicle)
+local function onEveryOneMinute()
+    local player = getPlayer()
+    if not player then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
-    player:getModData()["UT_vehicleSpeedBoost"] = 0.2
+
+    local shoes = player:getClothingItem_Feet()
+    if not shoes then return end
+
+    local itemdata = shoes:getModData()
+    if not itemdata then return end
+
+    if itemdata.UT_origStomp == nil then
+        itemdata.UT_origStomp    = shoes:getStompPower()
+        itemdata.UT_stompState   = "Normal"
+    end
+
+    if itemdata.UT_stompState ~= "LeadFoot" then
+        shoes:setStompPower((itemdata.UT_origStomp * 2) + 1)
+        itemdata.UT_stompState = "LeadFoot"
+    end
 end
 
-local function onVehicleExit(player, vehicle)
-    player:getModData()["UT_vehicleSpeedBoost"] = nil
-end
-
-Events.OnEnterVehicle.Add(onVehicleEnter)
-Events.OnExitVehicle.Add(onVehicleExit)
+Events.EveryOneMinute.Add(onEveryOneMinute)

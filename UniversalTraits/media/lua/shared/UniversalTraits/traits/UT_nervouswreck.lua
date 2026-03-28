@@ -1,6 +1,6 @@
 -- UT_nervouswreck.lua
--- Nervous wreck: strong panic amplifier, stress-triggered panic spikes.
--- Panic amplification is checked every ten minutes (no OnPanic event in B42).
+-- Nervous wreck: amplifies panic buildup when stressed.
+-- Uses CharacterStat.PANIC (0-100 scale) + stats:add() — correct B42 API.
 
 local TRAIT_ID = "UniversalTraits:UT_nervouswreck"
 
@@ -10,14 +10,16 @@ local function onEveryTenMinutes()
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
 
     local stats = player:getStats()
-    local panic = stats:getPanic()
-    -- Amplify any existing panic
+    local panic = stats:get(CharacterStat.PANIC)
+    local stress = stats:get(CharacterStat.STRESS)
+
+    -- Amplify existing panic
     if panic > 0 then
-        stats:setPanic(math.min(1, panic + 0.3))
+        stats:add(CharacterStat.PANIC, panic * 0.3)
     end
     -- Extra spike when highly stressed
-    if stats:getStress() > 0.7 then
-        stats:setPanic(math.min(1, stats:getPanic() + 0.05))
+    if stress > 70 then
+        stats:add(CharacterStat.PANIC, 5)
     end
 end
 
