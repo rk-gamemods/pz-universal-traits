@@ -17,6 +17,7 @@ dofile(base .. "../media/lua/shared/UTCore/UTCore_XPHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_SpeedHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_BleedHook.lua")
+dofile(base .. "../media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua")
 
 local passed, failed = 0, 0
 local function test(name, fn)
@@ -302,6 +303,37 @@ test("BleedHook calls ReduceHealth for bleedMult > 1.0", function()
     for i = 1, 60 do Events.OnPlayerUpdate.fire(p) end
     _G.getPlayer = function() return nil end
     assert(torso:getReduceHealthCalls() >= 1, "expected ReduceHealth call for mult 2.0")
+end)
+
+-- MeleeDelayHook: 50% reduction for axe category with UT_axes trait
+test("MeleeDelayHook reduces delay 50% for axe weapon with UT_axes", function()
+    local weapon = MockWeapon("HandAxe", 20)
+    local p = MockPlayer({"UniversalTraits:UT_axes"}, { primaryHandItem = weapon })
+    UTCore._meleeDelayOnPlayerUpdate(p)
+    assert_eq(p:getModData()["_lastMeleeDelay"], 10, "expected delay set to 10 (50% of 20)")
+end)
+
+-- MeleeDelayHook: strength-scaled reduction for UT_heavyswing
+test("MeleeDelayHook uses strength-scaled formula for UT_heavyswing", function()
+    local weapon = MockWeapon("PickAxe", 20)
+    local p = MockPlayer({"UniversalTraits:UT_heavyswing"}, {
+        primaryHandItem = weapon,
+        perkLevels = { Strength = 5 },
+    })
+    -- Perks global not defined in test env; getPerkLevel uses key "Strength"
+    _G.Perks = { Strength = "Strength" }
+    UTCore._meleeDelayOnPlayerUpdate(p)
+    _G.Perks = nil
+    -- newDelay = 20 - 20 * (5 * 0.1) = 20 - 10 = 10
+    assert_eq(p:getModData()["_lastMeleeDelay"], 10, "expected delay 10 (strength-scaled)")
+end)
+
+-- MeleeDelayHook: no trait means setMeleeDelay is NOT called
+test("MeleeDelayHook does not apply when no relevant trait is present", function()
+    local weapon = MockWeapon("HandAxe", 20)
+    local p = MockPlayer({}, { primaryHandItem = weapon })
+    UTCore._meleeDelayOnPlayerUpdate(p)
+    assert_eq(p:getModData()["_lastMeleeDelay"], nil, "expected setMeleeDelay not called")
 end)
 
 print(string.format("\n%d passed, %d failed", passed, failed))

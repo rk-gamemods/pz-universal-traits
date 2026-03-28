@@ -2,10 +2,13 @@
 -- Mock PZ globals for unit tests (standard Lua 5.x, NOT Kahlua).
 
 -- Mock IsoPlayer
-function MockPlayer(traits)
+function MockPlayer(traits, opts)
     local t = traits or {}
+    opts = opts or {}
     local moddata = {}
     local maxWeight = 8
+    local primaryHandItem = opts.primaryHandItem or nil
+    local perkLevels = opts.perkLevels or {}
     local statsData = {
         panic     = 0,
         stress    = 0,
@@ -59,10 +62,14 @@ function MockPlayer(traits)
         getY                = function(self) return y end,
         setX                = function(self, v) x = v end,
         setY                = function(self, v) y = v end,
-        isLocalPlayer       = function(self) return true end,
-        moveTo              = function(self, nx, ny) x = nx; y = ny end,
-        getBodyDamage       = function(self) return bodyDamage end,
-        setBodyDamage       = function(self, bd) bodyDamage = bd end,
+        isLocalPlayer        = function(self) return true end,
+        moveTo               = function(self, nx, ny) x = nx; y = ny end,
+        getBodyDamage        = function(self) return bodyDamage end,
+        setBodyDamage        = function(self, bd) bodyDamage = bd end,
+        getPrimaryHandItem   = function(self) return primaryHandItem end,
+        setPrimaryHandItem   = function(self, item) primaryHandItem = item end,
+        getPerkLevel         = function(self, perk) return perkLevels[perk] or 0 end,
+        setMeleeDelay        = function(self, v) moddata["_lastMeleeDelay"] = v end,
     }
 end
 
@@ -86,12 +93,13 @@ end
 
 Events.AddXP = _makeEventTable()
 
-Events.EveryOneMinute  = _makeEventTable()
-Events.EveryTenMinutes = _makeEventTable()
-Events.EveryHours      = _makeEventTable()
-Events.OnPlayerUpdate  = _makeEventTable()
-Events.OnPlayerMove    = _makeEventTable()
-Events.OnGameBoot      = _makeEventTable()
+Events.EveryOneMinute         = _makeEventTable()
+Events.EveryTenMinutes        = _makeEventTable()
+Events.EveryHours             = _makeEventTable()
+Events.OnPlayerUpdate         = _makeEventTable()
+Events.OnPlayerMove           = _makeEventTable()
+Events.OnGameBoot             = _makeEventTable()
+Events.OnWeaponHitCharacter   = _makeEventTable()
 
 _G.getPlayer = function() return nil end  -- tests override this
 
@@ -151,5 +159,25 @@ function MockTimedAction(player, actionType, baseDuration)
         character = character,
         Type = Type,
         getDuration = function(self) return maxTime end,
+    }
+end
+
+-- MockWeapon: simulates a PZ HandWeapon for MeleeDelayHook tests
+function MockWeapon(weaponType, meleeDelay, isTwoHand, isMelee)
+    local _type       = weaponType or "HandAxe"
+    local _delay      = meleeDelay or 0
+    local _twoHand    = (isTwoHand == nil) and false or isTwoHand
+    local _melee      = (isMelee == nil) and true or isMelee
+    local setDelayCalls = {}
+    return {
+        getType          = function(self) return _type end,
+        getMeleeDelay    = function(self) return _delay end,
+        setMeleeDelay    = function(self, v)
+            table.insert(setDelayCalls, v)
+            _delay = v
+        end,
+        isTwoHandWeapon  = function(self) return _twoHand end,
+        isMeleeWeapon    = function(self) return _melee end,
+        getSetDelayCalls = function(self) return setDelayCalls end,
     }
 end
