@@ -249,6 +249,8 @@ end)
 
 -- WorkSpeedHook
 dofile(base .. "../media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua")
+-- Note: patchTimedActions fires here as it would in-game, but has no global table targets
+-- in this test environment. The three tests below exercise applyWorkDuration directly.
 Events.OnGameBoot.fire()  -- triggers getDuration override
 
 test("WorkSpeedHook shortens duration for negative workSpeedMod", function()
