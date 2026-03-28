@@ -285,18 +285,18 @@ test("UT_onetrickpony sets UT_multiSkillPenalty=true", function()
     assert_eq(p:getModData()["UT_multiSkillPenalty"], true, "UT_onetrickpony")
 end)
 
--- UT_flatearther writes UT_readSpeedMod = -0.3 (a negative modifier, meaning -30% read speed)
-test("UT_flatearther sets UT_readSpeedMod ~= nil", function()
+-- UT_flatearther writes UT_readSpeedMod = 0.3 (positive = slower reading)
+test("UT_flatearther sets UT_readSpeedMod > 0", function()
     local p = fireNewGame("UniversalTraits:UT_flatearther")
     local v = p:getModData()["UT_readSpeedMod"]
-    assert_true(type(v) == "number", "expected UT_readSpeedMod to be a number, got " .. tostring(v))
+    assert_true(type(v) == "number" and v > 0, "expected UT_readSpeedMod > 0, got " .. tostring(v))
 end)
 
--- UT_fast writes UT_speedBoost = 0.3 directly into moddata (positive boost)
-test("UT_fast sets UT_speedBoost > 0", function()
+-- UT_fast calls UTCore.applySpeedModifier(player, 0.3) -> UT_speedMod = 0.3 (positive = faster)
+test("UT_fast sets UT_speedMod > 0", function()
     local p = fireNewGame("UniversalTraits:UT_fast")
-    local v = p:getModData()["UT_speedBoost"]
-    assert_true(type(v) == "number" and v > 0, "expected UT_speedBoost > 0, got " .. tostring(v))
+    local v = p:getModData()["UT_speedMod"]
+    assert_true(type(v) == "number" and v > 0, "expected UT_speedMod > 0, got " .. tostring(v))
 end)
 
 -- UT_noodlelegs writes UT_speedMod = -0.2 directly into moddata (negative penalty)
@@ -306,11 +306,11 @@ test("UT_noodlelegs sets UT_speedMod < 0", function()
     assert_true(type(v) == "number" and v < 0, "expected UT_speedMod < 0, got " .. tostring(v))
 end)
 
--- UT_quickworker calls UTCore.applyWorkSpeed(player, 0.3) -> UT_workSpeedMod = 0.3 (positive boost)
-test("UT_quickworker sets UT_workSpeedMod > 0", function()
+-- UT_quickworker calls UTCore.applyWorkSpeed(player, -0.3) -> UT_workSpeedMod = -0.3 (negative = faster)
+test("UT_quickworker sets UT_workSpeedMod < 0", function()
     local p = fireNewGame("UniversalTraits:UT_quickworker")
     local v = p:getModData()["UT_workSpeedMod"]
-    assert_true(type(v) == "number" and v > 0, "expected UT_workSpeedMod > 0, got " .. tostring(v))
+    assert_true(type(v) == "number" and v < 0, "expected UT_workSpeedMod < 0, got " .. tostring(v))
 end)
 
 -- UT_thickblood calls UTCore.applyBleedRate(player, 0.5) -> UT_bleedMult = 0.5 (reduced bleed)

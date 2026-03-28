@@ -5,7 +5,7 @@ local TRAIT_ID = "UniversalTraits:UT_fast"
 
 local function onNewGame(player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
-    player:getModData()["UT_speedBoost"] = 0.3
+    UTCore.applySpeedModifier(player, 0.3)
 end
 
 local function onPlayerUpdate(player)
