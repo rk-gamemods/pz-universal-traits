@@ -97,3 +97,20 @@ if not _G.Events.OnPlayerUpdate then
         Add = function(fn) end,  -- no-op: update handlers not tested here
     }
 end
+
+-- Events.OnWeaponHitCharacter stub
+-- Stores the last registered handler so tests can call it directly.
+if not _G.Events.OnWeaponHitCharacter then
+    _G.Events.OnWeaponHitCharacter = {
+        _handler = nil,
+        Add  = function(fn) _G.Events.OnWeaponHitCharacter._handler = fn end,
+        fire = function(self, player, weapon, target)
+            if self._handler then self._handler(player, weapon, target) end
+        end,
+    }
+end
+
+-- ZombRand stub: deterministic — always returns 0 (triggers any crit check with critchance > 0)
+if not _G.ZombRand then
+    _G.ZombRand = function(n) return 0 end
+end

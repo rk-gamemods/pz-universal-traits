@@ -327,5 +327,73 @@ test("UT_heavilybleedingwounds sets UT_bleedMult > 1.0", function()
     assert_true(type(v) == "number" and v > 1.0, "expected UT_bleedMult > 1.0, got " .. tostring(v))
 end)
 
+-- ===== UT_actionhero runtime damage tests =====
+-- Load the trait file so its Events.OnWeaponHitCharacter.Add() fires.
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_actionhero.lua")
+
+-- Helper: build a minimal weapon mock
+local function MockWeapon(typeName)
+    return { getType = function(self) return typeName end }
+end
+
+-- Helper: build a target mock with mutable health
+local function MockTarget(startHealth)
+    local hp = startHealth
+    return {
+        getHealth = function(self) return hp end,
+        setHealth = function(self, v) hp = v end,
+    }
+end
+
+-- Helper: build a spotted-list mock returning N enemies all at the given distance
+local function MockSpottedList(count, dist)
+    local enemies = {}
+    for i = 1, count do
+        enemies[i] = { _dist = dist }
+    end
+    return {
+        size = function(self) return count end,
+        get  = function(self, i) return enemies[i + 1] end,
+    }
+end
+
+-- Helper: extend MockPlayer with the extra methods actionhero needs
+local function MockActionPlayer(traitList, spottedList)
+    local p = MockPlayer(traitList)
+    p.getSpottedList = function(self) return spottedList end
+    p.DistTo = function(self, enemy) return enemy._dist end
+    return p
+end
+
+test("actionhero deals bonus damage when surrounded (5 enemies within 2 tiles)", function()
+    local spotted  = MockSpottedList(5, 1)   -- 5 enemies at dist=1 (≤2)
+    local player   = MockActionPlayer(
+        { "UniversalTraits:UT_actionhero" },
+        spotted
+    )
+    local weapon   = MockWeapon("Axe")
+    local target   = MockTarget(100)
+
+    Events.OnWeaponHitCharacter:fire(player, weapon, target)
+
+    assert_true(target:getHealth() < 100,
+        "expected health < 100 after actionhero crit, got " .. tostring(target:getHealth()))
+end)
+
+test("actionhero skipped when player has UT_mundane", function()
+    local spotted = MockSpottedList(5, 1)
+    local player  = MockActionPlayer(
+        { "UniversalTraits:UT_actionhero", "UniversalTraits:UT_mundane" },
+        spotted
+    )
+    local weapon  = MockWeapon("Axe")
+    local target  = MockTarget(100)
+
+    Events.OnWeaponHitCharacter:fire(player, weapon, target)
+
+    assert_eq(target:getHealth(), 100,
+        "expected health unchanged when UT_mundane is active")
+end)
+
 print(string.format("\n%d passed, %d failed", passed, failed))
 if failed > 0 then os.exit(1) end
