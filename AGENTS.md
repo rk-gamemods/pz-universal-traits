@@ -39,7 +39,7 @@ UniversalTraits/                          ← repo root
   UT_CORE/
     media/lua/shared/UTCore/              ← source infrastructure files
     release/UT_CORE/42.0/media/           ← deployed copy (must be kept in sync)
-    test/run_tests.lua                    ← 15 tests (standard Lua 5.x)
+    test/run_tests.lua                    ← 29 tests (standard Lua 5.x)
     test/UTCoreMocks.lua                  ← mock IsoPlayer, Stats, BodyDamage
   UniversalTraits/
     media/registries.lua                  ← CharacterTrait.register() for all traits
@@ -49,7 +49,7 @@ UniversalTraits/                          ← repo root
       UT_MET.lua                          ← runtime mutual exclusivity table
       traits/UT_<id>.lua                  ← per-trait Lua effect files (95 files)
     release/UniversalTraits/42.0/media/   ← deployed copy (must be kept in sync)
-    test/run_tests.lua                    ← 21 tests (standard Lua 5.x)
+    test/run_tests.lua                    ← 28 tests (standard Lua 5.x)
     test/UTTestMocks.lua                  ← mock CharacterTrait
   planning/                               ← implementation plans
   research/                               ← source mod research
@@ -61,32 +61,49 @@ UniversalTraits/                          ← repo root
 
 ## Test Commands
 
-Run from repo root (`C:\Users\Admin\Documents\GIT\GameMods\PZMods\UniversalTraits`):
+Run from repo root (`C:\Users\Admin\Documents\GIT\GameMods\PZMods\UTMods`):
 
 ```bash
 "C:\Users\Admin\AppData\Local\Programs\Lua\bin\lua.exe" UT_CORE/test/run_tests.lua
 "C:\Users\Admin\AppData\Local\Programs\Lua\bin\lua.exe" UniversalTraits/test/run_tests.lua
 ```
 
-**Current passing counts:** 15 (UT_CORE) + 21 (UniversalTraits) = 36 total.
+**Current passing counts:** 29 (UT_CORE) + 28 (UniversalTraits) = 57 total.
 
 ---
 
-## Release Sync Command
+## In-Game Testing (Deploy to Live Mods)
 
 Run from repo root after ANY code change before in-game testing:
 
 ```bash
+cp -r UniversalTraits/media/. "C:/Users/Admin/Zomboid/mods/UniversalTraits/42.0/media/"
+cp -r UT_CORE/media/. "C:/Users/Admin/Zomboid/mods/UT_CORE/42.0/media/"
+```
+
+**Note:** Deploy directly from source (`media/`) to the live mods folder. Do NOT write to `release/`.
+
+---
+
+## Release Folder Policy
+
+`UniversalTraits/release/` and `UT_CORE/release/` are **empty during development**.
+
+They are only populated when the mod is ready for distribution (Workshop upload or zip packaging).
+At that point, copy the full deployable package:
+
+```bash
+# Only run this when preparing a distribution release — NOT for in-game testing
+mkdir -p UniversalTraits/release/UniversalTraits/42.0/media
+cp UniversalTraits/mod.info UniversalTraits/release/UniversalTraits/42.0/
 cp -r UniversalTraits/media/. UniversalTraits/release/UniversalTraits/42.0/media/
+
+mkdir -p UT_CORE/release/UT_CORE/42.0/media
+cp UT_CORE/mod.info UT_CORE/release/UT_CORE/42.0/
 cp -r UT_CORE/media/. UT_CORE/release/UT_CORE/42.0/media/
 ```
 
-Deploy to live mods (optional, for in-game testing):
-
-```bash
-cp -r UniversalTraits/release/UniversalTraits/. "C:/Users/Admin/Zomboid/mods/UniversalTraits/"
-cp -r UT_CORE/release/UT_CORE/. "C:/Users/Admin/Zomboid/mods/UT_CORE/"
-```
+The `release/` folders hold only the minimal deployable mod package — no docs, no tests, no planning files.
 
 ---
 
@@ -220,6 +237,26 @@ Events.EveryOneMinute.Add(onEveryMinute)
 - `UTCore.unregisterPeriodicHandler(traitId)` — removes from Events and registry
 - `intervalEvent` values: `"EveryOneMinute"`, `"EveryTenMinutes"`, `"EveryHours"`, `"OnPlayerUpdate"`
 
+### UTCore_XPHook.lua
+
+- Registered via `Events.AddXP` — reads `UT_xpMult_<perk>`, `UT_xpDisable_<perk>`, `UT_multiSkillPenalty` from moddata and applies corrections automatically
+- `UTCore._xpPerksThisMinute` — exposed for test resets
+
+### UTCore_SpeedHook.lua
+
+- Registered via `Events.OnPlayerMove` — reads `UT_speedMod` from moddata and applies position delta multiplication automatically
+- Teleport guard: skips if delta > 5 tiles
+
+### UTCore_WorkSpeedHook.lua
+
+- `UTCore.applyWorkDuration(timedAction, base)` → number — applies `UT_workSpeedMod` and (for ISReadABook) `UT_readSpeedMod` to a TimedAction duration
+- Registered via `Events.OnGameBoot` to patch all TimedAction `getDuration()` calls globally
+
+### UTCore_BleedHook.lua
+
+- Registered via `Events.OnPlayerUpdate` (throttled every 30 ticks) — reads `UT_bleedMult` from moddata and applies BodyPart health corrections automatically
+- `UTCore._bleedTickCounter` — exposed for test resets
+
 ---
 
 ## B42 PZ API — Confirmed Working
@@ -347,19 +384,15 @@ Key groups:
 
 ## Known Gaps / TODOs
 
-1. **AddXP event hook missing** — `UTCore.applyXPMultiplier` and `UTCore.disableXP` store moddata
-   flags, but there is no `Events.AddXP` handler in UTCore that reads them and modifies the XP amount.
-   This must be implemented for those traits to have any in-game effect.
+All 6 previously documented gaps are now resolved. See new UTCore hook modules:
 
-2. **Speed Move() not implemented** — `UT_speedMod` moddata is stored but no OnPlayerUpdate handler
-   calls `player:Move()` to actually modify movement. MoreTraits' `MT_FastGimpTraits` is the reference
-   implementation. Add to UTCore or a dedicated handler.
+- **UTCore_XPHook.lua** — handles AddXP interception (XP mult, XP disable, onetrickpony multi-skill penalty)
+- **UTCore_SpeedHook.lua** — handles OnPlayerMove speed delta (fast, noodlelegs, lurcher, pacer, sorelegs)
+- **UTCore_WorkSpeedHook.lua** — handles getDuration override (quickworker, slowworker, slack, flatearther, photographicmemory)
+- **UTCore_BleedHook.lua** — handles bleed rate via BodyPart health adjustment (thickblood, weaklybleeding, heavilybleeding)
 
-3. **Work speed not hooked** — `UT_workSpeedMod` stored in moddata but no TimedAction hook reads it.
+### Remaining deferred work
 
-4. **Bleed rate not hooked** — `UT_bleedMult` stored but no wound tick handler reads it.
-
-5. **UT_onetrickpony** — sets `UT_multiSkillPenalty = true` flag but the AddXP handler to enforce it
-   is not implemented.
-
-6. **UT_flatearther read speed** — `UT_readSpeedMod` stored but no ISReadABook TimedAction hook.
+- **UT_amputee** — complex limb system, deferred indefinitely
+- **poster.png** — cosmetic, not required for function
+- **In-game verification** — all traits need visual/functional confirmation in PZ character creation

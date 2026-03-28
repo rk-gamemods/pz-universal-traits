@@ -1,5 +1,5 @@
 -- UT_slowworker.lua
--- -25% work speed
+-- +50% work duration (slower)
 
 local TRAIT_ID = "UniversalTraits:UT_slowworker"
 
