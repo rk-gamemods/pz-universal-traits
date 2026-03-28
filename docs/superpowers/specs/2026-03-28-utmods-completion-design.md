@@ -202,8 +202,8 @@ New tests:
 ### In-game smoke test (manual, post-deploy)
 Deploy from source:
 ```bash
-cp -r UniversalTraits/media/. "C:/Users/Admin/Zomboid/mods/UniversalTraits/42.0/media/"
-cp -r UT_CORE/media/. "C:/Users/Admin/Zomboid/mods/UT_CORE/42.0/media/"
+cp -r UniversalTraits/media/. "C:/Users/Admin/Zomboid/mods/UniversalTraits/"
+cp -r UT_CORE/media/. "C:/Users/Admin/Zomboid/mods/UT_CORE/"
 ```
 
 Verification checklist:

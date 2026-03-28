@@ -38,7 +38,7 @@ Two-mod layout targeting Project Zomboid Build 42 (Kahlua/Lua 5.x):
 UniversalTraits/                          ← repo root
   UT_CORE/
     media/lua/shared/UTCore/              ← source infrastructure files
-    release/UT_CORE/42.0/media/           ← deployed copy (must be kept in sync)
+    release/UT_CORE/media/           ← deployed copy (must be kept in sync)
     test/run_tests.lua                    ← 29 tests (standard Lua 5.x)
     test/UTCoreMocks.lua                  ← mock IsoPlayer, Stats, BodyDamage
   UniversalTraits/
@@ -48,7 +48,7 @@ UniversalTraits/                          ← repo root
     media/lua/shared/UniversalTraits/
       UT_MET.lua                          ← runtime mutual exclusivity table
       traits/UT_<id>.lua                  ← per-trait Lua effect files (95 files)
-    release/UniversalTraits/42.0/media/   ← deployed copy (must be kept in sync)
+    release/UniversalTraits/media/   ← deployed copy (must be kept in sync)
     test/run_tests.lua                    ← 28 tests (standard Lua 5.x)
     test/UTTestMocks.lua                  ← mock CharacterTrait
   planning/                               ← implementation plans
@@ -77,8 +77,8 @@ Run from repo root (`C:\Users\Admin\Documents\GIT\GameMods\PZMods\UTMods`):
 Run from repo root after ANY code change before in-game testing:
 
 ```bash
-cp -r UniversalTraits/media/. "C:/Users/Admin/Zomboid/mods/UniversalTraits/42.0/media/"
-cp -r UT_CORE/media/. "C:/Users/Admin/Zomboid/mods/UT_CORE/42.0/media/"
+cp -r UniversalTraits/media/. "C:/Users/Admin/Zomboid/mods/UniversalTraits/"
+cp -r UT_CORE/media/. "C:/Users/Admin/Zomboid/mods/UT_CORE/"
 ```
 
 **Note:** Deploy directly from source (`media/`) to the live mods folder. Do NOT write to `release/`.
@@ -94,13 +94,13 @@ At that point, copy the full deployable package:
 
 ```bash
 # Only run this when preparing a distribution release — NOT for in-game testing
-mkdir -p UniversalTraits/release/UniversalTraits/42.0/media
-cp UniversalTraits/mod.info UniversalTraits/release/UniversalTraits/42.0/
-cp -r UniversalTraits/media/. UniversalTraits/release/UniversalTraits/42.0/media/
+mkdir -p UniversalTraits/release/UniversalTraits/media
+cp UniversalTraits/mod.info UniversalTraits/release/UniversalTraits/
+cp -r UniversalTraits/media/. UniversalTraits/release/UniversalTraits/media/
 
-mkdir -p UT_CORE/release/UT_CORE/42.0/media
-cp UT_CORE/mod.info UT_CORE/release/UT_CORE/42.0/
-cp -r UT_CORE/media/. UT_CORE/release/UT_CORE/42.0/media/
+mkdir -p UT_CORE/release/UT_CORE/media
+cp UT_CORE/mod.info UT_CORE/release/UT_CORE/
+cp -r UT_CORE/media/. UT_CORE/release/UT_CORE/media/
 ```
 
 The `release/` folders hold only the minimal deployable mod package — no docs, no tests, no planning files.
