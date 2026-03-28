@@ -30,9 +30,8 @@ local function handleContainerInspect(player, container)
     if ZombRand(100) < 33 then
         local itemType = vagabondItems[ZombRand(#vagabondItems) + 1]
         container:AddItem(itemType)
+        md[lootedKey] = true   -- mark only when loot was awarded
     end
-
-    md[lootedKey] = true
 end
 
 -- Expose for testing

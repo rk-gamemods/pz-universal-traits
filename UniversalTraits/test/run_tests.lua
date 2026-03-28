@@ -528,5 +528,28 @@ test("vagabond loot: skips player without vagabond trait", function()
     assert_eq(callCount, 0, "AddItem should not be called when player lacks vagabond trait")
 end)
 
+test("vagabond loot: container NOT marked as looted when roll fails", function()
+    -- Stub ZombRand to return 50 so ZombRand(100) = 50 >= 33 (roll fails)
+    local _origZombRand = _G.ZombRand
+    _G.ZombRand = function(n) return 50 end
+
+    local player = MockPlayer({ "UniversalTraits:UT_vagabond" })
+    local callCount = 0
+    local container = {
+        getObject = function(self) return nil end,
+        AddItem   = function(self, itemType) callCount = callCount + 1 end,
+    }
+
+    UT_vagabond_handleContainerInspect(player, container)
+
+    -- Restore ZombRand
+    _G.ZombRand = _origZombRand
+
+    assert_eq(callCount, 0, "AddItem should NOT be called when roll fails")
+    local lootedKey = "UT_vagabond_looted_" .. tostring(container)
+    assert_true(player:getModData()[lootedKey] == nil,
+        "container should NOT be marked as looted when roll fails")
+end)
+
 print(string.format("\n%d passed, %d failed", passed, failed))
 if failed > 0 then os.exit(1) end
