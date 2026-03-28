@@ -46,12 +46,16 @@ local function onPlayerMove()
 
     if dx ~= 0 or dy ~= 0 then
         local factor = 1.0 + mod
-        player:setX(prevX + dx * factor)
-        player:setY(prevY + dy * factor)
+        local newPosX = prevX + dx * factor
+        local newPosY = prevY + dy * factor
+        player:setX(newPosX)
+        player:setY(newPosY)
+        md["UT_prevX"] = newPosX
+        md["UT_prevY"] = newPosY
+    else
+        md["UT_prevX"] = newX
+        md["UT_prevY"] = newY
     end
-
-    md["UT_prevX"] = player:getX()
-    md["UT_prevY"] = player:getY()
 end
 
 if Events and Events.OnPlayerMove then
