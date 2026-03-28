@@ -551,5 +551,38 @@ test("vagabond loot: container NOT marked as looted when roll fails", function()
         "container should NOT be marked as looted when roll fails")
 end)
 
+-- ===== UT_martial barehands damage tests =====
+-- Load the trait file so its Events.OnWeaponHitCharacter.Add() fires.
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_martial.lua")
+
+test("martial deals bonus damage with bare hands (guaranteed crit)", function()
+    -- SmallBlunt level=5 → critchance = (5+5)*0.01 = 0.10 → 10%
+    -- ZombRand always returns 0 → 0 < 10 → crit fires
+    local player = MockPlayer({ "UniversalTraits:UT_martial" })
+    player:setPerkLevel(Perks.SmallBlunt, 5)
+    -- endurance starts at 1.0 in MockPlayer (no penalty)
+
+    local weapon = MockWeapon("BareHands")
+    local target = MockTarget(100)
+
+    Events.OnWeaponHitCharacter:fire(player, weapon, target)
+
+    assert_true(target:getHealth() < 100,
+        "expected health < 100 after martial crit, got " .. tostring(target:getHealth()))
+end)
+
+test("martial skips when weapon is not BareHands", function()
+    local player = MockPlayer({ "UniversalTraits:UT_martial" })
+    player:setPerkLevel(Perks.SmallBlunt, 5)
+
+    local weapon = MockWeapon("Axe")
+    local target = MockTarget(100)
+
+    Events.OnWeaponHitCharacter:fire(player, weapon, target)
+
+    assert_eq(target:getHealth(), 100,
+        "expected health unchanged when weapon is not BareHands")
+end)
+
 print(string.format("\n%d passed, %d failed", passed, failed))
 if failed > 0 then os.exit(1) end

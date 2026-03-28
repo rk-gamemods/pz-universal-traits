@@ -32,19 +32,33 @@ function MockPlayer(traitList)
     local moddata = {}
     local traits = {}
     for _, id in ipairs(traitList or {}) do traits[id] = true end
+    -- Mutable stats object (shared across getStats() calls)
+    local stats = {
+        _endurance = 1.0,
+        setStress    = function() end, setHunger  = function() end,
+        setThirst    = function() end, setFatigue = function() end,
+        setPanic     = function() end,
+        setEndurance = function(self, v) self._endurance = v end,
+        getEndurance    = function(self) return self._endurance end,
+        getMaxEndurance = function(self) return 1.0 end,
+    }
+    -- Mutable xp object
+    local xp = {
+        _log = {},
+        AddXP = function(self, perk, amount) table.insert(self._log, { perk=perk, amount=amount }) end,
+    }
     return {
         getModData = function(self) return moddata end,
         getTraits  = function(self)
             return { contains = function(_, id) return traits[id] == true end }
         end,
-        getStats   = function(self)
-            return {
-                setStress    = function() end, setHunger  = function() end,
-                setThirst    = function() end, setFatigue = function() end,
-                setEndurance = function() end, setPanic   = function() end,
-                getEndurance    = function() return 1.0 end,
-                getMaxEndurance = function() return 1.0 end,
-            }
+        getStats   = function(self) return stats end,
+        getXp      = function(self) return xp end,
+        getPerkLevel = function(self, perk)
+            return moddata["_perkLevel_" .. tostring(perk)] or 0
+        end,
+        setPerkLevel = function(self, perk, level)
+            moddata["_perkLevel_" .. tostring(perk)] = level
         end,
         getBodyDamage    = function(self) return nil end,
         setMaxWeightBase = function(self, v) moddata["_maxWeight"] = v end,
@@ -103,13 +117,13 @@ if not _G.Events.OnPlayerUpdate then
 end
 
 -- Events.OnWeaponHitCharacter stub
--- Stores the last registered handler so tests can call it directly.
+-- Stores all registered handlers so tests can fire them via :fire(player, weapon, target).
 if not _G.Events.OnWeaponHitCharacter then
+    local _weaponHitHandlers = {}
     _G.Events.OnWeaponHitCharacter = {
-        _handler = nil,
-        Add  = function(fn) _G.Events.OnWeaponHitCharacter._handler = fn end,
+        Add  = function(fn) table.insert(_weaponHitHandlers, fn) end,
         fire = function(self, player, weapon, target)
-            if self._handler then self._handler(player, weapon, target) end
+            for _, fn in ipairs(_weaponHitHandlers) do fn(player, weapon, target) end
         end,
     }
 end
@@ -117,4 +131,9 @@ end
 -- ZombRand stub: deterministic — always returns 0 (triggers any crit check with critchance > 0)
 if not _G.ZombRand then
     _G.ZombRand = function(n) return 0 end
+end
+
+-- Perks stub: provides SmallBlunt sentinel used by martial and other combat traits
+if not _G.Perks then
+    _G.Perks = { SmallBlunt = "SmallBlunt" }
 end
