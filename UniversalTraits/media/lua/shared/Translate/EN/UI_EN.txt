@@ -3,544 +3,544 @@ UI_EN = {
     -- PHASE 1 — XP BOOST: PREPARED SERIES
     -- ============================================================
     UI_UT_preparedfood          = "Prepared: Food",
-    UI_UT_preparedfoodDesc      = "You spent countless hours preserving and preparing food before the outbreak. Gain bonus XP in Cooking and Farming.",
+    UI_UT_preparedfoodDesc      = "You spent countless hours preserving and preparing food before the outbreak. Gain ×2 XP in Cooking.",
 
     UI_UT_preparedammo          = "Prepared: Ammunition",
-    UI_UT_preparedammoDesc      = "You stockpiled ammunition and reloaded your own rounds. Gain bonus XP in Reloading.",
+    UI_UT_preparedammoDesc      = "You stockpiled ammunition and reloaded your own rounds. Gain ×2 XP in Aiming and Reloading.",
 
     UI_UT_preparedmedical       = "Prepared: Medical",
-    UI_UT_preparedmedicalDesc   = "You took first-aid courses and kept a well-stocked medical kit. Gain bonus XP in First Aid.",
+    UI_UT_preparedmedicalDesc   = "You took first-aid courses and kept a well-stocked medical kit. Gain ×2 XP in First Aid.",
 
     UI_UT_preparedcarpentry     = "Prepared: Carpentry",
-    UI_UT_preparedcarpentryDesc = "You fortified and reinforced your home long before the dead rose. Gain bonus XP in Carpentry and Masonry.",
+    UI_UT_preparedcarpentryDesc = "You fortified and reinforced your home long before the dead rose. Gain ×2 XP in Carpentry.",
 
     UI_UT_preparedcamp          = "Prepared: Camping",
-    UI_UT_preparedcampDesc      = "You practised wilderness survival and long-term camping. Gain bonus XP in Foraging and Trapping.",
+    UI_UT_preparedcampDesc      = "You practised wilderness survival and long-term camping. Gain ×2 XP in Fishing.",
 
     UI_UT_preparedweapons       = "Prepared: Weapons",
-    UI_UT_preparedweaponsDesc   = "You trained extensively with melee weapons before the collapse. Gain bonus XP in Axe and Long Blunt.",
+    UI_UT_preparedweaponsDesc   = "You trained extensively with melee weapons before the collapse. Gain ×2 XP in Maintenance.",
 
     UI_UT_preparedcars          = "Prepared: Vehicles",
-    UI_UT_preparedcarsDesc      = "You kept your vehicles in top condition and knew basic mechanics. Gain bonus XP in Mechanics.",
+    UI_UT_preparedcarsDesc      = "You kept your vehicles in top condition and knew basic mechanics. Gain ×2 XP in Mechanics.",
 
     UI_UT_preparedcartography   = "Prepared: Cartography",
-    UI_UT_preparedcartographyDesc = "You mapped escape routes and supply caches well in advance. Gain bonus XP in Navigation.",
+    UI_UT_preparedcartographyDesc = "You mapped escape routes and supply caches well in advance. Gain ×2 XP in Cartography.",
 
     -- ============================================================
     -- PHASE 1 — XP BOOST: MOVEMENT & STEALTH
     -- ============================================================
     UI_UT_swift                 = "Swift",
-    UI_UT_swiftDesc             = "Light on your feet, you move faster than most. Gain bonus XP in Sprinting.",
+    UI_UT_swiftDesc             = "Light on your feet, you move faster than most. Gain ×2 XP in Sprinting.",
 
     UI_UT_flexible              = "Flexible",
-    UI_UT_flexibleDesc          = "Years of stretching and gymnastics keep you agile. Gain bonus XP in Nimbleness.",
+    UI_UT_flexibleDesc          = "Years of stretching and gymnastics keep you agile. Gain ×2 XP in Nimbleness.",
 
     UI_UT_quiet                 = "Quiet",
-    UI_UT_quietDesc             = "You naturally move without making noise. Gain bonus XP in Sneaking.",
+    UI_UT_quietDesc             = "You naturally move without making noise. Gain ×2 XP in Sneaking and Sprinting.",
 
     UI_UT_olympian              = "Olympian",
-    UI_UT_olympianDesc          = "A dedicated multi-sport athlete. Gain bonus XP in Sprinting and Nimbleness.",
+    UI_UT_olympianDesc          = "A dedicated multi-sport athlete. Gain ×2 XP in Sprinting and Fitness.",
 
     UI_UT_evasive               = "Evasive",
-    UI_UT_evasiveDesc           = "You have a knack for slipping out of dangerous situations. Gain bonus XP in Nimbleness and Sneaking.",
+    UI_UT_evasiveDesc           = "You have a knack for slipping out of dangerous situations. Gain ×2 XP in Nimbleness and Sprinting.",
 
     UI_UT_marathonrunner        = "Marathon Runner",
-    UI_UT_marathonrunnerDesc    = "You can run for hours without stopping. Gain bonus XP in Sprinting and Fitness.",
+    UI_UT_marathonrunnerDesc    = "You can run for hours without stopping. Gain ×3 XP in Sprinting.",
 
     UI_UT_strongnimble          = "Strong and Nimble",
-    UI_UT_strongnimbleDesc      = "Power and agility in equal measure. Gain bonus XP in Strength and Nimbleness.",
+    UI_UT_strongnimbleDesc      = "Power and agility in equal measure. Gain ×3 XP in Nimbleness and ×2 XP in Strength.",
 
     UI_UT_taut                  = "Taut",
-    UI_UT_tautDesc              = "Lean muscle built through calisthenics. Gain bonus XP in Fitness and Nimbleness.",
+    UI_UT_tautDesc              = "Lean muscle built through calisthenics. Gain ×3 XP in Fitness.",
 
     UI_UT_ninjaway              = "Ninja Way",
-    UI_UT_ninjawayDesc          = "You trained in the art of silent movement. Gain bonus XP in Sneaking and Nimbleness.",
+    UI_UT_ninjawayDesc          = "You trained in the art of silent movement. Gain ×3 XP in Sneaking and ×2 XP in Sprinting.",
 
     UI_UT_gymgoer               = "Gym-Goer",
-    UI_UT_gymgoerDesc           = "Regular gym sessions have made you strong. Gain bonus XP in Strength and Fitness.",
+    UI_UT_gymgoerDesc           = "Regular gym sessions have made you strong. Gain ×2 XP in Fitness.",
 
     UI_UT_sprintdemon           = "Sprint Demon",
-    UI_UT_sprintdemonDesc       = "Explosive speed when it matters most. Gain bonus XP in Sprinting.",
+    UI_UT_sprintdemonDesc       = "Explosive speed when it matters most. Gain ×2 XP in Sprinting.",
 
     UI_UT_trekker               = "Trekker",
-    UI_UT_trekkerDesc           = "Long hikes across rugged terrain are second nature to you. Gain bonus XP in Fitness and Sprinting.",
+    UI_UT_trekkerDesc           = "Long hikes across rugged terrain are second nature to you. Gain ×2 XP in Fitness and Sprinting.",
 
     -- ============================================================
     -- PHASE 1 — XP BOOST: COMBAT (MELEE)
     -- ============================================================
     UI_UT_martial               = "Martial Artist",
-    UI_UT_martialDesc           = "Trained in unarmed combat disciplines. Gain bonus XP in all melee weapon skills.",
+    UI_UT_martialDesc           = "Trained in unarmed combat disciplines. Gain ×2 XP in Fitness and Short Blunt.",
 
     UI_UT_bladetwirl            = "Blade Twirl",
-    UI_UT_bladetwirlDesc        = "You handle bladed weapons with a practised flourish. Gain bonus XP in Long Blade and Short Blade.",
+    UI_UT_bladetwirlDesc        = "You handle bladed weapons with a practised flourish. Gain ×2 XP in Long Blade and Short Blade.",
 
     UI_UT_blunttwirl            = "Blunt Twirl",
-    UI_UT_blunttwirlDesc        = "You swing blunt weapons with practiced momentum. Gain bonus XP in Long Blunt and Short Blunt.",
+    UI_UT_blunttwirlDesc        = "You swing blunt weapons with practiced momentum. Gain ×2 XP in Long Blunt.",
 
     UI_UT_tavernbrawler         = "Tavern Brawler",
-    UI_UT_tavernbrawlerDesc     = "Countless barroom fights have sharpened your fists and improvised weapon skills. Gain bonus XP in Short Blunt.",
+    UI_UT_tavernbrawlerDesc     = "Countless barroom fights have sharpened your fists and improvised weapon skills. Gain ×2 XP in Short Blunt.",
 
     UI_UT_grunt                 = "Grunt",
-    UI_UT_gruntDesc             = "Raw power and aggression drive your fighting style. Gain bonus XP in Axe and Long Blunt.",
+    UI_UT_gruntDesc             = "Raw power and aggression drive your fighting style. Gain ×2 XP in Carpentry, Short Blunt, Masonry, and Blacksmith.",
 
     UI_UT_actionhero            = "Action Hero",
-    UI_UT_actionheroDesc        = "You fight like the hero of your own action movie. Gain bonus XP in Axe, Long Blunt, Long Blade, and Spear.",
+    UI_UT_actionheroDesc        = "You fight like the hero of your own action movie. Gain ×2 XP in Axe, Long Blade, Long Blunt, Short Blade, Short Blunt, and Spear.",
 
     UI_UT_cruelty               = "Cruelty",
-    UI_UT_crueltyDesc           = "You strike without mercy or hesitation. Gain bonus XP in all melee weapon skills.",
+    UI_UT_crueltyDesc           = "You strike without mercy or hesitation. Gain ×2 XP in Axe, Long Blade, Long Blunt, Short Blade, Short Blunt, Spear, Aiming, and Reloading.",
 
     UI_UT_sharpshooter          = "Sharpshooter",
-    UI_UT_sharpshooterDesc      = "Cool under fire, you aim before you shoot. Gain bonus XP in Aiming and Reloading.",
+    UI_UT_sharpshooterDesc      = "Cool under fire, you aim before you shoot. Gain ×3 XP in Aiming.",
 
     -- ============================================================
     -- PHASE 1 — XP BOOST: COMBAT (PROWESS SERIES)
     -- ============================================================
     UI_UT_problunt              = "Pro: Blunt",
-    UI_UT_probluntDesc          = "Specialised training with blunt weapons. Gain bonus XP in Long Blunt and Short Blunt.",
+    UI_UT_probluntDesc          = "Specialised training with blunt weapons. Gain ×3 XP in Long Blunt and Short Blunt.",
 
     UI_UT_problade              = "Pro: Blade",
-    UI_UT_probladeDesc          = "Specialised training with bladed weapons. Gain bonus XP in Long Blade and Short Blade.",
+    UI_UT_probladeDesc          = "Specialised training with bladed weapons. Gain ×3 XP in Long Blade and Short Blade.",
 
     UI_UT_progun                = "Pro: Firearms",
-    UI_UT_progunDesc            = "Specialised firearms training. Gain bonus XP in Aiming and Reloading.",
+    UI_UT_progunDesc            = "Specialised firearms training. Gain ×3 XP in Aiming and Reloading.",
 
     UI_UT_prospear              = "Pro: Spear",
-    UI_UT_prospearDesc          = "Specialised training with pole weapons. Gain bonus XP in Spear.",
+    UI_UT_prospearDesc          = "Specialised training with pole weapons. Gain ×3 XP in Spear.",
 
     -- ============================================================
     -- PHASE 1 — XP BOOST: COMBAT (SPECIALIZATION SERIES)
     -- ============================================================
     UI_UT_specweapons           = "Specialist: Weapons",
-    UI_UT_specweaponsDesc       = "You dedicated your pre-apocalypse life to weapons mastery. Gain bonus XP in all weapon skills. Mutually exclusive with other Specialist traits.",
+    UI_UT_specweaponsDesc       = "You dedicated your pre-apocalypse life to weapons mastery. Gain ×5 XP in Axe, Long Blade, Long Blunt, Short Blade, Short Blunt, and Spear. Mutually exclusive with other Specialist traits.",
 
     UI_UT_speccrafting          = "Specialist: Crafting",
-    UI_UT_speccraftingDesc      = "Your life revolved around making and building things. Gain bonus XP in all crafting skills. Mutually exclusive with other Specialist traits.",
+    UI_UT_speccraftingDesc      = "Your life revolved around making and building things. Gain ×5 XP in Carpentry, Metalworking, Masonry, Tailoring, and Electrical. Mutually exclusive with other Specialist traits.",
 
     UI_UT_specfood              = "Specialist: Food",
-    UI_UT_specfoodDesc          = "You were a culinary professional or devoted homesteader. Gain bonus XP in Cooking, Farming, and Foraging. Mutually exclusive with other Specialist traits.",
+    UI_UT_specfoodDesc          = "You were a culinary professional or devoted homesteader. Gain ×5 XP in Cooking, Farming, Fishing, and Foraging. Mutually exclusive with other Specialist traits.",
 
     UI_UT_specguns              = "Specialist: Firearms",
-    UI_UT_specgunsDesc          = "A lifelong firearms enthusiast. Gain bonus XP in Aiming and Reloading. Mutually exclusive with other Specialist traits.",
+    UI_UT_specgunsDesc          = "A lifelong firearms enthusiast. Gain ×5 XP in Aiming and Reloading. Mutually exclusive with other Specialist traits.",
 
     UI_UT_specmove              = "Specialist: Movement",
-    UI_UT_specmoveDesc          = "Your body is a finely tuned machine. Gain bonus XP in Sprinting, Nimbleness, and Sneaking. Mutually exclusive with other Specialist traits.",
+    UI_UT_specmoveDesc          = "Your body is a finely tuned machine. Gain ×5 XP in Sprinting, Nimbleness, Lightfoot, and Sneaking. Mutually exclusive with other Specialist traits.",
 
     UI_UT_specaid               = "Specialist: First Aid",
-    UI_UT_specaidDesc           = "Medical training was your calling. Gain bonus XP in First Aid. Mutually exclusive with other Specialist traits.",
+    UI_UT_specaidDesc           = "Medical training was your calling. Gain ×9 XP in First Aid. Mutually exclusive with other Specialist traits.",
 
     UI_UT_terminator            = "Terminator",
-    UI_UT_terminatorDesc        = "Nothing will stop you. Gain bonus XP in all skills. Mutually exclusive with other Specialist traits.",
+    UI_UT_terminatorDesc        = "Nothing will stop you. Gain ×5 XP in Axe, Long Blade, Long Blunt, Short Blade, Short Blunt, Spear, Aiming, and Reloading. Mutually exclusive with other Specialist traits.",
 
     -- ============================================================
     -- PHASE 1 — XP BOOST: COMBATTRAITS WEAPON TREE
     -- ============================================================
     UI_UT_heavyswing            = "Heavy Swing",
-    UI_UT_heavyswingDesc        = "You put your whole body into every blow. Gain bonus XP in Axe, Long Blunt, Long Blade, and Spear.",
+    UI_UT_heavyswingDesc        = "You put your whole body into every blow. Gain ×3 XP in Axe, Long Blade, Long Blunt, Short Blade, Short Blunt, and Spear.",
 
     UI_UT_twohanded             = "Two-Handed",
-    UI_UT_twohandedDesc         = "You favour weapons that require both hands. Gain bonus XP in all two-handed weapon skills.",
+    UI_UT_twohandedDesc         = "You favour weapons that require both hands. Gain ×3 XP in Axe, Long Blade, Long Blunt, and Spear.",
 
     UI_UT_onehanded             = "One-Handed",
-    UI_UT_onehandedDesc         = "You fight best with one hand free. Gain bonus XP in all one-handed weapon skills.",
+    UI_UT_onehandedDesc         = "You fight best with one hand free. Gain ×3 XP in Short Blade and Short Blunt.",
 
     UI_UT_axes                  = "Axe Fighter",
-    UI_UT_axesDesc              = "Axes are your weapon of choice. Gain bonus XP in Axe.",
+    UI_UT_axesDesc              = "Axes are your weapon of choice. Gain ×3 XP in Axe.",
 
     UI_UT_twohanded_axes        = "Two-Handed Axe Fighter",
-    UI_UT_twohanded_axesDesc    = "Nothing compares to the power of a great axe. Gain bonus XP in Axe (two-handed).",
+    UI_UT_twohanded_axesDesc    = "Nothing compares to the power of a great axe. Gain ×3 XP in Axe.",
 
     UI_UT_onehanded_axes        = "One-Handed Axe Fighter",
-    UI_UT_onehanded_axesDesc    = "Quick, brutal chops from a hand axe. Gain bonus XP in Axe (one-handed).",
+    UI_UT_onehanded_axesDesc    = "Quick, brutal chops from a hand axe. Gain ×2 XP in Axe.",
 
     UI_UT_blunts                = "Blunt Fighter",
-    UI_UT_bluntsDesc            = "You trust a solid bludgeon over any blade. Gain bonus XP in Long Blunt and Short Blunt.",
+    UI_UT_bluntsDesc            = "You trust a solid bludgeon over any blade. Gain ×3 XP in Long Blunt and Short Blunt.",
 
     UI_UT_twohanded_blunts      = "Two-Handed Blunt Fighter",
-    UI_UT_twohanded_bluntsDesc  = "You wield heavy two-handed bludgeons with authority. Gain bonus XP in Long Blunt.",
+    UI_UT_twohanded_bluntsDesc  = "You wield heavy two-handed bludgeons with authority. Gain ×3 XP in Long Blunt.",
 
     UI_UT_onehanded_blunts      = "One-Handed Blunt Fighter",
-    UI_UT_onehanded_bluntsDesc  = "Fast, compact strikes with one-handed blunt weapons. Gain bonus XP in Short Blunt.",
+    UI_UT_onehanded_bluntsDesc  = "Fast, compact strikes with one-handed blunt weapons. Gain ×3 XP in Short Blunt.",
 
     UI_UT_long_blunts           = "Long Blunt Specialist",
-    UI_UT_long_bluntsDesc       = "Your reach and power with long blunt weapons is unmatched. Gain bonus XP in Long Blunt.",
+    UI_UT_long_bluntsDesc       = "Your reach and power with long blunt weapons is unmatched. Gain ×3 XP in Long Blunt.",
 
     UI_UT_short_blunts          = "Short Blunt Specialist",
-    UI_UT_short_bluntsDesc      = "You excel with compact, quick-striking blunt weapons. Gain bonus XP in Short Blunt.",
+    UI_UT_short_bluntsDesc      = "You excel with compact, quick-striking blunt weapons. Gain ×3 XP in Short Blunt.",
 
     UI_UT_blades                = "Blade Fighter",
-    UI_UT_bladesDesc            = "Sharp steel is your answer to the undead. Gain bonus XP in Long Blade and Short Blade.",
+    UI_UT_bladesDesc            = "Sharp steel is your answer to the undead. Gain ×3 XP in Long Blade and Short Blade.",
 
     UI_UT_twohanded_blades      = "Two-Handed Blade Fighter",
-    UI_UT_twohanded_bladesDesc  = "You wield great swords and machetes with skill. Gain bonus XP in Long Blade.",
+    UI_UT_twohanded_bladesDesc  = "You wield great swords and machetes with skill. Gain ×3 XP in Long Blade.",
 
     UI_UT_onehanded_blades      = "One-Handed Blade Fighter",
-    UI_UT_onehanded_bladesDesc  = "Fast, precise cuts with a one-handed blade. Gain bonus XP in Short Blade.",
+    UI_UT_onehanded_bladesDesc  = "Fast, precise cuts with a one-handed blade. Gain ×3 XP in Short Blade.",
 
     UI_UT_long_blades           = "Long Blade Specialist",
-    UI_UT_long_bladesDesc       = "Sweeping cuts with long bladed weapons are second nature. Gain bonus XP in Long Blade.",
+    UI_UT_long_bladesDesc       = "Sweeping cuts with long bladed weapons are second nature. Gain ×3 XP in Long Blade.",
 
     UI_UT_short_blades          = "Short Blade Specialist",
-    UI_UT_short_bladesDesc      = "Close-quarters knife work is your speciality. Gain bonus XP in Short Blade.",
+    UI_UT_short_bladesDesc      = "Close-quarters knife work is your speciality. Gain ×3 XP in Short Blade.",
 
     UI_UT_spears                = "Spear Fighter",
-    UI_UT_spearsDesc            = "You keep the dead at arm's length with a well-placed thrust. Gain bonus XP in Spear.",
+    UI_UT_spearsDesc            = "You keep the dead at arm's length with a well-placed thrust. Gain ×3 XP in Spear.",
 
     -- ============================================================
     -- PHASE 1 — XP BOOST: CRAFTING & KNOWLEDGE
     -- ============================================================
     UI_UT_ingenuitive           = "Ingenuitive",
-    UI_UT_ingenuitiveDesc       = "You find creative solutions where others see dead ends. Gain bonus XP in Carpentry and Electrical.",
+    UI_UT_ingenuitiveDesc       = "You find creative solutions where others see dead ends. Gain ×3 XP in Electrical and ×2 XP in Metalworking.",
 
     UI_UT_generator             = "Generator Know-How",
-    UI_UT_generatorDesc         = "You kept the lights on when the grid failed. Gain bonus XP in Electrical and Mechanics.",
+    UI_UT_generatorDesc         = "You kept the lights on when the grid failed. Gain ×2 XP in Electrical.",
 
     UI_UT_tinkerer              = "Tinkerer",
-    UI_UT_tinkererDesc          = "You love taking things apart and putting them back together. Gain bonus XP in Electrical and Mechanics.",
+    UI_UT_tinkererDesc          = "You love taking things apart and putting them back together. Gain ×2 XP in Electrical, Mechanics, Tailoring, and Flint Knapping.",
 
     UI_UT_scrapper              = "Scrapper",
-    UI_UT_scrapperDesc          = "You see value in every broken-down machine or scrap pile. Gain bonus XP in Mechanics.",
+    UI_UT_scrapperDesc          = "You see value in every broken-down machine or scrap pile. Gain ×2 XP in Scavenging.",
 
     UI_UT_scrounger             = "Scrounger",
-    UI_UT_scroungerDesc         = "You have an eye for overlooked resources. Gain bonus XP in Carpentry and Masonry.",
+    UI_UT_scroungerDesc         = "You have an eye for overlooked resources. Gain ×2 XP in Scavenging.",
 
     UI_UT_natural               = "Natural",
-    UI_UT_naturalDesc           = "The outdoors is your home. Gain bonus XP in Foraging and Trapping.",
+    UI_UT_naturalDesc           = "The outdoors is your home. Gain ×2 XP in Cooking.",
 
     UI_UT_wildsman              = "Wildsman",
-    UI_UT_wildsmanDesc          = "You lived off the land long before it became necessary. Gain bonus XP in Foraging, Farming, and Trapping.",
+    UI_UT_wildsmanDesc          = "You lived off the land long before it became necessary. Gain ×2 XP in Foraging and Fishing.",
 
     UI_UT_mushroomer            = "Mushroomer",
-    UI_UT_mushroomerDesc        = "You know your fungi — the edible, the medicinal, and the deadly. Gain bonus XP in Foraging and Farming.",
+    UI_UT_mushroomerDesc        = "You know your fungi — the edible, the medicinal, and the deadly. Gain ×3 XP in Foraging.",
 
     UI_UT_antique               = "Antique Enthusiast",
-    UI_UT_antiqueDesc           = "Your love of vintage objects has given you unexpected practical knowledge. Gain bonus XP in Mechanics and Carpentry.",
+    UI_UT_antiqueDesc           = "Your love of vintage objects has given you unexpected practical knowledge. Gain ×2 XP in Scavenging.",
 
     UI_UT_blissful              = "Blissfully Fit",
-    UI_UT_blissfulDesc          = "You stayed active just for the joy of it. Gain bonus XP in Fitness.",
+    UI_UT_blissfulDesc          = "You stayed active just for the joy of it. Gain ×2 XP in Fitness.",
 
     UI_UT_gordanite             = "Gordanite",
-    UI_UT_gordaniteDesc         = "A devoted culinary student of the Gordon school. Gain bonus XP in Cooking.",
+    UI_UT_gordaniteDesc         = "A devoted culinary student of the Gordon school. Gain ×3 XP in Cooking.",
 
     UI_UT_graverobber           = "Grave Robber",
-    UI_UT_graverobberDesc       = "You have no qualms looting the dead. Gain bonus XP in Scavenging.",
+    UI_UT_graverobberDesc       = "You have no qualms looting the dead. Gain ×3 XP in Scavenging.",
 
     UI_UT_vagabond              = "Vagabond",
-    UI_UT_vagabondDesc          = "A life on the road taught you to move fast and light. Gain bonus XP in Sprinting.",
+    UI_UT_vagabondDesc          = "A life on the road taught you to move fast and light. Gain ×2 XP in Sprinting.",
 
     UI_UT_crafty                = "Crafty",
-    UI_UT_craftyDesc            = "Your hands know how to make something from nothing. Gain bonus XP in Carpentry and Tailoring.",
+    UI_UT_craftyDesc            = "Your hands know how to make something from nothing. Gain ×2 XP in Carpentry, Mechanics, and Tailoring.",
 
     UI_UT_paramedic             = "Paramedic",
-    UI_UT_paramedicDesc         = "Emergency medical training keeps people alive under pressure. Gain bonus XP in First Aid.",
+    UI_UT_paramedicDesc         = "Emergency medical training keeps people alive under pressure. Gain ×3 XP in First Aid.",
 
     UI_UT_pitcrew               = "Pit Crew",
-    UI_UT_pitcrewDesc           = "Fast hands and mechanical intuition from years of motorsport. Gain bonus XP in Mechanics.",
+    UI_UT_pitcrewDesc           = "Fast hands and mechanical intuition from years of motorsport. Gain ×3 XP in Mechanics.",
 
     UI_UT_prodigy               = "Prodigy",
-    UI_UT_prodigyDesc           = "You pick up new skills at an extraordinary rate. Gain bonus XP in all skills.",
+    UI_UT_prodigyDesc           = "You pick up new skills at an extraordinary rate. Gain ×2 XP in Cooking, Carpentry, Mechanics, First Aid, Fitness, Sprinting, Tailoring, Electrical, Aiming, and Reloading.",
 
     UI_UT_driver                = "Driver",
-    UI_UT_driverDesc            = "Countless hours behind the wheel have made you a natural. Gain bonus XP in Mechanics.",
+    UI_UT_driverDesc            = "Countless hours behind the wheel have made you a natural. Gain ×2 XP in Driving.",
 
     UI_UT_amateurelectrician    = "Amateur Electrician",
-    UI_UT_amateurelectricianDesc = "Weekend electrical projects taught you more than most people know. Gain bonus XP in Electrical.",
+    UI_UT_amateurelectricianDesc = "Weekend electrical projects taught you more than most people know. Gain ×2 XP in Electrical.",
 
     -- ============================================================
     -- PHASE 1 — XP BOOST: FILLTERTRAITS
     -- ============================================================
     UI_UT_trackman              = "Trackman",
-    UI_UT_trackmanDesc          = "You read trails and set traps like a seasoned hunter. Gain bonus XP in Trapping.",
+    UI_UT_trackmanDesc          = "You read trails and set traps like a seasoned hunter. Gain ×3 XP in Trapping.",
 
     UI_UT_cleaver               = "Cleaver",
-    UI_UT_cleaverDesc           = "Butchery work has given your arms a practiced chop. Gain bonus XP in Long Blade.",
+    UI_UT_cleaverDesc           = "Butchery work has given your arms a practiced chop. Gain ×2 XP in Long Blade.",
 
     UI_UT_woodsplitter          = "Wood Splitter",
-    UI_UT_woodsplitterDesc      = "Splitting firewood is a meditation for you. Gain bonus XP in Axe.",
+    UI_UT_woodsplitterDesc      = "Splitting firewood is a meditation for you. Gain ×2 XP in Axe.",
 
     UI_UT_improviser            = "Improviser",
-    UI_UT_improviserDesc        = "Necessity is your mother of invention. Gain bonus XP in Carpentry.",
+    UI_UT_improviserDesc        = "Necessity is your mother of invention. Gain ×2 XP in Maintenance.",
 
     -- ============================================================
     -- PHASE 1 — STAT MODIFIERS
     -- ============================================================
     UI_UT_packmule              = "Pack Mule",
-    UI_UT_packmuleDesc          = "You can carry far more than the average survivor.",
+    UI_UT_packmuleDesc          = "You can carry far more than the average survivor. Increases your base carry weight.",
 
     UI_UT_packmouse             = "Pack Mouse",
-    UI_UT_packmouseDesc         = "You struggle to carry as much as most people.",
+    UI_UT_packmouseDesc         = "You struggle to carry as much as most people. Reduces your base carry weight.",
 
     UI_UT_gimp                  = "Gimp",
-    UI_UT_gimpDesc              = "An old injury slows you down. You move more slowly than others.",
+    UI_UT_gimpDesc              = "An old injury slows you down. Your movement speed is reduced.",
 
     UI_UT_anemic                = "Anemic",
-    UI_UT_anemicDesc            = "Low iron levels leave you perpetually fatigued.",
+    UI_UT_anemicDesc            = "Low iron levels leave you perpetually fatigued. Endurance and fitness recovery are reduced.",
 
     UI_UT_badteeth              = "Bad Teeth",
     UI_UT_badteethDesc          = "Dental problems make eating painful and limit what you can consume safely.",
 
     UI_UT_deprived              = "Deprived",
-    UI_UT_deprivedDesc          = "Years of neglect have left your body in poor condition.",
+    UI_UT_deprivedDesc          = "Years of neglect have left your body in poor condition. Multiple physical stats are reduced.",
 
     UI_UT_couchdweller          = "Couch Dweller",
-    UI_UT_couchdwellerDesc      = "A sedentary lifestyle means you tire quickly.",
+    UI_UT_couchdwellerDesc      = "A sedentary lifestyle means you tire quickly. Endurance is reduced.",
 
     UI_UT_sloth                 = "Sloth",
-    UI_UT_slothDesc             = "Extreme laziness has kept you from developing any physical fitness.",
+    UI_UT_slothDesc             = "Extreme laziness has kept you from developing any physical fitness. Fitness is at its lowest.",
 
     UI_UT_squirrel              = "Squirrel",
-    UI_UT_squirrelDesc          = "You hoard everything you find, even when it weighs you down.",
+    UI_UT_squirrelDesc          = "You hoard everything you find, even when it weighs you down. Carry weight is increased but so is the tendency to overload.",
 
     UI_UT_antivaxxer            = "Anti-Vaxxer",
-    UI_UT_antivaxxerDesc        = "Your distrust of medicine makes you resistant to treatment.",
+    UI_UT_antivaxxerDesc        = "Your distrust of medicine makes you resistant to treatment. Medical items are less effective on you.",
 
     UI_UT_flimsy                = "Flimsy",
-    UI_UT_flimsyDesc            = "You are not built for physical exertion.",
+    UI_UT_flimsyDesc            = "You are not built for physical exertion. Strength and endurance are reduced.",
 
     UI_UT_sundayrunner          = "Sunday Runner",
-    UI_UT_sundayrunnerDesc      = "Occasional jogging has done little for your long-term endurance.",
+    UI_UT_sundayrunnerDesc      = "Occasional jogging has done little for your long-term endurance. Fitness is slightly below average.",
 
     UI_UT_lesssweaty            = "Less Sweaty",
-    UI_UT_lesssweaytDesc        = "You don't sweat much even under exertion.",
+    UI_UT_lesssweaytDesc        = "You don't sweat much even under exertion. Wetness from physical activity is significantly reduced.",
 
     UI_UT_highsweaty            = "High Sweaty",
-    UI_UT_highsweaytDesc        = "You sweat profusely at the slightest exertion.",
+    UI_UT_highsweaytDesc        = "You sweat profusely at the slightest exertion. Physical activity rapidly increases your wetness level.",
 
     UI_UT_cangrabmore           = "Strong Grip",
-    UI_UT_cangrabmoreDesc       = "Your powerful hands let you grab and restrain zombies more effectively.",
+    UI_UT_cangrabmoreDesc       = "Your powerful hands let you grab and restrain zombies more effectively. Grab success rate is increased.",
 
     UI_UT_cangrabless           = "Weak Grip",
-    UI_UT_cangrablessDesc       = "Your weak hands make it harder to grab and hold onto things.",
+    UI_UT_cangrablessDesc       = "Your weak hands make it harder to grab and hold onto things. Grab success rate is reduced.",
 
     UI_UT_backpacker            = "Backpacker",
-    UI_UT_backpackerDesc        = "Efficient packing and load distribution let you carry more comfortably.",
+    UI_UT_backpackerDesc        = "Efficient packing and load distribution let you carry more comfortably. Carry weight is increased.",
 
     UI_UT_topheavy              = "Top Heavy",
-    UI_UT_topheavyDesc          = "Your upper-body bulk makes nimble movement harder.",
+    UI_UT_topheavyDesc          = "Your upper-body bulk makes nimble movement harder. Nimbleness XP gain and base agility are reduced.",
 
     UI_UT_sore                  = "Chronically Sore",
-    UI_UT_soreDesc              = "Persistent muscle soreness limits your physical performance.",
+    UI_UT_soreDesc              = "Persistent muscle soreness limits your physical performance. Endurance and strength are reduced.",
 
     UI_UT_staunch               = "Staunch",
-    UI_UT_staunchDesc           = "You have an unusually high pain tolerance and recover from injuries well.",
+    UI_UT_staunchDesc           = "You have an unusually high pain tolerance and recover from injuries well. Pain effects and injury penalties are reduced.",
 
     -- ============================================================
     -- PHASE 2 — LUA-DRIVEN: SPAWN / INVENTORY
     -- ============================================================
     UI_UT_preparedpack          = "Prepared: Pack",
-    UI_UT_preparedpackDesc      = "You packed your bag with obsessive care before everything fell apart. You start with extra inventory capacity.",
+    UI_UT_preparedpackDesc      = "You packed your bag with obsessive care before everything fell apart. Increases your base carry weight by +3.",
 
     -- ============================================================
     -- PHASE 2 — LUA-DRIVEN: MOVEMENT
     -- ============================================================
     UI_UT_fast                  = "Fast",
-    UI_UT_fastDesc              = "Light on your feet, you cover ground quicker than most. Your movement speed is noticeably higher.",
+    UI_UT_fastDesc              = "+30% movement speed. Also slowly regenerates endurance (+0.01 per 30 ticks) while endurance is not full.",
 
     UI_UT_noodlelegs            = "Noodle Legs",
-    UI_UT_noodlelegsDesc        = "Your legs never quite cooperate. You move slower than everyone else and tire of it daily.",
+    UI_UT_noodlelegsDesc        = "Your legs never quite cooperate. -20% movement speed.",
 
     UI_UT_pacer                 = "Pacer",
-    UI_UT_pacerDesc             = "You have always had a brisk, purposeful walk. Your base walking speed is a cut above average.",
+    UI_UT_pacerDesc             = "You have always had a brisk, purposeful walk. +15% movement speed.",
 
     UI_UT_lurcher               = "Lurcher",
-    UI_UT_lurcherDesc           = "You move with a lumbering, uncoordinated gait. Your overall movement is sluggish and awkward.",
+    UI_UT_lurcherDesc           = "You move with a lumbering, uncoordinated gait. -15% movement speed and -15% work speed.",
 
     UI_UT_sorelegs              = "Sore Legs",
-    UI_UT_sorelegsDesc          = "Chronic aches run from hip to heel. Your speed and physical fitness are both reduced.",
+    UI_UT_sorelegsDesc          = "Chronic aches run from hip to heel. -20% movement speed and -2 carry weight.",
 
     -- ============================================================
     -- PHASE 2 — LUA-DRIVEN: WORK SPEED
     -- ============================================================
     UI_UT_quickworker           = "Quick Worker",
-    UI_UT_quickworkerDesc       = "You always got the job done ahead of schedule. Your work speed is significantly faster than normal.",
+    UI_UT_quickworkerDesc       = "You always got the job done ahead of schedule. +30% work speed on all crafting and building actions.",
 
     UI_UT_slowworker            = "Slow Worker",
-    UI_UT_slowworkerDesc        = "You take your sweet time with everything. Your work speed is considerably below average.",
+    UI_UT_slowworkerDesc        = "You take your sweet time with everything. -25% work speed on all crafting and building actions.",
 
     UI_UT_slack                 = "Slack",
-    UI_UT_slackDesc             = "Effort was never really your thing. You work slower than most, and it shows.",
+    UI_UT_slackDesc             = "Effort was never really your thing. -20% work speed on all crafting and building actions.",
 
     -- ============================================================
     -- PHASE 2 — LUA-DRIVEN: COMBAT & PHYSICAL
     -- ============================================================
     UI_UT_batteringram          = "Battering Ram",
-    UI_UT_batteringramDesc      = "You hit like a freight train. Your shoves and pushes send zombies flying with tremendous force.",
+    UI_UT_batteringramDesc      = "You hit like a freight train. Push force on shoves and knockbacks is increased by +50%.",
 
     UI_UT_fitted                = "Fitted",
-    UI_UT_fittedDesc            = "Everything you carry sits snug and balanced. Your effective encumbrance is reduced.",
+    UI_UT_fittedDesc            = "Reduces the weight of each worn clothing item by 50%. Removes run and combat speed penalties from worn items. Effect updates every ~1 second.",
 
     UI_UT_glassbody             = "Glass Body",
-    UI_UT_glassbodyDesc         = "Your body feels like it was built to break. You take significantly more damage from every hit.",
+    UI_UT_glassbodyDesc         = "Your body feels like it was built to break. All incoming damage is multiplied by ×1.5 (+50% damage taken).",
 
     UI_UT_brittle               = "Brittle",
-    UI_UT_brittleDesc           = "Your bones are fragile and snap under stress. Your chance of sustaining fractures is much higher.",
+    UI_UT_brittleDesc           = "Your bones are fragile and snap under stress. Fracture chance is increased by +50%.",
 
     UI_UT_flailer               = "Flailer",
-    UI_UT_flailerDesc           = "Your swings are wild and undisciplined. Your combat accuracy leaves a lot to be desired.",
+    UI_UT_flailerDesc           = "Your swings are wild and undisciplined. Combat accuracy is reduced by -15%.",
 
     UI_UT_fasthands             = "Fast Hands",
-    UI_UT_fasthandsDesc         = "Your hands move with fluid precision. Item handling, reloading, and interaction speed are all improved.",
+    UI_UT_fasthandsDesc         = "Your hands move with fluid precision. Item transfers and reload actions complete 40% faster (transfer time multiplier: ×0.6).",
 
     UI_UT_analgesia             = "Analgesia",
-    UI_UT_analgesiaDesc         = "Your nervous system simply does not register pain the way others do. Pain has no effect on your performance.",
+    UI_UT_analgesiaDesc         = "Your nervous system does not register pain. The pain immunity flag is set permanently — pain has no effect on your performance or stats.",
 
     -- ============================================================
     -- PHASE 2 — LUA-DRIVEN: BLEEDING
     -- ============================================================
     UI_UT_thickblood            = "Thick Blooded",
-    UI_UT_thickbloodDesc        = "Your blood clots unusually fast. Wounds stop bleeding more quickly than they would for most people.",
+    UI_UT_thickbloodDesc        = "Your blood clots unusually fast. Bleed rate is reduced to 50% of normal — wounds stop bleeding twice as quickly.",
 
     UI_UT_heavilybleedingwounds = "Heavily Bleeding Wounds",
-    UI_UT_heavilybleedingwoundsDesc = "Even minor cuts refuse to close. Your wounds bleed at an accelerated rate.",
+    UI_UT_heavilybleedingwoundsDesc = "Even minor cuts refuse to close. Bleed rate is increased to 200% of normal — wounds bleed twice as fast.",
 
     UI_UT_weaklybleedingwounds  = "Weakly Bleeding Wounds",
-    UI_UT_weaklybleedingwoundsDesc = "Your wounds seal up almost before you notice them. Bleeding from injuries is significantly reduced.",
+    UI_UT_weaklybleedingwoundsDesc = "Your wounds seal up almost before you notice them. Bleed rate is reduced to 60% of normal.",
 
     -- ============================================================
     -- PHASE 2 — LUA-DRIVEN: SLEEP & REST
     -- ============================================================
     UI_UT_restfulsleeper        = "Restful Sleeper",
-    UI_UT_restfulsleeperDesc    = "You drop into a deep sleep the moment your head hits the pillow. The quality of your rest is far above average.",
+    UI_UT_restfulsleeperDesc    = "You drop into a deep sleep the moment your head hits the pillow. Sleep quality is increased by +50%, allowing faster fatigue recovery from rest.",
 
     UI_UT_quickrest             = "Quick Rest",
-    UI_UT_quickrestDesc         = "Your body bounces back from exhaustion fast. Rest and recovery actions are more effective for you.",
+    UI_UT_quickrestDesc         = "Your body bounces back from exhaustion fast. Sleep quality is increased by +30%.",
 
     UI_UT_snorer                = "Snorer",
-    UI_UT_snorerDesc            = "You rattle the walls when you sleep. The noise you make at night may attract unwanted attention.",
+    UI_UT_snorerDesc            = "You rattle the walls when you sleep. Noise output while sleeping is doubled (×2.0 noise multiplier), attracting nearby zombies.",
 
     -- ============================================================
     -- PHASE 2 — LUA-DRIVEN: PSYCHOLOGY & MODIFIERS
     -- ============================================================
     UI_UT_unwavering            = "Unwavering",
-    UI_UT_unwaveringDesc        = "Fear never really got its hooks into you. You have a strong natural resistance to panic.",
+    UI_UT_unwaveringDesc        = "Fear never really got its hooks into you. Panic resistance is increased by 40% — panic events have 40% less impact.",
 
     UI_UT_idealweight           = "Ideal Weight",
-    UI_UT_idealweightDesc       = "You are in the kind of shape most people only dream about. Your physical stats benefit across the board.",
+    UI_UT_idealweightDesc       = "You are in peak physical condition. Carry weight is increased by +1 and fatigue rate is reduced to 85% of normal.",
 
     UI_UT_mundane               = "Mundane",
-    UI_UT_mundaneDesc           = "You were never exceptional at anything, and that has not changed. You gain XP across all skills at a reduced rate.",
+    UI_UT_mundaneDesc           = "You were never exceptional at anything. XP gain in Carpentry, Cooking, First Aid, Mechanics, Electrical, Aiming, and Reloading is reduced to ×0.8 (−20%).",
 
     UI_UT_incomprehensive       = "Incomprehensive",
-    UI_UT_incomprehensiveDesc   = "Complex ideas just do not stick for you. Your maximum skill levels are capped lower than normal.",
+    UI_UT_incomprehensiveDesc   = "Complex ideas just do not stick for you. Your effective skill cap is reduced by 2 in all skills.",
 
     UI_UT_photographicmemory    = "Photographic Memory",
-    UI_UT_photographicmemoryDesc = "You retain everything you read or learn with uncanny accuracy. Reading speed and skill gain are substantially increased.",
+    UI_UT_photographicmemoryDesc = "You retain everything you read or learn with uncanny accuracy. XP gain in Carpentry, Cooking, First Aid, Electrical, and Mechanics is increased to ×1.5 (+50%).",
 
     -- ============================================================
     -- PHASE 2 — LUA-DRIVEN: XP PENALTIES
     -- ============================================================
     UI_UT_antigun               = "Anti-Gun Activist",
-    UI_UT_antigunDesc           = "You spent years campaigning against firearms and never touched one. Firearms XP comes to you much more slowly.",
+    UI_UT_antigunDesc           = "You spent years campaigning against firearms and never touched one. XP gain in Aiming and Reloading is reduced to ×0.5 (−50%).",
 
     UI_UT_flatearther            = "Flat Earther",
-    UI_UT_flateartherDesc        = "You distrust books, science, and anything written down. Your reading speed is drastically reduced.",
+    UI_UT_flateartherDesc        = "You distrust books, science, and anything written down. Reading speed is reduced by 30% and MetaGame XP is reduced to ×0.7 (−30%).",
 
     UI_UT_luddite               = "Luddite",
-    UI_UT_ludditeDesc           = "Technology has always been your enemy. Electrical skills advance at a reduced rate.",
+    UI_UT_ludditeDesc           = "Technology has always been your enemy. XP gain in Electrical is reduced to ×0.6 (−40%).",
 
     UI_UT_onetrickpony          = "One Trick Pony",
-    UI_UT_onetrickponyDesc      = "You excel only in what you know best. Branching out into new skills costs you more than it should.",
+    UI_UT_onetrickponyDesc      = "You excel only in what you know best. Training multiple skills simultaneously applies an XP penalty across all skills being trained.",
 
     -- ============================================================
     -- PHASE 2 — LUA-DRIVEN: NO-XP SERIES
     -- ============================================================
     UI_UT_noxpshooter           = "No XP: Shooting",
-    UI_UT_noxpshooterDesc       = "You have already mastered firearms and no longer learn from using them. Shooting grants no XP.",
+    UI_UT_noxpshooterDesc       = "You have already mastered firearms and no longer learn from using them. Aiming and Reloading grant no XP.",
 
     UI_UT_noxptechnician        = "No XP: Tech",
-    UI_UT_noxptechnicianDesc    = "Electrical work holds no more lessons for you. Tech skills grant no XP.",
+    UI_UT_noxptechnicianDesc    = "Electrical work holds no more lessons for you. Electrical and Mechanics grant no XP.",
 
     UI_UT_noxpaxe               = "No XP: Axe",
-    UI_UT_noxpaxeDesc           = "The axe is second nature to you. Using one no longer teaches you anything new.",
+    UI_UT_noxpaxeDesc           = "The axe is second nature to you. Using one no longer teaches you anything new. Axe grants no XP.",
 
     UI_UT_noxpfirstaid          = "No XP: First Aid",
     UI_UT_noxpfirstaidDesc      = "You know medicine as well as you ever will. First Aid actions grant no XP.",
 
     UI_UT_noxpmaintenance       = "No XP: Maintenance",
-    UI_UT_noxpmaintenanceDesc   = "Tool upkeep is routine. You gain no XP from maintenance tasks.",
+    UI_UT_noxpmaintenanceDesc   = "Tool upkeep is routine. Maintenance grants no XP.",
 
     UI_UT_noxpsneaky            = "No XP: Sneaky",
-    UI_UT_noxpsneakyDesc        = "Moving quietly is just how you walk. Stealth and Lightfoot grant no XP.",
+    UI_UT_noxpsneakyDesc        = "Moving quietly is just how you walk. Sneaking and Lightfoot grant no XP.",
 
     -- ============================================================
     -- PHASE 2 — LUA-DRIVEN: TIMED / CIRCADIAN
     -- ============================================================
     UI_UT_owlperson             = "Night Owl",
-    UI_UT_owlpersonDesc         = "You come alive after dark. You gain bonuses at night but feel sluggish and unfocused during the day.",
+    UI_UT_owlpersonDesc         = "You come alive after dark. Between 6pm and 6am stress decreases by 0.02 per minute. Between 6am and 6pm stress increases by 0.01 per minute.",
 
     UI_UT_larkperson            = "Early Bird",
-    UI_UT_larkpersonDesc        = "You rise with the sun and hit the ground running. You perform better during the day but struggle once night falls.",
+    UI_UT_larkpersonDesc        = "You rise with the sun and hit the ground running. Between 6am and 6pm stress decreases by 0.02 per minute. Between 6pm and 6am stress increases by 0.01 per minute.",
 
     -- ============================================================
     -- PHASE 2 — LUA-DRIVEN: VEHICLE
     -- ============================================================
     UI_UT_leadfoot              = "Lead Foot",
-    UI_UT_leadfootDesc          = "You always pushed vehicles past their limits. Your top speed while driving is noticeably higher.",
+    UI_UT_leadfootDesc          = "You always pushed vehicles past their limits. +20% vehicle top speed while driving.",
 
     UI_UT_expertdriver          = "Expert Driver",
-    UI_UT_expertdriverDesc      = "Years behind the wheel have made you one of the best. You handle vehicles with exceptional control and efficiency.",
+    UI_UT_expertdriverDesc      = "Years behind the wheel have made you one of the best. Improves vehicle handling while driving.",
 
     UI_UT_poordriver            = "Student Driver",
-    UI_UT_poordriverDesc        = "You never quite got the hang of driving. Your vehicle handling is slow and error-prone.",
+    UI_UT_poordriverDesc        = "You never quite got the hang of driving. Worsens vehicle handling while driving.",
 
     -- ============================================================
     -- PHASE 2 — LUA-DRIVEN: ITEM / CONSUMPTION
     -- ============================================================
     UI_UT_ironliver             = "Iron Liver",
-    UI_UT_ironliverDesc         = "Alcohol affects you about as much as water. You can drink heavily with minimal impairment.",
+    UI_UT_ironliverDesc         = "Alcohol affects you about as much as water. Each real-world minute, drunkenness above 0.1 is reduced by 10% (multiplied by ×0.9).",
 
     UI_UT_durability            = "Durability",
-    UI_UT_durabilityDesc        = "You treat your gear with care and know how to make it last. Items you use degrade more slowly.",
+    UI_UT_durabilityDesc        = "You treat your gear with care and know how to make it last. Items you use degrade 25% slower (durability multiplier: ×1.25).",
 
     UI_UT_gourmand              = "Gourmand",
-    UI_UT_gourmandDesc          = "Food is one of life's great pleasures, and you intend to keep it that way. You gain extra benefits when eating.",
+    UI_UT_gourmandDesc          = "Food is one of life's great pleasures. Each meal grants +30% bonus hunger relief and reduces boredom by 0.05.",
 
     UI_UT_ascetic               = "Ascetic",
-    UI_UT_asceticDesc           = "You subsist on the bare minimum and have made peace with it. Your diet is strictly limited by principle.",
+    UI_UT_asceticDesc           = "You subsist on the bare minimum. Eating within 5 minutes of your last meal triggers a mood penalty. Only one meal per 5-minute window is recommended.",
 
     -- ============================================================
     -- PHASE 3a — SPAWN-WITH-CONDITION
     -- ============================================================
     UI_UT_injured_I             = "Lightly Injured",
-    UI_UT_injured_IDesc         = "You did not make it out clean. You begin with minor cuts and bruises that will need tending before things get worse.",
+    UI_UT_injured_IDesc         = "You did not make it out clean. You spawn with injuries to your left hand and left foot, and stress set to 0.3.",
 
     UI_UT_injured_II            = "Seriously Injured",
-    UI_UT_injured_IIDesc        = "Something went very wrong before the end. You start with serious wounds and every step reminds you of it.",
+    UI_UT_injured_IIDesc        = "Something went very wrong before the end. You spawn with injuries to both hands and your left foot and upper torso, stress at 0.6, and fatigue at 0.4.",
 
     UI_UT_broke                 = "Broken",
-    UI_UT_brokeDesc             = "Your leg snapped before you even got started. You spawn with a broken leg and will need to find help — or a splint — fast.",
+    UI_UT_brokeDesc             = "Your leg snapped before you even got started. You spawn with a fractured and injured left foot, stress at 0.5, and fatigue at 0.3.",
 
     UI_UT_burned                = "Burned",
-    UI_UT_burnedDesc            = "Fire got to you before you got away. You spawn with severe burns covering part of your body, and the pain is constant.",
+    UI_UT_burnedDesc            = "Fire got to you before you got away. You spawn with 60% burn severity on your upper torso and both hands, stress at 0.7, fatigue at 0.5, and panic at 0.3.",
 
     -- ============================================================
     -- PHASE 3b — PERIODIC-CHECK TRAITS
     -- ============================================================
     UI_UT_depressive            = "Depressive",
-    UI_UT_depressiveDesc        = "A heavy sadness follows you everywhere. You struggle to find motivation, and dark thoughts creep in when you are alone.",
+    UI_UT_depressiveDesc        = "A heavy sadness follows you everywhere. Every 10 in-game minutes, stress increases by +0.08.",
 
     UI_UT_paranoia              = "Paranoia",
-    UI_UT_paranoiaDesc          = "Every shadow hides something. Every sound is a warning. Your mind manufactures threats even when none exist.",
+    UI_UT_paranoiaDesc          = "Every shadow hides something. Every 10 in-game minutes, panic increases by +0.06.",
 
     UI_UT_selfdestructive       = "Self-Destructive",
     UI_UT_selfdestructiveDesc   = "You have always been your own worst enemy. You act against your own interests in ways that are hard to explain, even to yourself.",
 
     UI_UT_melancholic           = "Melancholic",
-    UI_UT_melancholicDesc       = "The world feels muted and grey. You manage to function, but a quiet sadness colors everything you do.",
+    UI_UT_melancholicDesc       = "The world feels muted and grey. A quiet sadness colors everything you do.",
 
     UI_UT_immuneresponse        = "Immune Response",
     UI_UT_immuneresponseDesc    = "Your body fights back hard and fast. When illness takes hold, your immune system kicks into overdrive and burns it out sooner.",
 
     UI_UT_ravenous              = "Ravenous",
-    UI_UT_ravenousDesc          = "Your appetite is relentless. You burn through food faster than most, and the hunger never really goes away.",
+    UI_UT_ravenousDesc          = "Your appetite is relentless. Every 10 in-game minutes, hunger increases by +0.1.",
 
     UI_UT_optimist              = "Optimist",
-    UI_UT_optimistDesc          = "You genuinely believe things will work out. That outlook keeps your spirits higher than circumstances probably warrant.",
+    UI_UT_optimistDesc          = "You genuinely believe things will work out. Every 10 in-game minutes, stress decreases by −0.06 and panic decreases by −0.04.",
 
     UI_UT_pessimist             = "Pessimist",
-    UI_UT_pessimistDesc         = "You expect the worst and, frankly, you are usually right. The constant low-level gloom drags on your mood over time.",
+    UI_UT_pessimistDesc         = "You expect the worst and, frankly, you are usually right. Every 10 in-game minutes, stress increases by +0.05.",
 
     UI_UT_mstoptimist           = "Silver Lining",
-    UI_UT_mstoptimistDesc       = "Even at the end of the world, you find something to be glad about. Your mood lifts a little when others would give up.",
+    UI_UT_mstoptimistDesc       = "Even at the end of the world, you find something to be glad about. Every 10 in-game minutes, stress decreases by −0.08 when stress is above 0.6, or −0.03 otherwise.",
 
     UI_UT_adaptivemetabolism    = "Adaptive Metabolism",
     UI_UT_adaptivemetabolismDesc = "Your body is remarkably good at making do with what it has. Your metabolism adjusts efficiently to changing conditions.",
@@ -576,13 +576,13 @@ UI_EN = {
     UI_UT_sedentaryDesc         = "Your body has grown accustomed to doing as little as possible. Fitness fades faster for you without consistent effort.",
 
     UI_UT_alcoholic_I           = "Alcoholic (Mild)",
-    UI_UT_alcoholic_IDesc       = "You enjoy a drink more than most. A craving nags at you occasionally, but you can manage it most of the time.",
+    UI_UT_alcoholic_IDesc       = "You enjoy a drink more than most. Every 30 in-game minutes while sober (drunkenness below 0.05), stress increases by +0.05.",
 
     UI_UT_alcoholic_II          = "Alcoholic (Moderate)",
-    UI_UT_alcoholic_IIDesc      = "Alcohol is a regular need rather than a want. The cravings come more often now and they are harder to ignore.",
+    UI_UT_alcoholic_IIDesc      = "Alcohol is a regular need rather than a want. Every 10 in-game minutes while sober (drunkenness below 0.05), stress increases by +0.10.",
 
     UI_UT_alcoholic_III         = "Alcoholic (Severe)",
-    UI_UT_alcoholic_IIIDesc     = "Your body demands alcohol. The cravings hit hard and often, and going without is a genuine ordeal.",
+    UI_UT_alcoholic_IIIDesc     = "Your body demands alcohol. Every in-game minute while below 0.1 drunkenness, stress increases by +0.05. While below 0.05 drunkenness, panic also increases by +0.03 per minute.",
 
     UI_UT_addictedtocaffeine    = "Caffeine Addict",
     UI_UT_addictedtocaffeineDesc = "Coffee is not a luxury, it is a necessity. Without caffeine, your focus crumbles and the headaches begin.",
@@ -594,16 +594,16 @@ UI_EN = {
     -- PHASE 3c — EVENT-DRIVEN TRAITS
     -- ============================================================
     UI_UT_fearful               = "Fearful",
-    UI_UT_fearfulDesc           = "Fear comes quickly and hits hard. When danger appears, your body's panic response is significantly amplified.",
+    UI_UT_fearfulDesc           = "Fear comes quickly and hits hard. Each time a panic event fires, panic is increased by an additional +0.2.",
 
     UI_UT_nervouswreck          = "Nervous Wreck",
-    UI_UT_nervouswreckDesc      = "Your nerves are always close to the edge. Any trigger sends your anxiety spiking well past what is normal.",
+    UI_UT_nervouswreckDesc      = "Your nerves are always close to the edge. Each panic event adds +0.3 to panic. Additionally, every 10 in-game minutes while stress is above 0.7, panic increases by +0.05.",
 
     UI_UT_scardycat             = "Scaredy Cat",
-    UI_UT_scardycatDesc         = "You startle easily and panic often. It is not something you can fully control, and it shows.",
+    UI_UT_scardycatDesc         = "You startle easily and panic often. Each time a panic event fires, panic is increased by an additional +0.15.",
 
     UI_UT_maniac                = "Maniac",
-    UI_UT_maniacDesc            = "Combat wakes something up in you. Every kill sends a rush through your system that sharpens your focus and lifts your mood.",
+    UI_UT_maniacDesc            = "Combat wakes something up in you. Each time you kill a zombie, stress decreases by −0.15 and boredom decreases by −0.2.",
 
     UI_UT_anorexy               = "Anorexia",
     UI_UT_anorexyDesc           = "Your relationship with food is deeply complicated. Eating feels wrong, and your body pays the price for every meal.",
@@ -645,29 +645,29 @@ UI_EN = {
     UI_UT_superimmunedesc       = "Your immune system is exceptional. Infections that would lay others low barely register with your body.",
 
     UI_UT_bouncer_I             = "Bouncer",
-    UI_UT_bouncer_IDesc         = "Years working the door taught you how to handle yourself. You gain bonus XP across all melee weapon categories.",
+    UI_UT_bouncer_IDesc         = "Years working the door taught you how to handle yourself. Gain ×2 XP in Axe, Long Blade, Long Blunt, Short Blade, Short Blunt, and Spear.",
 
     UI_UT_bouncer_II            = "Bruiser",
-    UI_UT_bouncer_IIDesc        = "Raw power is your trademark. You gain bonus XP in Strength and Small Blunt weapons.",
+    UI_UT_bouncer_IIDesc        = "Raw power is your trademark. Gain ×3 XP in Strength and ×3 XP in Short Blunt.",
 
     UI_UT_gunspecialist_I       = "Gun Specialist I",
-    UI_UT_gunspecialist_IDesc   = "Hours at the range paid off. You gain bonus XP in Aiming and Reloading.",
+    UI_UT_gunspecialist_IDesc   = "Hours at the range paid off. Gain ×2 XP in Aiming and Reloading.",
 
     UI_UT_gunspecialist_II      = "Gun Specialist II",
-    UI_UT_gunspecialist_IIDesc  = "You know firearms inside and out. You gain double bonus XP in Aiming and Reloading, and a bonus in Nimble.",
+    UI_UT_gunspecialist_IIDesc  = "You know firearms inside and out. Gain ×3 XP in Aiming and Reloading, and ×2 XP in Nimbleness.",
 
     UI_UT_gunspecialist_III     = "Gun Specialist III",
-    UI_UT_gunspecialist_IIIDesc = "Firearms are an extension of yourself. You gain double XP in Aiming and Reloading, a bonus in Nimble, +10% reload and aim speed, and your weapons never jam.",
+    UI_UT_gunspecialist_IIIDesc = "Firearms are an extension of yourself. Gain ×3 XP in Aiming and Reloading, and ×2 XP in Nimbleness. Also grants +10% reload speed, +10% aim speed, and equipped weapons never jam.",
 
     -- ============================================================
     -- PHASE 3d — COMPLEX STATE TRAITS
     -- ============================================================
     UI_UT_indefatigable         = "Indefatigable",
-    UI_UT_indefatigableDesc     = "You do not know the meaning of worn out. Your stamina recovers with a system all its own, outlasting what most people think is possible.",
+    UI_UT_indefatigableDesc     = "You do not know the meaning of worn out. While running, endurance slowly regenerates (+0.005 per 30 ticks). When endurance bottoms out, a 3-minute recovery timer starts and restores endurance to 50% on completion.",
 
     UI_UT_hardy                 = "Hardy",
-    UI_UT_hardyDesc             = "You endure. Pain, exhaustion, and hardship all hit you, but your body tracks the punishment and bounces back harder than expected.",
+    UI_UT_hardyDesc             = "You endure. When fatigue exceeds 0.8 an exhaustion phase begins, raising stress by +0.02 per minute. After 10 consecutive minutes of rest (fatigue below 0.3), exhaustion clears and a 5-minute bonus phase begins that slowly restores endurance (+0.002 per minute).",
 
     UI_UT_secondwind            = "Second Wind",
-    UI_UT_secondwindDesc        = "Just when you think you are done, something kicks in. A burst of recovered stamina can arrive at the moment you need it most.",
+    UI_UT_secondwindDesc        = "Just when you think you are done, something kicks in. While sprinting with endurance at or below 0.1, endurance is instantly restored by +0.3. This triggers once per 10-minute cooldown.",
 }
