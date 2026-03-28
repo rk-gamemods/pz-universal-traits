@@ -2,7 +2,7 @@
 
 **Goal:** Build a comprehensive B42 character-creation trait mod consolidating ~200 traits from multiple source mods into a clean, conflict-free, UT_-prefixed package.
 
-**Architecture:** Two-mod layout — `UT_CORE` (shared Lua infrastructure, required dependency) + `UniversalTraits` (trait definitions, scripts, translations). Source in `media/`, synced to `release/ModName/media/` (media sits at mod root alongside mod.info — no version subfolder). Three implementation phases ordered by complexity.
+**Architecture:** Two-mod layout — `UT_CORE` (shared Lua infrastructure, required dependency) + `UniversalTraits` (trait definitions, scripts, translations). Source in `media/`, synced to `release/ModName/42/media/` (PZ B42 standard: `42/` subfolder is required for all B42 mods). Three implementation phases ordered by complexity.
 
 **Tech Stack:** Lua 5.x (PZ B42 Kahlua), B42 `CharacterTrait.register()` + `character_trait_definition` script blocks, standard Lua 5.x test runner.
 
@@ -12,8 +12,8 @@
 
 **Release sync (run from repo root):**
 ```bash
-cp -r UniversalTraits/media/. UniversalTraits/release/UniversalTraits/media/
-cp -r UT_CORE/media/. UT_CORE/release/UT_CORE/media/
+cp -r UniversalTraits/media/. UniversalTraits/release/UniversalTraits/42/media/
+cp -r UT_CORE/media/. UT_CORE/release/UT_CORE/42/media/
 ```
 
 **Deploy to live mods:**
