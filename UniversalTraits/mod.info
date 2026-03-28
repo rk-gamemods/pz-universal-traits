@@ -1,0 +1,7 @@
+name=Universal Traits
+poster=poster.png
+id=UniversalTraits
+description=A comprehensive character-creation trait pack for Build 42. Consolidates and deduplicates content from multiple trait mods into one clean, conflict-free package. All traits use the UT_ prefix — no vanilla overrides, no ID collisions. Single-player only.
+require=UT_CORE
+modversion=1.0
+pzversion=42.0

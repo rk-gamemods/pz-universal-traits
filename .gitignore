@@ -1,0 +1,8 @@
+# Deployed live copies (managed by robocopy, not git)
+# release/ IS tracked — it's the deployable package
+# Live mods dir is NOT tracked
+C:/Users/Admin/Zomboid/mods/
+
+# OS
+Thumbs.db
+.DS_Store
