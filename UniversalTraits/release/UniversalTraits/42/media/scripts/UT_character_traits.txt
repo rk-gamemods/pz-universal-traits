@@ -2213,7 +2213,7 @@ module UniversalTraits
         Cost = 10,
         UIName = UI_UT_gunspecialist_III,
         UIDescription = UI_UT_gunspecialist_IIIdesc,
-        XPBoosts = Aiming=2;Reloading=2,
+        XPBoosts = Aiming=2;Reloading=2;Nimble=1,
         MutuallyExclusiveTraits = UniversalTraits:UT_gunspecialist_I;UniversalTraits:UT_gunspecialist_II;UniversalTraits:UT_specguns,
     }
 
