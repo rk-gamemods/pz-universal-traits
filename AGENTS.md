@@ -270,7 +270,17 @@ Events.EveryOneMinute.Add(onEveryMinute)
 - Fires all registered callbacks with `(player, zombie)` before the native stagger animation locks in
 - **Cannot be throttled** — rising-edge detection requires checking every tick (exception to the throttle rule)
 - `UTCore._zombieCollisionCallbacks` — table of `traitId → fn(player, zombie)`
-- `UTCore.registerZombieCollisionHandler(traitId, fn)` — register a callback; called once per collision rising edge
+
+#### Declare API (preferred for traits)
+
+- `UTCore.declareZombieCollisionHandler(traitId, fn)` — **preferred trait API**; call at file-load time. Stores the handler in a local `_declarations` upvalue (not on UTCore table — cannot be accidentally cleared)
+- On `Events.OnCreatePlayer`, UTCore iterates all declarations and auto-registers handlers for traits the player has via `UTCore.hasTrait()`
+- Integrity self-healing via `Events.EveryOneMinute` — every 10 game-minutes (~10 real seconds), checks declared handlers against `_zombieCollisionCallbacks` and re-registers any that are missing
+- Trait files need only one line: `UTCore.declareZombieCollisionHandler(TRAIT_ID, onZombieCollision)` — no OnCreatePlayer/OnNewGame boilerplate
+
+#### Low-level API (internal / advanced use)
+
+- `UTCore.registerZombieCollisionHandler(traitId, fn)` — directly register a callback
 - `UTCore.unregisterZombieCollisionHandler(traitId)` — remove callback
 - Cancel native stagger from inside a callback: `player:setBumpType("")` + `player:setBumpFall(false)`
 
