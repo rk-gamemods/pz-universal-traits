@@ -300,10 +300,10 @@ UI_EN = {
     UI_UT_sundayrunnerDesc      = "Occasional jogging has done little for your long-term endurance. Fitness is slightly below average.",
 
     UI_UT_lesssweaty            = "Less Sweaty",
-    UI_UT_lesssweaytDesc        = "You don't sweat much even under exertion. Wetness from physical activity is significantly reduced.",
+    UI_UT_lesssweatyDesc        = "You don't sweat much even under exertion. Wetness from physical activity is significantly reduced.",
 
     UI_UT_highsweaty            = "High Sweaty",
-    UI_UT_highsweaytDesc        = "You sweat profusely at the slightest exertion. Physical activity rapidly increases your wetness level.",
+    UI_UT_highsweatyDesc        = "You sweat profusely at the slightest exertion. Physical activity rapidly increases your wetness level.",
 
     UI_UT_cangrabmore           = "Strong Grip",
     UI_UT_cangrabmoreDesc       = "Your powerful hands let you grab and restrain zombies more effectively. Grab success rate is increased.",
@@ -624,25 +624,25 @@ UI_EN = {
     UI_UT_sensitivestomachDesc  = "Your digestive system does not take kindly to stress or poor food. Meals that others handle fine can leave you miserable.",
 
     UI_UT_butterfingers         = "Butterfingers",
-    UI_UT_butterfingersdesc     = "Things slip out of your hands at the worst moments. No matter how careful you try to be, stuff just ends up on the floor.",
+    UI_UT_butterfingersDesc     = "Things slip out of your hands at the worst moments. No matter how careful you try to be, stuff just ends up on the floor.",
 
     UI_UT_acrophobic            = "Acrophobic",
-    UI_UT_acrophobicdesc        = "Heights make your stomach drop and your hands shake. The higher up you are, the harder it is to function.",
+    UI_UT_acrophobicDesc        = "Heights make your stomach drop and your hands shake. The higher up you are, the harder it is to function.",
 
     UI_UT_vehophobic            = "Vehophobic",
-    UI_UT_vehophobicdesc        = "Getting behind the wheel or into a vehicle fills you with dread. The fear is irrational but it is very real.",
+    UI_UT_vehophobicDesc        = "Getting behind the wheel or into a vehicle fills you with dread. The fear is irrational but it is very real.",
 
     UI_UT_motionsickness        = "Motion Sickness",
-    UI_UT_motionsicknessdesc    = "Vehicles do not agree with you. Even short drives leave you nauseous and desperate for still ground.",
+    UI_UT_motionsicknessDesc    = "Vehicles do not agree with you. Even short drives leave you nauseous and desperate for still ground.",
 
     UI_UT_physicallyactive      = "Physically Active",
-    UI_UT_physicallyactivedesc  = "You have always pushed your body and it pays off. Exercise yields more fitness gains for you than it does for others.",
+    UI_UT_physicallyactiveDesc  = "You have always pushed your body and it pays off. Exercise yields more fitness gains for you than it does for others.",
 
     UI_UT_humanhamster          = "Human Hamster",
-    UI_UT_humanhamsterdesc      = "You have an overwhelming compulsion to hoard. Every container you pass demands to be checked and filled.",
+    UI_UT_humanhamsterDesc      = "You have an overwhelming compulsion to hoard. Every container you pass demands to be checked and filled.",
 
     UI_UT_superimmune           = "Super Immune",
-    UI_UT_superimmunedesc       = "Your immune system is exceptional. Infections that would lay others low barely register with your body.",
+    UI_UT_superimmuneDesc       = "Your immune system is exceptional. Infections that would lay others low barely register with your body.",
 
     UI_UT_bouncer_I             = "Bouncer",
     UI_UT_bouncer_IDesc         = "Years working the door taught you how to handle yourself. Start at Strength 6 and Short Blunt level 1. When surrounded by 3 or more zombies, chance to automatically stagger one back.",

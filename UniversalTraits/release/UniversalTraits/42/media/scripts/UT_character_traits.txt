@@ -12,7 +12,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_preparedfood,
         Cost = 1,
         UIName = UI_UT_preparedfood,
-        UIDescription = UI_UT_preparedfooddesc,
+        UIDescription = UI_UT_preparedfoodDesc,
         XPBoosts = Cooking=1,
     }
 
@@ -23,7 +23,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_preparedammo,
         Cost = 1,
         UIName = UI_UT_preparedammo,
-        UIDescription = UI_UT_preparedammodesc,
+        UIDescription = UI_UT_preparedammoDesc,
         XPBoosts = Aiming=1;Reloading=1,
     }
 
@@ -34,7 +34,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_preparedmedical,
         Cost = 1,
         UIName = UI_UT_preparedmedical,
-        UIDescription = UI_UT_preparedmedicaldesc,
+        UIDescription = UI_UT_preparedmedicalDesc,
         XPBoosts = Doctor=1,
     }
 
@@ -45,7 +45,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_preparedcarpentry,
         Cost = 1,
         UIName = UI_UT_preparedcarpentry,
-        UIDescription = UI_UT_preparedcarpentrydesc,
+        UIDescription = UI_UT_preparedcarpentryDesc,
         XPBoosts = Woodwork=1,
     }
 
@@ -56,7 +56,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_preparedcamp,
         Cost = 1,
         UIName = UI_UT_preparedcamp,
-        UIDescription = UI_UT_preparedcampdesc,
+        UIDescription = UI_UT_preparedcampDesc,
         XPBoosts = Fishing=1,
     }
 
@@ -67,7 +67,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_preparedweapons,
         Cost = 1,
         UIName = UI_UT_preparedweapons,
-        UIDescription = UI_UT_preparedweaponsdesc,
+        UIDescription = UI_UT_preparedweaponsDesc,
         XPBoosts = Maintenance=1,
     }
 
@@ -78,7 +78,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_preparedcars,
         Cost = 1,
         UIName = UI_UT_preparedcars,
-        UIDescription = UI_UT_preparedcarsdesc,
+        UIDescription = UI_UT_preparedcarsDesc,
         XPBoosts = Mechanics=1,
     }
 
@@ -89,7 +89,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_preparedcartography,
         Cost = 1,
         UIName = UI_UT_preparedcartography,
-        UIDescription = UI_UT_preparedcartographydesc,
+        UIDescription = UI_UT_preparedcartographyDesc,
         XPBoosts = Cartography=1,
     }
 
@@ -104,7 +104,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_swift,
         Cost = 2,
         UIName = UI_UT_swift,
-        UIDescription = UI_UT_swiftdesc,
+        UIDescription = UI_UT_swiftDesc,
         XPBoosts = Lightfoot=1,
     }
 
@@ -115,7 +115,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_flexible,
         Cost = 3,
         UIName = UI_UT_flexible,
-        UIDescription = UI_UT_flexibledesc,
+        UIDescription = UI_UT_flexibleDesc,
         XPBoosts = Nimble=1,
     }
 
@@ -126,7 +126,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_quiet,
         Cost = 2,
         UIName = UI_UT_quiet,
-        UIDescription = UI_UT_quietdesc,
+        UIDescription = UI_UT_quietDesc,
         XPBoosts = Sneak=1;Lightfoot=1,
     }
 
@@ -137,7 +137,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_olympian,
         Cost = 5,
         UIName = UI_UT_olympian,
-        UIDescription = UI_UT_olympiandesc,
+        UIDescription = UI_UT_olympianDesc,
         XPBoosts = Sprinting=1;Fitness=1,
     }
 
@@ -148,7 +148,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_evasive,
         Cost = 8,
         UIName = UI_UT_evasive,
-        UIDescription = UI_UT_evasivedesc,
+        UIDescription = UI_UT_evasiveDesc,
         XPBoosts = Nimble=1;Sprinting=1,
     }
 
@@ -159,7 +159,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_marathonrunner,
         Cost = 5,
         UIName = UI_UT_marathonrunner,
-        UIDescription = UI_UT_marathonrunnerdesc,
+        UIDescription = UI_UT_marathonrunnerDesc,
         XPBoosts = Sprinting=2,
     }
 
@@ -170,7 +170,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_strongnimble,
         Cost = 7,
         UIName = UI_UT_strongnimble,
-        UIDescription = UI_UT_strongnimbledesc,
+        UIDescription = UI_UT_strongnimbleDesc,
         XPBoosts = Nimble=2;Strength=1,
     }
 
@@ -181,7 +181,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_taut,
         Cost = 6,
         UIName = UI_UT_taut,
-        UIDescription = UI_UT_tautdesc,
+        UIDescription = UI_UT_tautDesc,
         XPBoosts = Fitness=2,
     }
 
@@ -192,7 +192,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_ninjaway,
         Cost = 5,
         UIName = UI_UT_ninjaway,
-        UIDescription = UI_UT_ninjawaydesc,
+        UIDescription = UI_UT_ninjawayDesc,
         XPBoosts = Sneak=2;Lightfoot=1,
     }
 
@@ -203,7 +203,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_gymgoer,
         Cost = 5,
         UIName = UI_UT_gymgoer,
-        UIDescription = UI_UT_gymgoerdesc,
+        UIDescription = UI_UT_gymgoerDesc,
         XPBoosts = Strength=1;Fitness=1,
     }
 
@@ -214,7 +214,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_sprintdemon,
         Cost = 2,
         UIName = UI_UT_sprintdemon,
-        UIDescription = UI_UT_sprintdemondesc,
+        UIDescription = UI_UT_sprintdemonDesc,
         XPBoosts = Sprinting=1,
     }
 
@@ -225,7 +225,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_trekker,
         Cost = 5,
         UIName = UI_UT_trekker,
-        UIDescription = UI_UT_trekkerdesc,
+        UIDescription = UI_UT_trekkerDesc,
         XPBoosts = Fitness=1;Sprinting=1,
     }
 
@@ -240,7 +240,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_martial,
         Cost = 5,
         UIName = UI_UT_martial,
-        UIDescription = UI_UT_martialdesc,
+        UIDescription = UI_UT_martialDesc,
         XPBoosts = Fitness=1;SmallBlunt=1,
     }
 
@@ -251,7 +251,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_bladetwirl,
         Cost = 5,
         UIName = UI_UT_bladetwirl,
-        UIDescription = UI_UT_bladetwirldesc,
+        UIDescription = UI_UT_bladetwirlDesc,
         XPBoosts = LongBlade=1;SmallBlade=1,
     }
 
@@ -262,7 +262,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_blunttwirl,
         Cost = 5,
         UIName = UI_UT_blunttwirl,
-        UIDescription = UI_UT_blunttwirldesc,
+        UIDescription = UI_UT_blunttwirlDesc,
         XPBoosts = SmallBlunt=1;LongBlunt=1,
     }
 
@@ -273,7 +273,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_tavernbrawler,
         Cost = 3,
         UIName = UI_UT_tavernbrawler,
-        UIDescription = UI_UT_tavernbrawlerdesc,
+        UIDescription = UI_UT_tavernbrawlerDesc,
         XPBoosts = SmallBlunt=1,
     }
 
@@ -284,7 +284,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_grunt,
         Cost = 4,
         UIName = UI_UT_grunt,
-        UIDescription = UI_UT_gruntdesc,
+        UIDescription = UI_UT_gruntDesc,
         XPBoosts = Woodwork=1;SmallBlunt=1;Masonry=1;Blacksmith=1,
     }
 
@@ -295,7 +295,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_actionhero,
         Cost = 8,
         UIName = UI_UT_actionhero,
-        UIDescription = UI_UT_actionherodesc,
+        UIDescription = UI_UT_actionheroDesc,
     }
 
     character_trait_definition UniversalTraits:UT_cruelty
@@ -305,7 +305,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_cruelty,
         Cost = 6,
         UIName = UI_UT_cruelty,
-        UIDescription = UI_UT_crueltydesc,
+        UIDescription = UI_UT_crueltyDesc,
         XPBoosts = Axe=1;LongBlade=1;LongBlunt=1;SmallBlade=1;SmallBlunt=1;Spear=1,
     }
 
@@ -316,7 +316,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_sharpshooter,
         Cost = 6,
         UIName = UI_UT_sharpshooter,
-        UIDescription = UI_UT_sharpshooterdesc,
+        UIDescription = UI_UT_sharpshooterDesc,
         XPBoosts = Aiming=2,
     }
 
@@ -331,7 +331,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_problunt,
         Cost = 7,
         UIName = UI_UT_problunt,
-        UIDescription = UI_UT_probluntdesc,
+        UIDescription = UI_UT_probluntDesc,
         XPBoosts = LongBlunt=2;SmallBlunt=2,
     }
 
@@ -342,7 +342,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_problade,
         Cost = 7,
         UIName = UI_UT_problade,
-        UIDescription = UI_UT_probladedesc,
+        UIDescription = UI_UT_probladeDesc,
         XPBoosts = LongBlade=2;SmallBlade=2,
     }
 
@@ -353,7 +353,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_progun,
         Cost = 7,
         UIName = UI_UT_progun,
-        UIDescription = UI_UT_progunsdesc,
+        UIDescription = UI_UT_progunDesc,
         XPBoosts = Aiming=2;Reloading=2,
     }
 
@@ -364,7 +364,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_prospear,
         Cost = 7,
         UIName = UI_UT_prospear,
-        UIDescription = UI_UT_prospeardesc,
+        UIDescription = UI_UT_prospearDesc,
         XPBoosts = Spear=2,
     }
 
@@ -379,7 +379,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_specweapons,
         Cost = 12,
         UIName = UI_UT_specweapons,
-        UIDescription = UI_UT_specweaponsdesc,
+        UIDescription = UI_UT_specweaponsDesc,
         XPBoosts = Axe=4;LongBlade=4;LongBlunt=4;SmallBlade=4;SmallBlunt=4;Spear=4,
         MutuallyExclusiveTraits = UniversalTraits:UT_speccrafting;UniversalTraits:UT_specfood;UniversalTraits:UT_specguns;UniversalTraits:UT_specmove;UniversalTraits:UT_specaid,
     }
@@ -391,7 +391,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_speccrafting,
         Cost = 12,
         UIName = UI_UT_speccrafting,
-        UIDescription = UI_UT_speccraftingdesc,
+        UIDescription = UI_UT_speccraftingDesc,
         XPBoosts = Woodwork=4;Metalworking=4;Masonry=4;Tailoring=4;Electricity=4,
         MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_specfood;UniversalTraits:UT_specguns;UniversalTraits:UT_specmove;UniversalTraits:UT_specaid,
     }
@@ -403,7 +403,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_specfood,
         Cost = 12,
         UIName = UI_UT_specfood,
-        UIDescription = UI_UT_specfooddesc,
+        UIDescription = UI_UT_specfoodDesc,
         XPBoosts = Cooking=4;Farming=4;Fishing=4;PlantScavenging=4,
         MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting;UniversalTraits:UT_specguns;UniversalTraits:UT_specmove;UniversalTraits:UT_specaid,
     }
@@ -415,7 +415,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_specguns,
         Cost = 12,
         UIName = UI_UT_specguns,
-        UIDescription = UI_UT_specgunsdesc,
+        UIDescription = UI_UT_specgunsDesc,
         XPBoosts = Aiming=4;Reloading=4,
         MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting;UniversalTraits:UT_specfood;UniversalTraits:UT_specmove;UniversalTraits:UT_specaid;UniversalTraits:UT_gunspecialist_I;UniversalTraits:UT_gunspecialist_II;UniversalTraits:UT_gunspecialist_III,
     }
@@ -427,7 +427,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_specmove,
         Cost = 12,
         UIName = UI_UT_specmove,
-        UIDescription = UI_UT_specmovedesc,
+        UIDescription = UI_UT_specmoveDesc,
         XPBoosts = Sprinting=4;Nimble=4;Lightfoot=4;Sneak=4,
         MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting;UniversalTraits:UT_specfood;UniversalTraits:UT_specguns;UniversalTraits:UT_specaid,
     }
@@ -439,7 +439,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_specaid,
         Cost = 9,
         UIName = UI_UT_specaid,
-        UIDescription = UI_UT_specaiddesc,
+        UIDescription = UI_UT_specaidDesc,
         XPBoosts = Doctor=8,
         MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting;UniversalTraits:UT_specfood;UniversalTraits:UT_specguns;UniversalTraits:UT_specmove,
     }
@@ -451,7 +451,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_terminator,
         Cost = 14,
         UIName = UI_UT_terminator,
-        UIDescription = UI_UT_terminatordesc,
+        UIDescription = UI_UT_terminatorDesc,
         XPBoosts = Axe=4;LongBlade=4;LongBlunt=4;SmallBlade=4;SmallBlunt=4;Spear=4;Aiming=4;Reloading=4,
     }
 
@@ -467,7 +467,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_heavyswing,
         Cost = 8,
         UIName = UI_UT_heavyswing,
-        UIDescription = UI_UT_heavyswingdesc,
+        UIDescription = UI_UT_heavyswingDesc,
         XPBoosts = Axe=2;LongBlade=2;LongBlunt=2;SmallBlade=2;SmallBlunt=2;Spear=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
     }
@@ -479,7 +479,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_twohanded,
         Cost = 8,
         UIName = UI_UT_twohanded,
-        UIDescription = UI_UT_twohandeddesc,
+        UIDescription = UI_UT_twohandedDesc,
         XPBoosts = Axe=2;LongBlade=2;LongBlunt=2;Spear=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
     }
@@ -491,7 +491,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_onehanded,
         Cost = 8,
         UIName = UI_UT_onehanded,
-        UIDescription = UI_UT_onehandeddesc,
+        UIDescription = UI_UT_onehandedDesc,
         XPBoosts = SmallBlade=2;SmallBlunt=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
     }
@@ -503,7 +503,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_axes,
         Cost = 6,
         UIName = UI_UT_axes,
-        UIDescription = UI_UT_axesdesc,
+        UIDescription = UI_UT_axesDesc,
         XPBoosts = Axe=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
     }
@@ -515,7 +515,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_twohanded_axes,
         Cost = 5,
         UIName = UI_UT_twohanded_axes,
-        UIDescription = UI_UT_twohanded_axesdesc,
+        UIDescription = UI_UT_twohanded_axesDesc,
         XPBoosts = Axe=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
     }
@@ -527,7 +527,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_onehanded_axes,
         Cost = 3,
         UIName = UI_UT_onehanded_axes,
-        UIDescription = UI_UT_onehanded_axesdesc,
+        UIDescription = UI_UT_onehanded_axesDesc,
         XPBoosts = Axe=1,
         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
     }
@@ -539,7 +539,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_blunts,
         Cost = 7,
         UIName = UI_UT_blunts,
-        UIDescription = UI_UT_bluntsdesc,
+        UIDescription = UI_UT_bluntsDesc,
         XPBoosts = LongBlunt=2;SmallBlunt=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
     }
@@ -551,7 +551,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_twohanded_blunts,
         Cost = 5,
         UIName = UI_UT_twohanded_blunts,
-        UIDescription = UI_UT_twohanded_bluntsdesc,
+        UIDescription = UI_UT_twohanded_bluntsDesc,
         XPBoosts = LongBlunt=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
     }
@@ -563,7 +563,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_onehanded_blunts,
         Cost = 4,
         UIName = UI_UT_onehanded_blunts,
-        UIDescription = UI_UT_onehanded_bluntsdesc,
+        UIDescription = UI_UT_onehanded_bluntsDesc,
         XPBoosts = SmallBlunt=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
     }
@@ -575,7 +575,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_long_blunts,
         Cost = 5,
         UIName = UI_UT_long_blunts,
-        UIDescription = UI_UT_long_bluntsdesc,
+        UIDescription = UI_UT_long_bluntsDesc,
         XPBoosts = LongBlunt=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
     }
@@ -587,7 +587,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_short_blunts,
         Cost = 4,
         UIName = UI_UT_short_blunts,
-        UIDescription = UI_UT_short_bluntsdesc,
+        UIDescription = UI_UT_short_bluntsDesc,
         XPBoosts = SmallBlunt=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
     }
@@ -599,7 +599,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_blades,
         Cost = 7,
         UIName = UI_UT_blades,
-        UIDescription = UI_UT_bladesdesc,
+        UIDescription = UI_UT_bladesDesc,
         XPBoosts = LongBlade=2;SmallBlade=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
     }
@@ -611,7 +611,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_twohanded_blades,
         Cost = 5,
         UIName = UI_UT_twohanded_blades,
-        UIDescription = UI_UT_twohanded_bladesdesc,
+        UIDescription = UI_UT_twohanded_bladesDesc,
         XPBoosts = LongBlade=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
     }
@@ -623,7 +623,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_onehanded_blades,
         Cost = 4,
         UIName = UI_UT_onehanded_blades,
-        UIDescription = UI_UT_onehanded_bladesdesc,
+        UIDescription = UI_UT_onehanded_bladesDesc,
         XPBoosts = SmallBlade=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
     }
@@ -635,7 +635,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_long_blades,
         Cost = 5,
         UIName = UI_UT_long_blades,
-        UIDescription = UI_UT_long_bladesdesc,
+        UIDescription = UI_UT_long_bladesDesc,
         XPBoosts = LongBlade=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
     }
@@ -647,7 +647,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_short_blades,
         Cost = 4,
         UIName = UI_UT_short_blades,
-        UIDescription = UI_UT_short_bladesdesc,
+        UIDescription = UI_UT_short_bladesDesc,
         XPBoosts = SmallBlade=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_spears,
     }
@@ -659,7 +659,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_spears,
         Cost = 6,
         UIName = UI_UT_spears,
-        UIDescription = UI_UT_spearsdesc,
+        UIDescription = UI_UT_spearsDesc,
         XPBoosts = Spear=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades,
     }
@@ -675,7 +675,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_ingenuitive,
         Cost = 9,
         UIName = UI_UT_ingenuitive,
-        UIDescription = UI_UT_ingenuitivedesc,
+        UIDescription = UI_UT_ingenuitiveDesc,
         XPBoosts = Electricity=2;MetalWelding=1,
     }
 
@@ -686,7 +686,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_generator,
         Cost = 2,
         UIName = UI_UT_generator,
-        UIDescription = UI_UT_generatordesc,
+        UIDescription = UI_UT_generatorDesc,
         XPBoosts = Electricity=1,
     }
 
@@ -697,7 +697,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_tinkerer,
         Cost = 5,
         UIName = UI_UT_tinkerer,
-        UIDescription = UI_UT_tinkererdesc,
+        UIDescription = UI_UT_tinkererDesc,
         XPBoosts = Electricity=1;Mechanics=1;Tailoring=1;FlintKnapping=1,
     }
 
@@ -708,7 +708,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_scrapper,
         Cost = 3,
         UIName = UI_UT_scrapper,
-        UIDescription = UI_UT_scrapperdesc,
+        UIDescription = UI_UT_scrapperDesc,
         XPBoosts = MetalWelding=1;Maintenance=1;Blacksmith=1,
     }
 
@@ -719,7 +719,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_scrounger,
         Cost = 5,
         UIName = UI_UT_scrounger,
-        UIDescription = UI_UT_scroungerdesc,
+        UIDescription = UI_UT_scroungerDesc,
         XPBoosts = Scavenging=1,
     }
 
@@ -730,7 +730,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_natural,
         Cost = 4,
         UIName = UI_UT_natural,
-        UIDescription = UI_UT_naturaldesc,
+        UIDescription = UI_UT_naturalDesc,
         XPBoosts = Cooking=1,
     }
 
@@ -741,7 +741,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_wildsman,
         Cost = 8,
         UIName = UI_UT_wildsman,
-        UIDescription = UI_UT_wildsmandesc,
+        UIDescription = UI_UT_wildsmanDesc,
         XPBoosts = PlantScavenging=1;Fishing=1,
     }
 
@@ -752,7 +752,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_mushroomer,
         Cost = 4,
         UIName = UI_UT_mushroomer,
-        UIDescription = UI_UT_mushroomerdesc,
+        UIDescription = UI_UT_mushroomerDesc,
         XPBoosts = PlantScavenging=2,
     }
 
@@ -763,7 +763,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_antique,
         Cost = 6,
         UIName = UI_UT_antique,
-        UIDescription = UI_UT_antiquedesc,
+        UIDescription = UI_UT_antiqueDesc,
         XPBoosts = Scavenging=1,
     }
 
@@ -774,7 +774,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_blissful,
         Cost = 3,
         UIName = UI_UT_blissful,
-        UIDescription = UI_UT_blisfuldesc,
+        UIDescription = UI_UT_blissfulDesc,
         XPBoosts = Fitness=1,
     }
 
@@ -785,7 +785,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_gordanite,
         Cost = 6,
         UIName = UI_UT_gordanite,
-        UIDescription = UI_UT_gordanitedesc,
+        UIDescription = UI_UT_gordaniteDesc,
         XPBoosts = Cooking=2,
     }
 
@@ -807,7 +807,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_vagabond,
         Cost = 3,
         UIName = UI_UT_vagabond,
-        UIDescription = UI_UT_vagabonddesc,
+        UIDescription = UI_UT_vagabondDesc,
     }
 
     character_trait_definition UniversalTraits:UT_crafty
@@ -817,7 +817,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_crafty,
         Cost = 5,
         UIName = UI_UT_crafty,
-        UIDescription = UI_UT_craftydesc,
+        UIDescription = UI_UT_craftyDesc,
         XPBoosts = Woodwork=1;Mechanics=1;Tailoring=1,
     }
 
@@ -828,7 +828,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_paramedic,
         Cost = 5,
         UIName = UI_UT_paramedic,
-        UIDescription = UI_UT_paramedicdesc,
+        UIDescription = UI_UT_paramedicDesc,
         XPBoosts = Doctor=2,
     }
 
@@ -839,7 +839,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_pitcrew,
         Cost = 5,
         UIName = UI_UT_pitcrew,
-        UIDescription = UI_UT_pitcrewdesc,
+        UIDescription = UI_UT_pitcrewDesc,
         XPBoosts = Mechanics=2,
     }
 
@@ -850,7 +850,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_prodigy,
         Cost = 12,
         UIName = UI_UT_prodigy,
-        UIDescription = UI_UT_prodigydesc,
+        UIDescription = UI_UT_prodigyDesc,
         XPBoosts = Cooking=1;Woodwork=1;Mechanics=1;Doctor=1;Fitness=1;Sprinting=1;Tailoring=1;Electricity=1;Aiming=1;Reloading=1,
     }
 
@@ -861,7 +861,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_driver,
         Cost = 2,
         UIName = UI_UT_driver,
-        UIDescription = UI_UT_driverdesc,
+        UIDescription = UI_UT_driverDesc,
         XPBoosts = Driving=1,
     }
 
@@ -872,7 +872,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_amateurelectrician,
         Cost = 1,
         UIName = UI_UT_amateurelectrician,
-        UIDescription = UI_UT_amateurelectriciandesc,
+        UIDescription = UI_UT_amateurelectricianDesc,
         XPBoosts = Electricity=1,
     }
 
@@ -887,7 +887,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_trackman,
         Cost = 6,
         UIName = UI_UT_trackman,
-        UIDescription = UI_UT_trackmandesc,
+        UIDescription = UI_UT_trackmanDesc,
         XPBoosts = Trapping=2,
     }
 
@@ -898,7 +898,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_cleaver,
         Cost = 4,
         UIName = UI_UT_cleaver,
-        UIDescription = UI_UT_cleaverdesc,
+        UIDescription = UI_UT_cleaverDesc,
         XPBoosts = LongBlade=1,
     }
 
@@ -909,7 +909,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_woodsplitter,
         Cost = 4,
         UIName = UI_UT_woodsplitter,
-        UIDescription = UI_UT_woodsplitterdesc,
+        UIDescription = UI_UT_woodsplitterDesc,
         XPBoosts = Axe=1,
     }
 
@@ -920,7 +920,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_improviser,
         Cost = 4,
         UIName = UI_UT_improviser,
-        UIDescription = UI_UT_improviserdesc,
+        UIDescription = UI_UT_improviserDesc,
         XPBoosts = Maintenance=1,
     }
 
@@ -939,7 +939,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_packmule,
         Cost = 7,
         UIName = UI_UT_packmule,
-        UIDescription = UI_UT_packmuledesc,
+        UIDescription = UI_UT_packmuleDesc,
     }
 
     character_trait_definition UniversalTraits:UT_packmouse
@@ -949,7 +949,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_packmouse,
         Cost = -7,
         UIName = UI_UT_packmouse,
-        UIDescription = UI_UT_packmousedesc,
+        UIDescription = UI_UT_packmouseDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_packmule;UniversalTraits:UT_squirrel;UniversalTraits:UT_backpacker,
     }
 
@@ -960,7 +960,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_gimp,
         Cost = -8,
         UIName = UI_UT_gimp,
-        UIDescription = UI_UT_gimpdesc,
+        UIDescription = UI_UT_gimpDesc,
     }
 
     character_trait_definition UniversalTraits:UT_anemic
@@ -970,7 +970,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_anemic,
         Cost = -4,
         UIName = UI_UT_anemic,
-        UIDescription = UI_UT_anemicdesc,
+        UIDescription = UI_UT_anemicDesc,
     }
 
     character_trait_definition UniversalTraits:UT_badteeth
@@ -980,7 +980,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_badteeth,
         Cost = -3,
         UIName = UI_UT_badteeth,
-        UIDescription = UI_UT_badteethdesc,
+        UIDescription = UI_UT_badteethDesc,
     }
 
     character_trait_definition UniversalTraits:UT_deprived
@@ -990,7 +990,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_deprived,
         Cost = -6,
         UIName = UI_UT_deprived,
-        UIDescription = UI_UT_depriveddesc,
+        UIDescription = UI_UT_deprivedDesc,
     }
 
     character_trait_definition UniversalTraits:UT_couchdweller
@@ -1000,7 +1000,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_couchdweller,
         Cost = 2,
         UIName = UI_UT_couchdweller,
-        UIDescription = UI_UT_couchdwellerdesc,
+        UIDescription = UI_UT_couchdwellerDesc,
     }
 
     character_trait_definition UniversalTraits:UT_sloth
@@ -1010,7 +1010,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_sloth,
         Cost = 2,
         UIName = UI_UT_sloth,
-        UIDescription = UI_UT_slothdesc,
+        UIDescription = UI_UT_slothDesc,
     }
 
     character_trait_definition UniversalTraits:UT_squirrel
@@ -1020,7 +1020,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_squirrel,
         Cost = 2,
         UIName = UI_UT_squirrel,
-        UIDescription = UI_UT_squirreldesc,
+        UIDescription = UI_UT_squirrelDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy,
     }
 
@@ -1031,7 +1031,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_antivaxxer,
         Cost = -3,
         UIName = UI_UT_antivaxxer,
-        UIDescription = UI_UT_antivaxxerdesc,
+        UIDescription = UI_UT_antivaxxerDesc,
     }
 
     character_trait_definition UniversalTraits:UT_flimsy
@@ -1041,7 +1041,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_flimsy,
         Cost = -4,
         UIName = UI_UT_flimsy,
-        UIDescription = UI_UT_flimsydesc,
+        UIDescription = UI_UT_flimsyDesc,
     }
 
     character_trait_definition UniversalTraits:UT_sundayrunner
@@ -1051,7 +1051,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_sundayrunner,
         Cost = -1,
         UIName = UI_UT_sundayrunner,
-        UIDescription = UI_UT_sundayrunnerdesc,
+        UIDescription = UI_UT_sundayrunnerDesc,
     }
 
     character_trait_definition UniversalTraits:UT_lesssweaty
@@ -1061,7 +1061,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_lesssweaty,
         Cost = 2,
         UIName = UI_UT_lesssweaty,
-        UIDescription = UI_UT_lesssweatydesc,
+        UIDescription = UI_UT_lesssweatyDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_highsweaty,
     }
 
@@ -1072,7 +1072,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_highsweaty,
         Cost = -3,
         UIName = UI_UT_highsweaty,
-        UIDescription = UI_UT_highsweatydesc,
+        UIDescription = UI_UT_highsweatyDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_lesssweaty,
     }
 
@@ -1083,7 +1083,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_cangrabmore,
         Cost = 2,
         UIName = UI_UT_cangrabmore,
-        UIDescription = UI_UT_cangrabmoredesc,
+        UIDescription = UI_UT_cangrabmoreDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_cangrabless,
     }
 
@@ -1094,7 +1094,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_cangrabless,
         Cost = -2,
         UIName = UI_UT_cangrabless,
-        UIDescription = UI_UT_cangrablessdesc,
+        UIDescription = UI_UT_cangrablessDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_cangrabmore,
     }
 
@@ -1105,7 +1105,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_backpacker,
         Cost = 8,
         UIName = UI_UT_backpacker,
-        UIDescription = UI_UT_backpackerdesc,
+        UIDescription = UI_UT_backpackerDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy,
     }
 
@@ -1116,7 +1116,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_topheavy,
         Cost = -4,
         UIName = UI_UT_topheavy,
-        UIDescription = UI_UT_topheavydesc,
+        UIDescription = UI_UT_topheavyDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_squirrel;UniversalTraits:UT_backpacker;UniversalTraits:UT_packmule,
     }
 
@@ -1127,7 +1127,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_sore,
         Cost = -6,
         UIName = UI_UT_sore,
-        UIDescription = UI_UT_soredesc,
+        UIDescription = UI_UT_soreDesc,
     }
 
     character_trait_definition UniversalTraits:UT_staunch
@@ -1137,7 +1137,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_staunch,
         Cost = 10,
         UIName = UI_UT_staunch,
-        UIDescription = UI_UT_staunchdesc,
+        UIDescription = UI_UT_staunchDesc,
     }
 
     -- ============================================================
@@ -1151,7 +1151,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_preparedpack,
         Cost = 1,
         UIName = UI_UT_preparedpack,
-        UIDescription = UI_UT_preparedpackdesc,
+        UIDescription = UI_UT_preparedpackDesc,
     }
 
     -- ============================================================
@@ -1165,7 +1165,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_fast,
         Cost = 6,
         UIName = UI_UT_fast,
-        UIDescription = UI_UT_fastdesc,
+        UIDescription = UI_UT_fastDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_noodlelegs;UniversalTraits:UT_lurcher,
     }
 
@@ -1176,7 +1176,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_noodlelegs,
         Cost = -6,
         UIName = UI_UT_noodlelegs,
-        UIDescription = UI_UT_noodlelegsdesc,
+        UIDescription = UI_UT_noodlelegsDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_fast;UniversalTraits:UT_pacer,
     }
 
@@ -1187,7 +1187,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_pacer,
         Cost = 4,
         UIName = UI_UT_pacer,
-        UIDescription = UI_UT_pacerdesc,
+        UIDescription = UI_UT_pacerDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_noodlelegs,
     }
 
@@ -1198,7 +1198,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_lurcher,
         Cost = -5,
         UIName = UI_UT_lurcher,
-        UIDescription = UI_UT_lurcherdesc,
+        UIDescription = UI_UT_lurcherDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_fast,
     }
 
@@ -1209,7 +1209,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_sorelegs,
         Cost = -10,
         UIName = UI_UT_sorelegs,
-        UIDescription = UI_UT_sorelegsdesc,
+        UIDescription = UI_UT_sorelegsDesc,
     }
 
     -- ============================================================
@@ -1223,7 +1223,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_quickworker,
         Cost = 9,
         UIName = UI_UT_quickworker,
-        UIDescription = UI_UT_quickworkerdesc,
+        UIDescription = UI_UT_quickworkerDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_slowworker;UniversalTraits:UT_slack,
     }
 
@@ -1234,7 +1234,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_slowworker,
         Cost = -9,
         UIName = UI_UT_slowworker,
-        UIDescription = UI_UT_slowworkerdesc,
+        UIDescription = UI_UT_slowworkerDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_quickworker;UniversalTraits:UT_slack,
     }
 
@@ -1245,7 +1245,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_slack,
         Cost = -6,
         UIName = UI_UT_slack,
-        UIDescription = UI_UT_slackdesc,
+        UIDescription = UI_UT_slackDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_quickworker;UniversalTraits:UT_slowworker,
     }
 
@@ -1260,7 +1260,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_batteringram,
         Cost = 7,
         UIName = UI_UT_batteringram,
-        UIDescription = UI_UT_batteringramdesc,
+        UIDescription = UI_UT_batteringramDesc,
     }
 
     character_trait_definition UniversalTraits:UT_fitted
@@ -1270,7 +1270,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_fitted,
         Cost = 4,
         UIName = UI_UT_fitted,
-        UIDescription = UI_UT_fitteddesc,
+        UIDescription = UI_UT_fittedDesc,
     }
 
     character_trait_definition UniversalTraits:UT_glassbody
@@ -1280,7 +1280,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_glassbody,
         Cost = -10,
         UIName = UI_UT_glassbody,
-        UIDescription = UI_UT_glassbodydesc,
+        UIDescription = UI_UT_glassbodyDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_analgesia,
     }
 
@@ -1291,7 +1291,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_brittle,
         Cost = -6,
         UIName = UI_UT_brittle,
-        UIDescription = UI_UT_brittledesc,
+        UIDescription = UI_UT_brittleDesc,
     }
 
     character_trait_definition UniversalTraits:UT_flailer
@@ -1301,7 +1301,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_flailer,
         Cost = -4,
         UIName = UI_UT_flailer,
-        UIDescription = UI_UT_flailerdesc,
+        UIDescription = UI_UT_flailerDesc,
     }
 
     character_trait_definition UniversalTraits:UT_fasthands
@@ -1311,7 +1311,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_fasthands,
         Cost = 12,
         UIName = UI_UT_fasthands,
-        UIDescription = UI_UT_fasthandsdesc,
+        UIDescription = UI_UT_fasthandsDesc,
     }
 
     character_trait_definition UniversalTraits:UT_analgesia
@@ -1321,7 +1321,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_analgesia,
         Cost = 12,
         UIName = UI_UT_analgesia,
-        UIDescription = UI_UT_analgesiadesc,
+        UIDescription = UI_UT_analgesiaDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_glassbody,
     }
 
@@ -1336,7 +1336,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_thickblood,
         Cost = 4,
         UIName = UI_UT_thickblood,
-        UIDescription = UI_UT_thickblooddesc,
+        UIDescription = UI_UT_thickbloodDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_heavilybleedingwounds,
     }
 
@@ -1347,7 +1347,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_heavilybleedingwounds,
         Cost = -4,
         UIName = UI_UT_heavilybleedingwounds,
-        UIDescription = UI_UT_heavilybleedingwoundsdesc,
+        UIDescription = UI_UT_heavilybleedingwoundsDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_thickblood;UniversalTraits:UT_weaklybleedingwounds,
     }
 
@@ -1358,7 +1358,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_weaklybleedingwounds,
         Cost = 3,
         UIName = UI_UT_weaklybleedingwounds,
-        UIDescription = UI_UT_weaklybleedingwoundsdesc,
+        UIDescription = UI_UT_weaklybleedingwoundsDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_heavilybleedingwounds,
     }
 
@@ -1373,7 +1373,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_restfulsleeper,
         Cost = 6,
         UIName = UI_UT_restfulsleeper,
-        UIDescription = UI_UT_restfulsleeperdesc,
+        UIDescription = UI_UT_restfulsleeperDesc,
     }
 
     character_trait_definition UniversalTraits:UT_quickrest
@@ -1383,7 +1383,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_quickrest,
         Cost = 3,
         UIName = UI_UT_quickrest,
-        UIDescription = UI_UT_quickrestdesc,
+        UIDescription = UI_UT_quickrestDesc,
     }
 
     character_trait_definition UniversalTraits:UT_snorer
@@ -1393,7 +1393,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_snorer,
         Cost = -2,
         UIName = UI_UT_snorer,
-        UIDescription = UI_UT_snorerdesc,
+        UIDescription = UI_UT_snorerDesc,
     }
 
     -- ============================================================
@@ -1407,7 +1407,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_unwavering,
         Cost = 6,
         UIName = UI_UT_unwavering,
-        UIDescription = UI_UT_unwaveringdesc,
+        UIDescription = UI_UT_unwaveringDesc,
     }
 
     character_trait_definition UniversalTraits:UT_idealweight
@@ -1417,7 +1417,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_idealweight,
         Cost = 4,
         UIName = UI_UT_idealweight,
-        UIDescription = UI_UT_idealweightdesc,
+        UIDescription = UI_UT_idealweightDesc,
     }
 
     character_trait_definition UniversalTraits:UT_mundane
@@ -1427,7 +1427,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_mundane,
         Cost = -9,
         UIName = UI_UT_mundane,
-        UIDescription = UI_UT_mundanedesc,
+        UIDescription = UI_UT_mundaneDesc,
     }
 
     character_trait_definition UniversalTraits:UT_incomprehensive
@@ -1437,7 +1437,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_incomprehensive,
         Cost = -10,
         UIName = UI_UT_incomprehensive,
-        UIDescription = UI_UT_incomprehensivedesc,
+        UIDescription = UI_UT_incomprehensiveDesc,
     }
 
     character_trait_definition UniversalTraits:UT_photographicmemory
@@ -1447,7 +1447,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_photographicmemory,
         Cost = 20,
         UIName = UI_UT_photographicmemory,
-        UIDescription = UI_UT_photographicmemorydesc,
+        UIDescription = UI_UT_photographicmemoryDesc,
     }
 
     -- ============================================================
@@ -1461,7 +1461,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_antigun,
         Cost = -6,
         UIName = UI_UT_antigun,
-        UIDescription = UI_UT_antigundesc,
+        UIDescription = UI_UT_antigunDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_noxpshooter,
     }
 
@@ -1472,7 +1472,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_flatearther,
         Cost = -4,
         UIName = UI_UT_flatearther,
-        UIDescription = UI_UT_flateartherdesc,
+        UIDescription = UI_UT_flateartherDesc,
     }
 
     character_trait_definition UniversalTraits:UT_luddite
@@ -1492,7 +1492,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_onetrickpony,
         Cost = -4,
         UIName = UI_UT_onetrickpony,
-        UIDescription = UI_UT_onetrickponydesc,
+        UIDescription = UI_UT_onetrickponyDesc,
     }
 
     -- ============================================================
@@ -1506,7 +1506,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_noxpshooter,
         Cost = 3,
         UIName = UI_UT_noxpshooter,
-        UIDescription = UI_UT_noxpshooterdesc,
+        UIDescription = UI_UT_noxpshooterDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_antigun,
     }
 
@@ -1517,7 +1517,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_noxptechnician,
         Cost = 3,
         UIName = UI_UT_noxptechnician,
-        UIDescription = UI_UT_noxptechniciandesc,
+        UIDescription = UI_UT_noxptechnicianDesc,
     }
 
     character_trait_definition UniversalTraits:UT_noxpaxe
@@ -1527,7 +1527,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_noxpaxe,
         Cost = 2,
         UIName = UI_UT_noxpaxe,
-        UIDescription = UI_UT_noxpaxedesc,
+        UIDescription = UI_UT_noxpaxeDesc,
     }
 
     character_trait_definition UniversalTraits:UT_noxpfirstaid
@@ -1537,7 +1537,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_noxpfirstaid,
         Cost = 3,
         UIName = UI_UT_noxpfirstaid,
-        UIDescription = UI_UT_noxpfirstaiddesc,
+        UIDescription = UI_UT_noxpfirstaidDesc,
     }
 
     character_trait_definition UniversalTraits:UT_noxpmaintenance
@@ -1547,7 +1547,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_noxpmaintenance,
         Cost = 3,
         UIName = UI_UT_noxpmaintenance,
-        UIDescription = UI_UT_noxpmaintenancedesc,
+        UIDescription = UI_UT_noxpmaintenanceDesc,
     }
 
     character_trait_definition UniversalTraits:UT_noxpsneaky
@@ -1557,7 +1557,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_noxpsneaky,
         Cost = 5,
         UIName = UI_UT_noxpsneaky,
-        UIDescription = UI_UT_noxpsneakydesc,
+        UIDescription = UI_UT_noxpsneakyDesc,
     }
 
     -- ============================================================
@@ -1571,7 +1571,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_owlperson,
         Cost = -1,
         UIName = UI_UT_owlperson,
-        UIDescription = UI_UT_owlpersondesc,
+        UIDescription = UI_UT_owlpersonDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_larkperson,
     }
 
@@ -1582,7 +1582,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_larkperson,
         Cost = -1,
         UIName = UI_UT_larkperson,
-        UIDescription = UI_UT_larkpersondesc,
+        UIDescription = UI_UT_larkpersonDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_owlperson,
     }
 
@@ -1597,7 +1597,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_leadfoot,
         Cost = 2,
         UIName = UI_UT_leadfoot,
-        UIDescription = UI_UT_leadfootdesc,
+        UIDescription = UI_UT_leadfootDesc,
     }
 
     character_trait_definition UniversalTraits:UT_expertdriver
@@ -1607,7 +1607,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_expertdriver,
         Cost = 5,
         UIName = UI_UT_expertdriver,
-        UIDescription = UI_UT_expertdriverdesc,
+        UIDescription = UI_UT_expertdriverDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_poordriver,
     }
 
@@ -1618,7 +1618,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_poordriver,
         Cost = -5,
         UIName = UI_UT_poordriver,
-        UIDescription = UI_UT_poordriverdesc,
+        UIDescription = UI_UT_poordriverDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_expertdriver,
     }
 
@@ -1633,7 +1633,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_ironliver,
         Cost = 3,
         UIName = UI_UT_ironliver,
-        UIDescription = UI_UT_ironliverdesc,
+        UIDescription = UI_UT_ironliverDesc,
     }
 
     character_trait_definition UniversalTraits:UT_durability
@@ -1643,7 +1643,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_durability,
         Cost = 3,
         UIName = UI_UT_durability,
-        UIDescription = UI_UT_durabilitydesc,
+        UIDescription = UI_UT_durabilityDesc,
     }
 
     character_trait_definition UniversalTraits:UT_gourmand
@@ -1653,7 +1653,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_gourmand,
         Cost = 4,
         UIName = UI_UT_gourmand,
-        UIDescription = UI_UT_gourmanddesc,
+        UIDescription = UI_UT_gourmandDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_ascetic,
     }
 
@@ -1664,7 +1664,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_ascetic,
         Cost = -4,
         UIName = UI_UT_ascetic,
-        UIDescription = UI_UT_asceticdesc,
+        UIDescription = UI_UT_asceticDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_gourmand,
     }
 
@@ -1679,7 +1679,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_injured_I,
         Cost = -4,
         UIName = UI_UT_injured_I,
-        UIDescription = UI_UT_injured_Idesc,
+        UIDescription = UI_UT_injured_IDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_injured_II,
     }
 
@@ -1690,7 +1690,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_injured_II,
         Cost = -8,
         UIName = UI_UT_injured_II,
-        UIDescription = UI_UT_injured_IIdesc,
+        UIDescription = UI_UT_injured_IIDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_injured_I,
     }
 
@@ -1701,7 +1701,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_broke,
         Cost = -10,
         UIName = UI_UT_broke,
-        UIDescription = UI_UT_brokedesc,
+        UIDescription = UI_UT_brokeDesc,
     }
 
     character_trait_definition UniversalTraits:UT_burned
@@ -1711,7 +1711,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_burned,
         Cost = -8,
         UIName = UI_UT_burned,
-        UIDescription = UI_UT_burneddesc,
+        UIDescription = UI_UT_burnedDesc,
     }
 
     -- ============================================================
@@ -1725,7 +1725,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_depressive,
         Cost = -4,
         UIName = UI_UT_depressive,
-        UIDescription = UI_UT_depressivedesc,
+        UIDescription = UI_UT_depressiveDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_optimist,
     }
 
@@ -1736,7 +1736,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_paranoia,
         Cost = -4,
         UIName = UI_UT_paranoia,
-        UIDescription = UI_UT_paranoiadesc,
+        UIDescription = UI_UT_paranoiaDesc,
     }
 
     character_trait_definition UniversalTraits:UT_selfdestructive
@@ -1746,7 +1746,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_selfdestructive,
         Cost = -6,
         UIName = UI_UT_selfdestructive,
-        UIDescription = UI_UT_selfdestructivedesc,
+        UIDescription = UI_UT_selfdestructiveDesc,
     }
 
     character_trait_definition UniversalTraits:UT_melancholic
@@ -1756,7 +1756,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_melancholic,
         Cost = -3,
         UIName = UI_UT_melancholic,
-        UIDescription = UI_UT_melancholicdesc,
+        UIDescription = UI_UT_melancholicDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_optimist,
     }
 
@@ -1767,7 +1767,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_immuneresponse,
         Cost = 6,
         UIName = UI_UT_immuneresponse,
-        UIDescription = UI_UT_immuneresponsedesc,
+        UIDescription = UI_UT_immuneresponseDesc,
     }
 
     character_trait_definition UniversalTraits:UT_ravenous
@@ -1777,7 +1777,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_ravenous,
         Cost = -6,
         UIName = UI_UT_ravenous,
-        UIDescription = UI_UT_ravenousdesc,
+        UIDescription = UI_UT_ravenousDesc,
     }
 
     character_trait_definition UniversalTraits:UT_optimist
@@ -1787,7 +1787,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_optimist,
         Cost = 2,
         UIName = UI_UT_optimist,
-        UIDescription = UI_UT_optimistdesc,
+        UIDescription = UI_UT_optimistDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_pessimist;UniversalTraits:UT_depressive;UniversalTraits:UT_melancholic,
     }
 
@@ -1798,7 +1798,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_pessimist,
         Cost = -2,
         UIName = UI_UT_pessimist,
-        UIDescription = UI_UT_pessimistdesc,
+        UIDescription = UI_UT_pessimistDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_optimist;UniversalTraits:UT_mstoptimist,
     }
 
@@ -1809,7 +1809,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_mstoptimist,
         Cost = 3,
         UIName = UI_UT_mstoptimist,
-        UIDescription = UI_UT_mstoptimistdesc,
+        UIDescription = UI_UT_mstoptimistDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_pessimist,
     }
 
@@ -1820,7 +1820,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_adaptivemetabolism,
         Cost = 4,
         UIName = UI_UT_adaptivemetabolism,
-        UIDescription = UI_UT_adaptivemetabolismdesc,
+        UIDescription = UI_UT_adaptivemetabolismDesc,
     }
 
     character_trait_definition UniversalTraits:UT_accmetabolism
@@ -1830,7 +1830,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_accmetabolism,
         Cost = -3,
         UIName = UI_UT_accmetabolism,
-        UIDescription = UI_UT_accmetabolismdesc,
+        UIDescription = UI_UT_accmetabolismDesc,
     }
 
     character_trait_definition UniversalTraits:UT_albino
@@ -1840,7 +1840,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_albino,
         Cost = -4,
         UIName = UI_UT_albino,
-        UIDescription = UI_UT_albinodesc,
+        UIDescription = UI_UT_albinoDesc,
     }
 
     character_trait_definition UniversalTraits:UT_fibromyalgia
@@ -1850,7 +1850,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_fibromyalgia,
         Cost = -8,
         UIName = UI_UT_fibromyalgia,
-        UIDescription = UI_UT_fibromyalgiadesc,
+        UIDescription = UI_UT_fibromyalgiaDesc,
     }
 
     character_trait_definition UniversalTraits:UT_bigorexia
@@ -1860,7 +1860,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_bigorexia,
         Cost = -4,
         UIName = UI_UT_bigorexia,
-        UIDescription = UI_UT_bigorexiadesc,
+        UIDescription = UI_UT_bigorexiaDesc,
     }
 
     character_trait_definition UniversalTraits:UT_weathersensitive
@@ -1870,7 +1870,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_weathersensitive,
         Cost = -2,
         UIName = UI_UT_weathersensitive,
-        UIDescription = UI_UT_weathersensitivedesc,
+        UIDescription = UI_UT_weathersensitiveDesc,
     }
 
     character_trait_definition UniversalTraits:UT_panicattacks
@@ -1880,7 +1880,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_panicattacks,
         Cost = -6,
         UIName = UI_UT_panicattacks,
-        UIDescription = UI_UT_panicattacksdesc,
+        UIDescription = UI_UT_panicattacksDesc,
     }
 
     character_trait_definition UniversalTraits:UT_fearofthedark
@@ -1890,7 +1890,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_fearofthedark,
         Cost = -4,
         UIName = UI_UT_fearofthedark,
-        UIDescription = UI_UT_fearofthedarkdesc,
+        UIDescription = UI_UT_fearofthedarkDesc,
     }
 
     character_trait_definition UniversalTraits:UT_coldsensitive
@@ -1900,7 +1900,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_coldsensitive,
         Cost = -4,
         UIName = UI_UT_coldsensitive,
-        UIDescription = UI_UT_coldsensitivedesc,
+        UIDescription = UI_UT_coldsensitiveDesc,
     }
 
     character_trait_definition UniversalTraits:UT_heatsensitive
@@ -1910,7 +1910,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_heatsensitive,
         Cost = -4,
         UIName = UI_UT_heatsensitive,
-        UIDescription = UI_UT_heatsensitivedesc,
+        UIDescription = UI_UT_heatsensitiveDesc,
     }
 
     character_trait_definition UniversalTraits:UT_sedentary
@@ -1920,7 +1920,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_sedentary,
         Cost = -3,
         UIName = UI_UT_sedentary,
-        UIDescription = UI_UT_sedentarydesc,
+        UIDescription = UI_UT_sedentaryDesc,
     }
 
     character_trait_definition UniversalTraits:UT_alcoholic_I
@@ -1930,7 +1930,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_alcoholic_I,
         Cost = -4,
         UIName = UI_UT_alcoholic_I,
-        UIDescription = UI_UT_alcoholic_Idesc,
+        UIDescription = UI_UT_alcoholic_IDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_alcoholic_II;UniversalTraits:UT_alcoholic_III,
     }
 
@@ -1941,7 +1941,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_alcoholic_II,
         Cost = -7,
         UIName = UI_UT_alcoholic_II,
-        UIDescription = UI_UT_alcoholic_IIdesc,
+        UIDescription = UI_UT_alcoholic_IIDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_alcoholic_I;UniversalTraits:UT_alcoholic_III,
     }
 
@@ -1952,7 +1952,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_alcoholic_III,
         Cost = -10,
         UIName = UI_UT_alcoholic_III,
-        UIDescription = UI_UT_alcoholic_IIIdesc,
+        UIDescription = UI_UT_alcoholic_IIIDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_alcoholic_I;UniversalTraits:UT_alcoholic_II,
     }
 
@@ -1963,7 +1963,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_addictedtocaffeine,
         Cost = -3,
         UIName = UI_UT_addictedtocaffeine,
-        UIDescription = UI_UT_addictedtocaffeinedesc,
+        UIDescription = UI_UT_addictedtocaffeineDesc,
     }
 
     character_trait_definition UniversalTraits:UT_immunocompromised
@@ -1973,7 +1973,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_immunocompromised,
         Cost = -6,
         UIName = UI_UT_immunocompromised,
-        UIDescription = UI_UT_immunocompromiseddesc,
+        UIDescription = UI_UT_immunocompromisedDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_superimmune,
     }
 
@@ -1988,7 +1988,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_fearful,
         Cost = -4,
         UIName = UI_UT_fearful,
-        UIDescription = UI_UT_fearfuldesc,
+        UIDescription = UI_UT_fearfulDesc,
     }
 
     character_trait_definition UniversalTraits:UT_nervouswreck
@@ -1998,7 +1998,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_nervouswreck,
         Cost = -4,
         UIName = UI_UT_nervouswreck,
-        UIDescription = UI_UT_nervouswreckdesc,
+        UIDescription = UI_UT_nervouswreckDesc,
     }
 
     character_trait_definition UniversalTraits:UT_scardycat
@@ -2008,7 +2008,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_scardycat,
         Cost = -3,
         UIName = UI_UT_scardycat,
-        UIDescription = UI_UT_scardycatdesc,
+        UIDescription = UI_UT_scardycatDesc,
     }
 
     character_trait_definition UniversalTraits:UT_maniac
@@ -2018,7 +2018,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_maniac,
         Cost = 4,
         UIName = UI_UT_maniac,
-        UIDescription = UI_UT_maniacdesc,
+        UIDescription = UI_UT_maniacDesc,
     }
 
     character_trait_definition UniversalTraits:UT_anorexy
@@ -2028,7 +2028,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_anorexy,
         Cost = -6,
         UIName = UI_UT_anorexy,
-        UIDescription = UI_UT_anorexydesc,
+        UIDescription = UI_UT_anorexyDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_gourmand;UniversalTraits:UT_competitiveeater,
     }
 
@@ -2039,7 +2039,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_pillsallergy,
         Cost = -4,
         UIName = UI_UT_pillsallergy,
-        UIDescription = UI_UT_pillsallergydesc,
+        UIDescription = UI_UT_pillsallergyDesc,
     }
 
     character_trait_definition UniversalTraits:UT_wildplantsallergy
@@ -2049,7 +2049,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_wildplantsallergy,
         Cost = -3,
         UIName = UI_UT_wildplantsallergy,
-        UIDescription = UI_UT_wildplantsallergydesc,
+        UIDescription = UI_UT_wildplantsallergyDesc,
     }
 
     character_trait_definition UniversalTraits:UT_allergic
@@ -2059,7 +2059,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_allergic,
         Cost = -4,
         UIName = UI_UT_allergic,
-        UIDescription = UI_UT_allergicdesc,
+        UIDescription = UI_UT_allergicDesc,
     }
 
     character_trait_definition UniversalTraits:UT_competitiveeater
@@ -2069,7 +2069,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_competitiveeater,
         Cost = 3,
         UIName = UI_UT_competitiveeater,
-        UIDescription = UI_UT_competitiveeaterdesc,
+        UIDescription = UI_UT_competitiveeaterDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_anorexy,
     }
 
@@ -2080,7 +2080,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_sensitivestomach,
         Cost = -4,
         UIName = UI_UT_sensitivestomach,
-        UIDescription = UI_UT_sensitivestomachdesc,
+        UIDescription = UI_UT_sensitivestomachDesc,
     }
 
     character_trait_definition UniversalTraits:UT_butterfingers
@@ -2090,7 +2090,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_butterfingers,
         Cost = -4,
         UIName = UI_UT_butterfingers,
-        UIDescription = UI_UT_butterfingersdesc,
+        UIDescription = UI_UT_butterfingersDesc,
     }
 
     character_trait_definition UniversalTraits:UT_acrophobic
@@ -2100,7 +2100,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_acrophobic,
         Cost = -4,
         UIName = UI_UT_acrophobic,
-        UIDescription = UI_UT_acrophobicdesc,
+        UIDescription = UI_UT_acrophobicDesc,
     }
 
     character_trait_definition UniversalTraits:UT_vehophobic
@@ -2110,7 +2110,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_vehophobic,
         Cost = -4,
         UIName = UI_UT_vehophobic,
-        UIDescription = UI_UT_vehophobicdesc,
+        UIDescription = UI_UT_vehophobicDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_expertdriver,
     }
 
@@ -2121,7 +2121,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_motionsickness,
         Cost = -4,
         UIName = UI_UT_motionsickness,
-        UIDescription = UI_UT_motionsicknessdesc,
+        UIDescription = UI_UT_motionsicknessDesc,
     }
 
     character_trait_definition UniversalTraits:UT_physicallyactive
@@ -2131,7 +2131,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_physicallyactive,
         Cost = 4,
         UIName = UI_UT_physicallyactive,
-        UIDescription = UI_UT_physicallyactivedesc,
+        UIDescription = UI_UT_physicallyactiveDesc,
     }
 
     character_trait_definition UniversalTraits:UT_humanhamster
@@ -2141,7 +2141,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_humanhamster,
         Cost = -3,
         UIName = UI_UT_humanhamster,
-        UIDescription = UI_UT_humanhamsterdesc,
+        UIDescription = UI_UT_humanhamsterDesc,
     }
 
     character_trait_definition UniversalTraits:UT_superimmune
@@ -2151,7 +2151,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_superimmune,
         Cost = 8,
         UIName = UI_UT_superimmune,
-        UIDescription = UI_UT_superimmunedesc,
+        UIDescription = UI_UT_superimmuneDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_immunocompromised,
     }
 
@@ -2162,7 +2162,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_bouncer_I,
         Cost = 4,
         UIName = UI_UT_bouncer_I,
-        UIDescription = UI_UT_bouncer_Idesc,
+        UIDescription = UI_UT_bouncer_IDesc,
         XPBoosts = Strength=1;SmallBlunt=1,
         MutuallyExclusiveTraits = UniversalTraits:UT_bouncer_II,
     }
@@ -2174,7 +2174,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_bouncer_II,
         Cost = 6,
         UIName = UI_UT_bouncer_II,
-        UIDescription = UI_UT_bouncer_IIdesc,
+        UIDescription = UI_UT_bouncer_IIDesc,
         XPBoosts = Strength=2;SmallBlunt=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_bouncer_I,
     }
@@ -2186,7 +2186,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_gunspecialist_I,
         Cost = 4,
         UIName = UI_UT_gunspecialist_I,
-        UIDescription = UI_UT_gunspecialist_Idesc,
+        UIDescription = UI_UT_gunspecialist_IDesc,
         XPBoosts = Aiming=1;Reloading=1,
         MutuallyExclusiveTraits = UniversalTraits:UT_gunspecialist_II;UniversalTraits:UT_gunspecialist_III;UniversalTraits:UT_specguns,
     }
@@ -2198,7 +2198,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_gunspecialist_II,
         Cost = 8,
         UIName = UI_UT_gunspecialist_II,
-        UIDescription = UI_UT_gunspecialist_IIdesc,
+        UIDescription = UI_UT_gunspecialist_IIDesc,
         XPBoosts = Aiming=2;Reloading=2;Nimble=1,
         MutuallyExclusiveTraits = UniversalTraits:UT_gunspecialist_I;UniversalTraits:UT_gunspecialist_III;UniversalTraits:UT_specguns,
     }
@@ -2210,7 +2210,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_gunspecialist_III,
         Cost = 10,
         UIName = UI_UT_gunspecialist_III,
-        UIDescription = UI_UT_gunspecialist_IIIdesc,
+        UIDescription = UI_UT_gunspecialist_IIIDesc,
         XPBoosts = Aiming=2;Reloading=2;Nimble=1,
         MutuallyExclusiveTraits = UniversalTraits:UT_gunspecialist_I;UniversalTraits:UT_gunspecialist_II;UniversalTraits:UT_specguns,
     }
@@ -2226,7 +2226,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_indefatigable,
         Cost = 10,
         UIName = UI_UT_indefatigable,
-        UIDescription = UI_UT_indefatigabledesc,
+        UIDescription = UI_UT_indefatigableDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_hardy;UniversalTraits:UT_secondwind,
     }
 
@@ -2237,7 +2237,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_hardy,
         Cost = 8,
         UIName = UI_UT_hardy,
-        UIDescription = UI_UT_hardydesc,
+        UIDescription = UI_UT_hardyDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_indefatigable;UniversalTraits:UT_secondwind,
     }
 
@@ -2248,7 +2248,7 @@ module UniversalTraits
         CharacterTrait = UniversalTraits:UT_secondwind,
         Cost = 6,
         UIName = UI_UT_secondwind,
-        UIDescription = UI_UT_secondwinddesc,
+        UIDescription = UI_UT_secondwindDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_indefatigable;UniversalTraits:UT_hardy,
     }
 
