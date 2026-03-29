@@ -1,39 +1,43 @@
 -- UT_nervouswreck.lua
--- Nervous wreck: slows panic recovery by adding back a portion of what the engine removes.
+-- Nervous wreck: slows panic recovery by 70% by reducing the engine's own
+-- panicReductionValue from the default 0.06 to 0.018.
 --
 -- Engine decay reference (verified from BodyDamage.java ReducePanic()):
+--   default panicReductionValue = 0.06
 --   per-call delta = 0.06 * getThirtyFPSMultiplier() + 0.06 * monthsSurvived
---   getThirtyFPSMultiplier() = 0.5 at normal 1x game speed
 --   BodyDamage.Update() runs ~60x per real minute at 1x speed
 --
--- Baseline recovery rates (awake, no zombies):
+-- Recovery rates without trait (awake, no zombies):
 --   new player (0 months):  ~1.8 panic/min
 --   5-month veteran:        ~19.8 panic/min (full drain in ~5 min)
 --
--- This trait fires every 1 in-game minute (~1 real second) and adds back
--- a flat 0.15 + an optional 0.5 when highly stressed.
--- Effect: costs 5-month vet 9/min of their 19.8/min decay (~55% normal recovery).
--- New players are essentially stuck above ~5 panic until stress comes down.
+-- Recovery rates with trait (70% reduction):
+--   new player:             ~0.54 panic/min (~3x slower, still drains)
+--   5-month veteran:        ~5.94 panic/min (~17 min to full drain)
+--
+-- The value is applied once and reverted when the trait is absent.
+-- Sleeping still doubles the reduced rate (engine behaviour unchanged).
 
-local TRAIT_ID = "UniversalTraits:UT_nervouswreck"
+local TRAIT_ID    = "UniversalTraits:UT_nervouswreck"
+local BASE_VALUE  = 0.06
+local TRAIT_VALUE = 0.018  -- 70% reduction
 
-local function onEveryOneMinute()
-    local player = getPlayer()
-    if not player then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
+local function onPlayerUpdate(player)
+    local bd = player:getBodyDamage()
+    if not bd then return end
 
-    local stats = player:getStats()
-    local panic = stats:get(CharacterStat.PANIC)
-    if panic <= 0 then return end
+    local current = bd:getPanicReductionValue()
+    local hasTrait = UTCore.hasTrait(player, TRAIT_ID)
 
-    -- Slow natural recovery with a fixed counter-drain
-    stats:add(CharacterStat.PANIC, 0.15)
-
-    -- Extra spike when highly stressed
-    local stress = stats:get(CharacterStat.STRESS)
-    if stress > 70 then
-        stats:add(CharacterStat.PANIC, 0.5)
+    if hasTrait then
+        if math.abs(current - TRAIT_VALUE) > 0.001 then
+            bd:setPanicReductionValue(TRAIT_VALUE)
+        end
+    else
+        if math.abs(current - BASE_VALUE) > 0.001 then
+            bd:setPanicReductionValue(BASE_VALUE)
+        end
     end
 end
 
-Events.EveryOneMinute.Add(onEveryOneMinute)
+Events.OnPlayerUpdate.Add(onPlayerUpdate)
