@@ -332,7 +332,9 @@ Discovered from research mods (MoreTraits, FillerTraits, DynamicTraitsExpandedMo
 
 ### Events
 
-- `Events.OnNewGame.Add(fn)` — fn receives `(player)`
+- `Events.OnCreatePlayer.Add(fn)` — fn receives `(playerIndex, player)` — fires on **both** new game AND save load. Use this for conditional handler registration (preferred over `OnNewGame` for ongoing handlers)
+- `Events.OnNewGame.Add(fn)` — fn receives `(player)` — **new game only, does NOT fire on save load**. Use only for one-time spawn effects
+- `Events.OnGameStart.Add(fn)` — no args — fires on both new game and save load, after `OnCreatePlayer`
 - `Events.OnPlayerUpdate.Add(fn)` — fn receives `(player)` — **throttle required**
 - `Events.EveryOneMinute.Add(fn)` — no args, use `getPlayer()`
 - `Events.EveryTenMinutes.Add(fn)` — no args
@@ -353,6 +355,28 @@ Discovered from research mods (MoreTraits, FillerTraits, DynamicTraitsExpandedMo
 B42 speed is modified via `player:Move(Vector2)` in OnPlayerUpdate — complex and MP-sensitive.
 For UT_ traits, speed effects are stored as moddata flags (`UT_speedMod`, `UT_speedBoost`) rather than
 directly calling Move(). This is consistent with how MoreTraits handles it.
+
+### Conditional handler registration (preferred for ongoing handlers)
+
+For traits with event-driven or collision callbacks, prefer registering the handler
+only when the trait is active instead of always-register-check-inside:
+
+```lua
+local function onCreatePlayer(_playerIndex, player)
+    if not UTCore.hasTrait(player, TRAIT_ID) then return end
+    UTCore.registerSomeHandler(TRAIT_ID, myCallback)
+end
+Events.OnCreatePlayer.Add(onCreatePlayer)
+```
+
+**Why `OnCreatePlayer` not `OnNewGame`:** `OnNewGame` only fires on new character creation.
+Loading a save does NOT re-fire `OnNewGame`, so handlers registered there silently break.
+`OnCreatePlayer` fires on both new game and save load.
+
+**When NOT to use this:** Simple periodic checks (`EveryOneMinute`, `EveryTenMinutes`)
+that do one-off moddata reads. The `hasTrait` check inside is cheap enough and the
+always-register pattern is simpler. Reserve conditional registration for high-frequency
+paths (`OnPlayerUpdate`) or callback systems (collision hooks).
 
 ### Periodic handler throttling
 

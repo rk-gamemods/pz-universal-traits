@@ -171,6 +171,18 @@ if not _G.Events.OnNewGame then
     }
 end
 
+-- Events.OnCreatePlayer stub
+-- PZ fires OnCreatePlayer(playerIndex, player) on both new game and save load.
+if not _G.Events.OnCreatePlayer then
+    local _createPlayerHandlers = {}
+    _G.Events.OnCreatePlayer = {
+        Add  = function(fn) table.insert(_createPlayerHandlers, fn) end,
+        fire = function(self, playerIndex, player)
+            for _, fn in ipairs(_createPlayerHandlers) do fn(playerIndex, player) end
+        end,
+    }
+end
+
 -- Events.OnPlayerUpdate stub
 -- Stores registered handlers so tests can fire them directly via :fire(player).
 if not _G.Events.OnPlayerUpdate then

@@ -39,9 +39,10 @@ local function onZombieCollision(player, zombie)
     end
 end
 
-local function onNewGame(player)
+-- OnCreatePlayer fires on BOTH new game and save load (OnNewGame is new-game-only).
+local function onCreatePlayer(_playerIndex, player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
     UTCore.registerZombieCollisionHandler(TRAIT_ID, onZombieCollision)
 end
 
-Events.OnNewGame.Add(onNewGame)
+Events.OnCreatePlayer.Add(onCreatePlayer)

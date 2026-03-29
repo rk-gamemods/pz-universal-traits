@@ -678,15 +678,16 @@ local function fireRamCollision(player, zombie)
 end
 
 test("batteringram: NOT registered when player lacks the trait", function()
+    UTCore._zombieCollisionCallbacks = {}
     local player = MockPlayer({})  -- no trait
-    Events.OnNewGame:fire(player)
+    Events.OnCreatePlayer:fire(0, player)
     assert_true(UTCore._zombieCollisionCallbacks["UniversalTraits:UT_batteringram"] == nil,
         "expected callback NOT registered when trait absent")
 end)
 
 test("batteringram knocks zombie down when player is sprinting", function()
     local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
-    Events.OnNewGame:fire(player)
+    Events.OnCreatePlayer:fire(0, player)
     player._sprinting = true
     local zombie = MockZombie()
     fireRamCollision(player, zombie)
@@ -695,7 +696,7 @@ end)
 
 test("batteringram cancels bump state when player is sprinting", function()
     local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
-    Events.OnNewGame:fire(player)
+    Events.OnCreatePlayer:fire(0, player)
     player._sprinting = true
     player._bumpType = "stagger"
     local zombie = MockZombie()
@@ -705,7 +706,7 @@ end)
 
 test("batteringram drains endurance on each collision", function()
     local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
-    Events.OnNewGame:fire(player)
+    Events.OnCreatePlayer:fire(0, player)
     player._sprinting = true
     local zombie = MockZombie()
     fireRamCollision(player, zombie)
@@ -715,7 +716,7 @@ end)
 
 test("batteringram does NOT fire when player is not sprinting or running", function()
     local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
-    Events.OnNewGame:fire(player)
+    Events.OnCreatePlayer:fire(0, player)
     -- _sprinting and _running are both false (default)
     local zombie = MockZombie()
     fireRamCollision(player, zombie)
@@ -725,7 +726,7 @@ end)
 test("batteringram with UT_martial damages zombie on collision", function()
     -- ZombRand stub returns 0 → crit fires (0 < critchance*100)
     local player = MockPlayer({ "UniversalTraits:UT_batteringram", "UniversalTraits:UT_martial" })
-    Events.OnNewGame:fire(player)
+    Events.OnCreatePlayer:fire(0, player)
     player._sprinting = true
     local zombie = MockZombie({ health = 100 })
     fireRamCollision(player, zombie)
