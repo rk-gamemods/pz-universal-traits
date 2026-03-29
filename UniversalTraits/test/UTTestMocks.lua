@@ -63,8 +63,12 @@ function MockPlayer(traitList)
         _said         = nil,
         _shouted      = false,
         _sprinting    = false,
+        _running      = false,
         _moving       = false,
         _indoors      = false,
+        _bumpType     = "",
+        _bumpedChr    = nil,
+        _bumpFall     = false,
         getModData = function(self) return moddata end,
         getTraits  = function(self)
             return { contains = function(_, id) return traits[id] == true end }
@@ -83,10 +87,16 @@ function MockPlayer(traitList)
         -- Runtime-behavior mocks
         setBumpFallDown   = function(self, v) self._bumpFallDown = v end,
         isSprinting       = function(self) return self._sprinting end,
+        isRunning         = function(self) return self._running end,
         isMoving          = function(self) return self._moving end,
         isIndoors         = function(self) return self._indoors end,
         Say               = function(self, text) self._said = text end,
         ShouldBeShouting  = function(self, v) self._shouted = v end,
+        isBumped          = function(self) return self._bumpType ~= "" end,
+        getBumpedChr      = function(self) return self._bumpedChr end,
+        setBumpedChr      = function(self, chr) self._bumpedChr = chr end,
+        setBumpType       = function(self, s) self._bumpType = s end,
+        setBumpFall       = function(self, v) self._bumpFall = v end,
     }
     return player
 end
@@ -119,6 +129,33 @@ UTCore.applyBleedDecayMult  = function(player, mult, bandagedOnly)
 end
 UTCore.applyBleedDrainMult  = function(player, mult) player:getModData()["UT_bleedDrainMult"] = mult end
 UTCore.registerPeriodicHandler = function(traitId, interval, fn) end  -- no-op stub
+
+UTCore._zombieCollisionCallbacks = {}
+UTCore.registerZombieCollisionHandler = function(traitId, fn)
+    UTCore._zombieCollisionCallbacks[traitId] = fn
+end
+UTCore.unregisterZombieCollisionHandler = function(traitId)
+    UTCore._zombieCollisionCallbacks[traitId] = nil
+end
+
+-- MockZombie: simulates an IsoZombie for batteringram collision tests
+function MockZombie(opts)
+    opts = opts or {}
+    local _health        = opts.health or 100
+    local _knocked       = false
+    local knockDownCalls = {}
+    return {
+        isAlwaysKnockedDown = function(self) return false end,
+        knockDown           = function(self, fromBehind)
+            _knocked = true
+            table.insert(knockDownCalls, fromBehind)
+        end,
+        isKnockedDown       = function(self) return _knocked end,
+        getHealth           = function(self) return _health end,
+        setHealth           = function(self, v) _health = v end,
+        getKnockDownCalls   = function(self) return knockDownCalls end,
+    }
+end
 
 -- Events.OnNewGame mock
 -- PZ trait files call Events.OnNewGame.Add(fn) with dot notation (no self).

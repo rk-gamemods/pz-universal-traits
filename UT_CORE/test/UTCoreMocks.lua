@@ -34,6 +34,11 @@ function MockPlayer(traits, opts)
     local x, y = 0, 0
     local xpCalls = {}
     local bodyDamage = nil
+    local _bumpType   = ""
+    local _bumpedChr  = nil
+    local _bumpFall   = false
+    local _sprinting  = false
+    local _running    = false
     return {
         getTraits = function(self)
             return {
@@ -70,6 +75,34 @@ function MockPlayer(traits, opts)
         setPrimaryHandItem   = function(self, item) primaryHandItem = item end,
         getPerkLevel         = function(self, perk) return perkLevels[perk] or 0 end,
         setMeleeDelay        = function(self, v) moddata["_lastMeleeDelay"] = v end,
+        isSprinting          = function(self) return _sprinting end,
+        isRunning            = function(self) return _running end,
+        setSprinting         = function(self, v) _sprinting = v end,
+        setRunning           = function(self, v) _running = v end,
+        isBumped             = function(self) return _bumpType ~= "" end,
+        getBumpedChr         = function(self) return _bumpedChr end,
+        setBumpedChr         = function(self, chr) _bumpedChr = chr end,
+        setBumpType          = function(self, s) _bumpType = s end,
+        setBumpFall          = function(self, v) _bumpFall = v end,
+    }
+end
+
+-- MockZombie: simulates an IsoZombie for ZombieCollisionHook tests
+function MockZombie(opts)
+    opts = opts or {}
+    local _health        = opts.health or 100
+    local _knocked       = false
+    local knockDownCalls = {}
+    return {
+        isAlwaysKnockedDown = function(self) return false end,
+        knockDown           = function(self, fromBehind)
+            _knocked = true
+            table.insert(knockDownCalls, fromBehind)
+        end,
+        isKnockedDown       = function(self) return _knocked end,
+        getHealth           = function(self) return _health end,
+        setHealth           = function(self, v) _health = v end,
+        getKnockDownCalls   = function(self) return knockDownCalls end,
     }
 end
 

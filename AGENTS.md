@@ -9,6 +9,7 @@ and decisions made. This prevents repeat research and research drift across sess
 ## Standing Instruction: Update This File After Every Session
 
 After completing all tasks in a session, evaluate whether any of the following were learned:
+
 - New PZ B42 API calls discovered or confirmed working
 - Mod structure decisions that differ from initial assumptions
 - Gotchas, quirks, or bugs encountered
@@ -34,7 +35,7 @@ Two-mod layout targeting Project Zomboid Build 42 (Kahlua/Lua 5.x):
 
 ## Repo Structure
 
-```
+```text
 UniversalTraits/                          ← repo root
   UT_CORE/
     media/lua/shared/UTCore/              ← source infrastructure files
@@ -68,7 +69,7 @@ Run from repo root (`C:\Users\Admin\Documents\GIT\GameMods\PZMods\UTMods`):
 "C:\Users\Admin\AppData\Local\Programs\Lua\bin\lua.exe" UniversalTraits/test/run_tests.lua
 ```
 
-**Current passing counts:** 29 (UT_CORE) + 28 (UniversalTraits) = 57 total.
+**Current passing counts:** 38 (UT_CORE) + 45 (UniversalTraits) = 83 passing. (UniversalTraits has 47 total tests; 2 pre-existing failures in `UT_preparedcartography` are unrelated to the collision work.)
 
 ---
 
@@ -76,12 +77,12 @@ Run from repo root (`C:\Users\Admin\Documents\GIT\GameMods\PZMods\UTMods`):
 
 Run from repo root after ANY code change before in-game testing:
 
-```bash
-cp -r UniversalTraits/media/. "C:/Users/Admin/Zomboid/mods/UniversalTraits/"
-cp -r UT_CORE/media/. "C:/Users/Admin/Zomboid/mods/UT_CORE/"
+```powershell
+Copy-Item -Recurse -Force UT_CORE\media\* C:\Users\Admin\Zomboid\mods\UT_CORE\42\media\
+Copy-Item -Recurse -Force UniversalTraits\media\* C:\Users\Admin\Zomboid\mods\UniversalTraits\42\media\
 ```
 
-**Note:** Deploy directly from source (`media/`) to the live mods folder. Do NOT write to `release/`.
+**Note:** The live mod folder structure is `Zomboid\mods\ModName\42\media\`. Copying to the mod root (without `42\media\`) is **silent failure** — PZ B42 only reads from `42\media\`.
 
 ---
 
@@ -209,14 +210,17 @@ Events.EveryOneMinute.Add(onEveryMinute)
 ## UTCore API Reference
 
 ### UTCore_API.lua
+
 - `UTCore.hasTrait(player, traitId)` → bool — nil-safe trait check
 
 ### UTCore_TraitChecks.lua
+
 - `UTCore.hasAnyTrait(player, idTable)` → bool
 - `UTCore.getModData(player, key, default)` → value
 - `UTCore.setModData(player, key, value)`
 
 ### UTCore_StatModifiers.lua
+
 - `UTCore.applyCarryWeight(player, delta)` — calls `player:setMaxWeightBase(base + delta)`
 - `UTCore.applyBleedRate(player, multiplier)` — stores `UT_bleedMult` in moddata
 - `UTCore.applyWorkSpeed(player, delta)` — stores `UT_workSpeedMod` in moddata
@@ -229,10 +233,12 @@ Events.EveryOneMinute.Add(onEveryMinute)
 - `UTCore.applyNoiseMod(player, multiplier)` — stores `UT_noiseMult` in moddata
 
 ### UTCore_SpawnEffects.lua
+
 - `UTCore.applySpawnStats(player, statTable)` — keys: `"panic"`, `"stress"`, `"hunger"`, `"thirst"`, `"fatigue"`, `"endurance"`, `"carryDelta"`
 - `UTCore.applySpawnCondition(player, conditionTable)` — keys: `injuries={bodyPartIds}`, `fractures={bodyPartIds}`, `burnSeverity=float`
 
 ### UTCore_Events.lua
+
 - `UTCore.registerPeriodicHandler(traitId, intervalEvent, handlerFn)` — idempotent
 - `UTCore.unregisterPeriodicHandler(traitId)` — removes from Events and registry
 - `intervalEvent` values: `"EveryOneMinute"`, `"EveryTenMinutes"`, `"EveryHours"`, `"OnPlayerUpdate"`
@@ -257,6 +263,17 @@ Events.EveryOneMinute.Add(onEveryMinute)
 - Registered via `Events.OnPlayerUpdate` (throttled every 30 ticks) — reads `UT_bleedMult` from moddata and applies BodyPart health corrections automatically
 - `UTCore._bleedTickCounter` — exposed for test resets
 
+### UTCore_ZombieCollisionHook.lua
+
+- Detects the **rising edge** of `player:isBumped()` with a zombie as the bump source
+- On each real zombie collision (false→true transition of `isBumped()`), confirms the bumped entity is a zombie via `pcall(chr:isAlwaysKnockedDown())` — `isAlwaysKnockedDown()` is exclusive to `IsoZombie`, so pcall success = zombie type confirmed
+- Fires all registered callbacks with `(player, zombie)` before the native stagger animation locks in
+- **Cannot be throttled** — rising-edge detection requires checking every tick (exception to the throttle rule)
+- `UTCore._zombieCollisionCallbacks` — table of `traitId → fn(player, zombie)`
+- `UTCore.registerZombieCollisionHandler(traitId, fn)` — register a callback; called once per collision rising edge
+- `UTCore.unregisterZombieCollisionHandler(traitId)` — remove callback
+- Cancel native stagger from inside a callback: `player:setBumpType("")` + `player:setBumpFall(false)`
+
 ---
 
 ## B42 PZ API — Confirmed Working
@@ -264,6 +281,7 @@ Events.EveryOneMinute.Add(onEveryMinute)
 Discovered from research mods (MoreTraits, FillerTraits, DynamicTraitsExpandedMoodles, EvolvingTraitsWorld):
 
 ### Player
+
 - `player:getTraits()` → Java ArrayList; use `:contains(id)` to check
 - `player:getModData()` → Lua table (persists across save/load)
 - `player:getMaxWeightBase()` / `setMaxWeightBase(n)` — carry weight (integer)
@@ -271,11 +289,16 @@ Discovered from research mods (MoreTraits, FillerTraits, DynamicTraitsExpandedMo
 - `player:getBodyTemperature()` → float (normal ~37.0)
 - `player:isOutside()` → bool
 - `player:isSprinting()` / `isRunning()` / `isWalking()` → bool
+- `player:isBumped()` → bool — true while `getBumpType()` is non-empty (player is mid-collision stagger state)
+- `player:getBumpedChr()` → IsoGameCharacter — entity that caused the bump, or nil
+- `player:setBumpType("")` — clears `isBumped()`; cancels the stagger movement-block
+- `player:setBumpFall(false)` — prevents the trip/fall animation from playing
 - `player:getVehicle()` → vehicle or nil (check for in-vehicle)
 - `player:getZ()` → floor level (0 = ground, 1+ = upper floors)
 - `player:getPerkLevel(Perks.PerkName)` → int (0-10)
 
 ### Stats (`player:getStats()`)
+
 - `getStress()` / `setStress(v)` — 0.0-1.0
 - `getPanic()` / `setPanic(v)` — 0.0-1.0
 - `getHunger()` / `setHunger(v)` — 0.0-1.0
@@ -288,17 +311,27 @@ Discovered from research mods (MoreTraits, FillerTraits, DynamicTraitsExpandedMo
 - `getAnger()` → float
 
 ### Body Damage (`player:getBodyDamage()`)
+
 - `:getBodyPart(BodyPartType.xxx)` → IsoBodyPart
 - `:getInfectionLevel()` / `setInfectionLevel(v)` — 0.0+
 - Body part: `:setHealth(v)`, `:setFractured(bool)`
 - Body part constants: `BodyPartType.Hand_L`, `Hand_R`, `Foot_L`, `Foot_R`, `Torso_Upper`, `Torso_Lower`, `Neck`, etc.
 
 ### Time
+
 - `getGameTime():getTimeOfDay()` → 0.0-1.0 (0.0=midnight, 0.5=noon)
 - `getGameTime():getNight()` → bool
 - `getGameTime():getWorldAgeHours()` → float (for cooldown timestamps)
 
+### Zombie (`IsoZombie`)
+
+- `zombie:knockDown(fromBehind)` — knock the zombie to the ground; `false` = from front. Confirmed B42 (IsoZombie.java line ~4901)
+- `zombie:isAlwaysKnockedDown()` → IsoZombie-exclusive method; **exists ONLY on IsoZombie, not on IsoPlayer or IsoGameCharacter**. Use `pcall(chr:isAlwaysKnockedDown())` as a zombie type discriminator: pcall success = zombie
+- `zombie:getHealth()` / `setHealth(v)` — direct health manipulation
+- `zombie:isKnockedDown()` → bool
+
 ### Events
+
 - `Events.OnNewGame.Add(fn)` — fn receives `(player)`
 - `Events.OnPlayerUpdate.Add(fn)` — fn receives `(player)` — **throttle required**
 - `Events.EveryOneMinute.Add(fn)` — no args, use `getPlayer()`
@@ -316,30 +349,39 @@ Discovered from research mods (MoreTraits, FillerTraits, DynamicTraitsExpandedMo
 ## Key Architecture Decisions
 
 ### Speed modification
+
 B42 speed is modified via `player:Move(Vector2)` in OnPlayerUpdate — complex and MP-sensitive.
 For UT_ traits, speed effects are stored as moddata flags (`UT_speedMod`, `UT_speedBoost`) rather than
 directly calling Move(). This is consistent with how MoreTraits handles it.
 
 ### Periodic handler throttling
+
 **Rule:** No OnPlayerUpdate handler without a moddata tick counter throttle.
 Minimum throttle: every 15 ticks for high-frequency checks, 30 ticks for normal.
 Prefer `EveryOneMinute` / `EveryTenMinutes` over OnPlayerUpdate when real-time is not needed.
 
+**Exception:** Rising-edge detection (e.g., `UTCore_ZombieCollisionHook`) cannot be throttled — missing a single tick would skip the transition. These handlers must be lightweight: nil check + two boolean comparisons + early return covers 99%+ of ticks.
+
 ### Moddata key convention
+
 All UT_ moddata keys are prefixed `UT_` to avoid collision with vanilla and other mods.
 Examples: `UT_speedMod`, `UT_bleedMult`, `UT_indefCooldown`.
 
 ### Cooldown tracking
+
 Use `getGameTime():getWorldAgeHours()` for cooldown timestamps (persists across sessions).
 Compare: `now - startTime >= (minutes / 60.0)`.
 
 ### Lua file loading (PZ vs standard Lua)
+
 PZ loads via `dofile`, not `require`. Therefore:
+
 - Do NOT use `local` for top-level module tables (they won't be accessible globally).
 - Do NOT use `return` at end of file.
 - Use `TableName = TableName or {}` pattern.
 
 ### Tests run with standard Lua 5.x (not Kahlua)
+
 The test harness uses `UTCoreMocks.lua` / `UTTestMocks.lua` to stub PZ globals.
 When adding new PZ API calls to UTCore files, add corresponding mock support to the mock files.
 
@@ -349,6 +391,7 @@ When adding new PZ API calls to UTCore files, add corresponding mock support to 
 
 Defined in `UT_MET.lua` (runtime) and `MutuallyExclusiveTraits` fields in script blocks.
 Key groups:
+
 - **Specialization series:** specweapons, speccrafting, specfood, specguns, specmove, specaid
 - **Weapon Axes:** axes, twohanded_axes, onehanded_axes
 - **Weapon Blunts:** blunts, twohanded_blunts, onehanded_blunts, long_blunts, short_blunts

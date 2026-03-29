@@ -668,5 +668,57 @@ test("pacer applies unhappiness after 600 indoor ticks", function()
         .. tostring(bd._unhappinessLevel))
 end)
 
+-- ===== UT_batteringram collision tests =====
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_batteringram.lua")
+
+local function fireRamCollision(player, zombie)
+    local fn = UTCore._zombieCollisionCallbacks["UniversalTraits:UT_batteringram"]
+    if fn then fn(player, zombie) end
+end
+
+test("batteringram knocks zombie down when player is sprinting", function()
+    local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
+    player._sprinting = true
+    local zombie = MockZombie()
+    fireRamCollision(player, zombie)
+    assert_eq(#zombie:getKnockDownCalls(), 1, "expected knockDown called once")
+end)
+
+test("batteringram cancels bump state when player is sprinting", function()
+    local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
+    player._sprinting = true
+    player._bumpType = "stagger"
+    local zombie = MockZombie()
+    fireRamCollision(player, zombie)
+    assert_eq(player._bumpType, "", "expected bumpType cleared")
+end)
+
+test("batteringram drains endurance on each collision", function()
+    local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
+    player._sprinting = true
+    local zombie = MockZombie()
+    fireRamCollision(player, zombie)
+    assert_true(player:getStats():getEndurance() < 1.0,
+        "expected endurance < 1.0 after collision")
+end)
+
+test("batteringram does NOT fire when player is not sprinting or running", function()
+    local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
+    -- _sprinting and _running are both false (default)
+    local zombie = MockZombie()
+    fireRamCollision(player, zombie)
+    assert_eq(#zombie:getKnockDownCalls(), 0, "expected no knockDown when not sprinting")
+end)
+
+test("batteringram with UT_martial damages zombie on collision", function()
+    -- ZombRand stub returns 0 → crit fires (0 < critchance*100)
+    local player = MockPlayer({ "UniversalTraits:UT_batteringram", "UniversalTraits:UT_martial" })
+    player._sprinting = true
+    local zombie = MockZombie({ health = 100 })
+    fireRamCollision(player, zombie)
+    assert_true(zombie:getHealth() < 100,
+        "expected zombie health reduced by martial synergy, got " .. tostring(zombie:getHealth()))
+end)
+
 print(string.format("\n%d passed, %d failed", passed, failed))
 if failed > 0 then os.exit(1) end

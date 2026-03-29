@@ -18,6 +18,7 @@ dofile(base .. "../media/lua/shared/UTCore/UTCore_SpeedHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_BleedHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua")
+dofile(base .. "../media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua")
 
 local passed, failed = 0, 0
 local function test(name, fn)
@@ -334,6 +335,73 @@ test("MeleeDelayHook does not apply when no relevant trait is present", function
     local p = MockPlayer({}, { primaryHandItem = weapon })
     UTCore._meleeDelayOnPlayerUpdate(p)
     assert_eq(p:getModData()["_lastMeleeDelay"], nil, "expected setMeleeDelay not called")
+end)
+
+-- ===== ZombieCollisionHook tests =====
+
+test("registerZombieCollisionHandler stores callback", function()
+    UTCore._zombieCollisionCallbacks = {}
+    local fn = function() end
+    UTCore.registerZombieCollisionHandler("test_trait", fn)
+    assert_eq(UTCore._zombieCollisionCallbacks["test_trait"], fn)
+end)
+
+test("unregisterZombieCollisionHandler removes callback", function()
+    UTCore._zombieCollisionCallbacks = {}
+    UTCore.registerZombieCollisionHandler("test_trait", function() end)
+    UTCore.unregisterZombieCollisionHandler("test_trait")
+    assert_eq(UTCore._zombieCollisionCallbacks["test_trait"], nil)
+end)
+
+test("ZombieCollisionHook fires callback on rising edge with zombie", function()
+    UTCore._zombieCollisionCallbacks = {}
+    local p = MockPlayer()
+    local z = MockZombie()
+    local firedPlayer, firedZombie
+    UTCore.registerZombieCollisionHandler("test_trait", function(player, zombie)
+        firedPlayer = player
+        firedZombie = zombie
+    end)
+    p:setBumpType("stagger")
+    p:setBumpedChr(z)
+    Events.OnPlayerUpdate.fire(p)
+    assert_eq(firedPlayer, p, "callback should receive the player")
+    assert_eq(firedZombie, z, "callback should receive the zombie")
+end)
+
+test("ZombieCollisionHook does NOT re-fire on sustained bump", function()
+    UTCore._zombieCollisionCallbacks = {}
+    local p = MockPlayer()
+    local z = MockZombie()
+    local callCount = 0
+    UTCore.registerZombieCollisionHandler("test_trait", function() callCount = callCount + 1 end)
+    p:setBumpType("stagger")
+    p:setBumpedChr(z)
+    Events.OnPlayerUpdate.fire(p)   -- rising edge
+    Events.OnPlayerUpdate.fire(p)   -- still bumped
+    assert_eq(callCount, 1, "expected exactly 1 fire for a sustained bump")
+end)
+
+test("ZombieCollisionHook does NOT fire for non-zombie bumpedChr", function()
+    UTCore._zombieCollisionCallbacks = {}
+    local p = MockPlayer()
+    local fired = false
+    UTCore.registerZombieCollisionHandler("test_trait", function() fired = true end)
+    local notZombie = { getName = function() return "survivor" end }  -- no isAlwaysKnockedDown
+    p:setBumpType("stagger")
+    p:setBumpedChr(notZombie)
+    Events.OnPlayerUpdate.fire(p)
+    assert_eq(fired, false, "expected no callback for non-zombie bumpedChr")
+end)
+
+test("ZombieCollisionHook does NOT fire when bumpedChr is nil", function()
+    UTCore._zombieCollisionCallbacks = {}
+    local p = MockPlayer()
+    local fired = false
+    UTCore.registerZombieCollisionHandler("test_trait", function() fired = true end)
+    p:setBumpType("stagger")   -- bumped, but no entity set
+    Events.OnPlayerUpdate.fire(p)
+    assert_eq(fired, false, "expected no callback when bumpedChr is nil")
 end)
 
 print(string.format("\n%d passed, %d failed", passed, failed))
