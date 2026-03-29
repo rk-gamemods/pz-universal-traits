@@ -2,34 +2,23 @@
 -- Martial Arts: bonus barehands damage based on SmallBlunt skill.
 -- Fires on every weapon hit. Only active when weapon type is "BareHands".
 -- Skipped if player has UT_mundane (mundane disables crits).
+--
+-- Public API (callable by other traits):
+--   UT_martial.applyBonusDamage(player, target, endurance)
+--     Rolls for crit, scales by endurance, applies health deduction and XP grant.
+--     Returns the damage dealt (0 if mundane suppressed it).
+--     Includes mundane check — passes silently if UT_mundane is active.
+
+UT_martial = UT_martial or {}
 
 local TRAIT_ID = "UniversalTraits:UT_martial"
 
-local function onWeaponHitCharacter(player, weapon, target)
-    if not player then return end
+-- Shared damage calculation used by this trait and any synergy callers.
+-- Does NOT drain endurance — callers manage that themselves.
+function UT_martial.applyBonusDamage(player, target, endurance)
+    -- Mundane suppresses crits and bonus damage
+    if UTCore.hasTrait(player, "UniversalTraits:UT_mundane") then return 0 end
 
-    -- Guard: bare-hands only
-    if weapon:getType() ~= "BareHands" then return end
-
-    -- Guard: must have martial trait
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
-
-    -- Get stats for endurance drain (always applies on bare-hand hit)
-    local stats = player.getStats and player:getStats()
-    local endurance = 1.0
-    if stats and stats.getEndurance then
-        endurance = stats:getEndurance()
-    end
-
-    -- Always drain endurance on bare-hand hit
-    if stats and stats.setEndurance then
-        stats:setEndurance(math.max(0, endurance - 0.001))
-    end
-
-    -- Guard: UT_mundane disables crits
-    if UTCore.hasTrait(player, "UniversalTraits:UT_mundane") then return end
-
-    -- Get SmallBlunt perk level
     local smallBluntLevel = 0
     local ok, level = pcall(function()
         if Perks and Perks.SmallBlunt then
@@ -41,31 +30,49 @@ local function onWeaponHitCharacter(player, weapon, target)
         smallBluntLevel = level
     end
 
-    -- Compute crit chance: (5 + (smallBluntLevel * 5)) * 0.01
     local critchance = (5 + (smallBluntLevel * 5)) * 0.01
 
-    -- Roll for crit
-    local martialDamage
+    local damage
     if ZombRand(100) < (critchance * 100) then
-        -- Crit base damage: 6 * 0.1 = 0.6
-        martialDamage = 6 * 0.1
+        damage = 6 * 0.1  -- crit
     else
-        -- Non-crit base damage: 2 * 0.1 = 0.2
-        martialDamage = 2 * 0.1
+        damage = 2 * 0.1  -- normal
     end
 
-    -- Apply endurance scaling -- scales from 0.35x at 0 endurance to 1.35x at full endurance
-    martialDamage = martialDamage * (endurance + 0.35)
+    -- Scales from 0.35x at 0 endurance to 1.35x at full
+    damage = damage * (endurance + 0.35)
 
-    -- Apply damage
-    target:setHealth(target:getHealth() - martialDamage)
-
-    -- Grant XP
-    local xpOk = pcall(function()
+    pcall(function() target:setHealth(target:getHealth() - damage) end)
+    pcall(function()
         if Perks and Perks.SmallBlunt then
-            player:getXp():AddXP(Perks.SmallBlunt, martialDamage * 2)
+            player:getXp():AddXP(Perks.SmallBlunt, damage * 2)
         end
     end)
+
+    return damage
+end
+
+local function onWeaponHitCharacter(player, weapon, target)
+    if not player then return end
+
+    -- Guard: bare-hands only
+    if weapon:getType() ~= "BareHands" then return end
+
+    -- Guard: must have martial trait
+    if not UTCore.hasTrait(player, TRAIT_ID) then return end
+
+    local stats = player.getStats and player:getStats()
+    local endurance = 1.0
+    if stats and stats.getEndurance then
+        endurance = stats:getEndurance()
+    end
+
+    -- Always drain endurance on bare-hand hit
+    if stats and stats.setEndurance then
+        stats:setEndurance(math.max(0, endurance - 0.001))
+    end
+
+    UT_martial.applyBonusDamage(player, target, endurance)
 end
 
 Events.OnWeaponHitCharacter.Add(onWeaponHitCharacter)

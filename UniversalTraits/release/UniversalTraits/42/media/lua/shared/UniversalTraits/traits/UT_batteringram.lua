@@ -3,8 +3,8 @@
 -- sprinting or running, replacing the native stagger/trip with a knockdown.
 -- Player is immune to the stagger and trip effects during these collisions.
 -- Each collision drains a small amount of endurance (~20 before exhausted).
--- Synergy: if the player also has UT_martial, each collision applies martial arts
--- damage to the zombie in addition to the knockdown.
+-- Synergy: if the player also has UT_martial, delegates to UT_martial.applyBonusDamage
+-- so the damage formula stays in one place.
 --
 -- Uses UTCore_ZombieCollisionHook, which detects the real collision event from
 -- the engine (player:isBumped() rising edge + player:getBumpedChr() == zombie).
@@ -12,31 +12,6 @@
 local TRAIT_ID        = "UniversalTraits:UT_batteringram"
 local MARTIAL_TRAIT   = "UniversalTraits:UT_martial"
 local ENDURANCE_DRAIN = 0.05  -- per collision (~20 before fully exhausted)
-
--- Reuses the same crit/damage formula as UT_martial, accepting the already-drained
--- endurance value so the scaling reflects the current state.
-local function getMartialBonusDamage(player, endurance)
-    local smallBluntLevel = 0
-    local ok, level = pcall(function()
-        if Perks and Perks.SmallBlunt then
-            return player:getPerkLevel(Perks.SmallBlunt)
-        end
-        return 0
-    end)
-    if ok and type(level) == "number" then
-        smallBluntLevel = level
-    end
-
-    local critChance = (5 + smallBluntLevel * 5) * 0.01
-    local damage
-    if ZombRand(100) < (critChance * 100) then
-        damage = 0.6  -- critical
-    else
-        damage = 0.2  -- normal
-    end
-    -- Scale 0.35x at 0 endurance → 1.35x at full endurance
-    return damage * (endurance + 0.35)
-end
 
 -- Only registered when the trait is active — no hasTrait guard needed inside.
 local function onZombieCollision(player, zombie)
@@ -58,15 +33,9 @@ local function onZombieCollision(player, zombie)
     endurance = math.max(0, endurance - ENDURANCE_DRAIN)
     stats:setEndurance(endurance)
 
-    -- Martial arts synergy: deal damage on top of the knockdown
+    -- Martial arts synergy: delegate entirely to UT_martial so the formula stays in one place
     if UTCore.hasTrait(player, MARTIAL_TRAIT) then
-        local damage = getMartialBonusDamage(player, endurance)
-        pcall(function() zombie:setHealth(zombie:getHealth() - damage) end)
-        pcall(function()
-            if Perks and Perks.SmallBlunt then
-                player:getXp():AddXP(Perks.SmallBlunt, damage * 2)
-            end
-        end)
+        UT_martial.applyBonusDamage(player, zombie, endurance)
     end
 end
 
