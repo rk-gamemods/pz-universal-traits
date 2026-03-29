@@ -33,6 +33,9 @@ Leave blank if you want to discuss first.
 
 **Decision:**
 
+Bouncer I should not get the push back script. It should also not be the exact same as action hero. Bouncer should not cover blades.
+Reducing push/shove cooldown would be an excellent replacement for blades.
+
 ---
 
 ### UT_cruelty

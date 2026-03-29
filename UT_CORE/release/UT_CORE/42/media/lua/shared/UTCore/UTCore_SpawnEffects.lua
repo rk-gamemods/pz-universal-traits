@@ -56,3 +56,13 @@ function UTCore.applySpawnCondition(player, conditionTable)
         end
     end
 end
+
+--- stripSpawnItems(player)
+-- Clears all worn clothing and inventory items, then creates a fresh key ring.
+-- Used by traits that require the player to spawn with nothing.
+function UTCore.stripSpawnItems(player)
+    player:clearWornItems()
+    local inv = player:getInventory()
+    if inv then inv:removeAllItems() end
+    player:createKeyRing()
+end

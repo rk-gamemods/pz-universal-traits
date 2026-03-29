@@ -21,7 +21,7 @@ module UniversalTraits
         IsProfessionTrait = false,
         DisabledInMultiplayer = true,
         CharacterTrait = UniversalTraits:UT_preparedammo,
-        Cost = 1,
+        Cost = 2,
         UIName = UI_UT_preparedammo,
         UIDescription = UI_UT_preparedammoDesc,
         XPBoosts = Aiming=1;Reloading=1,
@@ -54,10 +54,10 @@ module UniversalTraits
         IsProfessionTrait = false,
         DisabledInMultiplayer = true,
         CharacterTrait = UniversalTraits:UT_preparedcamp,
-        Cost = 1,
+        Cost = 2,
         UIName = UI_UT_preparedcamp,
         UIDescription = UI_UT_preparedcampDesc,
-        XPBoosts = Fishing=1,
+        XPBoosts = Fishing=1;Trapping=1,
     }
 
     character_trait_definition UniversalTraits:UT_preparedweapons
@@ -82,16 +82,6 @@ module UniversalTraits
         XPBoosts = Mechanics=1,
     }
 
-    character_trait_definition UniversalTraits:UT_preparedcartography
-    {
-        IsProfessionTrait = false,
-        DisabledInMultiplayer = true,
-        CharacterTrait = UniversalTraits:UT_preparedcartography,
-        Cost = 1,
-        UIName = UI_UT_preparedcartography,
-        UIDescription = UI_UT_preparedcartographyDesc,
-        XPBoosts = Cartography=1,
-    }
 
     -- ============================================================
     -- PHASE 1 — XP BOOST: MOVEMENT & STEALTH
@@ -862,7 +852,6 @@ module UniversalTraits
         Cost = 2,
         UIName = UI_UT_driver,
         UIDescription = UI_UT_driverDesc,
-        XPBoosts = Driving=1,
     }
 
     character_trait_definition UniversalTraits:UT_amateurelectrician
@@ -1136,6 +1125,7 @@ module UniversalTraits
         DisabledInMultiplayer = true,
         CharacterTrait = UniversalTraits:UT_staunch,
         Cost = 10,
+        XPBoosts = FirstAid=1,
         UIName = UI_UT_staunch,
         UIDescription = UI_UT_staunchDesc,
     }

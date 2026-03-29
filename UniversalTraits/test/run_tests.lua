@@ -313,18 +313,20 @@ test("UT_quickworker sets UT_workSpeedMod < 0", function()
     assert_true(type(v) == "number" and v < 0, "expected UT_workSpeedMod < 0, got " .. tostring(v))
 end)
 
--- UT_thickblood calls UTCore.applyBleedRate(player, 0.5) -> UT_bleedMult = 0.5 (reduced bleed)
-test("UT_thickblood sets UT_bleedMult < 1.0", function()
+-- UT_thickblood sets UT_bleedDecayMult=1.5 (faster clot) and UT_bleedDrainMult=0.5 (slower death)
+test("UT_thickblood sets UT_bleedDecayMult > 1.0 and UT_bleedDrainMult < 1.0", function()
     local p = fireNewGame("UniversalTraits:UT_thickblood")
-    local v = p:getModData()["UT_bleedMult"]
-    assert_true(type(v) == "number" and v < 1.0, "expected UT_bleedMult < 1.0, got " .. tostring(v))
+    local decay = p:getModData()["UT_bleedDecayMult"]
+    local drain = p:getModData()["UT_bleedDrainMult"]
+    assert_true(type(decay) == "number" and decay > 1.0, "expected UT_bleedDecayMult > 1.0, got " .. tostring(decay))
+    assert_true(type(drain) == "number" and drain < 1.0, "expected UT_bleedDrainMult < 1.0, got " .. tostring(drain))
 end)
 
--- UT_heavilybleedingwounds calls UTCore.applyBleedRate(player, 2.0) -> UT_bleedMult = 2.0 (increased bleed)
-test("UT_heavilybleedingwounds sets UT_bleedMult > 1.0", function()
+-- UT_heavilybleedingwounds sets UT_bleedDrainMult=2.0 (faster death rate)
+test("UT_heavilybleedingwounds sets UT_bleedDrainMult > 1.0", function()
     local p = fireNewGame("UniversalTraits:UT_heavilybleedingwounds")
-    local v = p:getModData()["UT_bleedMult"]
-    assert_true(type(v) == "number" and v > 1.0, "expected UT_bleedMult > 1.0, got " .. tostring(v))
+    local v = p:getModData()["UT_bleedDrainMult"]
+    assert_true(type(v) == "number" and v > 1.0, "expected UT_bleedDrainMult > 1.0, got " .. tostring(v))
 end)
 
 -- ===== UT_actionhero runtime damage tests =====

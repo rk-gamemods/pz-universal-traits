@@ -3,28 +3,25 @@ UI_EN = {
     -- PHASE 1 — XP BOOST: PREPARED SERIES
     -- ============================================================
     UI_UT_preparedfood          = "Prepared: Food",
-    UI_UT_preparedfoodDesc      = "You spent countless hours preserving and preparing food before the outbreak. Gain ×2 XP in Cooking.",
+    UI_UT_preparedfoodDesc      = "You spent countless hours preserving and preparing food before the outbreak. +1 to Cooking.",
 
     UI_UT_preparedammo          = "Prepared: Ammunition",
-    UI_UT_preparedammoDesc      = "You stockpiled ammunition and reloaded your own rounds. Gain ×2 XP in Aiming and Reloading.",
+    UI_UT_preparedammoDesc      = "You stockpiled ammunition and reloaded your own rounds. +1 to Aiming and Reloading.",
 
     UI_UT_preparedmedical       = "Prepared: Medical",
-    UI_UT_preparedmedicalDesc   = "You took first-aid courses and kept a well-stocked medical kit. Gain ×2 XP in First Aid.",
+    UI_UT_preparedmedicalDesc   = "You took first-aid courses and kept a well-stocked medical kit. +1 to First Aid.",
 
     UI_UT_preparedcarpentry     = "Prepared: Carpentry",
-    UI_UT_preparedcarpentryDesc = "You fortified and reinforced your home long before the dead rose. Gain ×2 XP in Carpentry.",
+    UI_UT_preparedcarpentryDesc = "You fortified and reinforced your home long before the dead rose. +1 to Carpentry.",
 
     UI_UT_preparedcamp          = "Prepared: Camping",
-    UI_UT_preparedcampDesc      = "You practised wilderness survival and long-term camping. Gain ×2 XP in Fishing.",
+    UI_UT_preparedcampDesc      = "You lived off the land long before the outbreak. +1 to Fishing and Trapping.",
 
     UI_UT_preparedweapons       = "Prepared: Weapons",
-    UI_UT_preparedweaponsDesc   = "You trained extensively with melee weapons before the collapse. Gain ×2 XP in Maintenance.",
+    UI_UT_preparedweaponsDesc   = "You kept your gear in fighting shape. +1 to Maintenance.",
 
     UI_UT_preparedcars          = "Prepared: Vehicles",
-    UI_UT_preparedcarsDesc      = "You kept your vehicles in top condition and knew basic mechanics. Gain ×2 XP in Mechanics.",
-
-    UI_UT_preparedcartography   = "Prepared: Cartography",
-    UI_UT_preparedcartographyDesc = "You mapped escape routes and supply caches well in advance. Gain ×2 XP in Cartography.",
+    UI_UT_preparedcarsDesc      = "You kept your vehicles in top condition and knew basic mechanics. +1 to Mechanics.",
 
     -- ============================================================
     -- PHASE 1 — XP BOOST: MOVEMENT & STEALTH

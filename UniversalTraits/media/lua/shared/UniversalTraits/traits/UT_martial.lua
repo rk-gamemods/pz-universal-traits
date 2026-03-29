@@ -23,7 +23,7 @@ local function onWeaponHitCharacter(player, weapon, target)
 
     -- Always drain endurance on bare-hand hit
     if stats and stats.setEndurance then
-        stats:setEndurance(math.max(0, endurance - 0.002))
+        stats:setEndurance(math.max(0, endurance - 0.001))
     end
 
     -- Guard: UT_mundane disables crits
@@ -41,34 +41,31 @@ local function onWeaponHitCharacter(player, weapon, target)
         smallBluntLevel = level
     end
 
-    -- Compute crit chance: (5 + smallBluntLevel) * 0.01
-    local critchance = (5 + smallBluntLevel) * 0.01
+    -- Compute crit chance: (5 + (smallBluntLevel * 5)) * 0.01
+    local critchance = (5 + (smallBluntLevel * 5)) * 0.01
 
     -- Roll for crit
+    local martialDamage
     if ZombRand(100) < (critchance * 100) then
-        -- Base damage: 4 * 0.1 = 0.4
-        local martialDamage = 4 * 0.1
-
-        -- Apply endurance scaling
-        if endurance < 0.25 then
-            martialDamage = martialDamage * 0.25
-        elseif endurance < 0.50 then
-            martialDamage = martialDamage * 0.5
-        elseif endurance < 0.75 then
-            martialDamage = martialDamage * 0.75
-        -- else: multiply by 1.0 (no change)
-        end
-
-        -- Apply damage
-        target:setHealth(target:getHealth() - martialDamage)
-
-        -- Grant XP
-        local xpOk = pcall(function()
-            if Perks and Perks.SmallBlunt then
-                player:getXp():AddXP(Perks.SmallBlunt, martialDamage * 2)
-            end
-        end)
+        -- Crit base damage: 6 * 0.1 = 0.6
+        martialDamage = 6 * 0.1
+    else
+        -- Non-crit base damage: 2 * 0.1 = 0.2
+        martialDamage = 2 * 0.1
     end
+
+    -- Apply endurance scaling -- scales from 0.35x at 0 endurance to 1.35x at full endurance
+    martialDamage = martialDamage * (endurance + 0.35)
+
+    -- Apply damage
+    target:setHealth(target:getHealth() - martialDamage)
+
+    -- Grant XP
+    local xpOk = pcall(function()
+        if Perks and Perks.SmallBlunt then
+            player:getXp():AddXP(Perks.SmallBlunt, martialDamage * 2)
+        end
+    end)
 end
 
 Events.OnWeaponHitCharacter.Add(onWeaponHitCharacter)

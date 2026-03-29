@@ -113,6 +113,11 @@ UTCore.applyNoiseMod        = function(player, v) player:getModData()["UT_noiseM
 UTCore.applySleepQuality    = function(player, v) player:getModData()["UT_sleepQualMod"] = v end
 UTCore.applyPanicResistance = function(player, v) player:getModData()["UT_panicResist"] = v end
 UTCore.applySpawnCondition  = function(player, t) player:getModData()["_spawnCond"] = t end
+UTCore.applyBleedDecayMult  = function(player, mult, bandagedOnly)
+    player:getModData()["UT_bleedDecayMult"]        = mult
+    player:getModData()["UT_bleedDecayBandagedOnly"] = bandagedOnly and true or false
+end
+UTCore.applyBleedDrainMult  = function(player, mult) player:getModData()["UT_bleedDrainMult"] = mult end
 UTCore.registerPeriodicHandler = function(traitId, interval, fn) end  -- no-op stub
 
 -- Events.OnNewGame mock

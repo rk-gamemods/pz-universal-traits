@@ -852,7 +852,6 @@ module UniversalTraits
         Cost = 2,
         UIName = UI_UT_driver,
         UIDescription = UI_UT_driverDesc,
-        XPBoosts = Driving=1,
     }
 
     character_trait_definition UniversalTraits:UT_amateurelectrician
@@ -1126,6 +1125,7 @@ module UniversalTraits
         DisabledInMultiplayer = true,
         CharacterTrait = UniversalTraits:UT_staunch,
         Cost = 10,
+        XPBoosts = FirstAid=1,
         UIName = UI_UT_staunch,
         UIDescription = UI_UT_staunchDesc,
     }
