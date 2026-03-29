@@ -15,13 +15,31 @@
 --   player:setBumpType("")   → clears isBumped(); disables stagger movement-block
 --   player:setBumpFall(false) → prevents the trip/fall animation
 --
--- API:
+-- Trait API (preferred):
+--   UTCore.declareZombieCollisionHandler(traitId, fn)
+--     Called at file-load time. Declares intent — the handler is automatically
+--     registered via OnCreatePlayer when the player has the trait, and
+--     self-healed by a periodic integrity check if ever cleared.
+--
+-- Low-level API (UTCore internal use):
 --   UTCore.registerZombieCollisionHandler(traitId, fn)
---     fn(player, zombie) — called once per collision (rising edge only)
 --   UTCore.unregisterZombieCollisionHandler(traitId)
 
 UTCore = UTCore or {}
 UTCore._zombieCollisionCallbacks = UTCore._zombieCollisionCallbacks or {}
+
+-- Declarations live in a local upvalue: trait files add to it via the public
+-- declare function, but nothing can accidentally wipe it by clearing a UTCore field.
+local _declarations = {}
+
+--- Declare a zombie collision handler for a trait. Call once at file-load time.
+--- The handler is automatically registered on OnCreatePlayer (new game + save load)
+--- and re-registered by the integrity check if the callbacks table is ever cleared.
+---   traitId:   full trait ID, e.g. "UniversalTraits:UT_batteringram"
+---   handlerFn: function(player, zombie) — called once per collision rising edge
+function UTCore.declareZombieCollisionHandler(traitId, handlerFn)
+    _declarations[traitId] = handlerFn
+end
 
 function UTCore.registerZombieCollisionHandler(traitId, handlerFn)
     UTCore._zombieCollisionCallbacks[traitId] = handlerFn
@@ -60,3 +78,45 @@ local function onPlayerUpdate(player)
 end
 
 Events.OnPlayerUpdate.Add(onPlayerUpdate)
+
+---------------------------------------------------------------------------
+-- Auto-registration from declarations
+---------------------------------------------------------------------------
+
+-- OnCreatePlayer fires on BOTH new game and save load.
+-- Registers collision handlers for every declared trait the player actually has.
+local function onCreatePlayer(_playerIndex, player)
+    if not player then return end
+    for traitId, fn in pairs(_declarations) do
+        if UTCore.hasTrait(player, traitId) then
+            UTCore._zombieCollisionCallbacks[traitId] = fn
+        end
+    end
+end
+
+Events.OnCreatePlayer.Add(onCreatePlayer)
+
+-- Integrity check: every 10 game-minutes (~10 real seconds), verify that
+-- declared handlers are still present in the live callbacks table.
+-- Re-registers any missing ones. Cost: one pairs() over declarations
+-- (typically < 5 entries) + one hasTrait + one table lookup each.
+local _integrityCounter = 0
+
+local function integrityCheck()
+    _integrityCounter = _integrityCounter + 1
+    if _integrityCounter < 10 then return end
+    _integrityCounter = 0
+
+    local player = getPlayer()
+    if not player then return end
+
+    for traitId, fn in pairs(_declarations) do
+        if UTCore.hasTrait(player, traitId) then
+            if not UTCore._zombieCollisionCallbacks[traitId] then
+                UTCore._zombieCollisionCallbacks[traitId] = fn
+            end
+        end
+    end
+end
+
+Events.EveryOneMinute.Add(integrityCheck)

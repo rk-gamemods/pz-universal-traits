@@ -133,6 +133,7 @@ Events.OnPlayerUpdate         = _makeEventTable()
 Events.OnPlayerMove           = _makeEventTable()
 Events.OnGameBoot             = _makeEventTable()
 Events.OnWeaponHitCharacter   = _makeEventTable()
+Events.OnCreatePlayer         = _makeEventTable()
 
 _G.getPlayer = function() return nil end  -- tests override this
 

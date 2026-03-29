@@ -404,5 +404,46 @@ test("ZombieCollisionHook does NOT fire when bumpedChr is nil", function()
     assert_eq(fired, false, "expected no callback when bumpedChr is nil")
 end)
 
+-- ===== declareZombieCollisionHandler + auto-registration tests =====
+
+test("declareZombieCollisionHandler auto-registers on OnCreatePlayer for active trait", function()
+    UTCore._zombieCollisionCallbacks = {}
+    local fn = function() end
+    UTCore.declareZombieCollisionHandler("UniversalTraits:UT_test_declare", fn)
+    local p = MockPlayer({ "UniversalTraits:UT_test_declare" })
+    Events.OnCreatePlayer.fire(0, p)
+    assert_eq(UTCore._zombieCollisionCallbacks["UniversalTraits:UT_test_declare"], fn,
+        "expected callback registered after OnCreatePlayer")
+end)
+
+test("declareZombieCollisionHandler does NOT register for player without trait", function()
+    UTCore._zombieCollisionCallbacks = {}
+    UTCore.declareZombieCollisionHandler("UniversalTraits:UT_test_notrait", function() end)
+    local p = MockPlayer({})
+    Events.OnCreatePlayer.fire(0, p)
+    assert_eq(UTCore._zombieCollisionCallbacks["UniversalTraits:UT_test_notrait"], nil,
+        "expected no callback for player lacking the trait")
+end)
+
+test("integrity check re-registers cleared declared handler", function()
+    UTCore._zombieCollisionCallbacks = {}
+    local fn = function() end
+    UTCore.declareZombieCollisionHandler("UniversalTraits:UT_test_integrity", fn)
+    local p = MockPlayer({ "UniversalTraits:UT_test_integrity" })
+    _G.getPlayer = function() return p end
+    Events.OnCreatePlayer.fire(0, p)
+    assert_eq(UTCore._zombieCollisionCallbacks["UniversalTraits:UT_test_integrity"], fn)
+
+    -- Simulate something clearing the callbacks table
+    UTCore._zombieCollisionCallbacks = {}
+
+    -- Fire EveryOneMinute 10 times to trigger the integrity check
+    for _ = 1, 10 do Events.EveryOneMinute.fire() end
+
+    assert_eq(UTCore._zombieCollisionCallbacks["UniversalTraits:UT_test_integrity"], fn,
+        "expected integrity check to re-register the cleared callback")
+    _G.getPlayer = function() return nil end
+end)
+
 print(string.format("\n%d passed, %d failed", passed, failed))
 if failed > 0 then os.exit(1) end

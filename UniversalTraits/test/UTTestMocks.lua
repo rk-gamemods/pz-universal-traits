@@ -229,3 +229,15 @@ if not _G.Events.OnPanic then
         end,
     }
 end
+
+-- Events.EveryOneMinute stub
+-- UTCore_ZombieCollisionHook registers an integrity check on this event.
+if not _G.Events.EveryOneMinute then
+    local _everyOneMinuteHandlers = {}
+    _G.Events.EveryOneMinute = {
+        Add  = function(fn) table.insert(_everyOneMinuteHandlers, fn) end,
+        fire = function(self)
+            for _, fn in ipairs(_everyOneMinuteHandlers) do fn() end
+        end,
+    }
+end

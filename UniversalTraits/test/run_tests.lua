@@ -670,6 +670,8 @@ end)
 
 -- ===== UT_batteringram collision tests =====
 UTCore._zombieCollisionCallbacks = {}  -- reset before batteringram tests
+-- Load the collision hook so declareZombieCollisionHandler is available
+dofile("UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_batteringram.lua")
 
 local function fireRamCollision(player, zombie)
