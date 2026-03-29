@@ -1,23 +1,34 @@
 -- UT_ascetic.lua
--- Warns if eating too frequently; penalizes mood if eating within 5 minutes of last meal
+-- Ascetic: penalizes mood when eating within 5 in-game minutes of the last meal.
+-- Detected via rising edge on healthFromFoodTimer (same pattern as sensitivestomach).
 
 local TRAIT_ID = "UniversalTraits:UT_ascetic"
 
-local function onEat(player, food)
+local function onPlayerUpdate(player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
 
-    local modData = player:getModData()
-    local currentWorldAgeHours = getGameTime():getWorldAgeHours()
-    local lastAteHours = modData["UT_ateRecently"]
+    local md = player:getModData()
+    local healTimer = player:getBodyDamage():getHealthFromFoodTimer()
+    local prev = md["UT_ascetic_prevTimer"]
 
-    -- Check if ate within last 5 minutes (5/60 hours)
-    if lastAteHours and (currentWorldAgeHours - lastAteHours) < (5 / 60) then
-        print("WARNING: Ascetic trait - eating too soon after last meal!")
+    -- Detect moment food was eaten: timer jumps up from a low/nil value
+    if prev ~= nil and healTimer > prev + 50 then
+        local lastAteHours = md["UT_ascetic_lastAte"]
+        local currentHours = getGameTime():getWorldAgeHours()
+
+        if lastAteHours and (currentHours - lastAteHours) < (5 / 60) then
+            -- Ate within 5 in-game minutes of last meal — penalize unhappiness
+            pcall(function()
+                local stats = player:getStats()
+                stats:add(CharacterStat.UNHAPPINESS, 10)
+                stats:add(CharacterStat.STRESS, 5)
+            end)
+        end
+
+        md["UT_ascetic_lastAte"] = currentHours
     end
 
-    -- Update last meal time
-    modData["UT_ateRecently"] = currentWorldAgeHours
-    modData["UT_asceticPenalty"] = true
+    md["UT_ascetic_prevTimer"] = healTimer
 end
 
-Events.OnEat.Add(onEat)
+Events.OnPlayerUpdate.Add(onPlayerUpdate)

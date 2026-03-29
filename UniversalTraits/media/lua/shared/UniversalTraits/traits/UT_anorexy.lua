@@ -1,12 +1,24 @@
 -- UT_anorexy.lua
--- Anorexy: food restriction penalty on eat
+-- Anorexy: raises stress when eating, detected via rising edge on healthFromFoodTimer.
 
 local TRAIT_ID = "UniversalTraits:UT_anorexy"
 
-local function onEat(player, food)
+local function onPlayerUpdate(player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
-    player:getModData()["UT_anorexPenalty"] = true
-    player:getStats():setStress(math.min(1, player:getStats():getStress() + 0.1))
+
+    local md = player:getModData()
+    local healTimer = player:getBodyDamage():getHealthFromFoodTimer()
+    local prev = md["UT_anorexy_prevTimer"]
+
+    -- Detect moment food was eaten: timer jumps up from a low/nil value
+    if prev ~= nil and healTimer > prev + 50 then
+        pcall(function()
+            local stats = player:getStats()
+            stats:add(CharacterStat.STRESS, 10)
+        end)
+    end
+
+    md["UT_anorexy_prevTimer"] = healTimer
 end
 
-Events.OnEat.Add(onEat)
+Events.OnPlayerUpdate.Add(onPlayerUpdate)
