@@ -14,7 +14,6 @@ UTTraitsRegistries.UT_preparedcarpentry   = CharacterTrait.register("UniversalTr
 UTTraitsRegistries.UT_preparedcamp        = CharacterTrait.register("UniversalTraits:UT_preparedcamp")
 UTTraitsRegistries.UT_preparedweapons     = CharacterTrait.register("UniversalTraits:UT_preparedweapons")
 UTTraitsRegistries.UT_preparedcars        = CharacterTrait.register("UniversalTraits:UT_preparedcars")
-UTTraitsRegistries.UT_preparedcartography = CharacterTrait.register("UniversalTraits:UT_preparedcartography")
 
 -- ============================================================
 -- PHASE 1 — XP BOOST: MOVEMENT & STEALTH
