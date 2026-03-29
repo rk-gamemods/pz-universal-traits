@@ -242,7 +242,7 @@
     "UI_UT_unwavering": "Unwavering",
     "UI_UT_unwaveringDesc": "Fear never really got its hooks into you. Panic resistance is increased by 40% — panic events have 40% less impact.",
     "UI_UT_idealweight": "Ideal Weight",
-    "UI_UT_idealweightDesc": "Your body fights to stay at its ideal weight. If you are overweight or above, you burn calories at 2x the normal rate. If you are underweight or below, you burn calories at 0.5x the normal rate. No effect at normal weight.",
+    "UI_UT_idealweightDesc": "Your body fights to stay at its ideal weight. If you are near overweight or above, you burn calories at 2x the normal rate. If you are near underweight or below, you burn calories at 0.5x the normal rate. No effect at normal weight 76-84.",
     "UI_UT_mundane": "Mundane",
     "UI_UT_mundaneDesc": "You were never exceptional at anything. XP gain in Carpentry, Cooking, First Aid, Mechanics, Electrical, Aiming, and Reloading is reduced to ×0.8 (−20%).",
     "UI_UT_incomprehensive": "Incomprehensive",
