@@ -1,42 +1,49 @@
 -- UT_nervouswreck.lua
--- Nervous wreck: slows panic recovery by 70% by reducing the engine's own
--- panicReductionValue from the default 0.06 to 0.018.
+-- Nervous wreck: slows panic recovery by 70% by scaling down the engine's
+-- panicReductionValue. Reads the current value once on trait acquisition,
+-- stores it, then writes 30% of that value. Restores on trait removal.
+--
+-- This avoids stomping other mods: if another trait has already modified
+-- panicReductionValue, we reduce *that* value by 70% rather than overwriting
+-- with a hardcoded absolute. Two conflicting traits that both scale this value
+-- will compose multiplicatively, which is reasonable behaviour.
 --
 -- Engine decay reference (verified from BodyDamage.java ReducePanic()):
 --   default panicReductionValue = 0.06
---   per-call delta = 0.06 * getThirtyFPSMultiplier() + 0.06 * monthsSurvived
+--   per-call delta = value * getThirtyFPSMultiplier() + value * monthsSurvived
 --   BodyDamage.Update() runs ~60x per real minute at 1x speed
 --
--- Recovery rates without trait (awake, no zombies):
---   new player (0 months):  ~1.8 panic/min
---   5-month veteran:        ~19.8 panic/min (full drain in ~5 min)
---
--- Recovery rates with trait (70% reduction):
---   new player:             ~0.54 panic/min (~3x slower, still drains)
---   5-month veteran:        ~5.94 panic/min (~17 min to full drain)
---
--- The value is applied once and reverted when the trait is absent.
+-- With 70% reduction from default:
+--   new player:       ~0.54 panic/min (was ~1.8)
+--   5-month veteran:  ~5.94 panic/min (was ~19.8, full drain ~17 min)
 -- Sleeping still doubles the reduced rate (engine behaviour unchanged).
 
-local TRAIT_ID    = "UniversalTraits:UT_nervouswreck"
-local BASE_VALUE  = 0.06
-local TRAIT_VALUE = 0.018  -- 70% reduction
+local TRAIT_ID  = "UniversalTraits:UT_nervouswreck"
+local REDUCTION = 0.30  -- keep 30% of current value (70% slower recovery)
 
 local function onPlayerUpdate(player)
-    local bd = player:getBodyDamage()
-    if not bd then return end
+    local bd = player:getModData()
+    local bodyDamage = player:getBodyDamage()
+    if not bodyDamage then return end
 
-    local current = bd:getPanicReductionValue()
     local hasTrait = UTCore.hasTrait(player, TRAIT_ID)
+    local isApplied = bd["UT_nervouswreck_applied"] == true
 
-    if hasTrait then
-        if math.abs(current - TRAIT_VALUE) > 0.001 then
-            bd:setPanicReductionValue(TRAIT_VALUE)
+    if hasTrait and not isApplied then
+        -- Snapshot current value and apply reduction
+        local current = bodyDamage:getPanicReductionValue()
+        bd["UT_nervouswreck_base"] = current
+        bodyDamage:setPanicReductionValue(current * REDUCTION)
+        bd["UT_nervouswreck_applied"] = true
+
+    elseif not hasTrait and isApplied then
+        -- Restore to snapshotted value
+        local base = bd["UT_nervouswreck_base"]
+        if base then
+            bodyDamage:setPanicReductionValue(base)
         end
-    else
-        if math.abs(current - BASE_VALUE) > 0.001 then
-            bd:setPanicReductionValue(BASE_VALUE)
-        end
+        bd["UT_nervouswreck_applied"] = false
+        bd["UT_nervouswreck_base"] = nil
     end
 end
 
