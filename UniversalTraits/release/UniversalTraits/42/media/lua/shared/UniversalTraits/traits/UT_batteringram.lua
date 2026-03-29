@@ -38,9 +38,8 @@ local function getMartialBonusDamage(player, endurance)
     return damage * (endurance + 0.35)
 end
 
+-- Only registered when the trait is active — no hasTrait guard needed inside.
 local function onZombieCollision(player, zombie)
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
-
     -- Only trigger while actively sprinting or running (walking into a zombie does nothing)
     if not player:isSprinting() and not player:isRunning() then return end
 
@@ -71,4 +70,9 @@ local function onZombieCollision(player, zombie)
     end
 end
 
-UTCore.registerZombieCollisionHandler(TRAIT_ID, onZombieCollision)
+local function onNewGame(player)
+    if not UTCore.hasTrait(player, TRAIT_ID) then return end
+    UTCore.registerZombieCollisionHandler(TRAIT_ID, onZombieCollision)
+end
+
+Events.OnNewGame.Add(onNewGame)
