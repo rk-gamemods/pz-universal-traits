@@ -157,9 +157,10 @@ In `UniversalTraits/media/scripts/UT_character_traits.txt`:
 - XPBoosts only needed for script-only traits (Phase 1 / bouncer / gunspecialist tiers).
 - Phase 2+ traits are Lua-driven — no XPBoosts in the script block.
 - All trait IDs in MET fields use full namespace: `UniversalTraits:UT_<id>`.
-- `UT_MET.lua` is not enough by itself for character creation. Vanilla character creation reads `MutuallyExclusiveTraits` from `UT_character_traits.txt` and resolves them eagerly during script load.
-- Forward references are unsafe: if `MutuallyExclusiveTraits` names a later-defined trait, `CharacterTraitDefinitionScript` stores `null`, and the character creator can crash with `attempted index: isFree of non-table: null`.
-- Safe rule: in `UT_character_traits.txt`, only reference `UniversalTraits:` ids defined **earlier** in the file (or vanilla/base traits that already exist). Do not require script-side bidirectional pairs.
+- Vanilla B42 startup order is `ModRegistries.init()` first, then `ScriptManager.instance.Load()`. `media/registries.lua` runs before `media/scripts/*.txt`, so `MutuallyExclusiveTraits` can safely reference any trait id that was registered in `registries.lua`, even if its script block appears later in the file.
+- Character creation still reads `MutuallyExclusiveTraits` from `UT_character_traits.txt`; `UT_MET.lua` is only a runtime grouping table and does not populate the pregame UI by itself.
+- Script-side `addMutuallyExclusive()` is one-way. For character-creation behavior, keep intended `UniversalTraits:` exclusions explicit on both traits so selecting either side removes the other from the available list.
+- The real null-crash causes are unknown/unregistered trait ids in script/runtime mutual exclusions, or runtime code that appends `nil` into `getMutuallyExclusiveTraits()` / `setMutualExclusive()`.
 
 ---
 

@@ -117,6 +117,57 @@ test("UT_indefatigable registered", function()
     assert_eq(UTTraitsRegistries.UT_indefatigable, "UniversalTraits:UT_indefatigable")
 end)
 
+local function collectRegisteredIdsFromRegistries(text)
+    local ids = {}
+
+    for id in text:gmatch('CharacterTrait%.register%(%"([^"]+)"%)') do
+        ids[id] = true
+    end
+
+    return ids
+end
+
+local function parseScriptTraitDefinitions(text)
+    local defs = {}
+    local current_def = nil
+    local current = nil
+
+    for line in text:gmatch("[^\r\n]+") do
+        local def = line:match("^%s*character_trait_definition%s+([^%s]+)")
+        if def then
+            current_def = def
+            current = {
+                block_id = def,
+                character_trait = nil,
+                granted_traits = {},
+                mutually_exclusive_traits = {},
+            }
+            defs[#defs + 1] = current
+        elseif current then
+            local character_trait = line:match("^%s*CharacterTrait%s*=%s*([^,%s]+)")
+            if character_trait then
+                current.character_trait = character_trait
+            end
+
+            local granted = line:match("^%s*GrantedTraits%s*=%s*(.-),%s*$")
+            if granted then
+                for trait_id in granted:gmatch("([^;]+)") do
+                    current.granted_traits[#current.granted_traits + 1] = trait_id
+                end
+            end
+
+            local me = line:match("^%s*MutuallyExclusiveTraits%s*=%s*(.-),%s*$")
+            if me then
+                for trait_id in me:gmatch("([^;]+)") do
+                    current.mutually_exclusive_traits[#current.mutually_exclusive_traits + 1] = trait_id
+                end
+            end
+        end
+    end
+
+    return defs
+end
+
 -- Verify all 199 expected trait IDs are registered in CharacterTrait._registered
 local expected_ids = {
     -- Prepared series (7)
@@ -270,35 +321,47 @@ test("total registration count is 198", function()
     assert_eq(count, 198, "registration count")
 end)
 
-test("script MET definitions avoid forward refs and preserve UT_MET coverage", function()
+test("script trait definitions resolve cleanly and preserve UT_MET coverage", function()
+    local registry_file = io.open(base .. "../media/registries.lua", "r")
+    assert_true(registry_file ~= nil, "failed to open registries.lua")
+    local registry_text = registry_file:read("*a")
+    registry_file:close()
+
     local file = io.open(base .. "../media/scripts/UT_character_traits.txt", "r")
     assert_true(file ~= nil, "failed to open UT_character_traits.txt")
 
     local text = file:read("*a")
     file:close()
 
+    local registered_ids = collectRegisteredIdsFromRegistries(registry_text)
+    local defs = parseScriptTraitDefinitions(text)
     local me_by_trait = {}
-    local current_trait = nil
-    local order = {}
-    local next_index = 1
+    local def_by_trait = {}
 
-    for line in text:gmatch("[^\r\n]+") do
-        local def = line:match("^%s*character_trait_definition%s+([^%s]+)")
-        if def then
-            current_trait = def
-            order[def] = next_index
-            next_index = next_index + 1
-        else
-            local me = line:match("^%s*MutuallyExclusiveTraits%s*=%s*(.-),%s*$")
-            if me and current_trait then
-                local refs = {}
-                for trait_id in me:gmatch("([^;]+)") do
-                    assert_true(trait_id ~= "", current_trait .. " has empty MutuallyExclusiveTraits entry")
-                    refs[#refs + 1] = trait_id
-                end
-                me_by_trait[current_trait] = refs
+    for _, def in ipairs(defs) do
+        assert_true(def.block_id == def.character_trait,
+            def.block_id .. " CharacterTrait mismatch: " .. tostring(def.character_trait))
+        assert_true(registered_ids[def.character_trait] == true,
+            def.block_id .. " missing registry entry: " .. tostring(def.character_trait))
+
+        for _, granted_trait in ipairs(def.granted_traits) do
+            assert_true(granted_trait ~= "", def.block_id .. " has empty GrantedTraits entry")
+            if granted_trait:match("^UniversalTraits:") then
+                assert_true(registered_ids[granted_trait] == true,
+                    def.block_id .. " GrantedTraits missing registry entry: " .. granted_trait)
             end
         end
+
+        for _, me_trait in ipairs(def.mutually_exclusive_traits) do
+            assert_true(me_trait ~= "", def.block_id .. " has empty MutuallyExclusiveTraits entry")
+            if me_trait:match("^UniversalTraits:") then
+                assert_true(registered_ids[me_trait] == true,
+                    def.block_id .. " MutuallyExclusiveTraits missing registry entry: " .. me_trait)
+            end
+        end
+
+        me_by_trait[def.block_id] = def.mutually_exclusive_traits
+        def_by_trait[def.block_id] = def
     end
 
     local grouped_traits = {
@@ -311,26 +374,12 @@ test("script MET definitions avoid forward refs and preserve UT_MET coverage", f
     }
 
     for _, group in ipairs(grouped_traits) do
-        for i = 1, #group do
-            for j = i + 1, #group do
-                local a = group[i]
-                local b = group[j]
-                local later = order[a] > order[b] and a or b
-                local earlier = later == a and b or a
-                local refs = me_by_trait[later] or {}
-                assert_contains(refs, earlier,
-                    later .. " must reference earlier trait " .. earlier .. " for safe load order")
-            end
-        end
-    end
-
-    for trait_id, refs in pairs(me_by_trait) do
-        if trait_id:match("^UniversalTraits:") then
-            for _, other_id in ipairs(refs) do
-                if other_id:match("^UniversalTraits:") then
-                    assert_true(order[other_id] ~= nil, "unknown trait in MutuallyExclusiveTraits: " .. other_id)
-                    assert_true(order[other_id] < order[trait_id],
-                        "forward MutuallyExclusiveTraits ref: " .. trait_id .. " -> " .. other_id)
+        for _, trait_id in ipairs(group) do
+            local refs = me_by_trait[trait_id] or {}
+            for _, other_id in ipairs(group) do
+                if other_id ~= trait_id then
+                    assert_contains(refs, other_id,
+                        trait_id .. " missing character-creation MET reference to " .. other_id)
                 end
             end
         end
