@@ -3,9 +3,9 @@
 
 local TRAIT_ID = "UniversalTraits:UT_preparedpack"
 
-local function onNewGame(player)
+local function onCreatePlayer(_playerIndex, player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
     UTCore.applyCarryWeight(player, 3)
 end
 
-Events.OnNewGame.Add(onNewGame)
+Events.OnCreatePlayer.Add(onCreatePlayer)

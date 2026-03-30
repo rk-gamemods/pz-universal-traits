@@ -40,7 +40,7 @@ UniversalTraits/                          ← repo root
   UT_CORE/
     media/lua/shared/UTCore/              ← source infrastructure files
     release/UT_CORE/42/media/           ← deployed copy (must be kept in sync)
-    test/run_tests.lua                    ← 29 tests (standard Lua 5.x)
+    test/run_tests.lua                    ← 41 tests (standard Lua 5.x)
     test/UTCoreMocks.lua                  ← mock IsoPlayer, Stats, BodyDamage
   UniversalTraits/
     media/registries.lua                  ← CharacterTrait.register() for all traits
@@ -48,9 +48,9 @@ UniversalTraits/                          ← repo root
     media/lua/shared/Translate/EN/UI_EN.txt ← all translations
     media/lua/shared/UniversalTraits/
       UT_MET.lua                          ← runtime mutual exclusivity table
-      traits/UT_<id>.lua                  ← per-trait Lua effect files (95 files)
+      traits/UT_<id>.lua                  ← per-trait Lua effect files (121 files)
     release/UniversalTraits/42/media/   ← deployed copy (must be kept in sync)
-    test/run_tests.lua                    ← 28 tests (standard Lua 5.x)
+    test/run_tests.lua                    ← 48 tests (standard Lua 5.x, 2 pre-existing failures)
     test/UTTestMocks.lua                  ← mock CharacterTrait
   planning/                               ← implementation plans
   research/                               ← source mod research
@@ -69,7 +69,7 @@ Run from repo root (`C:\Users\Admin\Documents\GIT\GameMods\PZMods\UTMods`):
 "C:\Users\Admin\AppData\Local\Programs\Lua\bin\lua.exe" UniversalTraits/test/run_tests.lua
 ```
 
-**Current passing counts:** 38 (UT_CORE) + 45 (UniversalTraits) = 83 passing. (UniversalTraits has 47 total tests; 2 pre-existing failures in `UT_preparedcartography` are unrelated to the collision work.)
+**Current passing counts:** 41 (UT_CORE) + 46 (UniversalTraits) = 87 passing. (UniversalTraits has 48 total tests; 2 pre-existing failures in `UT_preparedcartography` are unrelated.)
 
 ---
 
@@ -185,13 +185,16 @@ In `UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_<id>.lua`:
 
 local TRAIT_ID = "UniversalTraits:UT_<id>"
 
-local function onNewGame(player)
+local function onCreatePlayer(_playerIndex, player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
-    -- effect
+    -- effect (transient state like applyCarryWeight)
 end
 
-Events.OnNewGame.Add(onNewGame)
+Events.OnCreatePlayer.Add(onCreatePlayer)
 ```
+
+Use `OnNewGame` only for one-time spawn effects (moddata flags, spawn conditions).
+Use `OnCreatePlayer` for anything that sets transient engine state (carry weight, handler registration).
 
 For periodic handlers, use `getPlayer()` (no args):
 
@@ -232,6 +235,10 @@ Events.EveryOneMinute.Add(onEveryMinute)
 - `UTCore.applySleepQuality(player, delta)` — stores `UT_sleepQualMod` in moddata
 - `UTCore.applyNoiseMod(player, multiplier)` — stores `UT_noiseMult` in moddata
 
+### UT_martial.lua (public API)
+
+- `UT_martial.applyBonusDamage(player, target, endurance)` → damage dealt (0 if mundane) — calculates bonus damage using Small Blunt skill, crit chance `(5 + level*5)%`, crit multiplier 6×0.1=0.6 vs normal 2×0.1=0.2, all scaled by endurance (×0.35 at 0 to ×1.35 at 1.0)
+
 ### UTCore_SpawnEffects.lua
 
 - `UTCore.applySpawnStats(player, statTable)` — keys: `"panic"`, `"stress"`, `"hunger"`, `"thirst"`, `"fatigue"`, `"endurance"`, `"carryDelta"`
@@ -262,6 +269,33 @@ Events.EveryOneMinute.Add(onEveryMinute)
 
 - Registered via `Events.OnPlayerUpdate` (throttled every 30 ticks) — reads `UT_bleedMult` from moddata and applies BodyPart health corrections automatically
 - `UTCore._bleedTickCounter` — exposed for test resets
+
+### UTCore_BleedDecayHook.lua
+
+- Registered via `Events.OnPlayerUpdate` (every tick — no throttle) — reads `UT_bleedDecayMult` and `UT_bleedDecayBandagedOnly` from moddata
+- Adjusts `bleedingTime` on each body part to multiply the native decay rate:
+  - `mult=3.0` → 3× faster wound healing (staunch trait)
+  - `mult=0.33` → 3× slower wound healing (anemic trait)
+- `bandagedOnly=true` → only affects bandaged body parts
+- Uses native decay constants: bandaged = 0.0002, unbandaged = 0.00002 (per tick × gameMultiplier)
+
+### UTCore_BleedDrainHook.lua
+
+- Registered via `Events.OnPlayerUpdate` (throttled every 30 ticks) — reads `UT_bleedDrainMult` from moddata
+- Offsets player general health to scale the effective bleed death rate:
+  - `mult=2.0` → doubles bleed death rate (heavilybleedingwounds)
+  - `mult=0.5` → halves bleed death rate (thickblood)
+- Only active when at least one body part has `bleeding() == true`
+- Estimates native drain per tick using per-body-part scalers (Neck = 5× standard)
+- `UTCore._bleedDrainTickCounter` — exposed for test resets
+
+### UTCore_MeleeDelayHook.lua
+
+- Registered via `Events.OnPlayerUpdate` + `Events.OnWeaponHitCharacter`
+- Reduces melee swing delay for weapon-category traits (axes, blunts, blades, spears, two-handed, one-handed) — standard traits get 50% delay reduction
+- `UT_heavyswing` uses strength-scaled reduction: `delay * (strength × 0.1)`
+- Uses `UT_meleeDelaySet` moddata flag to prevent re-application within a swing; cleared on `OnWeaponHitCharacter`
+- `UTCore._meleeDelayOnPlayerUpdate` — exposed for direct test invocation
 
 ### UTCore_ZombieCollisionHook.lua
 
@@ -454,9 +488,6 @@ Key groups:
 - **UT_amputee** — complex limb system, deferred indefinitely (plan says "defer to Phase 3b")
 - **In-game verification** — all traits need visual/functional confirmation in PZ character creation
 - **poster.png** — cosmetic, not required for function (both mods missing)
-- **XP hooks** — `UT_xpMult_*` and `UT_xpDisable_*` moddata flags are stored but the
-  `Events.AddXP` handler that reads them has not been implemented yet. Add to UTCore.
-
 ---
 
 ## Known Gaps / TODOs

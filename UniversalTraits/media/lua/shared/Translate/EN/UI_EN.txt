@@ -66,7 +66,7 @@ UI_EN = {
     -- PHASE 1 — XP BOOST: COMBAT (MELEE)
     -- ============================================================
     UI_UT_martial               = "Martial Artist",
-    UI_UT_martialDesc           = "Your hands are lethal weapons. Bare-hand strikes have a chance to land a critical hit dealing 4× damage, scaled by your endurance. Grants Short Blunt experience on each hit.",
+    UI_UT_martialDesc           = "Your hands are lethal weapons. Bare-hand strikes have a chance to land a critical hit dealing 3× damage (0.6 vs 0.2 base). Critical hit chance scales with Short Blunt skill (5% base + 5% per level). All damage scaled by endurance (×0.35 at empty to ×1.35 at full). Grants Short Blunt experience on each hit.",
 
     UI_UT_bladetwirl            = "Blade Twirl",
     UI_UT_bladetwirlDesc        = "You handle bladed weapons with a practised flourish. Gain ×2 XP in Long Blade and Short Blade.",
@@ -81,7 +81,7 @@ UI_EN = {
     UI_UT_gruntDesc             = "Raw power and aggression drive your fighting style. Gain ×2 XP in Carpentry, Short Blunt, Masonry, and Blacksmith.",
 
     UI_UT_actionhero            = "Action Hero",
-    UI_UT_actionheroDesc        = "You fight like the hero of your own action movie. The more zombies surround you, the harder you hit — bonus damage scales with nearby enemy count.",
+    UI_UT_actionheroDesc        = "You fight like the hero of your own action movie. Nearby zombies boost your damage: within 2 tiles (+10% crit, ×1.0 damage), within 5 tiles (+5% crit, ×0.4), within 10 tiles (+2% crit, ×0.2). Bonuses stack per zombie. Disabled by Mundane.",
 
     UI_UT_cruelty               = "Cruelty",
     UI_UT_crueltyDesc           = "You strike without mercy or hesitation. Start at level 1 in every melee weapon skill.",
@@ -261,19 +261,19 @@ UI_EN = {
     -- PHASE 1 — STAT MODIFIERS
     -- ============================================================
     UI_UT_packmule              = "Pack Mule",
-    UI_UT_packmuleDesc          = "You can carry far more than the average survivor. Increases your base carry weight.",
+    UI_UT_packmuleDesc          = "You can carry more than the average survivor. +2 base carry weight.",
 
     UI_UT_packmouse             = "Pack Mouse",
-    UI_UT_packmouseDesc         = "You struggle to carry as much as most people. Reduces your base carry weight.",
+    UI_UT_packmouseDesc         = "You struggle to carry as much as most people. -2 base carry weight.",
 
     UI_UT_gimp                  = "Gimp",
-    UI_UT_gimpDesc              = "An old injury slows you down. Your movement speed is reduced.",
+    UI_UT_gimpDesc              = "An old injury slows you down. -50% movement speed.",
 
     UI_UT_anemic                = "Anemic",
-    UI_UT_anemicDesc            = "Low iron levels leave you perpetually fatigued. Endurance and fitness recovery are reduced.",
+    UI_UT_anemicDesc            = "Low iron levels slow your healing. Wound bleed decay is 3× slower (wounds close much slower than normal).",
 
     UI_UT_badteeth              = "Bad Teeth",
-    UI_UT_badteethDesc          = "Dental problems make eating painful and limit what you can consume safely.",
+    UI_UT_badteethDesc          = "Dental problems make eating painful. Eating causes increasing head pain (proportional to food healing). Food effectiveness is not reduced — it just hurts.",
 
     UI_UT_deprived              = "Deprived",
     UI_UT_deprivedDesc          = "Years of neglect have left your body in poor condition. Multiple physical stats are reduced.",
@@ -333,16 +333,16 @@ UI_EN = {
     UI_UT_fastDesc              = "+30% movement speed. Also slowly regenerates endurance (+0.01 per 30 ticks) while endurance is not full.",
 
     UI_UT_noodlelegs            = "Noodle Legs",
-    UI_UT_noodlelegsDesc        = "Your legs never quite cooperate. -20% movement speed.",
+    UI_UT_noodlelegsDesc        = "Your legs never quite cooperate. -20% movement speed and constant endurance drain (-0.005/sec).",
 
     UI_UT_pacer                 = "Pacer",
-    UI_UT_pacerDesc             = "You have always had a brisk, purposeful walk. +15% movement speed. Staying indoors for extended periods makes you restless and unhappy.",
+    UI_UT_pacerDesc             = "You have always had a brisk, purposeful walk. +15% movement speed. After ~20 seconds indoors, you become restless (+2 unhappiness per cycle).",
 
     UI_UT_lurcher               = "Lurcher",
     UI_UT_lurcherDesc           = "You move with a lumbering, uncoordinated gait. -15% movement speed and -15% work speed. When exhausted and moving, you may lose your footing.",
 
     UI_UT_sorelegs              = "Sore Legs",
-    UI_UT_sorelegsDesc          = "Your legs are weak and prone to fatigue. -20% movement speed and reduced carry weight.",
+    UI_UT_sorelegsDesc          = "Your legs are weak and prone to fatigue. -20% movement speed and -2 base carry weight.",
 
     -- ============================================================
     -- PHASE 2 — LUA-DRIVEN: WORK SPEED
@@ -414,7 +414,7 @@ UI_EN = {
     UI_UT_idealweightDesc       = "You are in peak physical condition. Carry weight is increased by +1 and fatigue rate is reduced to 85% of normal.",
 
     UI_UT_mundane               = "Mundane",
-    UI_UT_mundaneDesc           = "You were never exceptional at anything. XP gain in Carpentry, Cooking, First Aid, Mechanics, Electrical, Aiming, and Reloading is reduced to ×0.8 (−20%).",
+    UI_UT_mundaneDesc           = "You were never exceptional at anything. XP gain in Carpentry, Cooking, First Aid, Mechanics, Electrical, Aiming, and Reloading is reduced to ×0.8 (−20%). Also disables special combat abilities from other traits (Martial Artist, Action Hero).",
 
     UI_UT_incomprehensive       = "Incomprehensive",
     UI_UT_incomprehensiveDesc   = "Complex ideas just do not stick for you. Your effective skill cap is reduced by 2 in all skills.",
