@@ -157,8 +157,9 @@ In `UniversalTraits/media/scripts/UT_character_traits.txt`:
 - XPBoosts only needed for script-only traits (Phase 1 / bouncer / gunspecialist tiers).
 - Phase 2+ traits are Lua-driven — no XPBoosts in the script block.
 - All trait IDs in MET fields use full namespace: `UniversalTraits:UT_<id>`.
-- `UT_MET.lua` is not enough by itself for character creation. Vanilla character creation reads `MutuallyExclusiveTraits` from `UT_character_traits.txt`; if script-side MET entries are missing or one-way, the UI can null-crash with `attempted index: isFree of non-table: null`.
-- For any `UniversalTraits:` mutual exclusion pair, keep script-side `MutuallyExclusiveTraits` **bidirectional**.
+- `UT_MET.lua` is not enough by itself for character creation. Vanilla character creation reads `MutuallyExclusiveTraits` from `UT_character_traits.txt` and resolves them eagerly during script load.
+- Forward references are unsafe: if `MutuallyExclusiveTraits` names a later-defined trait, `CharacterTraitDefinitionScript` stores `null`, and the character creator can crash with `attempted index: isFree of non-table: null`.
+- Safe rule: in `UT_character_traits.txt`, only reference `UniversalTraits:` ids defined **earlier** in the file (or vanilla/base traits that already exist). Do not require script-side bidirectional pairs.
 
 ---
 

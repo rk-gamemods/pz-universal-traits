@@ -18,7 +18,7 @@ Use this for any change to a trait's behavior, cost, description, or exclusivity
 ## 3. Mutual Exclusivity
 
 - [ ] If the trait gained or lost incompatibilities, update `MutuallyExclusiveTraits` in `UT_character_traits.txt`
-- [ ] Keep `UniversalTraits:` mutual exclusions bidirectional
+- [ ] Do not create forward `UniversalTraits:` refs in `MutuallyExclusiveTraits`; only point to traits defined earlier in the file (or vanilla/base traits)
 - [ ] If the trait belongs to a runtime group table, also update `UniversalTraits/media/lua/shared/UniversalTraits/UT_MET.lua`
 
 ## 4. Tests

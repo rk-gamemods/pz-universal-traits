@@ -270,7 +270,7 @@ test("total registration count is 198", function()
     assert_eq(count, 198, "registration count")
 end)
 
-test("script MET definitions are bidirectional for all UT traits", function()
+test("script MET definitions avoid forward refs and preserve UT_MET coverage", function()
     local file = io.open(base .. "../media/scripts/UT_character_traits.txt", "r")
     assert_true(file ~= nil, "failed to open UT_character_traits.txt")
 
@@ -279,16 +279,21 @@ test("script MET definitions are bidirectional for all UT traits", function()
 
     local me_by_trait = {}
     local current_trait = nil
+    local order = {}
+    local next_index = 1
 
     for line in text:gmatch("[^\r\n]+") do
         local def = line:match("^%s*character_trait_definition%s+([^%s]+)")
         if def then
             current_trait = def
+            order[def] = next_index
+            next_index = next_index + 1
         else
             local me = line:match("^%s*MutuallyExclusiveTraits%s*=%s*(.-),%s*$")
             if me and current_trait then
                 local refs = {}
                 for trait_id in me:gmatch("([^;]+)") do
+                    assert_true(trait_id ~= "", current_trait .. " has empty MutuallyExclusiveTraits entry")
                     refs[#refs + 1] = trait_id
                 end
                 me_by_trait[current_trait] = refs
@@ -306,12 +311,15 @@ test("script MET definitions are bidirectional for all UT traits", function()
     }
 
     for _, group in ipairs(grouped_traits) do
-        for _, trait_id in ipairs(group) do
-            local refs = me_by_trait[trait_id] or {}
-            for _, other_id in ipairs(group) do
-                if other_id ~= trait_id then
-                    assert_contains(refs, other_id, trait_id .. " missing MET reference")
-                end
+        for i = 1, #group do
+            for j = i + 1, #group do
+                local a = group[i]
+                local b = group[j]
+                local later = order[a] > order[b] and a or b
+                local earlier = later == a and b or a
+                local refs = me_by_trait[later] or {}
+                assert_contains(refs, earlier,
+                    later .. " must reference earlier trait " .. earlier .. " for safe load order")
             end
         end
     end
@@ -320,9 +328,9 @@ test("script MET definitions are bidirectional for all UT traits", function()
         if trait_id:match("^UniversalTraits:") then
             for _, other_id in ipairs(refs) do
                 if other_id:match("^UniversalTraits:") then
-                    local other_refs = me_by_trait[other_id] or {}
-                    assert_contains(other_refs, trait_id,
-                        "one-way MET pair: " .. trait_id .. " -> " .. other_id)
+                    assert_true(order[other_id] ~= nil, "unknown trait in MutuallyExclusiveTraits: " .. other_id)
+                    assert_true(order[other_id] < order[trait_id],
+                        "forward MutuallyExclusiveTraits ref: " .. trait_id .. " -> " .. other_id)
                 end
             end
         end

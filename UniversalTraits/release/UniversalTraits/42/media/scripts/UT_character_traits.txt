@@ -322,7 +322,6 @@ module UniversalTraits
         Cost = 7,
         UIName = UI_UT_problunt,
         UIDescription = UI_UT_probluntDesc,
-            MutuallyExclusiveTraits = UniversalTraits:UT_problade;UniversalTraits:UT_progun;UniversalTraits:UT_prospear,
         XPBoosts = LongBlunt=2;SmallBlunt=2,
     }
 
@@ -334,7 +333,7 @@ module UniversalTraits
         Cost = 7,
         UIName = UI_UT_problade,
         UIDescription = UI_UT_probladeDesc,
-            MutuallyExclusiveTraits = UniversalTraits:UT_problunt;UniversalTraits:UT_progun;UniversalTraits:UT_prospear,
+        MutuallyExclusiveTraits = UniversalTraits:UT_problunt,
         XPBoosts = LongBlade=2;SmallBlade=2,
     }
 
@@ -346,7 +345,7 @@ module UniversalTraits
         Cost = 7,
         UIName = UI_UT_progun,
         UIDescription = UI_UT_progunDesc,
-            MutuallyExclusiveTraits = UniversalTraits:UT_problunt;UniversalTraits:UT_problade;UniversalTraits:UT_prospear,
+        MutuallyExclusiveTraits = UniversalTraits:UT_problunt;UniversalTraits:UT_problade,
         XPBoosts = Aiming=2;Reloading=2,
     }
 
@@ -358,7 +357,7 @@ module UniversalTraits
         Cost = 7,
         UIName = UI_UT_prospear,
         UIDescription = UI_UT_prospearDesc,
-            MutuallyExclusiveTraits = UniversalTraits:UT_problunt;UniversalTraits:UT_problade;UniversalTraits:UT_progun,
+        MutuallyExclusiveTraits = UniversalTraits:UT_problunt;UniversalTraits:UT_problade;UniversalTraits:UT_progun,
         XPBoosts = Spear=2,
     }
 
@@ -375,7 +374,6 @@ module UniversalTraits
         UIName = UI_UT_specweapons,
         UIDescription = UI_UT_specweaponsDesc,
         XPBoosts = Axe=4;LongBlade=4;LongBlunt=4;SmallBlade=4;SmallBlunt=4;Spear=4,
-        MutuallyExclusiveTraits = UniversalTraits:UT_speccrafting;UniversalTraits:UT_specfood;UniversalTraits:UT_specguns;UniversalTraits:UT_specmove;UniversalTraits:UT_specaid,
     }
 
     character_trait_definition UniversalTraits:UT_speccrafting
@@ -387,7 +385,7 @@ module UniversalTraits
         UIName = UI_UT_speccrafting,
         UIDescription = UI_UT_speccraftingDesc,
         XPBoosts = Woodwork=4;Metalworking=4;Masonry=4;Tailoring=4;Electricity=4,
-        MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_specfood;UniversalTraits:UT_specguns;UniversalTraits:UT_specmove;UniversalTraits:UT_specaid,
+        MutuallyExclusiveTraits = UniversalTraits:UT_specweapons,
     }
 
     character_trait_definition UniversalTraits:UT_specfood
@@ -399,7 +397,7 @@ module UniversalTraits
         UIName = UI_UT_specfood,
         UIDescription = UI_UT_specfoodDesc,
         XPBoosts = Cooking=4;Farming=4;Fishing=4;PlantScavenging=4,
-        MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting;UniversalTraits:UT_specguns;UniversalTraits:UT_specmove;UniversalTraits:UT_specaid,
+        MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting,
     }
 
     character_trait_definition UniversalTraits:UT_specguns
@@ -411,7 +409,7 @@ module UniversalTraits
         UIName = UI_UT_specguns,
         UIDescription = UI_UT_specgunsDesc,
         XPBoosts = Aiming=4;Reloading=4,
-        MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting;UniversalTraits:UT_specfood;UniversalTraits:UT_specmove;UniversalTraits:UT_specaid;UniversalTraits:UT_gunspecialist_I;UniversalTraits:UT_gunspecialist_II;UniversalTraits:UT_gunspecialist_III,
+        MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting;UniversalTraits:UT_specfood,
     }
 
     character_trait_definition UniversalTraits:UT_specmove
@@ -423,7 +421,7 @@ module UniversalTraits
         UIName = UI_UT_specmove,
         UIDescription = UI_UT_specmoveDesc,
         XPBoosts = Sprinting=4;Nimble=4;Lightfoot=4;Sneak=4,
-        MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting;UniversalTraits:UT_specfood;UniversalTraits:UT_specguns;UniversalTraits:UT_specaid,
+        MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting;UniversalTraits:UT_specfood;UniversalTraits:UT_specguns,
     }
 
     character_trait_definition UniversalTraits:UT_specaid
@@ -463,7 +461,6 @@ module UniversalTraits
         UIName = UI_UT_heavyswing,
         UIDescription = UI_UT_heavyswingDesc,
         XPBoosts = Axe=2;LongBlade=2;LongBlunt=2;SmallBlade=2;SmallBlunt=2;Spear=2,
-        MutuallyExclusiveTraits = UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
     }
 
     character_trait_definition UniversalTraits:UT_twohanded
@@ -475,7 +472,7 @@ module UniversalTraits
         UIName = UI_UT_twohanded,
         UIDescription = UI_UT_twohandedDesc,
         XPBoosts = Axe=2;LongBlade=2;LongBlunt=2;Spear=2,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing,
     }
 
     character_trait_definition UniversalTraits:UT_onehanded
@@ -487,7 +484,7 @@ module UniversalTraits
         UIName = UI_UT_onehanded,
         UIDescription = UI_UT_onehandedDesc,
         XPBoosts = SmallBlade=2;SmallBlunt=2,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded,
     }
 
     character_trait_definition UniversalTraits:UT_axes
@@ -499,7 +496,7 @@ module UniversalTraits
         UIName = UI_UT_axes,
         UIDescription = UI_UT_axesDesc,
         XPBoosts = Axe=2,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded,
     }
 
     character_trait_definition UniversalTraits:UT_twohanded_axes
@@ -511,7 +508,7 @@ module UniversalTraits
         UIName = UI_UT_twohanded_axes,
         UIDescription = UI_UT_twohanded_axesDesc,
         XPBoosts = Axe=2,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes,
     }
 
     character_trait_definition UniversalTraits:UT_onehanded_axes
@@ -523,7 +520,7 @@ module UniversalTraits
         UIName = UI_UT_onehanded_axes,
         UIDescription = UI_UT_onehanded_axesDesc,
         XPBoosts = Axe=1,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes,
     }
 
     character_trait_definition UniversalTraits:UT_blunts
@@ -535,7 +532,7 @@ module UniversalTraits
         UIName = UI_UT_blunts,
         UIDescription = UI_UT_bluntsDesc,
         XPBoosts = LongBlunt=2;SmallBlunt=2,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes,
     }
 
     character_trait_definition UniversalTraits:UT_twohanded_blunts
@@ -547,7 +544,7 @@ module UniversalTraits
         UIName = UI_UT_twohanded_blunts,
         UIDescription = UI_UT_twohanded_bluntsDesc,
         XPBoosts = LongBlunt=2,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts,
     }
 
     character_trait_definition UniversalTraits:UT_onehanded_blunts
@@ -559,7 +556,7 @@ module UniversalTraits
         UIName = UI_UT_onehanded_blunts,
         UIDescription = UI_UT_onehanded_bluntsDesc,
         XPBoosts = SmallBlunt=2,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts,
     }
 
     character_trait_definition UniversalTraits:UT_long_blunts
@@ -571,7 +568,7 @@ module UniversalTraits
         UIName = UI_UT_long_blunts,
         UIDescription = UI_UT_long_bluntsDesc,
         XPBoosts = LongBlunt=2,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts,
     }
 
     character_trait_definition UniversalTraits:UT_short_blunts
@@ -583,7 +580,7 @@ module UniversalTraits
         UIName = UI_UT_short_blunts,
         UIDescription = UI_UT_short_bluntsDesc,
         XPBoosts = SmallBlunt=2,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts,
     }
 
     character_trait_definition UniversalTraits:UT_blades
@@ -595,7 +592,7 @@ module UniversalTraits
         UIName = UI_UT_blades,
         UIDescription = UI_UT_bladesDesc,
         XPBoosts = LongBlade=2;SmallBlade=2,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts,
     }
 
     character_trait_definition UniversalTraits:UT_twohanded_blades
@@ -607,7 +604,7 @@ module UniversalTraits
         UIName = UI_UT_twohanded_blades,
         UIDescription = UI_UT_twohanded_bladesDesc,
         XPBoosts = LongBlade=2,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades,
     }
 
     character_trait_definition UniversalTraits:UT_onehanded_blades
@@ -619,7 +616,7 @@ module UniversalTraits
         UIName = UI_UT_onehanded_blades,
         UIDescription = UI_UT_onehanded_bladesDesc,
         XPBoosts = SmallBlade=2,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades,
     }
 
     character_trait_definition UniversalTraits:UT_long_blades
@@ -631,7 +628,7 @@ module UniversalTraits
         UIName = UI_UT_long_blades,
         UIDescription = UI_UT_long_bladesDesc,
         XPBoosts = LongBlade=2,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades,
     }
 
     character_trait_definition UniversalTraits:UT_short_blades
@@ -643,7 +640,7 @@ module UniversalTraits
         UIName = UI_UT_short_blades,
         UIDescription = UI_UT_short_bladesDesc,
         XPBoosts = SmallBlade=2,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_spears,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades,
     }
 
     character_trait_definition UniversalTraits:UT_spears
@@ -933,7 +930,6 @@ module UniversalTraits
         Cost = 7,
         UIName = UI_UT_packmule,
         UIDescription = UI_UT_packmuleDesc,
-            MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy,
     }
 
     character_trait_definition UniversalTraits:UT_packmouse
@@ -944,7 +940,7 @@ module UniversalTraits
         Cost = -7,
         UIName = UI_UT_packmouse,
         UIDescription = UI_UT_packmouseDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_packmule;UniversalTraits:UT_squirrel;UniversalTraits:UT_backpacker,
+        MutuallyExclusiveTraits = UniversalTraits:UT_packmule,
     }
 
     character_trait_definition UniversalTraits:UT_gimp
@@ -1015,7 +1011,7 @@ module UniversalTraits
         Cost = 2,
         UIName = UI_UT_squirrel,
         UIDescription = UI_UT_squirrelDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy,
+        MutuallyExclusiveTraits = UniversalTraits:UT_packmouse,
     }
 
     character_trait_definition UniversalTraits:UT_antivaxxer
@@ -1056,7 +1052,6 @@ module UniversalTraits
         Cost = 2,
         UIName = UI_UT_lesssweaty,
         UIDescription = UI_UT_lesssweatyDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_highsweaty,
     }
 
     character_trait_definition UniversalTraits:UT_highsweaty
@@ -1078,7 +1073,6 @@ module UniversalTraits
         Cost = 2,
         UIName = UI_UT_cangrabmore,
         UIDescription = UI_UT_cangrabmoreDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_cangrabless,
     }
 
     character_trait_definition UniversalTraits:UT_cangrabless
@@ -1100,7 +1094,7 @@ module UniversalTraits
         Cost = 8,
         UIName = UI_UT_backpacker,
         UIDescription = UI_UT_backpackerDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy,
+        MutuallyExclusiveTraits = UniversalTraits:UT_packmouse,
     }
 
     character_trait_definition UniversalTraits:UT_topheavy
@@ -1161,7 +1155,6 @@ module UniversalTraits
         Cost = 6,
         UIName = UI_UT_fast,
         UIDescription = UI_UT_fastDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_noodlelegs;UniversalTraits:UT_lurcher,
     }
 
     character_trait_definition UniversalTraits:UT_noodlelegs
@@ -1172,7 +1165,7 @@ module UniversalTraits
         Cost = -6,
         UIName = UI_UT_noodlelegs,
         UIDescription = UI_UT_noodlelegsDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_fast;UniversalTraits:UT_pacer,
+        MutuallyExclusiveTraits = UniversalTraits:UT_fast,
     }
 
     character_trait_definition UniversalTraits:UT_pacer
@@ -1219,7 +1212,6 @@ module UniversalTraits
         Cost = 9,
         UIName = UI_UT_quickworker,
         UIDescription = UI_UT_quickworkerDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_slowworker;UniversalTraits:UT_slack,
     }
 
     character_trait_definition UniversalTraits:UT_slowworker
@@ -1230,7 +1222,7 @@ module UniversalTraits
         Cost = -9,
         UIName = UI_UT_slowworker,
         UIDescription = UI_UT_slowworkerDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_quickworker;UniversalTraits:UT_slack,
+        MutuallyExclusiveTraits = UniversalTraits:UT_quickworker,
     }
 
     character_trait_definition UniversalTraits:UT_slack
@@ -1276,7 +1268,6 @@ module UniversalTraits
         Cost = -10,
         UIName = UI_UT_glassbody,
         UIDescription = UI_UT_glassbodyDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_analgesia,
     }
 
     character_trait_definition UniversalTraits:UT_brittle
@@ -1332,7 +1323,6 @@ module UniversalTraits
         Cost = 4,
         UIName = UI_UT_thickblood,
         UIDescription = UI_UT_thickbloodDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavilybleedingwounds,
     }
 
     character_trait_definition UniversalTraits:UT_heavilybleedingwounds
@@ -1343,7 +1333,7 @@ module UniversalTraits
         Cost = -4,
         UIName = UI_UT_heavilybleedingwounds,
         UIDescription = UI_UT_heavilybleedingwoundsDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_thickblood;UniversalTraits:UT_weaklybleedingwounds,
+        MutuallyExclusiveTraits = UniversalTraits:UT_thickblood,
     }
 
     character_trait_definition UniversalTraits:UT_weaklybleedingwounds
@@ -1423,7 +1413,6 @@ module UniversalTraits
         Cost = -9,
         UIName = UI_UT_mundane,
         UIDescription = UI_UT_mundaneDesc,
-            MutuallyExclusiveTraits = UniversalTraits:UT_ascetic;UniversalTraits:UT_anorexy,
     }
 
     character_trait_definition UniversalTraits:UT_incomprehensive
@@ -1458,7 +1447,6 @@ module UniversalTraits
         Cost = -6,
         UIName = UI_UT_antigun,
         UIDescription = UI_UT_antigunDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_noxpshooter,
     }
 
     character_trait_definition UniversalTraits:UT_flatearther
@@ -1568,7 +1556,6 @@ module UniversalTraits
         Cost = -1,
         UIName = UI_UT_owlperson,
         UIDescription = UI_UT_owlpersonDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_larkperson,
     }
 
     character_trait_definition UniversalTraits:UT_larkperson
@@ -1604,7 +1591,6 @@ module UniversalTraits
         Cost = 5,
         UIName = UI_UT_expertdriver,
         UIDescription = UI_UT_expertdriverDesc,
-           MutuallyExclusiveTraits = UniversalTraits:UT_poordriver;UniversalTraits:UT_vehophobic,
     }
 
     character_trait_definition UniversalTraits:UT_poordriver
@@ -1650,7 +1636,6 @@ module UniversalTraits
         Cost = 4,
         UIName = UI_UT_gourmand,
         UIDescription = UI_UT_gourmandDesc,
-           MutuallyExclusiveTraits = UniversalTraits:UT_ascetic;UniversalTraits:UT_anorexy,
     }
 
     character_trait_definition UniversalTraits:UT_ascetic
@@ -1676,7 +1661,6 @@ module UniversalTraits
         Cost = -4,
         UIName = UI_UT_injured_I,
         UIDescription = UI_UT_injured_IDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_injured_II,
     }
 
     character_trait_definition UniversalTraits:UT_injured_II
@@ -1722,7 +1706,6 @@ module UniversalTraits
         Cost = -4,
         UIName = UI_UT_depressive,
         UIDescription = UI_UT_depressiveDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_optimist,
     }
 
     character_trait_definition UniversalTraits:UT_paranoia
@@ -1753,7 +1736,6 @@ module UniversalTraits
         Cost = -3,
         UIName = UI_UT_melancholic,
         UIDescription = UI_UT_melancholicDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_optimist,
     }
 
     character_trait_definition UniversalTraits:UT_immuneresponse
@@ -1784,7 +1766,7 @@ module UniversalTraits
         Cost = 2,
         UIName = UI_UT_optimist,
         UIDescription = UI_UT_optimistDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_pessimist;UniversalTraits:UT_depressive;UniversalTraits:UT_melancholic,
+        MutuallyExclusiveTraits = UniversalTraits:UT_depressive;UniversalTraits:UT_melancholic,
     }
 
     character_trait_definition UniversalTraits:UT_pessimist
@@ -1795,7 +1777,7 @@ module UniversalTraits
         Cost = -2,
         UIName = UI_UT_pessimist,
         UIDescription = UI_UT_pessimistDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_optimist;UniversalTraits:UT_mstoptimist,
+        MutuallyExclusiveTraits = UniversalTraits:UT_optimist,
     }
 
     character_trait_definition UniversalTraits:UT_mstoptimist
@@ -1927,7 +1909,6 @@ module UniversalTraits
         Cost = -4,
         UIName = UI_UT_alcoholic_I,
         UIDescription = UI_UT_alcoholic_IDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_alcoholic_II;UniversalTraits:UT_alcoholic_III,
     }
 
     character_trait_definition UniversalTraits:UT_alcoholic_II
@@ -1938,7 +1919,7 @@ module UniversalTraits
         Cost = -7,
         UIName = UI_UT_alcoholic_II,
         UIDescription = UI_UT_alcoholic_IIDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_alcoholic_I;UniversalTraits:UT_alcoholic_III,
+        MutuallyExclusiveTraits = UniversalTraits:UT_alcoholic_I,
     }
 
     character_trait_definition UniversalTraits:UT_alcoholic_III
@@ -1970,7 +1951,6 @@ module UniversalTraits
         Cost = -6,
         UIName = UI_UT_immunocompromised,
         UIDescription = UI_UT_immunocompromisedDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_superimmune,
     }
 
     -- ============================================================
@@ -2025,7 +2005,7 @@ module UniversalTraits
         Cost = -6,
         UIName = UI_UT_anorexy,
         UIDescription = UI_UT_anorexyDesc,
-           MutuallyExclusiveTraits = UniversalTraits:UT_gourmand;UniversalTraits:UT_competitiveeater;UniversalTraits:UT_mundane,
+        MutuallyExclusiveTraits = UniversalTraits:UT_gourmand;UniversalTraits:UT_mundane,
     }
 
     character_trait_definition UniversalTraits:UT_pillsallergy
@@ -2160,7 +2140,6 @@ module UniversalTraits
         UIName = UI_UT_bouncer_I,
         UIDescription = UI_UT_bouncer_IDesc,
         XPBoosts = Strength=1;SmallBlunt=1,
-        MutuallyExclusiveTraits = UniversalTraits:UT_bouncer_II,
     }
 
     character_trait_definition UniversalTraits:UT_bouncer_II
@@ -2184,7 +2163,7 @@ module UniversalTraits
         UIName = UI_UT_gunspecialist_I,
         UIDescription = UI_UT_gunspecialist_IDesc,
         XPBoosts = Aiming=1;Reloading=1,
-        MutuallyExclusiveTraits = UniversalTraits:UT_gunspecialist_II;UniversalTraits:UT_gunspecialist_III;UniversalTraits:UT_specguns,
+        MutuallyExclusiveTraits = UniversalTraits:UT_specguns,
     }
 
     character_trait_definition UniversalTraits:UT_gunspecialist_II
@@ -2196,7 +2175,7 @@ module UniversalTraits
         UIName = UI_UT_gunspecialist_II,
         UIDescription = UI_UT_gunspecialist_IIDesc,
         XPBoosts = Aiming=2;Reloading=2;Nimble=1,
-        MutuallyExclusiveTraits = UniversalTraits:UT_gunspecialist_I;UniversalTraits:UT_gunspecialist_III;UniversalTraits:UT_specguns,
+        MutuallyExclusiveTraits = UniversalTraits:UT_gunspecialist_I;UniversalTraits:UT_specguns,
     }
 
     character_trait_definition UniversalTraits:UT_gunspecialist_III
@@ -2223,7 +2202,6 @@ module UniversalTraits
         Cost = 10,
         UIName = UI_UT_indefatigable,
         UIDescription = UI_UT_indefatigableDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_hardy;UniversalTraits:UT_secondwind,
     }
 
     character_trait_definition UniversalTraits:UT_hardy
@@ -2234,7 +2212,7 @@ module UniversalTraits
         Cost = 8,
         UIName = UI_UT_hardy,
         UIDescription = UI_UT_hardyDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_indefatigable;UniversalTraits:UT_secondwind,
+        MutuallyExclusiveTraits = UniversalTraits:UT_indefatigable,
     }
 
     character_trait_definition UniversalTraits:UT_secondwind
