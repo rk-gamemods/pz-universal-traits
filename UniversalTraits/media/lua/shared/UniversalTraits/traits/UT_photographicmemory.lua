@@ -13,13 +13,8 @@ local function applyTrait(player)
     md["UT_readMoodBonus"] = 5
 end
 
-local function onNewGame(player)
-    applyTrait(player)
-end
-
 local function onCreatePlayer(_playerIndex, player)
     applyTrait(player)
 end
 
-Events.OnNewGame.Add(onNewGame)
 Events.OnCreatePlayer.Add(onCreatePlayer)

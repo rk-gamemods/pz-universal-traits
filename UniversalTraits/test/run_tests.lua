@@ -330,13 +330,19 @@ test("script MET definitions are bidirectional for all UT traits", function()
 end)
 
 -- ===== Per-trait moddata spot checks =====
--- Trait files use UTCore.hasTrait, UTCore.apply*, and Events.OnNewGame.
+-- Trait files use UTCore.hasTrait, UTCore.apply*, and Events.OnNewGame / OnCreatePlayer.
 -- All stubs are already provided by UTTestMocks.lua above.
 
 -- Helper: create a player that has the given traitId, fire OnNewGame, return player
 local function fireNewGame(traitId)
     local p = MockPlayer({ traitId })
     Events.OnNewGame:fire(p)
+    return p
+end
+
+local function fireCreatePlayer(traitId)
+    local p = MockPlayer({ traitId })
+    Events.OnCreatePlayer:fire(0, p)
     return p
 end
 
@@ -400,7 +406,7 @@ test("UT_heavilybleedingwounds sets UT_bleedDrainMult > 1.0", function()
 end)
 
 test("UT_photographicmemory sets global XP, read speed, and reading mood keys", function()
-    local p = fireNewGame("UniversalTraits:UT_photographicmemory")
+    local p = fireCreatePlayer("UniversalTraits:UT_photographicmemory")
     local md = p:getModData()
     assert_eq(md["UT_xpMult_All"], 1.5, "expected global XP mult 1.5")
     assert_true(type(md["UT_readSpeedMod"]) == "number" and md["UT_readSpeedMod"] < -0.6,
