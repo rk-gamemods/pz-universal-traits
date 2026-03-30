@@ -9,6 +9,7 @@ dofile(base .. "UTTestMocks.lua")
 
 -- Load registries
 dofile(base .. "../media/registries.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/UT_MET.lua")
 
 local passed, failed = 0, 0
 local function test(name, fn)
@@ -26,6 +27,15 @@ local function assert_eq(a, b, msg)
 end
 local function assert_true(v, msg)
     if not v then error(msg or "expected true, got false", 2) end
+end
+
+local function assert_contains(list, value, msg)
+    for _, item in ipairs(list) do
+        if item == value then
+            return
+        end
+    end
+    error((msg or "") .. " missing value=" .. tostring(value), 2)
 end
 
 -- registries.lua populates UTTraitsRegistries
@@ -109,11 +119,11 @@ end)
 
 -- Verify all 199 expected trait IDs are registered in CharacterTrait._registered
 local expected_ids = {
-    -- Prepared series (8)
+    -- Prepared series (7)
     "UniversalTraits:UT_preparedfood", "UniversalTraits:UT_preparedammo",
     "UniversalTraits:UT_preparedmedical", "UniversalTraits:UT_preparedcarpentry",
     "UniversalTraits:UT_preparedcamp", "UniversalTraits:UT_preparedweapons",
-    "UniversalTraits:UT_preparedcars", "UniversalTraits:UT_preparedcartography",
+    "UniversalTraits:UT_preparedcars",
     -- Movement & Stealth (12)
     "UniversalTraits:UT_swift", "UniversalTraits:UT_flexible",
     "UniversalTraits:UT_quiet", "UniversalTraits:UT_olympian",
@@ -242,7 +252,7 @@ local expected_ids = {
     "UniversalTraits:UT_secondwind",
 }
 
-test("all 199 trait IDs registered with CharacterTrait", function()
+test("all 198 trait IDs registered with CharacterTrait", function()
     local missing = {}
     for _, id in ipairs(expected_ids) do
         if not CharacterTrait._registered[id] then
@@ -254,10 +264,69 @@ test("all 199 trait IDs registered with CharacterTrait", function()
     end
 end)
 
-test("total registration count is 199", function()
+test("total registration count is 198", function()
     local count = 0
     for _ in pairs(CharacterTrait._registered) do count = count + 1 end
-    assert_eq(count, 199, "registration count")
+    assert_eq(count, 198, "registration count")
+end)
+
+test("script MET definitions are bidirectional for all UT traits", function()
+    local file = io.open(base .. "../media/scripts/UT_character_traits.txt", "r")
+    assert_true(file ~= nil, "failed to open UT_character_traits.txt")
+
+    local text = file:read("*a")
+    file:close()
+
+    local me_by_trait = {}
+    local current_trait = nil
+
+    for line in text:gmatch("[^\r\n]+") do
+        local def = line:match("^%s*character_trait_definition%s+([^%s]+)")
+        if def then
+            current_trait = def
+        else
+            local me = line:match("^%s*MutuallyExclusiveTraits%s*=%s*(.-),%s*$")
+            if me and current_trait then
+                local refs = {}
+                for trait_id in me:gmatch("([^;]+)") do
+                    refs[#refs + 1] = trait_id
+                end
+                me_by_trait[current_trait] = refs
+            end
+        end
+    end
+
+    local grouped_traits = {
+        UT_MET.Specialization,
+        UT_MET.WeaponAxes,
+        UT_MET.WeaponBlunts,
+        UT_MET.WeaponBlades,
+        UT_MET.HandType,
+        UT_MET.Prowess,
+    }
+
+    for _, group in ipairs(grouped_traits) do
+        for _, trait_id in ipairs(group) do
+            local refs = me_by_trait[trait_id] or {}
+            for _, other_id in ipairs(group) do
+                if other_id ~= trait_id then
+                    assert_contains(refs, other_id, trait_id .. " missing MET reference")
+                end
+            end
+        end
+    end
+
+    for trait_id, refs in pairs(me_by_trait) do
+        if trait_id:match("^UniversalTraits:") then
+            for _, other_id in ipairs(refs) do
+                if other_id:match("^UniversalTraits:") then
+                    local other_refs = me_by_trait[other_id] or {}
+                    assert_contains(other_refs, trait_id,
+                        "one-way MET pair: " .. trait_id .. " -> " .. other_id)
+                end
+            end
+        end
+    end
 end)
 
 -- ===== Per-trait moddata spot checks =====
@@ -279,6 +348,7 @@ dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_noodlelegs.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_quickworker.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_thickblood.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_heavilybleedingwounds.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_photographicmemory.lua")
 
 test("UT_onetrickpony sets UT_multiSkillPenalty=true", function()
     local p = fireNewGame("UniversalTraits:UT_onetrickpony")
@@ -327,6 +397,16 @@ test("UT_heavilybleedingwounds sets UT_bleedDrainMult > 1.0", function()
     local p = fireNewGame("UniversalTraits:UT_heavilybleedingwounds")
     local v = p:getModData()["UT_bleedDrainMult"]
     assert_true(type(v) == "number" and v > 1.0, "expected UT_bleedDrainMult > 1.0, got " .. tostring(v))
+end)
+
+test("UT_photographicmemory sets global XP, read speed, and reading mood keys", function()
+    local p = fireNewGame("UniversalTraits:UT_photographicmemory")
+    local md = p:getModData()
+    assert_eq(md["UT_xpMult_All"], 1.5, "expected global XP mult 1.5")
+    assert_true(type(md["UT_readSpeedMod"]) == "number" and md["UT_readSpeedMod"] < -0.6,
+        "expected roughly 3x faster reading, got " .. tostring(md["UT_readSpeedMod"]))
+    assert_eq(md["UT_readCalm"], true, "expected UT_readCalm=true")
+    assert_eq(md["UT_readMoodBonus"], 5, "expected UT_readMoodBonus=5")
 end)
 
 -- ===== UT_actionhero runtime damage tests =====

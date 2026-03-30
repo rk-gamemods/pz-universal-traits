@@ -27,8 +27,16 @@ local function onAddXP(player, perk, amount)
     end
 
     -- 2. XP multiplier: add the bonus delta
-    local mult = md["UT_xpMult_" .. perk]
-    if mult and mult ~= 1.0 then
+    local mult = 1.0
+    local globalMult = md["UT_xpMult_All"]
+    local perkMult = md["UT_xpMult_" .. perk]
+    if globalMult and globalMult ~= 1.0 then
+        mult = mult * globalMult
+    end
+    if perkMult and perkMult ~= 1.0 then
+        mult = mult * perkMult
+    end
+    if mult ~= 1.0 then
         local bonus = math.floor(amount * (mult - 1.0))
         if bonus ~= 0 then
             player:getXp():AddXP(perk, bonus, false, false, false)

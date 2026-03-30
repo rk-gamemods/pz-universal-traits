@@ -420,7 +420,7 @@ UI_EN = {
     UI_UT_incomprehensiveDesc   = "Complex ideas just do not stick for you. Your effective skill cap is reduced by 2 in all skills.",
 
     UI_UT_photographicmemory    = "Photographic Memory",
-    UI_UT_photographicmemoryDesc = "You retain everything you read or learn with uncanny accuracy. XP gain in Carpentry, Cooking, First Aid, Electrical, and Mechanics is increased to ×1.5 (+50%).",
+    UI_UT_photographicmemoryDesc = "You learn everything faster. All XP gain is increased to ×1.5 (+50%). Reading is 3× faster. While reading, panic and stress are forced to 0 and boredom/unhappiness drop rapidly. Finishing a skill book grants a flat XP bonus by tier: +12 / +30 / +65 / +120 / +200.",
 
     -- ============================================================
     -- PHASE 2 — LUA-DRIVEN: XP PENALTIES

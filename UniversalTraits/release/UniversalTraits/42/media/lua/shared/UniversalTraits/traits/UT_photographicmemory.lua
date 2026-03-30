@@ -1,15 +1,25 @@
 -- UT_photographicmemory.lua
--- +50% XP gain across knowledge-based skills
+-- Global learning and reading powerhouse.
 
 local TRAIT_ID = "UniversalTraits:UT_photographicmemory"
 
-local function onNewGame(player)
+local function applyTrait(player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
-    UTCore.applyXPMultiplier(player, "Woodwork", 1.5)
-    UTCore.applyXPMultiplier(player, "Cooking", 1.5)
-    UTCore.applyXPMultiplier(player, "Doctor", 1.5)
-    UTCore.applyXPMultiplier(player, "Electrical", 1.5)
-    UTCore.applyXPMultiplier(player, "Mechanics", 1.5)
+
+    local md = player:getModData()
+    md["UT_xpMult_All"] = 1.5
+    md["UT_readSpeedMod"] = -0.6666667
+    md["UT_readCalm"] = true
+    md["UT_readMoodBonus"] = 5
+end
+
+local function onNewGame(player)
+    applyTrait(player)
+end
+
+local function onCreatePlayer(_playerIndex, player)
+    applyTrait(player)
 end
 
 Events.OnNewGame.Add(onNewGame)
+Events.OnCreatePlayer.Add(onCreatePlayer)

@@ -40,7 +40,7 @@ UniversalTraits/                          ← repo root
   UT_CORE/
     media/lua/shared/UTCore/              ← source infrastructure files
     release/UT_CORE/42/media/           ← deployed copy (must be kept in sync)
-    test/run_tests.lua                    ← 41 tests (standard Lua 5.x)
+    test/run_tests.lua                    ← 45 tests (standard Lua 5.x)
     test/UTCoreMocks.lua                  ← mock IsoPlayer, Stats, BodyDamage
   UniversalTraits/
     media/registries.lua                  ← CharacterTrait.register() for all traits
@@ -50,7 +50,7 @@ UniversalTraits/                          ← repo root
       UT_MET.lua                          ← runtime mutual exclusivity table
       traits/UT_<id>.lua                  ← per-trait Lua effect files (121 files)
     release/UniversalTraits/42/media/   ← deployed copy (must be kept in sync)
-    test/run_tests.lua                    ← 48 tests (standard Lua 5.x, 2 pre-existing failures)
+    test/run_tests.lua                    ← 50 tests (standard Lua 5.x)
     test/UTTestMocks.lua                  ← mock CharacterTrait
   planning/                               ← implementation plans
   research/                               ← source mod research
@@ -69,7 +69,7 @@ Run from repo root (`C:\Users\Admin\Documents\GIT\GameMods\PZMods\UTMods`):
 "C:\Users\Admin\AppData\Local\Programs\Lua\bin\lua.exe" UniversalTraits/test/run_tests.lua
 ```
 
-**Current passing counts:** 41 (UT_CORE) + 46 (UniversalTraits) = 87 passing. (UniversalTraits has 48 total tests; 2 pre-existing failures in `UT_preparedcartography` are unrelated.)
+**Current passing counts:** 45 (UT_CORE) + 50 (UniversalTraits) = 95 passing.
 
 ---
 
@@ -88,13 +88,19 @@ Copy-Item -Recurse -Force UniversalTraits\media\* C:\Users\Admin\Zomboid\mods\Un
 
 ## Release Folder Policy
 
-`UniversalTraits/release/` and `UT_CORE/release/` are **empty during development**.
+`UniversalTraits/release/` and `UT_CORE/release/` must be kept in sync with source after every code change.
 
-They are only populated when the mod is ready for distribution (Workshop upload or zip packaging).
-At that point, copy the full deployable package:
+Required workflow after implementation work:
+
+1. Run tests.
+2. Sync `release/<ModName>/42/media/` from source `media/`.
+3. Copy root `mod.info` into `release/<ModName>/`.
+4. Deploy to live `C:\Users\Admin\Zomboid\mods\<ModName>\42\media\`.
+5. Commit the changes.
+
+Use these commands from repo root:
 
 ```bash
-# Only run this when preparing a distribution release — NOT for in-game testing
 mkdir -p UniversalTraits/release/UniversalTraits/42/media
 cp UniversalTraits/mod.info UniversalTraits/release/UniversalTraits/
 cp -r UniversalTraits/media/. UniversalTraits/release/UniversalTraits/42/media/
@@ -112,16 +118,16 @@ The `release/` folders hold only the minimal deployable mod package — no docs,
 
 | Phase | Count | Status |
 |-------|-------|--------|
-| Phase 1 — XP Boost / script-only stat modifiers | 99 | Complete |
+| Phase 1 — XP Boost / script-only stat modifiers | 98 | Complete |
 | Phase 2 — Stat modifier + hasTrait Lua effects | 46 | Complete |
 | Phase 3a — Spawn-with-condition | 4 | Complete |
-| Phase 3b — Periodic-check (timer-based) | 24 | Complete |
-| Phase 3c — Event-driven | 18 | Complete |
+| Phase 3b — Periodic-check (timer-based) | 25 | Complete |
+| Phase 3c — Event-driven | 22 | Complete |
 | Phase 3d — Complex state machines | 3 | Complete |
-| **Total registered** | **199** | — |
+| **Total registered** | **198** | — |
 | Deferred: UT_amputee | 1 | Deferred indefinitely |
 
-Registration count test in `UniversalTraits/test/run_tests.lua` asserts **199**.
+Registration count test in `UniversalTraits/test/run_tests.lua` asserts **198**.
 When adding new traits, update this count and the test.
 
 ---
@@ -148,6 +154,8 @@ In `UniversalTraits/media/scripts/UT_character_traits.txt`:
 - XPBoosts only needed for script-only traits (Phase 1 / bouncer / gunspecialist tiers).
 - Phase 2+ traits are Lua-driven — no XPBoosts in the script block.
 - All trait IDs in MET fields use full namespace: `UniversalTraits:UT_<id>`.
+- `UT_MET.lua` is not enough by itself for character creation. Vanilla character creation reads `MutuallyExclusiveTraits` from `UT_character_traits.txt`; if script-side MET entries are missing or one-way, the UI can null-crash with `attempted index: isFree of non-table: null`.
+- For any `UniversalTraits:` mutual exclusion pair, keep script-side `MutuallyExclusiveTraits` **bidirectional**.
 
 ---
 
@@ -264,6 +272,14 @@ Events.EveryOneMinute.Add(onEveryMinute)
 
 - `UTCore.applyWorkDuration(timedAction, base)` → number — applies `UT_workSpeedMod` and (for ISReadABook) `UT_readSpeedMod` to a TimedAction duration
 - Registered via `Events.OnGameBoot` to patch all TimedAction `getDuration()` calls globally
+
+### UTCore_ReadingHook.lua
+
+- Registered via `Events.OnGameBoot` to patch `ISReadABook.start`, `update`, `stop`, and `perform` when present
+- `UTCore.getSkillBookCompletionXP(item)` → number — returns the flat completion XP bonus for a skill book tier: 2/4/6/8/10 → 12/30/65/120/200
+- `UTCore.applyReadingMoodEffects(player, tickScale)` — for reading traits, clears panic/stress and reduces boredom/unhappiness while reading
+- `UTCore.tryAwardSkillBookCompletionXP(player, item, startPages, endPages)` → number — awards the flat XP bonus once when a skill book crosses from incomplete to fully read
+- Used by `UT_photographicmemory` for fast reading, calm while reading, mood gain while reading, and flat skill-book completion XP
 
 ### UTCore_BleedHook.lua
 
@@ -435,6 +451,11 @@ Prefer `EveryOneMinute` / `EveryTenMinutes` over OnPlayerUpdate when real-time i
 All UT_ moddata keys are prefixed `UT_` to avoid collision with vanilla and other mods.
 Examples: `UT_speedMod`, `UT_bleedMult`, `UT_indefCooldown`.
 
+Additional reading/XP keys:
+- `UT_xpMult_All` — global XP multiplier applied to all perks by `UTCore_XPHook`
+- `UT_readCalm` — if true, reading forces panic and stress to 0 via `UTCore_ReadingHook`
+- `UT_readMoodBonus` — per-tick boredom/unhappiness reduction while reading
+
 ### Cooldown tracking
 
 Use `getGameTime():getWorldAgeHours()` for cooldown timestamps (persists across sessions).
@@ -452,6 +473,8 @@ PZ loads via `dofile`, not `require`. Therefore:
 
 The test harness uses `UTCoreMocks.lua` / `UTTestMocks.lua` to stub PZ globals.
 When adding new PZ API calls to UTCore files, add corresponding mock support to the mock files.
+
+For trait metadata integrity, test the script file directly when the bug lives in `UT_character_traits.txt` rather than runtime Lua. The character creator null-crash (`isFree of non-table: null`) came from broken script-side `MutuallyExclusiveTraits`, not from `UT_MET.lua` itself.
 
 ---
 

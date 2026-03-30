@@ -322,6 +322,7 @@ module UniversalTraits
         Cost = 7,
         UIName = UI_UT_problunt,
         UIDescription = UI_UT_probluntDesc,
+            MutuallyExclusiveTraits = UniversalTraits:UT_problade;UniversalTraits:UT_progun;UniversalTraits:UT_prospear,
         XPBoosts = LongBlunt=2;SmallBlunt=2,
     }
 
@@ -333,6 +334,7 @@ module UniversalTraits
         Cost = 7,
         UIName = UI_UT_problade,
         UIDescription = UI_UT_probladeDesc,
+            MutuallyExclusiveTraits = UniversalTraits:UT_problunt;UniversalTraits:UT_progun;UniversalTraits:UT_prospear,
         XPBoosts = LongBlade=2;SmallBlade=2,
     }
 
@@ -344,6 +346,7 @@ module UniversalTraits
         Cost = 7,
         UIName = UI_UT_progun,
         UIDescription = UI_UT_progunDesc,
+            MutuallyExclusiveTraits = UniversalTraits:UT_problunt;UniversalTraits:UT_problade;UniversalTraits:UT_prospear,
         XPBoosts = Aiming=2;Reloading=2,
     }
 
@@ -355,6 +358,7 @@ module UniversalTraits
         Cost = 7,
         UIName = UI_UT_prospear,
         UIDescription = UI_UT_prospearDesc,
+            MutuallyExclusiveTraits = UniversalTraits:UT_problunt;UniversalTraits:UT_problade;UniversalTraits:UT_progun,
         XPBoosts = Spear=2,
     }
 
@@ -929,6 +933,7 @@ module UniversalTraits
         Cost = 7,
         UIName = UI_UT_packmule,
         UIDescription = UI_UT_packmuleDesc,
+            MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy,
     }
 
     character_trait_definition UniversalTraits:UT_packmouse
@@ -1418,6 +1423,7 @@ module UniversalTraits
         Cost = -9,
         UIName = UI_UT_mundane,
         UIDescription = UI_UT_mundaneDesc,
+            MutuallyExclusiveTraits = UniversalTraits:UT_ascetic;UniversalTraits:UT_anorexy,
     }
 
     character_trait_definition UniversalTraits:UT_incomprehensive
@@ -1435,7 +1441,7 @@ module UniversalTraits
         IsProfessionTrait = false,
         DisabledInMultiplayer = true,
         CharacterTrait = UniversalTraits:UT_photographicmemory,
-        Cost = 20,
+        Cost = 16,
         UIName = UI_UT_photographicmemory,
         UIDescription = UI_UT_photographicmemoryDesc,
     }
@@ -1598,7 +1604,7 @@ module UniversalTraits
         Cost = 5,
         UIName = UI_UT_expertdriver,
         UIDescription = UI_UT_expertdriverDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_poordriver,
+           MutuallyExclusiveTraits = UniversalTraits:UT_poordriver;UniversalTraits:UT_vehophobic,
     }
 
     character_trait_definition UniversalTraits:UT_poordriver
@@ -1644,7 +1650,7 @@ module UniversalTraits
         Cost = 4,
         UIName = UI_UT_gourmand,
         UIDescription = UI_UT_gourmandDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_ascetic,
+           MutuallyExclusiveTraits = UniversalTraits:UT_ascetic;UniversalTraits:UT_anorexy,
     }
 
     character_trait_definition UniversalTraits:UT_ascetic
@@ -1655,7 +1661,7 @@ module UniversalTraits
         Cost = -4,
         UIName = UI_UT_ascetic,
         UIDescription = UI_UT_asceticDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_gourmand,
+           MutuallyExclusiveTraits = UniversalTraits:UT_gourmand;UniversalTraits:UT_mundane,
     }
 
     -- ============================================================
@@ -2019,7 +2025,7 @@ module UniversalTraits
         Cost = -6,
         UIName = UI_UT_anorexy,
         UIDescription = UI_UT_anorexyDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_gourmand;UniversalTraits:UT_competitiveeater,
+           MutuallyExclusiveTraits = UniversalTraits:UT_gourmand;UniversalTraits:UT_competitiveeater;UniversalTraits:UT_mundane,
     }
 
     character_trait_definition UniversalTraits:UT_pillsallergy

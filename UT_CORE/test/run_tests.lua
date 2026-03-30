@@ -16,6 +16,7 @@ dofile(base .. "../media/lua/shared/UTCore/UTCore_SpawnEffects.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_XPHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_SpeedHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua")
+dofile(base .. "../media/lua/shared/UTCore/UTCore_ReadingHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_BleedHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua")
@@ -141,6 +142,18 @@ test("XPHook applies XP multiplier", function()
         if c.perk == "Aiming" then bonus = c.amount end
     end
     assert_eq(bonus, 5, "XP multiplier 1.5x on 10 should add +5 bonus")
+end)
+
+test("XPHook applies global XP multiplier", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_xpMult_All"] = 1.5
+    Events.AddXP.fire(p, "Cooking", 10)
+    local calls = p:getXpCalls()
+    local bonus = nil
+    for _, c in ipairs(calls) do
+        if c.perk == "Cooking" then bonus = c.amount end
+    end
+    assert_eq(bonus, 5, "global XP multiplier 1.5x on 10 should add +5 bonus")
 end)
 
 -- XPHook: XP disable
@@ -279,6 +292,56 @@ test("WorkSpeedHook applies readSpeedMod to ISReadABook", function()
     local action = MockTimedAction(p, "ISReadABook", 100)
     local result = UTCore.applyWorkDuration(action, 100)
     assert(math.abs(result - 130) < 1, "expected ~130, got " .. tostring(result))
+end)
+
+test("ReadingHook getSkillBookCompletionXP returns tier bonus", function()
+    SkillBook = { Cooking = { perk = "Cooking" } }
+    local item = {
+        getNumberOfPages = function() return 220 end,
+        getSkillTrained = function() return "Cooking" end,
+        getMaxLevelTrained = function() return 6 end,
+    }
+    assert_eq(UTCore.getSkillBookCompletionXP(item), 65)
+end)
+
+test("ReadingHook applyReadingMoodEffects clears panic and stress and improves mood", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_readCalm"] = true
+    p:getModData()["UT_readMoodBonus"] = 5
+    p:getStats():setPanic(20)
+    p:getStats():setStress(15)
+    p:setBodyDamage({
+        _boredom = 30,
+        _unhappy = 40,
+        getBoredomLevel = function(self) return self._boredom end,
+        setBoredomLevel = function(self, v) self._boredom = v end,
+        getUnhappinessLevel = function(self) return self._unhappy end,
+        setUnhappinessLevel = function(self, v) self._unhappy = v end,
+    })
+
+    UTCore.applyReadingMoodEffects(p, 1.0)
+
+    assert_eq(p:getStats():getPanic(), 0)
+    assert_eq(p:getStats():getStress(), 0)
+    assert_eq(p:getBodyDamage():getBoredomLevel(), 25)
+    assert_eq(p:getBodyDamage():getUnhappinessLevel(), 35)
+end)
+
+test("ReadingHook awards flat XP when a skill book is completed", function()
+    SkillBook = { Mechanics = { perk = "Mechanics" } }
+    local p = MockPlayer({})
+    local item = {
+        getNumberOfPages = function() return 200 end,
+        getSkillTrained = function() return "Mechanics" end,
+        getMaxLevelTrained = function() return 8 end,
+    }
+
+    local bonus = UTCore.tryAwardSkillBookCompletionXP(p, item, 120, 200)
+    local calls = p:getXpCalls()
+    assert_eq(bonus, 120)
+    assert_eq(#calls, 1)
+    assert_eq(calls[1].perk, "Mechanics")
+    assert_eq(calls[1].amount, 120)
 end)
 
 -- BleedHook
