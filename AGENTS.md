@@ -4,6 +4,8 @@ This file is the single source of truth for AI agents working in this project.
 Update it after completing any non-trivial task with lessons learned, API discoveries,
 and decisions made. This prevents repeat research and research drift across sessions.
 
+Before changing any trait, read `TRAIT_CHANGE_CHECKLIST.md` first. Keep the checklist short and operational; keep AGENTS for durable project knowledge.
+
 ---
 
 ## Standing Instruction: Update This File After Every Session
