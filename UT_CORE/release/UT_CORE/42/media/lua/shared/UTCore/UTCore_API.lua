@@ -14,3 +14,63 @@ function UTCore.hasTrait(player, traitId)
     if not traits then return false end
     return traits:contains(traitId)
 end
+
+local function safeCall(target, methodName)
+    if not target or type(target[methodName]) ~= "function" then return nil end
+    local ok, value = pcall(function()
+        return target[methodName](target)
+    end)
+    if ok then return value end
+    return nil
+end
+
+function UTCore.getCharacterTraitId(trait)
+    if trait == nil then return "<nil>" end
+    if type(trait) == "string" then return trait end
+
+    local name = safeCall(trait, "getName")
+    if name and name ~= "" then
+        return tostring(name)
+    end
+
+    local ok, value = pcall(function()
+        return tostring(trait)
+    end)
+    if ok and value then
+        return value
+    end
+
+    return "<unprintable>"
+end
+
+function UTCore.getTraitDefinitionId(traitDefinition)
+    if traitDefinition == nil then return "<nil>" end
+    local trait = safeCall(traitDefinition, "getType")
+    if trait ~= nil then
+        return UTCore.getCharacterTraitId(trait)
+    end
+    return UTCore.getCharacterTraitId(traitDefinition)
+end
+
+function UTCore.logCharacterCreationMetNull(traitDefinition, exclusiveTrait, index, isRemovingTrait)
+    local selectedId = UTCore.getTraitDefinitionId(traitDefinition)
+    local selectedLabel = safeCall(traitDefinition, "getLabel") or "<no-label>"
+    local entries = {}
+    local mutexList = safeCall(traitDefinition, "getMutuallyExclusiveTraits")
+
+    if mutexList and type(mutexList.size) == "function" and type(mutexList.get) == "function" then
+        for listIndex = 0, mutexList:size() - 1 do
+            entries[#entries + 1] = UTCore.getCharacterTraitId(mutexList:get(listIndex))
+        end
+    end
+
+    print(string.format(
+        "[UT_MET_DEBUG] selected=%s label=%s removing=%s nil_index=%d exclusive=%s mutex_list=[%s]",
+        selectedId,
+        tostring(selectedLabel),
+        tostring(isRemovingTrait),
+        index,
+        UTCore.getCharacterTraitId(exclusiveTrait),
+        table.concat(entries, ", ")
+    ))
+end
