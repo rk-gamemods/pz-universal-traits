@@ -161,6 +161,7 @@ In `UniversalTraits/media/scripts/UT_character_traits.txt`:
 - Character creation still reads `MutuallyExclusiveTraits` from `UT_character_traits.txt`; `UT_MET.lua` is only a runtime grouping table and does not populate the pregame UI by itself.
 - Script-side `addMutuallyExclusive()` is one-way. For character-creation behavior, keep intended `UniversalTraits:` exclusions explicit on both traits so selecting either side removes the other from the available list.
 - The real null-crash causes are unknown/unregistered trait ids in script/runtime mutual exclusions, or runtime code that appends `nil` into `getMutuallyExclusiveTraits()` / `setMutualExclusive()`.
+- When static review cannot identify the bad entry, add a temporary client-side wrapper around `CharacterCreationProfession:doTestForMutuallyExclusiveTraits()` and log the selected trait id plus the unresolved `exclusiveTrait` before vanilla dereferences `:isFree()`.
 
 ---
 

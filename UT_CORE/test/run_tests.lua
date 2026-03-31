@@ -49,6 +49,24 @@ test("hasTrait returns false for nil player", function()
     assert_eq(UTCore.hasTrait(nil, "UniversalTraits:UT_swift"), false)
 end)
 
+test("getCharacterTraitId uses getName when available", function()
+    local trait = {
+        getName = function(self) return "UniversalTraits:UT_specmove" end
+    }
+    assert_eq(UTCore.getCharacterTraitId(trait), "UniversalTraits:UT_specmove")
+end)
+
+test("getTraitDefinitionId resolves through getType", function()
+    local def = {
+        getType = function(self)
+            return {
+                getName = function(innerSelf) return "UniversalTraits:UT_specaid" end
+            }
+        end
+    }
+    assert_eq(UTCore.getTraitDefinitionId(def), "UniversalTraits:UT_specaid")
+end)
+
 -- hasAnyTrait
 test("hasAnyTrait returns true when player has one of the set", function()
     local p = MockPlayer({"UniversalTraits:UT_alcoholic_II"})
