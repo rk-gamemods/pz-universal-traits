@@ -36,6 +36,7 @@ local function makeStats(opts)
         _hunger = opts.hunger or 0.0,
         _thirst = opts.thirst or 0.0,
         _fatigue = opts.fatigue or 0.0,
+        _boredom = opts.boredom or 0.0,
         setStress = function(self, v) self._stress = v end,
         getStress = function(self) return self._stress end,
         setHunger = function(self, v) self._hunger = v end,
@@ -49,6 +50,8 @@ local function makeStats(opts)
         setEndurance = function(self, v) self._endurance = v end,
         getEndurance = function(self) return self._endurance end,
         getMaxEndurance = function(self) return self._maxEndurance end,
+        setBoredom = function(self, v) self._boredom = v end,
+        getBoredom = function(self) return self._boredom end,
     }
 end
 
@@ -58,6 +61,7 @@ local function makeBodyDamage(opts)
         _unhappinessLevel = opts.unhappinessLevel or 50,
         _boredomLevel = opts.boredomLevel or 0,
         _infectionLevel = opts.infectionLevel or 0,
+        _foodSicknessLevel = opts.foodSicknessLevel or 0,
         getPanicLevel = function(self) return self._panicLevel end,
         setPanicLevel = function(self, v) self._panicLevel = v end,
         getUnhappinessLevel = function(self) return self._unhappinessLevel end,
@@ -66,6 +70,8 @@ local function makeBodyDamage(opts)
         setBoredomLevel = function(self, v) self._boredomLevel = v end,
         getInfectionLevel = function(self) return self._infectionLevel end,
         setInfectionLevel = function(self, v) self._infectionLevel = v end,
+        getFoodSicknessLevel = function(self) return self._foodSicknessLevel end,
+        setFoodSicknessLevel = function(self, v) self._foodSicknessLevel = v end,
     }
 end
 
@@ -124,7 +130,11 @@ function MockPlayer(traitList, opts)
     local nutrition = opts.nutrition or makeNutrition(opts)
     local x = opts.x or 0
     local y = opts.y or 0
-    local primaryHandItem = opts.primaryHandItem or nil
+    local primaryHandItem   = opts.primaryHandItem or nil
+    local secondaryHandItem  = opts.secondaryHandItem or nil
+    local wornItems          = opts.wornItems or nil  -- MockWornItems object or nil
+    local inventory          = opts.inventory or nil  -- MockInventory object or nil
+    local square             = opts.square or nil    -- mock square object or nil
     local xp = {
         _log = {},
         AddXP = function(self, perk, amount) table.insert(self._log, { perk=perk, amount=amount }) end,
@@ -174,8 +184,17 @@ function MockPlayer(traitList, opts)
             self._vehicle = vehicle
             self._driving = vehicle ~= nil
         end,
-        getPrimaryHandItem = function(self) return primaryHandItem end,
-        setPrimaryHandItem = function(self, item) primaryHandItem = item end,
+        getPrimaryHandItem   = function(self) return primaryHandItem end,
+        setPrimaryHandItem   = function(self, item) primaryHandItem = item end,
+        getSecondaryHandItem = function(self) return secondaryHandItem end,
+        setSecondaryHandItem = function(self, item) secondaryHandItem = item end,
+        getWornItems         = function(self) return wornItems end,
+        getInventory         = function(self) return inventory end,
+        getCurrentSquare     = function(self) return square end,
+        removeFromHands      = function(self)
+            primaryHandItem   = nil
+            secondaryHandItem = nil
+        end,
         setMeleeDelay = function(self, v) moddata["_lastMeleeDelay"] = v end,
         -- Runtime-behavior mocks
         setBumpFallDown   = function(self, v) self._bumpFallDown = v end,
@@ -504,11 +523,16 @@ end
 local _mockGameTime = {
     worldAgeHours = 0,
     ticks = 0,
+    timeOfDay = 0.5,  -- 0.0–1.0; < 0.25 or > 0.75 = night
 }
 
 function setMockGameTime(worldAgeHours, ticks)
     _mockGameTime.worldAgeHours = worldAgeHours or 0
     _mockGameTime.ticks = ticks or 0
+end
+
+function setMockTimeOfDay(v)
+    _mockGameTime.timeOfDay = v or 0.5
 end
 
 function advanceMockGameTimeHours(delta)
@@ -522,7 +546,8 @@ end
 function getGameTime()
     return {
         getWorldAgeHours = function(self) return _mockGameTime.worldAgeHours end,
-        getTicks = function(self) return _mockGameTime.ticks end,
+        getTicks         = function(self) return _mockGameTime.ticks end,
+        getTimeOfDay     = function(self) return _mockGameTime.timeOfDay end,
     }
 end
 
@@ -708,4 +733,125 @@ if not UTCore._vehicleTraitEventsRegistered then
         UTCore.syncVehicleTrait(player)
     end)
     UTCore._vehicleTraitEventsRegistered = true
+end
+
+-- ============================================================
+-- Additional helpers for behavioral tests (P0 coverage suite)
+-- ============================================================
+
+-- MockItem — lightweight item stub for consumption hook tests
+function MockItem(typeName)
+    return {
+        _type = typeName,
+        getType     = function(self) return self._type end,
+        getFullType = function(self) return self._type end,
+    }
+end
+
+-- MockFirearm — weapon stub with reload/aim/jam stats for gunspecialist tests
+function MockFirearm(opts)
+    opts = opts or {}
+    local _reload  = opts.reloadTime  or 30
+    local _aim     = opts.aimingTime  or 20
+    local _jammed  = opts.jammed      or false
+    local _moddata = {}
+    return {
+        getModData    = function(self) return _moddata end,
+        getReloadTime = function(self) return _reload end,
+        setReloadTime = function(self, v) _reload = v end,
+        getAimingTime = function(self) return _aim end,
+        setAimingTime = function(self, v) _aim = v end,
+        isJammed      = function(self) return _jammed end,
+        setJammed     = function(self, v) _jammed = v end,
+    }
+end
+
+-- MockWornItems — worn-item container for humanhamster backpack detection
+-- bagCount: number of inventory-container items (bags)
+-- nonBagCount: number of non-container worn items
+function MockWornItems(bagCount, nonBagCount)
+    local slots = {}
+    for _ = 1, (bagCount or 0) do
+        table.insert(slots, {
+            getItem = function(self)
+                return { IsInventoryContainer = function() return true end }
+            end
+        })
+    end
+    for _ = 1, (nonBagCount or 0) do
+        table.insert(slots, {
+            getItem = function(self)
+                return { IsInventoryContainer = function() return false end }
+            end
+        })
+    end
+    return {
+        size    = function(self) return #slots end,
+        getItem = function(self, i) return slots[i + 1] end,  -- 0-indexed like Java
+    }
+end
+
+-- MockInventory — simple inventory with configurable weight
+function MockInventory(currentWeight, maxWeight)
+    local _items = {}
+    return {
+        getWeight    = function(self) return currentWeight or 0 end,
+        getMaxWeight = function(self) return maxWeight or 8 end,
+        Remove       = function(self, item)
+            for i, v in ipairs(_items) do
+                if v == item then table.remove(_items, i); return end
+            end
+        end,
+        AddItem      = function(self, item) table.insert(_items, item) end,
+        _items       = _items,
+    }
+end
+
+-- MockSquare — world square stub for item drop
+function MockSquare()
+    local _dropped = {}
+    return {
+        _dropped = _dropped,
+        AddWorldInventoryItem = function(self, item, _x, _y, _z)
+            table.insert(self._dropped, item)
+        end,
+    }
+end
+
+-- OnGameStart event mock (needed for UT_physicallyactive and UT_ItemConsumptionHooks)
+if not _G.Events.OnGameStart then
+    local _handlers = {}
+    _G.Events.OnGameStart = {
+        Add  = function(self_or_fn, fn)
+            local f = fn or self_or_fn
+            table.insert(_handlers, f)
+        end,
+        fire = function(...)
+            for _, h in ipairs(_handlers) do h(...) end
+        end,
+        _reset = function()
+            _handlers = {}
+        end,
+    }
+end
+
+-- ISEatFoodAction stub — must exist before UT_ItemConsumptionHooks wraps perform
+if not _G.ISEatFoodAction then
+    _G.ISEatFoodAction = {
+        perform = function(self) end,
+    }
+end
+
+-- ISDrinkFluidAction stub
+if not _G.ISDrinkFluidAction then
+    _G.ISDrinkFluidAction = {
+        perform = function(self) end,
+    }
+end
+
+-- ISFitnessAction stub — needed by UT_physicallyactive to wrap exeLooped
+if not _G.ISFitnessAction then
+    _G.ISFitnessAction = {
+        exeLooped = function(self) end,
+    }
 end

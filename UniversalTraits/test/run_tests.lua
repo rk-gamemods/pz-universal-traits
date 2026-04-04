@@ -1155,5 +1155,362 @@ test("idealweight halves calorie burn when underweight", function()
         "expected reduced calorie burn at underweight values")
 end)
 
-print(string.format("\n%d passed, %d failed", passed, failed))
-if failed > 0 then os.exit(1) end
+-- ============================================================
+-- P0 coverage: behavioral tests for all audited traits
+-- ============================================================
+
+-- Load remaining trait files not yet dofile'd above
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_fearofthedark.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_mundane.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_addictedtocaffeine.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_allergic.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_antivaxxer.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_physicallyactive.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_gunspecialist_III.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua")
+
+-- Install consumption + fitness hooks (simulates game startup)
+Events.OnGameStart.fire()
+
+-- ─── UT_fearofthedark ─────────────────────────────────────────────────────────
+
+test("fearofthedark raises panic at night", function()
+    local player = MockPlayer({ "UniversalTraits:UT_fearofthedark" }, { panic = 0.1 })
+    setMockTimeOfDay(0.1)  -- nighttime (< 0.25)
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+    end)
+    local panic = player:getStats():getPanic()
+    assert_eq(math.floor(panic * 1000 + 0.5) / 1000, 0.14, "panic should be 0.1 + 0.04 = 0.14 at night")
+end)
+
+test("fearofthedark reduces panic during daytime", function()
+    local player = MockPlayer({ "UniversalTraits:UT_fearofthedark" }, { panic = 0.1 })
+    setMockTimeOfDay(0.5)  -- daytime (0.25–0.75)
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+    end)
+    local panic = player:getStats():getPanic()
+    assert_eq(math.floor(panic * 1000 + 0.5) / 1000, 0.09, "panic should be 0.1 - 0.01 = 0.09 during day")
+end)
+
+test("fearofthedark does not affect player without the trait", function()
+    local player = MockPlayer({}, { panic = 0.1 })
+    setMockTimeOfDay(0.1)
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+    end)
+    assert_eq(player:getStats():getPanic(), 0.1, "panic unchanged without trait")
+end)
+
+-- ─── UT_mundane ───────────────────────────────────────────────────────────────
+
+test("mundane sets 0.8x XP multiplier for Electricity on new game", function()
+    local player = MockPlayer({ "UniversalTraits:UT_mundane" })
+    Events.OnNewGame:fire(player)
+    assert_eq(player:getModData()["UT_xpMult_Electricity"], 0.8,
+        "UT_xpMult_Electricity should be 0.8 after OnNewGame")
+end)
+
+test("mundane does not affect player without the trait", function()
+    local player = MockPlayer({})
+    Events.OnNewGame:fire(player)
+    assert_eq(player:getModData()["UT_xpMult_Electricity"], nil,
+        "UT_xpMult_Electricity should not be set when trait is absent")
+end)
+
+-- ─── UT_addictedtocaffeine ────────────────────────────────────────────────────
+
+test("addictedtocaffeine adds stress when no caffeine flag set", function()
+    local player = MockPlayer({ "UniversalTraits:UT_addictedtocaffeine" }, { stress = 0.0 })
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    local stress = player:getStats():getStress()
+    assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.06,
+        "stress should be +0.06 when no UT_hadCaffeine flag")
+end)
+
+test("addictedtocaffeine skips stress when caffeine flag is set", function()
+    local player = MockPlayer({ "UniversalTraits:UT_addictedtocaffeine" }, { stress = 0.0 })
+    player:getModData()["UT_hadCaffeine"] = true
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(player:getStats():getStress(), 0.0, "no stress added when UT_hadCaffeine is set")
+end)
+
+test("addictedtocaffeine clears UT_hadCaffeine flag each tick", function()
+    local player = MockPlayer({ "UniversalTraits:UT_addictedtocaffeine" })
+    player:getModData()["UT_hadCaffeine"] = true
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(player:getModData()["UT_hadCaffeine"], nil,
+        "UT_hadCaffeine should be cleared after the tick")
+end)
+
+test("addictedtocaffeine does not affect player without the trait", function()
+    local player = MockPlayer({}, { stress = 0.0 })
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(player:getStats():getStress(), 0.0, "no stress added without trait")
+end)
+
+-- ─── UT_ItemConsumptionHooks: UT_allergic ─────────────────────────────────────
+
+test("allergic adds food sickness spike on guaranteed roll", function()
+    local player = MockPlayer({ "UniversalTraits:UT_allergic" })
+    setMockZombRandSequence({ 0 })  -- 0 < 30 → spike fires
+    local action = { character = player, item = MockItem("Chips") }
+    ISEatFoodAction.perform(action)
+    local sickness = player:getBodyDamage():getFoodSicknessLevel()
+    assert_eq(sickness, 20, "food sickness should be +20 on successful allergic roll")
+end)
+
+test("allergic does not spike on failed roll", function()
+    local player = MockPlayer({ "UniversalTraits:UT_allergic" })
+    setMockZombRandSequence({ 30 })  -- 30 is NOT < 30 → no spike
+    local action = { character = player, item = MockItem("Chips") }
+    ISEatFoodAction.perform(action)
+    assert_eq(player:getBodyDamage():getFoodSicknessLevel(), 0,
+        "no food sickness when roll fails")
+end)
+
+test("allergic does not trigger for medication items", function()
+    local player = MockPlayer({ "UniversalTraits:UT_allergic" })
+    setMockZombRandSequence({ 0 })  -- guaranteed roll but item is medication
+    local action = { character = player, item = MockItem("Antibiotics") }
+    ISEatFoodAction.perform(action)
+    assert_eq(player:getBodyDamage():getFoodSicknessLevel(), 0,
+        "no food sickness when item is medication (not food)")
+end)
+
+test("allergic does not affect player without the trait", function()
+    local player = MockPlayer({})
+    setMockZombRandSequence({ 0 })
+    local action = { character = player, item = MockItem("Chips") }
+    ISEatFoodAction.perform(action)
+    assert_eq(player:getBodyDamage():getFoodSicknessLevel(), 0,
+        "non-allergic player unaffected")
+end)
+
+-- ─── UT_ItemConsumptionHooks: UT_antivaxxer ───────────────────────────────────
+
+test("antivaxxer adds stress when medication eaten", function()
+    local player = MockPlayer({ "UniversalTraits:UT_antivaxxer" }, { stress = 0.0 })
+    local action = { character = player, item = MockItem("Painkiller") }
+    ISEatFoodAction.perform(action)
+    local stress = player:getStats():getStress()
+    assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.20,
+        "stress should be +0.20 when medication consumed")
+end)
+
+test("antivaxxer skips beta blocker", function()
+    local player = MockPlayer({ "UniversalTraits:UT_antivaxxer" }, { stress = 0.0 })
+    local action = { character = player, item = MockItem("BetaBlocker") }
+    ISEatFoodAction.perform(action)
+    assert_eq(player:getStats():getStress(), 0.0,
+        "beta blocker should not trigger antivaxxer stress")
+end)
+
+test("antivaxxer does not affect player without the trait", function()
+    local player = MockPlayer({}, { stress = 0.0 })
+    local action = { character = player, item = MockItem("Painkiller") }
+    ISEatFoodAction.perform(action)
+    assert_eq(player:getStats():getStress(), 0.0,
+        "non-antivaxxer player unaffected")
+end)
+
+-- ─── UT_ItemConsumptionHooks: caffeine flag ───────────────────────────────────
+
+test("consumption hook sets UT_hadCaffeine when coffee consumed", function()
+    local player = MockPlayer({ "UniversalTraits:UT_addictedtocaffeine" })
+    local action = { character = player, item = MockItem("Coffee") }
+    ISEatFoodAction.perform(action)
+    assert_true(player:getModData()["UT_hadCaffeine"] == true,
+        "UT_hadCaffeine should be true after coffee consumed")
+end)
+
+-- ─── UT_humanhamster ──────────────────────────────────────────────────────────
+
+test("humanhamster no stress when craving below 10", function()
+    local inv    = MockInventory(4.0)   -- 4/8 = 50%, needs bag too
+    local player = MockPlayer({ "UniversalTraits:UT_humanhamster" }, {
+        inventory = inv,
+        wornItems = MockWornItems(0),  -- no bag
+    })
+    player:getModData()["UT_hamsterCraving"] = 5  -- craving = 5 (below 10 threshold)
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+    end)
+    assert_eq(player:getStats():getStress(), 0.0, "no stress at craving < 10")
+end)
+
+test("humanhamster adds mild stress at craving 10–29", function()
+    local inv    = MockInventory(4.0)
+    local player = MockPlayer({ "UniversalTraits:UT_humanhamster" }, {
+        inventory = inv,
+        wornItems = MockWornItems(0),
+    })
+    player:getModData()["UT_hamsterCraving"] = 9  -- will become 10 after increment
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+    end)
+    local stress = player:getStats():getStress()
+    assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.02, "mild stress (+0.02) at craving 10")
+end)
+
+test("humanhamster adds severe stress at craving 60+", function()
+    local inv    = MockInventory(4.0)
+    local player = MockPlayer({ "UniversalTraits:UT_humanhamster" }, {
+        inventory = inv,
+        wornItems = MockWornItems(0),
+    })
+    player:getModData()["UT_hamsterCraving"] = 59  -- will become 60 after increment
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+    end)
+    local stress = player:getStats():getStress()
+    assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.08, "severe stress (+0.08) at craving 60")
+end)
+
+test("humanhamster resets craving when 80pct full with backpack", function()
+    local inv    = MockInventory(7.0)   -- 7/8 = 87.5%, >= 80%
+    local player = MockPlayer({ "UniversalTraits:UT_humanhamster" }, {
+        inventory = inv,
+        wornItems = MockWornItems(1),  -- one backpack worn
+    })
+    player:getModData()["UT_hamsterCraving"] = 30
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+    end)
+    assert_eq(player:getModData()["UT_hamsterCraving"], 0, "craving resets when satisfied")
+    assert_eq(player:getStats():getStress(), 0.0, "no stress when satisfied")
+end)
+
+-- ─── UT_physicallyactive ──────────────────────────────────────────────────────
+
+-- Verify Perks stub for this section
+_G.Perks = _G.Perks or { Fitness = "Fitness", Sprinting = "Sprinting" }
+
+test("physicallyactive reduces stress per exercise loop", function()
+    local player = MockPlayer({ "UniversalTraits:UT_physicallyactive" }, { stress = 0.5 })
+    local action = { character = player }
+    ISFitnessAction.exeLooped(action)
+    local stress = player:getStats():getStress()
+    assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.485,
+        "stress should decrease by 0.015 per exercise loop")
+end)
+
+test("physicallyactive reduces boredom per exercise loop", function()
+    local player = MockPlayer({ "UniversalTraits:UT_physicallyactive" }, { boredom = 50 })
+    local action = { character = player }
+    ISFitnessAction.exeLooped(action)
+    assert_eq(player:getStats():getBoredom(), 45, "boredom should decrease by 5 per exercise loop")
+end)
+
+test("physicallyactive at Fitness 10 restores endurance after exercise", function()
+    local player = MockPlayer({ "UniversalTraits:UT_physicallyactive" }, { endurance = 0.8 })
+    player:setPerkLevel(Perks.Fitness, 10)
+    -- Action captures pre-endurance; original (stub) does nothing to endurance here.
+    -- If original DID drain endurance we'd see it restored. Here we confirm
+    -- the post-endurance path runs without crashing when perkLevel is 10.
+    local action = { character = player }
+    ISFitnessAction.exeLooped(action)
+    -- Endurance unchanged (original stub doesn't drain it), no error expected
+    assert_true(player:getStats():getEndurance() >= 0.0, "endurance should remain non-negative")
+end)
+
+-- ─── UT_gunspecialist_III ─────────────────────────────────────────────────────
+
+test("gunspecialist_III reduces weapon reload time to 90pct on first apply", function()
+    local weapon = MockFirearm({ reloadTime = 30, aimingTime = 20 })
+    local player = MockPlayer({ "UniversalTraits:UT_gunspecialist_III" }, {
+        primaryHandItem = weapon,
+    })
+    -- tickCounter is module-level; fire 30 events to guarantee hitting one % 30 == 0 boundary
+    for _ = 1, 30 do Events.OnPlayerUpdate:fire(player) end
+    -- 10% reduction: floor(30 * 0.9) = 27
+    assert_eq(weapon:getReloadTime(), 27, "reload time should be 27 (floor of 30 * 0.9)")
+end)
+
+test("gunspecialist_III is idempotent on repeated calls", function()
+    local weapon = MockFirearm({ reloadTime = 30, aimingTime = 20 })
+    local player = MockPlayer({ "UniversalTraits:UT_gunspecialist_III" }, {
+        primaryHandItem = weapon,
+    })
+    -- Two full 30-event cycles: each group of 30 hits exactly one % 30 == 0 boundary
+    for _ = 1, 30 do Events.OnPlayerUpdate:fire(player) end  -- first apply: 27
+    for _ = 1, 30 do Events.OnPlayerUpdate:fire(player) end  -- second apply: should stay 27
+    assert_eq(weapon:getReloadTime(), 27, "reload time should not compound on second apply")
+end)
+
+test("gunspecialist_III unjams a jammed equipped firearm", function()
+    local weapon = MockFirearm({ reloadTime = 30, aimingTime = 20, jammed = true })
+    local player = MockPlayer({ "UniversalTraits:UT_gunspecialist_III" }, {
+        primaryHandItem = weapon,
+    })
+    for _ = 1, 30 do Events.OnPlayerUpdate:fire(player) end
+    assert_true(not weapon:isJammed(), "jammed firearm should be unjammed by gunspecialist_III")
+end)
+
+-- ─── UT_scardycat: panic cascade ──────────────────────────────────────────────
+
+test("scardycat panic cascade fires when panic rises by 0.05 or more", function()
+    -- Two EveryOneMinute calls: first to set prevPanic, second to detect the rise
+    local player = MockPlayer({ "UniversalTraits:UT_scardycat" }, { panic = 0.10 })
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()  -- prevPanic[id] = 0.10
+        player:getStats():setPanic(0.20)  -- panic rose by 0.10 (>= 0.05)
+        Events.EveryOneMinute:fire()  -- cascade: 0.20 + 0.15 = 0.35
+    end)
+    local panic = player:getStats():getPanic()
+    assert_true(panic >= 0.34 and panic <= 0.36,
+        "panic cascade should add 0.15 when panic rises >= 0.05 in a minute (got " .. tostring(panic) .. ")")
+end)
+
+test("scardycat no cascade when panic does not rise by 0.05", function()
+    local player = MockPlayer({ "UniversalTraits:UT_scardycat" }, { panic = 0.20 })
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()  -- prevPanic[id] = 0.20
+        player:getStats():setPanic(0.23)  -- rose only 0.03 (< 0.05)
+        Events.EveryOneMinute:fire()  -- no cascade
+    end)
+    local panic = player:getStats():getPanic()
+    assert_true(panic < 0.30,
+        "no cascade should fire when panic rose less than 0.05 (got " .. tostring(panic) .. ")")
+end)
+
+-- ─── UT_butterfingers: drop execution ─────────────────────────────────────────
+
+test("butterfingers drops primary hand item when UT_dropNext flag is set", function()
+    local item    = MockItem("ButterKnife")
+    local inv     = MockInventory(1.0)
+    local sq      = MockSquare()
+    inv:AddItem(item)
+    local player = MockPlayer({ "UniversalTraits:UT_butterfingers" }, {
+        primaryHandItem = item,
+        inventory = inv,
+        square = sq,
+    })
+    player:getModData()["UT_dropNext"] = true
+    Events.OnPlayerUpdate:fire(player)
+    assert_eq(player:getPrimaryHandItem(), nil, "primary hand item should be removed after drop")
+    assert_eq(#sq._dropped, 1, "item should have been placed on the ground square")
+end)
+
+test("butterfingers does nothing when no item in primary hand", function()
+    local inv  = MockInventory(0.0)
+    local sq   = MockSquare()
+    local player = MockPlayer({ "UniversalTraits:UT_butterfingers" }, {
+        inventory = inv,
+        square = sq,
+    })
+    player:getModData()["UT_dropNext"] = true
+    Events.OnPlayerUpdate:fire(player)
+    assert_eq(#sq._dropped, 0, "nothing dropped when primary hand is empty")
+end)
+

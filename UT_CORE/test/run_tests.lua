@@ -254,6 +254,41 @@ test("XPHook ignores zero or negative XP events", function()
     assert_eq(#p:getXpCalls(), 0, "zero XP event should produce no corrections")
 end)
 
+-- XPHook: skill cap enforcement (UT_skillCapReduction / UT_incomprehensive)
+test("XPHook blocks XP when player is at or above the skill cap", function()
+    -- UT_skillCapReduction = 2  →  hardCap = 10 - 2 = 8
+    local p = MockPlayer({}, { perkLevels = { Aiming = 8 } })
+    p:getModData()["UT_skillCapReduction"] = 2
+    Events.AddXP.fire(p, "Aiming", 10)
+    local blocked = false
+    for _, c in ipairs(p:getXpCalls()) do
+        if c.perk == "Aiming" and c.amount == -10 then blocked = true end
+    end
+    assert_eq(blocked, true, "XP should be negated at perk level 8 with cap reduction of 2")
+end)
+
+test("XPHook allows XP when player is below the skill cap", function()
+    -- UT_skillCapReduction = 2  →  hardCap = 8; level 7 is below cap
+    local p = MockPlayer({}, { perkLevels = { Aiming = 7 } })
+    p:getModData()["UT_skillCapReduction"] = 2
+    Events.AddXP.fire(p, "Aiming", 10)
+    local blocked = false
+    for _, c in ipairs(p:getXpCalls()) do
+        if c.perk == "Aiming" and c.amount == -10 then blocked = true end
+    end
+    assert_eq(blocked, false, "XP should not be blocked at perk level 7 when cap is 8")
+end)
+
+test("XPHook does not apply skill cap without UT_skillCapReduction set", function()
+    local p = MockPlayer({}, { perkLevels = { Aiming = 9 } })
+    Events.AddXP.fire(p, "Aiming", 10)
+    local blocked = false
+    for _, c in ipairs(p:getXpCalls()) do
+        if c.perk == "Aiming" and c.amount < 0 then blocked = true end
+    end
+    assert_eq(blocked, false, "no cap should apply when UT_skillCapReduction is not set")
+end)
+
 -- SpeedHook: positive speedMod amplifies movement
 test("SpeedHook positive speedMod amplifies movement", function()
     local player = MockPlayer({})
