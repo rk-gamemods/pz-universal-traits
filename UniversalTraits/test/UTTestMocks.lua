@@ -50,8 +50,30 @@ local function makeStats(opts)
         setEndurance = function(self, v) self._endurance = v end,
         getEndurance = function(self) return self._endurance end,
         getMaxEndurance = function(self) return self._maxEndurance end,
-        setBoredom = function(self, v) self._boredom = v end,
-        getBoredom = function(self) return self._boredom end,
+        setBoredom        = function(self, v) self._boredom = v end,
+        getBoredom        = function(self) return self._boredom end,
+        _drunkenness      = opts.drunkenness or 0.0,
+        getDrunkenness    = function(self) return self._drunkenness end,
+        setDrunkenness    = function(self, v) self._drunkenness = v end,
+        _charStatAccum    = {},
+        add    = function(self, key, delta)
+            local k = tostring(key)
+            self._charStatAccum[k] = (self._charStatAccum[k] or 0) + delta
+        end,
+        remove = function(self, key, delta)
+            local k = tostring(key)
+            self._charStatAccum[k] = (self._charStatAccum[k] or 0) - delta
+        end,
+        get    = function(self, key)
+            local k = tostring(key)
+            if k == "Stress"       then return self._stress       * 100 end
+            if k == "Panic"        then return self._panic        * 100 end
+            if k == "Fatigue"      then return self._fatigue      * 100 end
+            if k == "Boredom"      then return self._boredom      * 100 end
+            if k == "Hunger"       then return self._hunger       * 100 end
+            if k == "Thirst"       then return self._thirst       * 100 end
+            return 0
+        end,
     }
 end
 
@@ -70,8 +92,29 @@ local function makeBodyDamage(opts)
         setBoredomLevel = function(self, v) self._boredomLevel = v end,
         getInfectionLevel = function(self) return self._infectionLevel end,
         setInfectionLevel = function(self, v) self._infectionLevel = v end,
-        getFoodSicknessLevel = function(self) return self._foodSicknessLevel end,
-        setFoodSicknessLevel = function(self, v) self._foodSicknessLevel = v end,
+        getFoodSicknessLevel   = function(self) return self._foodSicknessLevel end,
+        setFoodSicknessLevel   = function(self, v) self._foodSicknessLevel = v end,
+        _wetness               = opts.wetness or 0.0,
+        getWetness             = function(self) return self._wetness end,
+        setWetness             = function(self, v) self._wetness = v end,
+        _healthFromFoodTimer   = opts.healthFromFoodTimer or 0,
+        getHealthFromFoodTimer = function(self) return self._healthFromFoodTimer end,
+        setHealthFromFoodTimer = function(self, v) self._healthFromFoodTimer = v end,
+        _panicReductionValue   = opts.panicReductionValue or 0.06,
+        getPanicReductionValue = function(self) return self._panicReductionValue end,
+        setPanicReductionValue = function(self, v) self._panicReductionValue = v end,
+        _bodyParts             = {},
+        getBodyPart            = function(self, partType)
+            local key = tostring(partType)
+            if not self._bodyParts[key] then
+                self._bodyParts[key] = {
+                    _pain = 0,
+                    getAdditionalPain = function(s) return s._pain end,
+                    setAdditionalPain = function(s, v) s._pain = v end,
+                }
+            end
+            return self._bodyParts[key]
+        end,
     }
 end
 
@@ -210,7 +253,19 @@ function MockPlayer(traitList, opts)
         getBumpedChr      = function(self) return self._bumpedChr end,
         setBumpedChr      = function(self, chr) self._bumpedChr = chr end,
         setBumpType       = function(self, s) self._bumpType = s end,
-        setBumpFall       = function(self, v) self._bumpFall = v end,
+        setBumpFall          = function(self, v) self._bumpFall = v end,
+        _z                   = opts.z or 0,
+        getZ                 = function(self) return self._z end,
+        setZ                 = function(self, v) self._z = v end,
+        _bodyTemp            = opts.bodyTemp or 37.0,
+        getBodyTemperature   = function(self) return self._bodyTemp end,
+        setBodyTemperature   = function(self, v) self._bodyTemp = v end,
+        _sleeping            = opts.sleeping or false,
+        isSleeping           = function(self) return self._sleeping end,
+        setSleeping          = function(self, v) self._sleeping = v end,
+        _backpack            = opts.backpack or nil,
+        getClothingItem_Back = function(self) return self._backpack end,
+        isOutside            = function(self) return not self._indoors end,
     }
     return player
 end
@@ -254,6 +309,12 @@ UTCore.applyBleedDecayMult  = function(player, mult, bandagedOnly)
     player:getModData()["UT_bleedDecayBandagedOnly"] = bandagedOnly and true or false
 end
 UTCore.applyBleedDrainMult  = function(player, mult) player:getModData()["UT_bleedDrainMult"] = mult end
+UTCore.stripSpawnItems      = UTCore.stripSpawnItems or function(player)
+    player:getModData()["_stripCalled"] = true
+end
+UTCore.applyStatFloor       = UTCore.applyStatFloor or function(player, key, floor)
+    player:getModData()["UT_statFloor_" .. tostring(key)] = floor
+end
 UTCore._periodicHandlers = UTCore._periodicHandlers or {}
 UTCore._vehicleTraitDefs = UTCore._vehicleTraitDefs or {}
 local function periodicHandlerKey(traitId, interval)
@@ -580,6 +641,15 @@ end
 if not _G.BodyPartType then
     _G.BodyPartType = { Neck = "Neck" }
 end
+_G.BodyPartType.Head        = _G.BodyPartType.Head        or "Head"
+_G.BodyPartType.Hand_L      = _G.BodyPartType.Hand_L      or "Hand_L"
+_G.BodyPartType.Hand_R      = _G.BodyPartType.Hand_R      or "Hand_R"
+_G.BodyPartType.Foot_L      = _G.BodyPartType.Foot_L      or "Foot_L"
+_G.BodyPartType.Torso_Upper = _G.BodyPartType.Torso_Upper or "Torso_Upper"
+_G.BodyPartType.Torso_Lower = _G.BodyPartType.Torso_Lower or "Torso_Lower"
+_G.BodyPartType.UpperArm_L  = _G.BodyPartType.UpperArm_L  or "UpperArm_L"
+_G.BodyPartType.UpperArm_R  = _G.BodyPartType.UpperArm_R  or "UpperArm_R"
+_G.BodyPartType.FromString   = _G.BodyPartType.FromString  or function(s) return s end
 
 function MockBodyPart(partType, isBleeding, isStemmed)
     local _type = partType or "Torso_Upper"
@@ -879,5 +949,75 @@ end
 if not _G.ISFitnessAction then
     _G.ISFitnessAction = {
         exeLooped = function(self) end,
+    }
+end
+
+-- ============================================================
+-- Extended stubs for Phase-4 behavioral tests (70 new traits)
+-- ============================================================
+
+-- CharacterStat global (used by sloth, squirrel, sundayrunner, couchdweller, sore, fearful)
+if not _G.CharacterStat then
+    _G.CharacterStat = {
+        STRESS       = "Stress",
+        BOREDOM      = "Boredom",
+        HUNGER       = "Hunger",
+        THIRST       = "Thirst",
+        UNHAPPINESS  = "Unhappiness",
+        FATIGUE      = "Fatigue",
+        PAIN         = "Pain",
+        PANIC        = "Panic",
+    }
+end
+
+-- GameTime.getInstance() (used by sloth/squirrel for getMultiplier)
+if not _G.GameTime then
+    _G.GameTime = {
+        getInstance = function()
+            return { getMultiplier = function(self) return 1.0 end }
+        end,
+    }
+end
+
+-- isRaining() global (used by lesssweaty)
+if not _G.isRaining then
+    _G.isRaining = function()
+        return _mockClimate.precipitationIntensity > 0.1
+    end
+end
+
+-- addSound global (used by fearful inside pcall — must exist as a no-op)
+if not _G.addSound then
+    _G.addSound = function() end
+end
+
+-- Events.OnZombieDead stub (used by UT_maniac)
+if not _G.Events.OnZombieDead then
+    local _handlers = {}
+    _G.Events.OnZombieDead = {
+        Add  = function(fn) table.insert(_handlers, fn) end,
+        fire = function(...) fireHandlers(_G.Events.OnZombieDead, _handlers, ...) end,
+    }
+end
+
+-- Events.OnWeaponSwingHitPoint stub (used by UT_highsweaty)
+if not _G.Events.OnWeaponSwingHitPoint then
+    local _handlers = {}
+    _G.Events.OnWeaponSwingHitPoint = {
+        Add  = function(fn) table.insert(_handlers, fn) end,
+        Remove = function(fn)
+            for i, h in ipairs(_handlers) do
+                if h == fn then table.remove(_handlers, i); return end
+            end
+        end,
+        fire = function(...) fireHandlers(_G.Events.OnWeaponSwingHitPoint, _handlers, ...) end,
+    }
+end
+
+-- MockBackpack helper — stub for testing UT_flimsy backpack weight checks
+function MockBackpack(contentsWeight)
+    return {
+        _contentsWeight = contentsWeight or 0,
+        getContentsWeight = function(self) return self._contentsWeight end,
     }
 end
