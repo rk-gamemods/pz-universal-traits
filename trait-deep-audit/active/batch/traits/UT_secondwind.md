@@ -19,13 +19,15 @@
   - `research/installed-mods/MoreTraits/mods/More Traits/42.15/media/lua/shared/Translate/EN/UI_EN.txt` (lines 147-158)
   - `research/installed-mods/MoreTraits/mods/More Traits/media/lua/shared/NPCs/MoreTraitsMainCreationMethods.lua` (lines 202-203)
 - Source trigger path:
-  - Source dispatcher calls `SecondWind(...)` for activation and `SecondWindRecharge(...)` for cooldown recovery.
+  - `MoreTraits` shared `OnPlayerUpdate` calls `SecondWind(player, playerdata)` for activation.
+  - Shared `EveryOneMinute` calls `SecondWindRecharge(player, playerdata)` for cooldown recovery.
 - Source behavior:
   - Cost `10`, grants `Fitness=1` XP boost.
   - Triggers when the trait is active, cooldown is clear, and either `endurance < 0.5` or `fatigue > 0.8`.
   - Requires at least 3 zombies within distance 5.
   - Restores endurance to `1.0`, may reduce fatigue to `0.4`, and starts a long cooldown.
-  - Source text says the cooldown is 14 days and is halved if no fatigue was recovered, but source code instead doubles recharge when fatigue recovery happened. Core intent is proven, cooldown nuance is only partially proven.
+  - Source text says the cooldown is 14 days and is halved if no fatigue was recovered, but the B42 shared code instead doubles recharge when fatigue recovery happened.
+  - The same B42 shared recharge function also returns early when `playerdata.secondwinddisabled` is true, even though activation sets that flag true. Core proc intent is proven, but the exact live cooldown behavior in source remains only partially proven.
 
 ## Current UT Evidence
 
@@ -113,7 +115,8 @@
 - Description: **accurate**
 - Balance: **justified**
 - Regression proof: **protected**
-- Action needed: **none**
+- Action needed: **research gap**
 - Open gaps:
-  - Confirm whether replacing the source danger/zombie fantasy with a pure stamina-management design was intentional.
-  - Optional test hardening for no-sprint, no-trait, and cooldown-lockout guards.
+  - B42 source evidence conflicts on the original cooldown rules: text says 14 days and possibly shorter without fatigue recovery, while code doubles recharge after fatigue recovery.
+  - B42 source recharge also appears gated off by `secondwinddisabled`, so the original live cooldown-clear path may be broken or version-divergent.
+  - UT regression coverage proves the happy path, but not the no-sprint, no-trait, or cooldown-lockout guards.

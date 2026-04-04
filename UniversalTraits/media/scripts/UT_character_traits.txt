@@ -924,7 +924,7 @@ module UniversalTraits
         Cost = -8,
         UIName = UI_UT_gimp,
         UIDescription = UI_UT_gimpDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_fast,
+        MutuallyExclusiveTraits = UniversalTraits:UT_fast;UniversalTraits:UT_pacer,
     }
 
     character_trait_definition UniversalTraits:UT_anemic
@@ -1126,7 +1126,7 @@ module UniversalTraits
         Cost = 6,
         UIName = UI_UT_fast,
         UIDescription = UI_UT_fastDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_noodlelegs;UniversalTraits:UT_lurcher;UniversalTraits:UT_gimp,
+        MutuallyExclusiveTraits = UniversalTraits:UT_noodlelegs;UniversalTraits:UT_lurcher;UniversalTraits:UT_gimp;UniversalTraits:UT_sorelegs,
     }
 
     character_trait_definition UniversalTraits:UT_noodlelegs
@@ -1148,7 +1148,7 @@ module UniversalTraits
         Cost = 4,
         UIName = UI_UT_pacer,
         UIDescription = UI_UT_pacerDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_noodlelegs,
+        MutuallyExclusiveTraits = UniversalTraits:UT_noodlelegs;UniversalTraits:UT_gimp;UniversalTraits:UT_lurcher;UniversalTraits:UT_sorelegs,
     }
 
     character_trait_definition UniversalTraits:UT_lurcher
@@ -1159,7 +1159,7 @@ module UniversalTraits
         Cost = -5,
         UIName = UI_UT_lurcher,
         UIDescription = UI_UT_lurcherDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_fast;UniversalTraits:UT_flailer,
+        MutuallyExclusiveTraits = UniversalTraits:UT_fast;UniversalTraits:UT_pacer;UniversalTraits:UT_flailer,
     }
 
     character_trait_definition UniversalTraits:UT_sorelegs
@@ -1170,6 +1170,7 @@ module UniversalTraits
         Cost = -10,
         UIName = UI_UT_sorelegs,
         UIDescription = UI_UT_sorelegsDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_fast;UniversalTraits:UT_pacer,
     }
 
 

@@ -28,7 +28,7 @@
 - Registered in registries.lua: yes
 - Defined in UT_character_traits.txt: yes
 - Translation strings present: yes
-- Exclusions and grants correct: no. UT does not define the source side exclusion with UT_analgesia.
+- Exclusions/grants correct: no. The source `Analgesia` <-> `Sore` mutual exclusion was not carried into UT script definitions; `UT_sore` has no `MutuallyExclusiveTraits` entry and `UT_analgesia` excludes `UT_glassbody` instead.
 - Runtime Lua file exists: yes
 
 ### Runtime Trace
@@ -88,8 +88,8 @@
 - Description: misleading
 - Balance: justified
 - Regression proof: partially protected
-- Action needed: doc fix, test fix
+- Action needed: code fix
 - Open gaps:
-  - Missing source exclusion with UT_analgesia
-  - Description claims strength and endurance penalties that are not implemented
-  - No behavioral test covers the pain floor runtime path
+  - Missing `UT_sore` <-> `UT_analgesia` mutual exclusion in current UT script data
+  - Description claims strength and endurance penalties but omits the real pain-floor-of-20 behavior
+  - No behavioral test covers the `OnPlayerUpdate` pain-floor path or its guard conditions
