@@ -3,6 +3,7 @@
 - Batch folder: trait-deep-audit/active/batch/
 - Coordinator: Claude Opus (orchestrator)
 - Status: in progress (107/~170 traits audited)
+- **Test suites: UniversalTraits 100/100 PASS · UT_CORE 73/73 PASS** (as of commit 743897d)
 
 ---
 
@@ -326,11 +327,29 @@ The following P0 and P1 issues were implemented and are no longer outstanding as
 23. **UT_noxp series** — source had all 6 siblings mutually exclusive; UT has none; players can stack all for large point windfall
 24. **UT_actionhero** — `isZombie()` guard removed; applies bonus damage to all targets not just zombies
 
-### P4: TEST GAPS
+### P4: TEST GAPS — ADDRESSED
 
-- **55 of 59 traits** have no behavioral regression test (registration sweep only)
-- Only UT_preparedpack, UT_expertdriver, UT_poordriver have strong pinned-value tests
-- UT_indefatigable runtime file not even loaded by test harness
+**As of commit 743897d, all P0-fixed traits now have ≥1 behavioral test.**
+
+UniversalTraits suite grew from 70 → 100 tests (+30).
+UT_CORE suite grew from 70 → 73 tests (+3, XPHook skill cap).
+
+Verified behavioral coverage for all P0-fixed traits:
+- UT_fearofthedark: night panic rise, day fall, no-trait guard ✓
+- UT_mundane: Electricity multiplier on OnNewGame ✓
+- UT_addictedtocaffeine: stress added/skipped/flag cleared ✓
+- UT_allergic: food sickness spike via consumption hook ✓
+- UT_antivaxxer: stress spike, beta blocker excluded ✓
+- UT_humanhamster: craving escalation, fullness reset ✓
+- UT_physicallyactive: stress/boredom relief per exercise loop ✓
+- UT_gunspecialist_III: 90% reload, idempotent, jam immunity ✓
+- UT_scardycat: panic cascade +0.15 on ≥0.05 rise ✓
+- UT_butterfingers: drop execution + guard when hand empty ✓
+- UT_incomprehensive (via UTCore_XPHook): skill cap blocks/allows ✓
+
+Still pending (lower priority, no regressions expected):
+- ~55+ remaining traits audited but not yet in the P0-fixed set
+- P4 automation candidates (vehicle trait harness, EveryTenMinutes pattern tests)
 
 ## Automation Candidates Found
 
