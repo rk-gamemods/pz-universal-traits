@@ -237,7 +237,7 @@ UI_EN = {
     UI_UT_prodigyDesc           = "You pick up new skills at an extraordinary rate. Start at level 1 in Cooking, Carpentry, Mechanics, First Aid, Fitness, Sprinting, Tailoring, Electrical, Aiming, and Reloading.",
 
     UI_UT_driver                = "Driver",
-    UI_UT_driverDesc            = "Countless hours behind the wheel have made you a natural. Gain ×2 XP in Driving.",
+    UI_UT_driverDesc            = "Countless hours behind the wheel have made you a natural. Vehicles get +20% top speed, engine power, and braking force, and run 20% quieter.",
 
     UI_UT_amateurelectrician    = "Amateur Electrician",
     UI_UT_amateurelectricianDesc = "Weekend electrical projects taught you more than most people know. Gain ×2 XP in Electrical.",
@@ -276,10 +276,10 @@ UI_EN = {
     UI_UT_badteethDesc          = "Dental problems make eating painful. Eating causes increasing head pain (proportional to food healing). Food effectiveness is not reduced — it just hurts.",
 
     UI_UT_deprived              = "Deprived",
-    UI_UT_deprivedDesc          = "Years of neglect have left your body in poor condition. Multiple physical stats are reduced.",
+    UI_UT_deprivedDesc          = "You are bringing nothing. You spawn with no clothing and no inventory items.",
 
     UI_UT_couchdweller          = "Couch Dweller",
-    UI_UT_couchdwellerDesc      = "A sedentary lifestyle means you tire quickly. Endurance is reduced.",
+    UI_UT_couchdwellerDesc      = "Your couch is your sanctuary. While indoors, boredom and unhappiness drain by 1 point per in-game minute.",
 
     UI_UT_sloth                 = "Sloth",
     UI_UT_slothDesc             = "Extreme laziness has kept you from developing any physical fitness. Fitness is at its lowest.",
@@ -291,25 +291,25 @@ UI_EN = {
     UI_UT_antivaxxerDesc        = "Your mistrust of medicine runs deep. Taking antibiotics, painkillers, sleeping pills, or similar pharmaceuticals causes immediate anxiety (+0.20 stress per dose). Beta blockers are unaffected — you will take those.",
 
     UI_UT_flimsy                = "Flimsy",
-    UI_UT_flimsyDesc            = "You are not built for physical exertion. Strength and endurance are reduced.",
+    UI_UT_flimsyDesc            = "Your arms can't handle the weight. When carrying a backpack heavier than 20 kg, both upper arms suffer pain proportional to the excess weight.",
 
     UI_UT_sundayrunner          = "Sunday Runner",
-    UI_UT_sundayrunnerDesc      = "Occasional jogging has done little for your long-term endurance. Fitness is slightly below average.",
+    UI_UT_sundayrunnerDesc      = "Running was never your thing. Every in-game minute while sprinting, unhappiness increases by +2.",
 
     UI_UT_lesssweaty            = "Less Sweaty",
     UI_UT_lesssweatyDesc        = "You don't sweat much even under exertion. Wetness from physical activity is significantly reduced.",
 
     UI_UT_highsweaty            = "High Sweaty",
-    UI_UT_highsweatyDesc        = "You sweat profusely at the slightest exertion. Physical activity rapidly increases your wetness level.",
+    UI_UT_highsweatyDesc        = "You sweat constantly. Sprinting: +0.05 wetness and +0.03 thirst per minute. Running: +0.03 wetness and +0.02 thirst per minute. Walking: +0.01 wetness per minute. Each combat swing adds extra wetness and thirst.",
 
     UI_UT_cangrabmore           = "Strong Grip",
-    UI_UT_cangrabmoreDesc       = "Your powerful hands let you grab and restrain zombies more effectively. Grab success rate is increased.",
+    UI_UT_cangrabmoreDesc       = "Your strong arms can carry more. Carry weight maximum is increased by +1.",
 
     UI_UT_cangrabless           = "Weak Grip",
-    UI_UT_cangrablessDesc       = "Your weak hands make it harder to grab and hold onto things. Grab success rate is reduced.",
+    UI_UT_cangrablessDesc       = "Your weak arms carry less. Carry weight maximum is reduced by -1.",
 
     UI_UT_backpacker            = "Backpacker",
-    UI_UT_backpackerDesc        = "Efficient packing and load distribution let you carry more comfortably. Carry weight is increased.",
+    UI_UT_backpackerDesc        = "Efficient packing and load distribution let you carry more comfortably. Carry weight maximum is increased by +4.",
 
     UI_UT_topheavy              = "Top Heavy",
     UI_UT_topheavyDesc          = "Your upper-body bulk makes nimble movement harder. Nimbleness XP gain and base agility are reduced.",
@@ -411,7 +411,7 @@ UI_EN = {
     UI_UT_unwaveringDesc        = "Fear never really got its hooks into you. Panic resistance is increased by 40% — panic events have 40% less impact.",
 
     UI_UT_idealweight           = "Ideal Weight",
-    UI_UT_idealweightDesc       = "You are in peak physical condition. Carry weight is increased by +1 and fatigue rate is reduced to 85% of normal.",
+    UI_UT_idealweightDesc       = "Your body relentlessly fights to stay at ideal weight. Above 84 kg: calorie burn is doubled. Below 76 kg: calorie burn is halved.",
 
     UI_UT_mundane               = "Mundane",
     UI_UT_mundaneDesc           = "You were never exceptional at anything. XP gain in Carpentry, Cooking, First Aid, Mechanics, Electrical, Aiming, and Reloading is reduced to ×0.8 (−20%). Also disables special combat abilities from other traits (Martial Artist, Action Hero).",
@@ -522,7 +522,7 @@ UI_EN = {
     UI_UT_selfdestructiveDesc   = "You have always been your own worst enemy. You act against your own interests in ways that are hard to explain, even to yourself.",
 
     UI_UT_melancholic           = "Melancholic",
-    UI_UT_melancholicDesc       = "The world feels muted and grey. A quiet sadness colors everything you do.",
+    UI_UT_melancholicDesc       = "The world feels muted and grey. Every 10 in-game minutes, unhappiness increases by +5.",
 
     UI_UT_immuneresponse        = "Immune Response",
     UI_UT_immuneresponseDesc    = "Your body fights back hard and fast. When illness takes hold, your immune system kicks into overdrive and burns it out sooner.",
@@ -543,13 +543,13 @@ UI_EN = {
     UI_UT_adaptivemetabolismDesc = "Your body is remarkably good at making do with what it has. Your metabolism adjusts efficiently to changing conditions.",
 
     UI_UT_accmetabolism         = "Accelerated Metabolism",
-    UI_UT_accmetabolismDesc     = "Everything runs fast inside you. Your body burns food quickly and your weight shifts with your diet more than most people experience.",
+    UI_UT_accmetabolismDesc     = "Everything runs fast inside you. Every 10 in-game minutes, hunger increases by +0.05 and thirst by +0.03.",
 
     UI_UT_albino                = "Albino",
-    UI_UT_albinoDesc            = "You lack melanin and sunlight has always been your enemy. Prolonged outdoor exposure causes real physical harm.",
+    UI_UT_albinoDesc            = "You lack melanin, and sunlight has always been your enemy. While outdoors during daylight hours, stress increases by +0.03 and fatigue by +0.02 each minute.",
 
     UI_UT_fibromyalgia          = "Fibromyalgia",
-    UI_UT_fibromyalgiaDesc      = "Chronic pain is your constant companion. Everyday exertion costs more than it should, and bad days can be genuinely debilitating.",
+    UI_UT_fibromyalgiaDesc      = "Chronic pain is your constant companion. Every 10 in-game minutes, stress increases by +0.07 and fatigue by +0.05.",
 
     UI_UT_bigorexia             = "Bigorexia",
     UI_UT_bigorexiaDesc         = "You are never big enough, never strong enough, never enough. Your mood suffers whenever your body does not match the image in your head.",
@@ -558,19 +558,19 @@ UI_EN = {
     UI_UT_weathersensitiveDesc  = "Your mood shifts with the sky. Storms drag you down; clear days lift you up more than they should.",
 
     UI_UT_panicattacks          = "Panic Attacks",
-    UI_UT_panicattacksDesc      = "Without warning, your body convinces itself that death is seconds away. The attacks pass, but they leave you shaken.",
+    UI_UT_panicattacksDesc      = "Without warning, panic spikes by +0.4. Happens at roughly 5% chance per in-game minute — about 3 times per hour on average.",
 
     UI_UT_fearofthedark         = "Fear of the Dark",
     UI_UT_fearofthedarkDesc     = "Darkness is not just inconvenient for you, it is genuinely frightening. Being in the dark wears away at your composure.",
 
     UI_UT_coldsensitive         = "Cold Sensitive",
-    UI_UT_coldsensitiveDesc     = "Cold cuts through you faster than it should. Even mild temperature drops affect your body and your focus.",
+    UI_UT_coldsensitiveDesc     = "Cold cuts through you faster than it should. When your body temperature drops below 36°C, stress increases by +0.08 and fatigue by +0.05 every 10 minutes.",
 
     UI_UT_heatsensitive         = "Heat Sensitive",
-    UI_UT_heatsensitiveDesc     = "Heat hits you harder than most. High temperatures sap your strength and leave you struggling when others are merely warm.",
+    UI_UT_heatsensitiveDesc     = "Heat hits you harder than most. When your body temperature rises above 38°C, stress increases by +0.08 and fatigue by +0.05 every 10 minutes.",
 
     UI_UT_sedentary             = "Sedentary",
-    UI_UT_sedentaryDesc         = "Your body has grown accustomed to doing as little as possible. Fitness fades faster for you without consistent effort.",
+    UI_UT_sedentaryDesc         = "Your body has grown accustomed to doing as little as possible. Endurance drains by 0.01 every in-game hour, regardless of activity.",
 
     UI_UT_alcoholic_I           = "Alcoholic (Mild)",
     UI_UT_alcoholic_IDesc       = "You enjoy a drink more than most. Every 30 in-game minutes while sober (drunkenness below 0.05), stress increases by +0.05.",
@@ -585,7 +585,7 @@ UI_EN = {
     UI_UT_addictedtocaffeineDesc = "Coffee is not a luxury, it is a necessity. Without recent caffeine, stress mounts by +0.06 every ten minutes. Drinking coffee, energy drinks, or other caffeinated items resets the clock and keeps withdrawal at bay.",
 
     UI_UT_immunocompromised     = "Immunocompromised",
-    UI_UT_immunocompromisedDesc = "Your immune system is not up to the task. Infections take hold more easily and your body struggles to fight back.",
+    UI_UT_immunocompromisedDesc = "Your immune system is not up to the task. Any active infection worsens by +0.01 every in-game minute.",
 
     -- ============================================================
     -- PHASE 3c — EVENT-DRIVEN TRAITS
@@ -603,7 +603,7 @@ UI_EN = {
     UI_UT_maniacDesc            = "Combat wakes something up in you. Each time you kill a zombie, stress decreases by −0.15 and boredom decreases by −0.2.",
 
     UI_UT_anorexy               = "Anorexia",
-    UI_UT_anorexyDesc           = "Your relationship with food is deeply complicated. Eating feels wrong, and your body pays the price for every meal.",
+    UI_UT_anorexyDesc           = "Your relationship with food is deeply complicated. Each time you eat, stress spikes by +0.1.",
 
     UI_UT_pillsallergy          = "Pill Allergy",
     UI_UT_pillsallergyDesc      = "Medicine that helps others can hurt you. Certain pills trigger an adverse reaction instead of the relief they promise.",
@@ -630,7 +630,7 @@ UI_EN = {
     UI_UT_vehophobicDesc        = "Getting behind the wheel or into a vehicle fills you with dread. The fear is irrational but it is very real.",
 
     UI_UT_motionsickness        = "Motion Sickness",
-    UI_UT_motionsicknessDesc    = "Vehicles do not agree with you. Even short drives leave you nauseous and desperate for still ground.",
+    UI_UT_motionsicknessDesc    = "Vehicles do not agree with you. Every minute spent in a vehicle, stress increases by +0.01.",
 
     UI_UT_physicallyactive      = "Physically Active",
     UI_UT_physicallyactiveDesc  = "You have always pushed your body and it pays off. Gain ×2 XP in Fitness and Sprinting. During exercise, stress and boredom steadily decrease. At Fitness level 10, gym exercises cost no endurance.",
@@ -642,7 +642,7 @@ UI_EN = {
     UI_UT_superimmuneDesc       = "Your immune system is exceptional. Infections that would lay others low barely register with your body.",
 
     UI_UT_bouncer_I             = "Bouncer",
-    UI_UT_bouncer_IDesc         = "Years working the door taught you how to handle yourself. Start at Strength 6 and Short Blunt level 1. When surrounded by 3 or more zombies, chance to automatically stagger one back.",
+    UI_UT_bouncer_IDesc         = "Years working the door taught you how to handle yourself. Grants +1 XP bonus to Strength and Short Blunt. When surrounded by 3 or more zombies, 5% chance per tick to automatically stagger one back.",
 
     UI_UT_bouncer_II            = "Bruiser",
     UI_UT_bouncer_IIDesc        = "Raw power is your trademark. Gain ×3 XP in Strength and ×3 XP in Short Blunt.",
@@ -654,7 +654,7 @@ UI_EN = {
     UI_UT_gunspecialist_IIDesc  = "You know firearms inside and out. Gain ×3 XP in Aiming and Reloading, and ×2 XP in Nimbleness.",
 
     UI_UT_gunspecialist_III     = "Gun Specialist III",
-    UI_UT_gunspecialist_IIIDesc = "Firearms are an extension of yourself. Gain ×3 XP in Aiming and Reloading, and ×2 XP in Nimbleness. Reload time and aim time are each reduced by 10%. Equipped weapons never jam.",
+    UI_UT_gunspecialist_IIIDesc = "Firearms are an extension of yourself. +2 XP bonus to Aiming and Reloading, +1 to Nimbleness. Reload time and aim time each reduced by 10%. Equipped weapons never jam.",
 
     -- ============================================================
     -- PHASE 3d — COMPLEX STATE TRAITS

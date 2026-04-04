@@ -2,7 +2,7 @@
 
 - Batch folder: trait-deep-audit/active/batch/
 - Coordinator: Claude Opus (orchestrator)
-- Status: in progress (107/~170 traits audited)
+- Status: in progress (108/~170 traits audited)
 - **Test suites: UniversalTraits 100/100 PASS · UT_CORE 73/73 PASS** (as of commit 743897d)
 
 ---
@@ -150,6 +150,7 @@ The following P0 and P1 issues were implemented and are no longer outstanding as
 | UT_deprived | MoreTraits | yes | done |
 | UT_driver | original | yes | done |
 | UT_flimsy | SomewhatTraits | yes | done |
+| UT_sundayrunner | SomewhatTraits | yes | done |
 | UT_gimp | MoreTraits | yes | done |
 | UT_gunspecialist_III | MoreTraits | yes | done |
 | UT_hardy | MoreTraits | yes | done |
@@ -277,6 +278,7 @@ The following P0 and P1 issues were implemented and are no longer outstanding as
 34. **UT_idealweight** — says "+1 carry weight and 85% fatigue rate" but actual mechanic is calorie burn multiplier
 35. **UT_highsweaty** — thirst drain, idle wetness, and combat trigger all undisclosed
 36. **UT_gunspecialist_III** — XPBoosts described as "×3 XP" instead of "+2 bonus"
+37. **UT_sundayrunner** — says "Fitness is slightly below average" but runtime adds `+2` unhappiness per in-game minute while sprinting; no Fitness penalty exists
 
 **Pure flavor, no mechanical info:**
 21. **UT_selfdestructive** — 100% flavor, zero numbers
@@ -326,6 +328,7 @@ The following P0 and P1 issues were implemented and are no longer outstanding as
 22. **UT_mstoptimist + UT_optimist** — both drain stress every 10min; stack freely for -0.14/tick at high stress
 23. **UT_noxp series** — source had all 6 siblings mutually exclusive; UT has none; players can stack all for large point windfall
 24. **UT_actionhero** — `isZombie()` guard removed; applies bonus damage to all targets not just zombies
+25. **UT_sundayrunner + UT_sprintdemon** — source made them mutually exclusive; UT dropped the exclusion entirely
 
 ### P4: TEST GAPS — ADDRESSED
 
@@ -357,3 +360,7 @@ Still pending (lower priority, no regressions expected):
 - All vehicle traits use `UTCore.registerVehicleTrait` → shared test template
 - Rising-edge food detection pattern (UT_competitiveeater, UT_sensitivestomach, UT_ascetic) → shared test
 - Periodic stress/panic traits (depressive, paranoia, melancholic, owlperson, larkperson) → shared EveryTenMinutes test pattern
+
+## Session Run Log
+
+- 2026-04-04 — Audited `UT_sundayrunner`; created `traits/UT_sundayrunner.md`; verified source SomewhatTraits sprint unhappiness behavior, confirmed UT description drift (`Fitness is slightly below average` is false), recorded missing `UT_sprintdemon` exclusion, and advanced checklist count to 108 audited. Checkpoint: `loop/checkpoint-20260404-171928-sundayrunner-audit`

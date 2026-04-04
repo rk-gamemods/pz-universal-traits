@@ -551,6 +551,24 @@ function getGameTime()
     }
 end
 
+-- ─── Climate Manager mock ──────────────────────────────────────────────────────
+_mockClimate = {
+    precipitationIntensity = 0.0,
+    cloudIntensity         = 0.5,
+}
+
+function setMockClimate(precip, clouds)
+    _mockClimate.precipitationIntensity = precip or 0.0
+    _mockClimate.cloudIntensity         = clouds or 0.5
+end
+
+function getClimateManager()
+    return {
+        getPrecipitationIntensity = function(self) return _mockClimate.precipitationIntensity end,
+        getCloudIntensity         = function(self) return _mockClimate.cloudIntensity end,
+    }
+end
+
 if not _G.getPlayer then
     _G.getPlayer = function() return nil end
 end

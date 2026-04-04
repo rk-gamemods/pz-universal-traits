@@ -200,6 +200,7 @@ module UniversalTraits
         UIName = UI_UT_sprintdemon,
         UIDescription = UI_UT_sprintdemonDesc,
         XPBoosts = Sprinting=1,
+        MutuallyExclusiveTraits = UniversalTraits:UT_sundayrunner,
     }
 
     character_trait_definition UniversalTraits:UT_trekker
@@ -924,6 +925,7 @@ module UniversalTraits
         Cost = -8,
         UIName = UI_UT_gimp,
         UIDescription = UI_UT_gimpDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_fast,
     }
 
     character_trait_definition UniversalTraits:UT_anemic
@@ -934,6 +936,7 @@ module UniversalTraits
         Cost = -4,
         UIName = UI_UT_anemic,
         UIDescription = UI_UT_anemicDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_thickblood,
     }
 
     character_trait_definition UniversalTraits:UT_badteeth
@@ -1015,6 +1018,7 @@ module UniversalTraits
         Cost = -1,
         UIName = UI_UT_sundayrunner,
         UIDescription = UI_UT_sundayrunnerDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_sprintdemon,
     }
 
     character_trait_definition UniversalTraits:UT_lesssweaty
@@ -1124,7 +1128,7 @@ module UniversalTraits
         Cost = 6,
         UIName = UI_UT_fast,
         UIDescription = UI_UT_fastDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_noodlelegs;UniversalTraits:UT_lurcher,
+        MutuallyExclusiveTraits = UniversalTraits:UT_noodlelegs;UniversalTraits:UT_lurcher;UniversalTraits:UT_gimp,
     }
 
     character_trait_definition UniversalTraits:UT_noodlelegs
@@ -1287,7 +1291,7 @@ module UniversalTraits
         Cost = 4,
         UIName = UI_UT_thickblood,
         UIDescription = UI_UT_thickbloodDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavilybleedingwounds;UniversalTraits:UT_weaklybleedingwounds,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavilybleedingwounds;UniversalTraits:UT_weaklybleedingwounds;UniversalTraits:UT_anemic,
     }
 
     character_trait_definition UniversalTraits:UT_heavilybleedingwounds
@@ -1448,7 +1452,7 @@ module UniversalTraits
         Cost = 3,
         UIName = UI_UT_noxpshooter,
         UIDescription = UI_UT_noxpshooterDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_antigun,
+        MutuallyExclusiveTraits = UniversalTraits:UT_antigun;UniversalTraits:UT_noxptechnician;UniversalTraits:UT_noxpaxe;UniversalTraits:UT_noxpfirstaid;UniversalTraits:UT_noxpmaintenance;UniversalTraits:UT_noxpsneaky,
     }
 
     character_trait_definition UniversalTraits:UT_noxptechnician
@@ -1459,6 +1463,7 @@ module UniversalTraits
         Cost = 3,
         UIName = UI_UT_noxptechnician,
         UIDescription = UI_UT_noxptechnicianDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_noxpshooter;UniversalTraits:UT_noxpaxe;UniversalTraits:UT_noxpfirstaid;UniversalTraits:UT_noxpmaintenance;UniversalTraits:UT_noxpsneaky,
     }
 
     character_trait_definition UniversalTraits:UT_noxpaxe
@@ -1469,6 +1474,7 @@ module UniversalTraits
         Cost = 2,
         UIName = UI_UT_noxpaxe,
         UIDescription = UI_UT_noxpaxeDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_noxpshooter;UniversalTraits:UT_noxptechnician;UniversalTraits:UT_noxpfirstaid;UniversalTraits:UT_noxpmaintenance;UniversalTraits:UT_noxpsneaky,
     }
 
     character_trait_definition UniversalTraits:UT_noxpfirstaid
@@ -1479,6 +1485,7 @@ module UniversalTraits
         Cost = 3,
         UIName = UI_UT_noxpfirstaid,
         UIDescription = UI_UT_noxpfirstaidDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_noxpshooter;UniversalTraits:UT_noxptechnician;UniversalTraits:UT_noxpaxe;UniversalTraits:UT_noxpmaintenance;UniversalTraits:UT_noxpsneaky,
     }
 
     character_trait_definition UniversalTraits:UT_noxpmaintenance
@@ -1489,6 +1496,7 @@ module UniversalTraits
         Cost = 3,
         UIName = UI_UT_noxpmaintenance,
         UIDescription = UI_UT_noxpmaintenanceDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_noxpshooter;UniversalTraits:UT_noxptechnician;UniversalTraits:UT_noxpaxe;UniversalTraits:UT_noxpfirstaid;UniversalTraits:UT_noxpsneaky,
     }
 
     character_trait_definition UniversalTraits:UT_noxpsneaky
@@ -1499,6 +1507,7 @@ module UniversalTraits
         Cost = 5,
         UIName = UI_UT_noxpsneaky,
         UIDescription = UI_UT_noxpsneakyDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_noxpshooter;UniversalTraits:UT_noxptechnician;UniversalTraits:UT_noxpaxe;UniversalTraits:UT_noxpfirstaid;UniversalTraits:UT_noxpmaintenance,
     }
 
 
@@ -1653,7 +1662,7 @@ module UniversalTraits
         Cost = -4,
         UIName = UI_UT_depressive,
         UIDescription = UI_UT_depressiveDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_optimist,
+        MutuallyExclusiveTraits = UniversalTraits:UT_optimist;UniversalTraits:UT_melancholic,
     }
 
     character_trait_definition UniversalTraits:UT_paranoia
@@ -1684,7 +1693,7 @@ module UniversalTraits
         Cost = -3,
         UIName = UI_UT_melancholic,
         UIDescription = UI_UT_melancholicDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_optimist,
+        MutuallyExclusiveTraits = UniversalTraits:UT_optimist;UniversalTraits:UT_depressive,
     }
 
     character_trait_definition UniversalTraits:UT_immuneresponse
@@ -1828,6 +1837,7 @@ module UniversalTraits
         Cost = -4,
         UIName = UI_UT_coldsensitive,
         UIDescription = UI_UT_coldsensitiveDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heatsensitive,
     }
 
     character_trait_definition UniversalTraits:UT_heatsensitive
@@ -1838,6 +1848,7 @@ module UniversalTraits
         Cost = -4,
         UIName = UI_UT_heatsensitive,
         UIDescription = UI_UT_heatsensitiveDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_coldsensitive,
     }
 
     character_trait_definition UniversalTraits:UT_sedentary

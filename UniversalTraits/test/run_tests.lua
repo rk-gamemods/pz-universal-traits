@@ -1514,3 +1514,87 @@ test("butterfingers does nothing when no item in primary hand", function()
     assert_eq(#sq._dropped, 0, "nothing dropped when primary hand is empty")
 end)
 
+-- ===== UT_melancholic behavioral tests (code changed: raises unhappiness) =====
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_melancholic.lua")
+
+test("melancholic raises unhappiness by 5 every 10 minutes", function()
+    local player = MockPlayer({ "UniversalTraits:UT_melancholic" })
+    local bd = player:getBodyDamage()
+    bd._unhappinessLevel = 20
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(bd:getUnhappinessLevel(), 25, "unhappiness should be 20 + 5 = 25")
+end)
+
+test("melancholic unhappiness caps at 100", function()
+    local player = MockPlayer({ "UniversalTraits:UT_melancholic" })
+    local bd = player:getBodyDamage()
+    bd._unhappinessLevel = 98
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(bd:getUnhappinessLevel(), 100, "unhappiness should cap at 100")
+end)
+
+test("melancholic does NOT raise stress", function()
+    local player = MockPlayer({ "UniversalTraits:UT_melancholic" }, { stress = 0.0 })
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(player:getStats():getStress(), 0.0, "stress should be unchanged by melancholic")
+end)
+
+test("melancholic does not affect player without the trait", function()
+    local player = MockPlayer({})
+    local bd = player:getBodyDamage()
+    bd._unhappinessLevel = 20
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(bd:getUnhappinessLevel(), 20, "unhappiness unchanged without trait")
+end)
+
+-- ===== UT_weathersensitive behavioral tests (code changed: real weather check) =====
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_weathersensitive.lua")
+
+test("weathersensitive raises stress when raining (precip > 0.3)", function()
+    setMockClimate(0.5, 0.8)  -- heavy rain
+    local player = MockPlayer({ "UniversalTraits:UT_weathersensitive" }, { stress = 0.2 })
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    local stress = player:getStats():getStress()
+    assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.25,
+        "stress should be 0.2 + 0.05 = 0.25 when raining")
+end)
+
+test("weathersensitive reduces stress when clear and sunny (clouds < 0.2)", function()
+    setMockClimate(0.0, 0.1)  -- no rain, clear sky
+    local player = MockPlayer({ "UniversalTraits:UT_weathersensitive" }, { stress = 0.4 })
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    local stress = player:getStats():getStress()
+    assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.38,
+        "stress should be 0.4 - 0.02 = 0.38 when sunny")
+end)
+
+test("weathersensitive does nothing when overcast but dry (no rain, clouds >= 0.2)", function()
+    setMockClimate(0.0, 0.6)  -- no rain, overcast
+    local player = MockPlayer({ "UniversalTraits:UT_weathersensitive" }, { stress = 0.3 })
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(player:getStats():getStress(), 0.3, "stress unchanged when overcast but dry")
+end)
+
+test("weathersensitive does not affect player without the trait", function()
+    setMockClimate(0.5, 0.8)  -- raining
+    local player = MockPlayer({}, { stress = 0.2 })
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(player:getStats():getStress(), 0.2, "stress unchanged without trait")
+end)
+
