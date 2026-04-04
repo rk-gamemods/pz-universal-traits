@@ -20,6 +20,11 @@ dofile(base .. "../media/lua/shared/UTCore/UTCore_ReadingHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_BleedHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua")
+dofile(base .. "../media/lua/shared/UTCore/UTCore_PainHook.lua")
+dofile(base .. "../media/lua/shared/UTCore/UTCore_DamageMultHook.lua")
+dofile(base .. "../media/lua/shared/UTCore/UTCore_FractureHook.lua")
+dofile(base .. "../media/lua/shared/UTCore/UTCore_NoiseHook.lua")
+dofile(base .. "../media/lua/shared/UTCore/UTCore_SleepQualityHook.lua")
 
 local passed, failed = 0, 0
 local function test(name, fn)
@@ -583,6 +588,220 @@ test("integrity check re-registers cleared declared handler", function()
     assert_eq(UTCore._zombieCollisionCallbacks["UniversalTraits:UT_test_integrity"], fn,
         "expected integrity check to re-register the cleared callback")
     _G.getPlayer = function() return nil end
+end)
+
+-- ===== PainHook tests =====
+
+test("PainHook zeroes pain when UT_painImmune is true", function()
+    local p = MockPlayer({})
+    p:getStats():setPain(50)
+    p:getModData()["UT_painImmune"] = true
+    _G.getPlayer = function() return p end
+    Events.OnPlayerUpdate.fire(p)
+    _G.getPlayer = function() return nil end
+    assert_eq(p:getStats():getPain(), 0, "expected pain cleared to 0")
+end)
+
+test("PainHook does not touch pain when UT_painImmune is absent", function()
+    local p = MockPlayer({})
+    p:getStats():setPain(50)
+    Events.OnPlayerUpdate.fire(p)
+    assert_eq(p:getStats():getPain(), 50, "expected pain unchanged when trait not set")
+end)
+
+-- ===== DamageMultHook tests =====
+
+test("DamageMultHook applies extra health loss on weapon hit", function()
+    local p = MockPlayer({})
+    p:setHealth(100)
+    p:getModData()["UT_damageMult"] = 1.5
+    _G.getPlayer = function() return p end
+    Events.OnPlayerUpdate.fire(p)   -- store prevHealth = 100
+    p:setHealth(80)                  -- simulate 20 damage taken
+    Events.OnWeaponHitCharacter.fire(nil, nil, p)
+    _G.getPlayer = function() return nil end
+    -- lost=20; extra = 20*(1.5-1.0)=10; final = 80-10 = 70
+    assert(math.abs(p:getHealth() - 70) < 0.01,
+        "expected health 70 (extra 10 from 1.5x mult), got " .. tostring(p:getHealth()))
+end)
+
+test("DamageMultHook does nothing when mult is 1.0", function()
+    local p = MockPlayer({})
+    p:setHealth(100)
+    p:getModData()["UT_damageMult"] = 1.0
+    _G.getPlayer = function() return p end
+    Events.OnPlayerUpdate.fire(p)
+    p:setHealth(80)
+    Events.OnWeaponHitCharacter.fire(nil, nil, p)
+    _G.getPlayer = function() return nil end
+    assert_eq(p:getHealth(), 80, "expected no extra loss when mult=1.0")
+end)
+
+test("DamageMultHook does not fire for a different target", function()
+    local p = MockPlayer({})
+    p:setHealth(100)
+    p:getModData()["UT_damageMult"] = 2.0
+    _G.getPlayer = function() return p end
+    Events.OnPlayerUpdate.fire(p)
+    p:setHealth(80)
+    local otherTarget = MockPlayer({})
+    Events.OnWeaponHitCharacter.fire(nil, nil, otherTarget)
+    _G.getPlayer = function() return nil end
+    assert_eq(p:getHealth(), 80, "expected no extra loss when target is another character")
+end)
+
+-- ===== FractureHook tests =====
+-- ZombRand always returns 0 in tests (set in mocks), so any chance > 0 succeeds.
+
+test("FractureHook fractures eligible part on successful roll", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_fractureMult"] = 1.5
+    local legPart = MockBodyPart(BodyPartType.Leg_L, false, false)
+    p:setBodyDamage(MockBodyDamage({ legPart }))
+    _G.getPlayer = function() return p end
+    Events.OnWeaponHitCharacter.fire(nil, nil, p)
+    _G.getPlayer = function() return nil end
+    assert_eq(legPart:isFractured(), true, "expected Leg_L to be fractured on successful roll")
+    assert(p:getModData()["UT_fractureCooldown"] > 0, "expected cooldown set after fracture")
+end)
+
+test("FractureHook does nothing when fractureMult is 1.0", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_fractureMult"] = 1.0
+    local legPart = MockBodyPart(BodyPartType.Leg_L, false, false)
+    p:setBodyDamage(MockBodyDamage({ legPart }))
+    _G.getPlayer = function() return p end
+    Events.OnWeaponHitCharacter.fire(nil, nil, p)
+    _G.getPlayer = function() return nil end
+    assert_eq(legPart:isFractured(), false, "expected no fracture when mult<=1.0")
+end)
+
+test("FractureHook respects cooldown and decrements it", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_fractureMult"] = 1.5
+    p:getModData()["UT_fractureCooldown"] = 50
+    local legPart = MockBodyPart(BodyPartType.Leg_L, false, false)
+    p:setBodyDamage(MockBodyDamage({ legPart }))
+    _G.getPlayer = function() return p end
+    Events.OnWeaponHitCharacter.fire(nil, nil, p)
+    _G.getPlayer = function() return nil end
+    assert_eq(legPart:isFractured(), false, "expected no fracture during cooldown")
+    assert_eq(p:getModData()["UT_fractureCooldown"], 49, "expected cooldown decremented by 1")
+end)
+
+test("FractureHook skips already-fractured parts", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_fractureMult"] = 1.5
+    -- All eligible parts already fractured
+    local legL = MockBodyPart(BodyPartType.Leg_L, false, false)
+    local legR = MockBodyPart(BodyPartType.Leg_R, false, false)
+    legL:setFractured(true)
+    legR:setFractured(true)
+    p:setBodyDamage(MockBodyDamage({ legL, legR }))
+    _G.getPlayer = function() return p end
+    Events.OnWeaponHitCharacter.fire(nil, nil, p)
+    _G.getPlayer = function() return nil end
+    -- No new fracture should be applied (all eligible parts already broken)
+    assert_eq(p:getModData()["UT_fractureCooldown"], nil,
+        "expected no cooldown set when all parts already fractured")
+end)
+
+-- ===== NoiseHook tests =====
+
+test("NoiseHook emits noise when sleeping with noiseMult > 1.0", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_noiseMult"] = 2.0
+    p:setSleeping(true)
+    _G.getPlayer = function() return p end
+    Events.EveryOneMinute.fire()
+    _G.getPlayer = function() return nil end
+    local calls = p:getNoiseCalls()
+    assert_eq(#calls, 1, "expected one makeNoise call")
+    assert_eq(calls[1], 5, "expected noise value 5 = floor(5 * (2.0-1.0))")
+end)
+
+test("NoiseHook skips noise when not sleeping", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_noiseMult"] = 2.0
+    p:setSleeping(false)
+    _G.getPlayer = function() return p end
+    Events.EveryOneMinute.fire()
+    _G.getPlayer = function() return nil end
+    assert_eq(#p:getNoiseCalls(), 0, "expected no noise when player is awake")
+end)
+
+test("NoiseHook skips when noiseMult is absent", function()
+    local p = MockPlayer({})
+    p:setSleeping(true)
+    _G.getPlayer = function() return p end
+    Events.EveryOneMinute.fire()
+    _G.getPlayer = function() return nil end
+    assert_eq(#p:getNoiseCalls(), 0, "expected no noise when UT_noiseMult not set")
+end)
+
+-- ===== SleepQualityHook tests =====
+
+test("SleepQualityHook reduces fatigue while sleeping", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_sleepQualMod"] = 0.5
+    p:setSleeping(true)
+    p:getStats():setFatigue(0.5)
+    _G.getPlayer = function() return p end
+    Events.EveryOneMinute.fire()
+    _G.getPlayer = function() return nil end
+    -- expected: 0.5 - (0.5 * 0.001) = 0.4995
+    local fatigue = p:getStats():getFatigue()
+    assert(fatigue < 0.5, "expected fatigue to decrease while sleeping")
+    assert(math.abs(fatigue - 0.4995) < 0.0001,
+        "expected fatigue ~0.4995, got " .. tostring(fatigue))
+end)
+
+test("SleepQualityHook skips when not sleeping", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_sleepQualMod"] = 0.5
+    p:setSleeping(false)
+    p:getStats():setFatigue(0.5)
+    _G.getPlayer = function() return p end
+    Events.EveryOneMinute.fire()
+    _G.getPlayer = function() return nil end
+    assert_eq(p:getStats():getFatigue(), 0.5, "expected fatigue unchanged when awake")
+end)
+
+test("SleepQualityHook clamps fatigue at 0", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_sleepQualMod"] = 0.5
+    p:setSleeping(true)
+    p:getStats():setFatigue(0.0)
+    _G.getPlayer = function() return p end
+    Events.EveryOneMinute.fire()
+    _G.getPlayer = function() return nil end
+    assert_eq(p:getStats():getFatigue(), 0.0, "expected fatigue not to go below 0")
+end)
+
+-- ===== WorkSpeedHook: transferSpeedMult branch =====
+
+test("WorkSpeedHook applies transferSpeedMult to ISInventoryTransferAction", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_transferSpeedMult"] = 0.6  -- 40% faster (delta = -0.4)
+    local action = MockTimedAction(p, "ISInventoryTransferAction", 100)
+    local result = UTCore.applyWorkDuration(action, 100)
+    assert(math.abs(result - 60) < 1, "expected ~60, got " .. tostring(result))
+end)
+
+test("WorkSpeedHook applies transferSpeedMult to ISReloadWeaponAction", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_transferSpeedMult"] = 0.6
+    local action = MockTimedAction(p, "ISReloadWeaponAction", 100)
+    local result = UTCore.applyWorkDuration(action, 100)
+    assert(math.abs(result - 60) < 1, "expected ~60, got " .. tostring(result))
+end)
+
+test("WorkSpeedHook does not apply transferSpeedMult to ISCraftItem", function()
+    local p = MockPlayer({})
+    p:getModData()["UT_transferSpeedMult"] = 0.6
+    local action = MockTimedAction(p, "ISCraftItem", 100)
+    local result = UTCore.applyWorkDuration(action, 100)
+    assert_eq(result, 100, "expected no transfer mod on a craft action")
 end)
 
 print(string.format("\n%d passed, %d failed", passed, failed))

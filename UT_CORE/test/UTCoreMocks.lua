@@ -22,10 +22,13 @@ function MockPlayer(traits, opts)
         thirst    = 0,
         fatigue   = 0,
         endurance = 1,
+        pain      = 0,
     }
     local stats = {
         getPanic     = function(self) return statsData.panic end,
         setPanic     = function(self, v) statsData.panic = v end,
+        getPain      = function(self) return statsData.pain end,
+        setPain      = function(self, v) statsData.pain = v end,
         getStress    = function(self) return statsData.stress end,
         setStress    = function(self, v) statsData.stress = v end,
         getHunger    = function(self) return statsData.hunger end,
@@ -40,6 +43,9 @@ function MockPlayer(traits, opts)
     local x, y = 0, 0
     local xpCalls = {}
     local bodyDamage = nil
+    local _health     = opts.health or 100
+    local _sleeping   = opts.sleeping or false
+    local _noiseCalls = {}
     local _bumpType   = ""
     local _bumpedChr  = nil
     local _bumpFall   = false
@@ -90,6 +96,12 @@ function MockPlayer(traits, opts)
         setBumpedChr         = function(self, chr) _bumpedChr = chr end,
         setBumpType          = function(self, s) _bumpType = s end,
         setBumpFall          = function(self, v) _bumpFall = v end,
+        getHealth            = function(self) return _health end,
+        setHealth            = function(self, v) _health = v end,
+        isSleeping           = function(self) return _sleeping end,
+        setSleeping          = function(self, v) _sleeping = v end,
+        makeNoise            = function(self, v) table.insert(_noiseCalls, v) end,
+        getNoiseCalls        = function(self) return _noiseCalls end,
     }
 end
 
@@ -144,9 +156,19 @@ Events.OnCreatePlayer         = _makeEventTable()
 _G.getPlayer = function() return nil end  -- tests override this
 
 -- BodyPartType global (needed by BleedHook)
-if not _G.BodyPartType then
-    _G.BodyPartType = { Neck = "Neck" }
-end
+-- Ensure BodyPartType has all types needed by hooks (UTTestMocks may have already
+-- defined it with only Neck, so we merge rather than guard with if-not).
+_G.BodyPartType = _G.BodyPartType or {}
+_G.BodyPartType.Neck       = _G.BodyPartType.Neck       or "Neck"
+_G.BodyPartType.Leg_L      = _G.BodyPartType.Leg_L      or "Leg_L"
+_G.BodyPartType.Leg_R      = _G.BodyPartType.Leg_R      or "Leg_R"
+_G.BodyPartType.UpperArm_L = _G.BodyPartType.UpperArm_L or "UpperArm_L"
+_G.BodyPartType.UpperArm_R = _G.BodyPartType.UpperArm_R or "UpperArm_R"
+_G.BodyPartType.LowerArm_L = _G.BodyPartType.LowerArm_L or "LowerArm_L"
+_G.BodyPartType.LowerArm_R = _G.BodyPartType.LowerArm_R or "LowerArm_R"
+
+-- ZombRand: always returns 0 in tests (lowest roll — fracture/chance checks always succeed)
+_G.ZombRand = _G.ZombRand or function(n) return 0 end
 
 -- MockBodyPart: simulates a PZ IsoBodyPart
 function MockBodyPart(partType, isBleeding, isStemmed)
@@ -154,6 +176,7 @@ function MockBodyPart(partType, isBleeding, isStemmed)
     local _bleeding = isBleeding or false
     local _stemmed = isStemmed or false
     local _health = 1.0
+    local _fractured = false
     local addHealthCalls = 0
     local reduceHealthCalls = 0
     return {
@@ -165,6 +188,8 @@ function MockBodyPart(partType, isBleeding, isStemmed)
         ReduceHealth         = function(self, v) reduceHealthCalls = reduceHealthCalls + 1; _health = _health - v end,
         getAddHealthCalls    = function(self) return addHealthCalls end,
         getReduceHealthCalls = function(self) return reduceHealthCalls end,
+        isFractured          = function(self) return _fractured end,
+        setFractured         = function(self, v) _fractured = v end,
     }
 end
 
@@ -181,12 +206,15 @@ end
 function MockBodyDamage(parts)
     local list = MockBodyPartsList(parts)
     local bleedingCount = 0
+    local _byType = {}
     for _, p in ipairs(parts or {}) do
         if p:bleeding() then bleedingCount = bleedingCount + 1 end
+        _byType[p:getType()] = p
     end
     return {
         getBodyParts        = function(self) return list end,
         getNumPartsBleeding = function(self) return bleedingCount end,
+        getBodyPart         = function(self, partType) return _byType[partType] end,
     }
 end
 
