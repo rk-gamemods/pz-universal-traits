@@ -14,11 +14,11 @@
 
 - Source files reviewed:
   - `research/installed-mods/SomewhatTraits/mods/SomewhatTraitsCore/42.15/media/lua/server/SWTraitsCore_server.lua` (lines 225-236) — current B42 runtime
-  - `research/installed-mods/SomewhatTraits/mods/SomewhatTraitsCore/media/lua/client/SWSomewhatTraitsCore.lua` (grep-confirmed `SWSquirrel()` legacy implementation) — older runtime naming continuity
-  - `research/installed-mods/SomewhatTraits/mods/SomewhatTraits/42.15/media/scripts/SWTraits_character_traits.txt` (lines 129-137) — current script definition
-  - `research/installed-mods/SomewhatTraits/mods/SomewhatTraits/media/lua/shared/NPCs/SWSomewhatTraits_MainCreationMethods.lua` (lines 91, 116) — legacy addTrait + mutual exclusion
-  - `research/installed-mods/SomewhatTraits/mods/SomewhatTraits/42.15/media/lua/shared/Translate/EN/UI_EN.txt` (lines 30-31) — source EN text
+  - `research/installed-mods/SomewhatTraits/mods/SomewhatTraits/42.15/media/registries.lua` (line 25) — current B42 registration list and cost continuity
+  - `research/installed-mods/SomewhatTraits/mods/SomewhatTraits/42.15/media/lua/shared/Translate/EN/UI.json` (lines 30-31) — current B42 name and description text
   - `research/installed-mods/SomewhatTraits/mods/SomewhatTraits/42.15/media/lua/shared/SWTraits_MET.lua` (lines 70-73) — source runtime mutual exclusion
+  - `research/installed-mods/SomewhatTraits/mods/SomewhatTraits/media/lua/shared/NPCs/SWSomewhatTraits_MainCreationMethods.lua` (lines 89-117) — legacy addTrait cost and mutual exclusion
+  - `research/installed-mods/SomewhatTraits/mods/SomewhatTraitsCore/media/lua/client/SWSomewhatTraitsCore.lua` (legacy `SWSquirrel()` implementation) — older runtime naming continuity
 - Source trigger path:
   - `Events.OnTick.Add(SWSquirrel)` in source runtime.
   - Handler gates on active player, trait possession, and `running or sprinting` before applying the effect.
@@ -52,6 +52,7 @@
   - `UI_UT_squirrelDesc = "You hoard everything you find, even when it weighs you down. Carry weight is increased but so is the tendency to overload."`
 - Exclusions/grants correct: **no** — current exclusions are `UT_packmouse` and `UT_topheavy`, but the source exclusion was `SWSloth`; UT currently omits `UT_sloth` entirely.
 - Runtime Lua file exists: yes — `UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_squirrel.lua`
+- UT_MET reference coverage: **no** — `UniversalTraits/media/lua/shared/UniversalTraits/UT_MET.lua` contains no `UT_squirrel` / `UT_sloth` pairing, so the Lua-side reference table also drifts from the source relationship.
 
 ### Runtime Trace
 
@@ -131,12 +132,12 @@
 ## Final Verdict
 
 - Source origin: **proven**
-- UT implementation: **drifted** — broad running-fatigue concept remains, but cadence is much weaker, sleep-trait interaction is dropped, and exclusions no longer match source.
+- UT implementation: **drifted** — broad running-fatigue concept remains, but cadence is much weaker, the sleep-trait interaction is dropped, and both script-side and UT_MET mutual exclusion coverage no longer match source.
 - Description: **misleading** — current text describes a nonexistent carry/hoarding mechanic.
 - Balance: **questionable**
 - Regression proof: **missing**
-- Action needed: **doc fix**, **test fix**, **code/design review**
+- Action needed: **code fix**
 - Open gaps:
-  - Need a design decision on whether the source `UT_sloth` mutual exclusion should be restored.
-  - Need a design decision on whether the source sleep-trait halving rule was intentionally removed.
-  - Need confirmation whether current `UT_packmouse` / `UT_topheavy` exclusions were deliberate or accidental carry-over.
+  - Source-style `UT_sloth` mutual exclusion is still missing in both `UT_character_traits.txt` and `UT_MET.lua`, while unrelated `UT_packmouse` / `UT_topheavy` exclusions remain in place.
+  - Source sleep-trait halving for `Needs Less Sleep` / `Needs More Sleep` is not implemented in UT, so the runtime behavior is still materially weaker than the source.
+  - The shipped UT description still documents a nonexistent carry-weight mechanic, and no runtime tests cover the actual running/sprinting fatigue reduction path.

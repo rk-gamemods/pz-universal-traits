@@ -30,7 +30,7 @@
 - Defined in `media/scripts/UT_character_traits.txt`: **yes**
 - Translation strings present: **yes** — `UI_UT_topheavy` and `UI_UT_topheavyDesc`
 - Runtime Lua file exists: **yes** — `media/lua/shared/UniversalTraits/traits/UT_topheavy.lua`
-- Exclusions/grants correct: **partially** — current UT excludes `UT_squirrel`, `UT_backpacker`, and `UT_packmule`; source only proves exclusion with `Backpacker`
+- Exclusions/grants correct: **yes** — `UT_squirrel`, `UT_backpacker`, and `UT_packmule` are real, correctly namespaced UT traits, and reciprocal `...;UniversalTraits:UT_topheavy` exclusions exist on the peer carry-family traits; this is structurally valid even though source only proves the `Backpacker` pairing
 
 ### Script Definition
 
@@ -140,10 +140,8 @@ At its current implementation, `UT_topheavy` is effectively a free-point trait t
 - Description: misleading
 - Balance: wrong
 - Regression proof: missing
-- Action needed: code fix | doc fix | test fix
+- Action needed: code fix
 - Open gaps:
-  - Exact source event registration for `IndomTimecheck()` was not proven from the reviewed installed-mod slice.
-  - UT-expanded exclusions (`UT_squirrel`, `UT_packmule`) look like design additions rather than source-faithful carry-over.
-  - No automated test currently protects the intended negative carry behavior.
-
-Primary correction direction: change the runtime formula to a real downside consistent with source intent, then rewrite the description to match the actual implemented behavior and add an event-path regression test.
+  - The runtime formula is inverted from source intent and currently grants `+2` carry weight instead of applying a downside.
+  - The description still claims Nimbleness/agility penalties that do not exist anywhere in script or runtime behavior.
+  - No automated test currently protects the `OnPlayerUpdate` carry-weight path or catches the sign inversion.

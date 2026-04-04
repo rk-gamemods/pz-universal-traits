@@ -124,4 +124,17 @@
   - No proof that `Events.OnRefreshInventoryWindowContainers` calls the handler with the expected `(player, container)` signature in live PZ.
   - No proof for actual corpse coverage.
   - No proof for unique-id vs fallback `tostring(container)` persistence across save/load boundaries.
-  - No proof th
+  - No live-game proof that repeated refreshes of the same failed container are easy or common enough to make the retry-until-success behavior materially abusable in normal play.
+
+## Final Verdict
+
+- Source origin: proven - MoreTraits `vagabond` is directly confirmed from the source registration, runtime function, and source translation text.
+- UT implementation: drifted - UT keeps the broad idea of bonus scavenged loot, but removes the source's garbage-bin restriction, luck scaling, optional `+1 Scavenging`, multi-roll structure, food-only table, and first-roll consumption rule.
+- Description: misleading - the current text hides the redesign, omits the flat 33% single-item behavior and reroll-on-failure rule, and claims corpse support that static source review does not prove.
+- Balance: questionable - the trait lost the source XP boost, but the broader trigger scope plus failure rerolls can make the current 3-point version stronger and more exploitable than the original bin-only design.
+- Regression proof: partially protected - helper-level tests cover success, failure, skip, and mark behavior inside `handleContainerInspect`, but they do not prove the live event signature, corpse participation, or save/load identity behavior.
+- Action needed: doc fix
+- Open gaps:
+  - Live PZ confirmation is still missing for whether `Events.OnRefreshInventoryWindowContainers` actually supplies the `(player, container)` pair assumed by the UT handler.
+  - Corpse coverage remains unproven; the description currently promises `containers and corpses`, but the runtime file itself does not distinguish corpse containers.
+  - Save/load stability is only partially proven because the handler falls back to `tostring(container)` when no unique object id is available, and no live evidence confirms whether that fallback stays stable across sessions.

@@ -229,6 +229,10 @@ UTCore.disableXP            = function(player, perk) player:getModData()["UT_xpD
 UTCore.applyCarryWeight     = function(player, v)
     player:setMaxWeightBase(player:getMaxWeightBase() + v)
 end
+UTCore.applyStrengthCarryWeight = function(player, bonus)
+    local strength = player:getPerkLevel(Perks.Strength)
+    player:setMaxWeightBase(5 + strength + bonus)
+end
 UTCore.applyMoodModifier    = function(player, v) player:getModData()["UT_moodMod"] = v end
 UTCore.applySpawnStats      = function(player, t)
     for k, v in pairs(t) do player:getModData()["_spawn_" .. k] = v end
@@ -758,11 +762,15 @@ end
 -- ============================================================
 
 -- MockItem — lightweight item stub for consumption hook tests
-function MockItem(typeName)
+-- opts.forageCategory: if set, getForageCategory() returns that value (simulates a foraged wild item)
+function MockItem(typeName, opts)
+    opts = opts or {}
+    local forageCategory = opts.forageCategory
     return {
         _type = typeName,
-        getType     = function(self) return self._type end,
-        getFullType = function(self) return self._type end,
+        getType           = function(self) return self._type end,
+        getFullType       = function(self) return self._type end,
+        getForageCategory = function(self) return forageCategory end,
     }
 end
 

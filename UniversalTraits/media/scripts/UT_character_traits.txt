@@ -976,6 +976,7 @@ module UniversalTraits
         Cost = 2,
         UIName = UI_UT_sloth,
         UIDescription = UI_UT_slothDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_squirrel,
     }
 
     character_trait_definition UniversalTraits:UT_squirrel
@@ -986,7 +987,7 @@ module UniversalTraits
         Cost = 2,
         UIName = UI_UT_squirrel,
         UIDescription = UI_UT_squirrelDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy,
+        MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy;UniversalTraits:UT_sloth,
     }
 
     character_trait_definition UniversalTraits:UT_antivaxxer
@@ -1093,6 +1094,7 @@ module UniversalTraits
         Cost = -6,
         UIName = UI_UT_sore,
         UIDescription = UI_UT_soreDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_analgesia,
     }
 
     character_trait_definition UniversalTraits:UT_staunch
@@ -1278,7 +1280,7 @@ module UniversalTraits
         Cost = 12,
         UIName = UI_UT_analgesia,
         UIDescription = UI_UT_analgesiaDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_glassbody,
+        MutuallyExclusiveTraits = UniversalTraits:UT_glassbody;UniversalTraits:UT_sore,
     }
 
 

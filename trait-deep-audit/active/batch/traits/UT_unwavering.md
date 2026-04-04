@@ -92,8 +92,8 @@
 - Description: misleading
 - Balance: wrong
 - Regression proof: missing
-- Action needed: code fix, doc fix, test fix
+- Action needed: code fix
 - Open gaps:
-  - No consumer for UT_panicResist was found, so current UT effect is only partially proven and likely inert
-  - No evidence was found that UT intentionally replaced the source combat/injury bundle with panic resistance
-  - Exact source hit-reaction speedup remains partially proven only
+  - No consumer for UT_panicResist was found, so the current UT implementation is only a one-time modData write and likely inert in gameplay
+  - No evidence was found that UT intentionally replaced the source combat and injury bundle with a panic-resistance-only redesign
+  - No regression test proves either the current OnNewGame modData write or any real panic-reduction behavior

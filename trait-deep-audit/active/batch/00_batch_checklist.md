@@ -2,7 +2,7 @@
 
 - Batch folder: trait-deep-audit/active/batch/
 - Coordinator: Claude Opus (orchestrator)
-- Status: in progress (108/~170 traits audited)
+- Status: in progress (121/~170 traits audited)
 - **Test suites: UniversalTraits 100/100 PASS · UT_CORE 73/73 PASS** (as of commit 743897d)
 
 ---
@@ -171,6 +171,19 @@ The following P0 and P1 issues were implemented and are no longer outstanding as
 | UT_noxptechnician | MoreTraits | yes | done |
 | UT_optimist | FillerTraits | yes | done |
 | UT_packmouse | MoreTraits | yes | done |
+| UT_packmule | MoreTraits | yes | done |
+| UT_pessimist | FillerTraits | yes | done |
+| UT_photographicmemory | FillerTraits | yes | done |
+| UT_pillsallergy | DTEM | yes | done |
+| UT_secondwind | MoreTraits | yes | done |
+| UT_sloth | SomewhatTraits | yes | done |
+| UT_sore | FillerTraits | yes | done |
+| UT_squirrel | SomewhatTraits | yes | done |
+| UT_staunch | FillerTraits | yes | done |
+| UT_topheavy | FillerTraits | yes | done |
+| UT_unwavering | MoreTraits | yes | done |
+| UT_vagabond | MoreTraits | yes | done |
+| UT_wildplantsallergy | DTEM | yes | done |
 
 ## Shared Blockers
 
@@ -178,6 +191,8 @@ The following P0 and P1 issues were implemented and are no longer outstanding as
 - `UT_sleepQualMod`: UT_quickrest + UT_restfulsleeper both write. No mutual exclusion.
 - `UT_bleedDrainMult`: UT_weaklybleedingwounds + UT_thickblood both write. No mutual exclusion.
 - Infection drain stacking: UT_superimmune + UT_immuneresponse both drain infection, no exclusion.
+- `UT_pillsAllergyFlag`, `UT_wildplantAllergyFlag`, and `UT_panicResist` are still write-only modData flags with no proven live consumer.
+- `UT_sloth` and `UT_squirrel` lost their source mutual exclusion and now drift into unrelated carry-trait exclusion space.
 
 ## Critical Findings — Priority Tiers
 
@@ -191,6 +206,9 @@ The following P0 and P1 issues were implemented and are no longer outstanding as
 | UT_butterfingers | UT_dropNext | -4 | 4 free |
 | UT_scardycat | cosmetic only, no world sound | -3 | ~3 free |
 | UT_humanhamster | grants +2 carry (BENEFIT) | -3 | 5 free (3+2) |
+| UT_pillsallergy | UT_pillsAllergyFlag | -4 | 4 free |
+| UT_wildplantsallergy | UT_wildplantAllergyFlag | -3 | 3 free |
+| UT_topheavy | inverted carry formula grants +2 carry | -4 | 6 free (4+2) |
 
 **Negative traits with broken mechanics (penalty always fires, no counterplay):**
 
@@ -213,6 +231,9 @@ The following P0 and P1 issues were implemented and are no longer outstanding as
 | UT_hardy | UT_hardyExhaustedAt |
 | UT_incomprehensive | UT_skillCapReduction |
 | UT_gunspecialist_III | UT_reloadSpeedBonus, UT_aimSpeedBonus |
+| UT_pillsallergy | UT_pillsAllergyFlag |
+| UT_unwavering | UT_panicResist |
+| UT_wildplantsallergy | UT_wildplantAllergyFlag |
 
 **Potential perk key mismatch (may silently break XP hooks):**
 
@@ -225,6 +246,7 @@ The following P0 and P1 issues were implemented and are no longer outstanding as
 | Trait | Dead Flag | Cost | Points Wasted |
 |-------|-----------|------|---------------|
 | UT_physicallyactive | UT_physActiveBonus | 4 | 4 wasted |
+| UT_unwavering | UT_panicResist | 6 | 6 wasted |
 
 *Note: 8 traits from batch 1-3 (UT_brittle, UT_snorer, etc.) were already fixed with real consumers.*
 
@@ -329,6 +351,9 @@ The following P0 and P1 issues were implemented and are no longer outstanding as
 23. **UT_noxp series** — source had all 6 siblings mutually exclusive; UT has none; players can stack all for large point windfall
 24. **UT_actionhero** — `isZombie()` guard removed; applies bonus damage to all targets not just zombies
 25. **UT_sundayrunner + UT_sprintdemon** — source made them mutually exclusive; UT dropped the exclusion entirely
+26. **UT_sloth + UT_squirrel** — source made them mutually exclusive complements; UT dropped the exclusion on both traits
+27. **UT_sore + UT_analgesia** — source excluded them; UT now allows chronic pain floor to coexist with pain suppression
+28. **UT_staunch + base:Frail** — source B42 excluded `Frail`; UT has no corresponding exclusion
 
 ### P4: TEST GAPS — ADDRESSED
 
@@ -364,3 +389,4 @@ Still pending (lower priority, no regressions expected):
 ## Session Run Log
 
 - 2026-04-04 — Audited `UT_sundayrunner`; created `traits/UT_sundayrunner.md`; verified source SomewhatTraits sprint unhappiness behavior, confirmed UT description drift (`Fitness is slightly below average` is false), recorded missing `UT_sprintdemon` exclusion, and advanced checklist count to 108 audited. Checkpoint: `loop/checkpoint-20260404-171928-sundayrunner-audit`
+- 2026-04-04 — Parallel audit wave completed for `UT_packmule`, `UT_pessimist`, `UT_photographicmemory`, `UT_pillsallergy`, `UT_secondwind`, `UT_sloth`, `UT_sore`, `UT_squirrel`, `UT_staunch`, `UT_topheavy`, `UT_unwavering`, `UT_vagabond`, and `UT_wildplantsallergy`; batch trait-file coverage is now 121/121 current Lua traits and checklist count advanced to 121 audited.

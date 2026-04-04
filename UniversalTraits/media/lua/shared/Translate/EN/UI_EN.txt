@@ -312,13 +312,13 @@ UI_EN = {
     UI_UT_backpackerDesc        = "Efficient packing and load distribution let you carry more comfortably. Carry weight maximum is increased by +4.",
 
     UI_UT_topheavy              = "Top Heavy",
-    UI_UT_topheavyDesc          = "Your upper-body bulk makes nimble movement harder. Nimbleness XP gain and base agility are reduced.",
+    UI_UT_topheavyDesc          = "Your top-heavy frame makes hauling weight harder. Carry weight is 5 + Strength − 3, reducing your capacity by 2–3 points compared to the default.",
 
     UI_UT_sore                  = "Chronically Sore",
-    UI_UT_soreDesc              = "Persistent muscle soreness limits your physical performance. Endurance and strength are reduced.",
+    UI_UT_soreDesc              = "A persistent ache that never fully fades. Pain is floored at 20 at all times — you are always at least a little hurt.",
 
     UI_UT_staunch               = "Staunch",
-    UI_UT_staunchDesc           = "You have an unusually high pain tolerance and recover from injuries well. Pain effects and injury penalties are reduced.",
+    UI_UT_staunchDesc           = "Your bandaging technique is exceptional. Bandaged wounds heal 3× faster than normal, closing the infection window and reducing bandage changes. No effect on unbandaged wounds.",
 
     -- ============================================================
     -- PHASE 2 — LUA-DRIVEN: SPAWN / INVENTORY
@@ -408,7 +408,7 @@ UI_EN = {
     -- PHASE 2 — LUA-DRIVEN: PSYCHOLOGY & MODIFIERS
     -- ============================================================
     UI_UT_unwavering            = "Unwavering",
-    UI_UT_unwaveringDesc        = "Fear never really got its hooks into you. Panic resistance is increased by 40% — panic events have 40% less impact.",
+    UI_UT_unwaveringDesc        = "Panic doesn't linger for you. Every 10 in-game minutes, if panic is above 0.1, it is reduced by 0.1.",
 
     UI_UT_idealweight           = "Ideal Weight",
     UI_UT_idealweightDesc       = "Your body relentlessly fights to stay at ideal weight. Above 84 kg: calorie burn is doubled. Below 76 kg: calorie burn is halved.",
@@ -591,10 +591,10 @@ UI_EN = {
     -- PHASE 3c — EVENT-DRIVEN TRAITS
     -- ============================================================
     UI_UT_fearful               = "Fearful",
-    UI_UT_fearfulDesc           = "Fear comes quickly and hits hard. Each time a panic event fires, panic is increased by an additional +0.2.",
+    UI_UT_fearfulDesc           = "Fear makes you loud. While panicked above 5, you periodically emit noise attracting zombies — louder and with a wider radius the more panicked you are.",
 
     UI_UT_nervouswreck          = "Nervous Wreck",
-    UI_UT_nervouswreckDesc      = "Your nerves are always close to the edge. Each panic event adds +0.3 to panic. Additionally, every 10 in-game minutes while stress is above 0.7, panic increases by +0.05.",
+    UI_UT_nervouswreckDesc      = "Once panic builds up, it drains 70% more slowly than normal. Panic you accumulate lingers far longer than it would for anyone else.",
 
     UI_UT_scardycat             = "Scaredy Cat",
     UI_UT_scardycatDesc         = "You startle easily and panic hard. Whenever panic rises sharply, it surges an extra +0.15. When 8 or more zombies are spotted there is a small chance of an involuntary scream — a world-audible outburst that attracts nearby undead.",
@@ -606,10 +606,10 @@ UI_EN = {
     UI_UT_anorexyDesc           = "Your relationship with food is deeply complicated. Each time you eat, stress spikes by +0.1.",
 
     UI_UT_pillsallergy          = "Pill Allergy",
-    UI_UT_pillsallergyDesc      = "Medicine that helps others can hurt you. Certain pills trigger an adverse reaction instead of the relief they promise.",
+    UI_UT_pillsallergyDesc      = "Pills that help others hurt you. Taking any medication triggers a food sickness reaction (+15 sickness).",
 
     UI_UT_wildplantsallergy     = "Wild Plant Allergy",
-    UI_UT_wildplantsallergyDesc = "Foraged plants that others eat without concern leave you feeling ill. Wild food carries real risk for you.",
+    UI_UT_wildplantsallergyDesc = "Wild foraged food leaves you feeling ill. Eating any foraged item triggers a food sickness reaction (+20 sickness).",
 
     UI_UT_allergic              = "Allergic",
     UI_UT_allergicDesc          = "Your immune system overreacts to ordinary food. Every meal carries a 30% chance your body treats it like a toxin — triggering nausea, vomiting, and health degradation until the episode passes on its own.",
@@ -624,7 +624,7 @@ UI_EN = {
     UI_UT_butterfingersDesc     = "Things slip out of your hands at the worst moments. Every few minutes there is a small chance your primary hand item drops to the ground — no matter how tight your grip.",
 
     UI_UT_acrophobic            = "Acrophobic",
-    UI_UT_acrophobicDesc        = "Heights make your stomach drop and your hands shake. The higher up you are, the harder it is to function.",
+    UI_UT_acrophobicDesc        = "Any floor above ground level adds +0.05 panic per minute. The effect is flat — you don't need to be high up, just off the ground.",
 
     UI_UT_vehophobic            = "Vehophobic",
     UI_UT_vehophobicDesc        = "Getting behind the wheel or into a vehicle fills you with dread. The fear is irrational but it is very real.",

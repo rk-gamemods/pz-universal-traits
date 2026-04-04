@@ -1,9 +1,11 @@
 -- UT_ItemConsumptionHooks.lua
 -- Shared overrides for ISEatFoodAction.perform and ISDrinkFluidAction.perform.
--- Handles three traits that need to know what the player just consumed:
+-- Handles five traits that need to know what the player just consumed:
 --   UT_allergic:            food sickness spike on eating any food (not medication)
 --   UT_addictedtocaffeine:  sets UT_hadCaffeine flag when caffeinated item consumed
 --   UT_antivaxxer:          stress spike when non-beta-blocker medication consumed
+--   UT_pillsallergy:        food sickness +15 when any medication is consumed
+--   UT_wildplantsallergy:   food sickness +20 when any foraged item is consumed
 --
 -- Both overrides follow the same safe decorator pattern used by SomewhatTraits and MoreTraits:
 --   store original → replace with wrapper → call original first → apply UT effects.
@@ -47,6 +49,13 @@ local function isFoodItem(item)
     return not isMedicationItem(item)
 end
 
+-- Checks whether an item is a foraged wild plant (has a forage category in B42)
+local function isWildPlantItem(item)
+    if not item then return false end
+    local ok, cat = pcall(function() return item:getForageCategory() end)
+    return ok and cat ~= nil
+end
+
 -- ─── ISEatFoodAction override ──────────────────────────────────────────────────
 -- Fires when the player finishes eating any consumable item.
 
@@ -79,6 +88,22 @@ local function applyEatEffects(character, item)
                 bd:setFoodSicknessLevel(math.min(100, current + 20))
             end)
         end
+    end
+
+    -- UT_pillsallergy: food sickness +15 when any medication is consumed
+    if isMedicationItem(item) and UTCore.hasTrait(character, "UniversalTraits:UT_pillsallergy") then
+        pcall(function()
+            local bd = character:getBodyDamage()
+            bd:setFoodSicknessLevel(math.min(100, bd:getFoodSicknessLevel() + 15))
+        end)
+    end
+
+    -- UT_wildplantsallergy: food sickness +20 when any foraged item is consumed
+    if isWildPlantItem(item) and UTCore.hasTrait(character, "UniversalTraits:UT_wildplantsallergy") then
+        pcall(function()
+            local bd = character:getBodyDamage()
+            bd:setFoodSicknessLevel(math.min(100, bd:getFoodSicknessLevel() + 20))
+        end)
     end
 end
 

@@ -1598,3 +1598,114 @@ test("weathersensitive does not affect player without the trait", function()
     assert_eq(player:getStats():getStress(), 0.2, "stress unchanged without trait")
 end)
 
+-- ===== UT_topheavy behavioral tests (code fixed: delta -3 not +2) =====
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_topheavy.lua")
+
+test("topheavy sets carry weight to 5 + Strength - 3", function()
+    local player = MockPlayer({ "UniversalTraits:UT_topheavy" })
+    player:setPerkLevel(Perks.Strength, 5)
+    withActivePlayer(player, function()
+        Events.OnPlayerUpdate:fire(player)
+    end)
+    -- expected: 5 + 5 - 3 = 7
+    assert_eq(player:getMaxWeightBase(), 7, "carry weight should be 5 + Strength(5) - 3 = 7")
+end)
+
+test("topheavy at Strength 0 gives carry weight 2", function()
+    local player = MockPlayer({ "UniversalTraits:UT_topheavy" })
+    -- default strength is 0
+    withActivePlayer(player, function()
+        Events.OnPlayerUpdate:fire(player)
+    end)
+    assert_eq(player:getMaxWeightBase(), 2, "carry weight should be 5 + Strength(0) - 3 = 2")
+end)
+
+test("topheavy does not affect player without the trait", function()
+    local player = MockPlayer({})
+    player:setPerkLevel(Perks.Strength, 5)
+    Events.OnPlayerUpdate:fire(player)
+    -- maxWeightBase default is 8; handler should not run without trait
+    assert_eq(player:getMaxWeightBase(), 8, "carry weight unchanged without trait")
+end)
+
+-- ===== UT_unwavering behavioral tests (code changed: EveryTenMinutes panic drain) =====
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_unwavering.lua")
+
+test("unwavering drains panic by 0.1 when above 0.1", function()
+    local player = MockPlayer({ "UniversalTraits:UT_unwavering" }, { panic = 0.5 })
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    local panic = player:getStats():getPanic()
+    assert_eq(math.floor(panic * 100 + 0.5) / 100, 0.40,
+        "panic should be 0.5 - 0.1 = 0.4 after drain")
+end)
+
+test("unwavering does not drain panic when at or below 0.1", function()
+    local player = MockPlayer({ "UniversalTraits:UT_unwavering" }, { panic = 0.1 })
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(player:getStats():getPanic(), 0.1, "panic unchanged when at 0.1 threshold")
+end)
+
+test("unwavering does not affect player without the trait", function()
+    local player = MockPlayer({}, { panic = 0.5 })
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(player:getStats():getPanic(), 0.5, "panic unchanged without trait")
+end)
+
+-- ===== UT_pillsallergy behavioral tests (hook in UT_ItemConsumptionHooks.lua) =====
+
+test("pillsallergy adds sickness 15 when medication consumed", function()
+    local player = MockPlayer({ "UniversalTraits:UT_pillsallergy" })
+    local action = { character = player, item = MockItem("Painkiller") }
+    ISEatFoodAction.perform(action)
+    assert_eq(player:getBodyDamage():getFoodSicknessLevel(), 15,
+        "food sickness should be +15 after medication consumed with pillsallergy")
+end)
+
+test("pillsallergy does not trigger on non-medication food", function()
+    local player = MockPlayer({ "UniversalTraits:UT_pillsallergy" })
+    local action = { character = player, item = MockItem("Chips") }
+    ISEatFoodAction.perform(action)
+    assert_eq(player:getBodyDamage():getFoodSicknessLevel(), 0,
+        "no sickness when non-medication item consumed with pillsallergy")
+end)
+
+test("pillsallergy does not affect player without the trait", function()
+    local player = MockPlayer({})
+    local action = { character = player, item = MockItem("Painkiller") }
+    ISEatFoodAction.perform(action)
+    assert_eq(player:getBodyDamage():getFoodSicknessLevel(), 0,
+        "no sickness when player lacks pillsallergy trait")
+end)
+
+-- ===== UT_wildplantsallergy behavioral tests (hook in UT_ItemConsumptionHooks.lua) =====
+
+test("wildplantsallergy adds sickness 20 when foraged item consumed", function()
+    local player = MockPlayer({ "UniversalTraits:UT_wildplantsallergy" })
+    local action = { character = player, item = MockItem("Berries", { forageCategory = "WildPlants" }) }
+    ISEatFoodAction.perform(action)
+    assert_eq(player:getBodyDamage():getFoodSicknessLevel(), 20,
+        "food sickness should be +20 after foraged item consumed with wildplantsallergy")
+end)
+
+test("wildplantsallergy does not trigger on non-foraged food", function()
+    local player = MockPlayer({ "UniversalTraits:UT_wildplantsallergy" })
+    local action = { character = player, item = MockItem("Chips") }
+    ISEatFoodAction.perform(action)
+    assert_eq(player:getBodyDamage():getFoodSicknessLevel(), 0,
+        "no sickness when non-foraged item consumed with wildplantsallergy")
+end)
+
+test("wildplantsallergy does not affect player without the trait", function()
+    local player = MockPlayer({})
+    local action = { character = player, item = MockItem("Berries", { forageCategory = "WildPlants" }) }
+    ISEatFoodAction.perform(action)
+    assert_eq(player:getBodyDamage():getFoodSicknessLevel(), 0,
+        "no sickness when player lacks wildplantsallergy trait")
+end)
+

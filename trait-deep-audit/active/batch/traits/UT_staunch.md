@@ -8,7 +8,7 @@
 - Current cost: 10
 - Scripted: yes
 - Owner: parallel trait audit worker
-- Status: audited
+- Status: complete
 
 ## Source Evidence
 
@@ -110,9 +110,9 @@
 - Description: misleading
 - Balance: wrong
 - Regression proof: missing
-- Action needed: doc fix | test fix | code fix
+- Action needed: code fix
 - Open gaps:
-  - Source family inconsistency across FillerTraits variants: older/common files describe a stat-package trait, while B42 also includes an active bleeding-health hook. UT follows neither source version closely.
-  - Current UT text should be rewritten to describe bandaged wound closure specifically if the implementation remains as-is.
-  - Current UT cost likely needs redesign if the implementation remains bandaged-only.
-  - Missing mutual exclusion carry-forward from source (`Frail` at minimum in B42 source).
+  - UT keeps the source name and cost, but the shipped effect is a different mechanic: `+1 First Aid` plus 3x bandaged-only bleed-time decay instead of source `+1 Strength`, `+1 Fitness`, and active unstemmed bleed health mitigation.
+  - The current player-facing text is materially false for the live implementation: no pain-tolerance effect, no generic injury-penalty reduction, and no mention that the real bonus is bandaged-only.
+  - Regression coverage is still registration-only; there is no test proving `OnCreatePlayer` sets `UT_bleedDecayMult = 3.0` and `UT_bleedDecayBandagedOnly = true`, or that the shared hook stays bandaged-only.
+  - Source mutual exclusion was not carried forward: B42 source excludes `Frail`, while UT currently exposes no `MutuallyExclusiveTraits` here.
