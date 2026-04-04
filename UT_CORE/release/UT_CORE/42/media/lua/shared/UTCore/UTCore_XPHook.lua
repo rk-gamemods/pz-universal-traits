@@ -1,5 +1,6 @@
 -- UTCore_XPHook.lua
--- Intercepts Events.AddXP to apply UT_ XP multipliers, disables, and multi-skill penalties.
+-- Intercepts Events.AddXP to apply UT_ XP multipliers, disables, multi-skill penalties,
+-- and skill cap enforcement (UT_skillCapReduction).
 
 UTCore = UTCore or {}
 
@@ -26,7 +27,21 @@ local function onAddXP(player, perk, amount)
         return
     end
 
-    -- 2. XP multiplier: add the bonus delta
+    -- 2. Skill cap enforcement (UT_incomprehensive): hard cap at (maxLevel - UT_skillCapReduction).
+    -- PZ perk max is 10. If UT_skillCapReduction = 2, the cap is level 8.
+    -- Any XP gain that would push the perk over the cap is negated in full.
+    local capReduction = md["UT_skillCapReduction"]
+    if capReduction and capReduction > 0 then
+        local currentLevel = player:getPerkLevel(perk)
+        local hardCap = 10 - capReduction
+        if currentLevel >= hardCap then
+            -- Block all XP at or beyond the cap
+            player:getXp():AddXP(perk, -amount, false, false, false)
+            return
+        end
+    end
+
+    -- 3. XP multiplier: add the bonus delta
     local mult = 1.0
     local globalMult = md["UT_xpMult_All"]
     local perkMult = md["UT_xpMult_" .. perk]
@@ -43,7 +58,7 @@ local function onAddXP(player, perk, amount)
         end
     end
 
-    -- 3. Multi-skill penalty (UT_onetrickpony): 50% penalty on 2nd+ perk per minute
+    -- 4. Multi-skill penalty (UT_onetrickpony): 50% penalty on 2nd+ perk per minute
     if md["UT_multiSkillPenalty"] then
         local pid = tostring(player)
         if not UTCore._xpPerksThisMinute[pid] then UTCore._xpPerksThisMinute[pid] = {} end

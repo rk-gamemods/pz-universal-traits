@@ -1,40 +1,59 @@
 -- UT_scardycat.lua
--- Scaredy cat: screams (makes noise) when too many zombies are spotted.
+-- Scaredy Cat: two independent mechanics.
+--
+-- 1. Panic cascade: the next time panic rises by >= 0.05 in a single minute,
+--    an additional +0.15 is added. Fires at most once per minute.
+--
+-- 2. Involuntary scream: when 8+ zombies are spotted and the 3% chance fires,
+--    addSound() creates world-audible noise (radius 15). Cooldown: 120 ticks.
 
 local TRAIT_ID = "UniversalTraits:UT_scardycat"
+
+local prevPanic = {}
+
+local function onEveryMinute()
+    local player = getPlayer()
+    if not player then return end
+    if not UTCore.hasTrait(player, TRAIT_ID) then return end
+
+    local stats = player:getStats()
+    local current = stats:getPanic()
+    local playerId = tostring(player)
+    local prev = prevPanic[playerId]
+
+    if prev ~= nil and (current - prev) >= 0.05 then
+        stats:setPanic(math.min(1, current + 0.15))
+    end
+
+    prevPanic[playerId] = current
+end
 
 local function onPlayerUpdate(player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
 
     local md = player:getModData()
-    if md["UT_scardycat_cooldown"] == nil then
-        md["UT_scardycat_cooldown"] = 0
-    end
+    md["UT_scardycat_cooldown"] = md["UT_scardycat_cooldown"] or 0
 
     if md["UT_scardycat_cooldown"] > 0 then
         md["UT_scardycat_cooldown"] = md["UT_scardycat_cooldown"] - 1
         return
     end
 
-    -- Count spotted zombies
     local zombieCount = 0
     pcall(function()
         zombieCount = player:getSpottedList():size()
     end)
     if zombieCount <= 8 then return end
 
-    -- 3% chance to scream
     if ZombRand(100) < 3 then
-        local shouted = false
+        -- addSound creates world-audible noise (B42 API): guarded separately so Say() always fires
         pcall(function()
-            player:ShouldBeShouting(true)
-            shouted = true
+            addSound(player, player:getX(), player:getY(), player:getZ(), 15, 15)
         end)
-        if not shouted then
-            pcall(function() player:Say("!") end)
-        end
+        player:Say("!")
         md["UT_scardycat_cooldown"] = 120
     end
 end
 
+Events.EveryOneMinute.Add(onEveryMinute)
 Events.OnPlayerUpdate.Add(onPlayerUpdate)

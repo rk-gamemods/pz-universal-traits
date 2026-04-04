@@ -1,5 +1,9 @@
 -- UT_addictedtocaffeine.lua
--- Addicted to Caffeine: stress builds without recent caffeine consumption
+-- Addicted to Caffeine: stress builds without recent caffeine consumption.
+--
+-- INTEGRATION NOTE: UT_hadCaffeine is set externally by UT_ItemConsumptionHooks.lua
+-- whenever the player eats or drinks a caffeinated item (coffee, energy drinks, etc.).
+-- This file only reads and clears that flag each EveryTenMinutes tick.
 
 local TRAIT_ID = "UniversalTraits:UT_addictedtocaffeine"
 

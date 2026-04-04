@@ -1,16 +1,50 @@
 -- UT_gunspecialist_III.lua
--- Runtime bonuses: +10% reload/aim speed (written to moddata), jam immunity on equipped weapons.
+-- Runtime bonuses: −10% reload time, −10% aiming time, jam immunity on equipped weapons.
+--
+-- Speed bonuses are applied directly to weapon item stats:
+--   weapon:setReloadTime(floor(base * 0.9))   — 10% fewer ticks to reload
+--   weapon:setAimingTime(floor(base * 0.9))   — 10% fewer ticks to aim
+-- Base values are cached in weapon modData (UT_gs3BaseReload / UT_gs3BaseAim) on first
+-- encounter so the multiplier is not compounded across load/saves or weapon swaps.
+--
+-- Jam immunity: unjams any equipped firearm every 30 ticks (same as before).
 
 local TRAIT_ID = "UniversalTraits:UT_gunspecialist_III"
+local SPEED_MULT = 0.9  -- 10% faster = 90% of base time
 
 local tickCounter = 0
 
+local function applySpeedBonus(weapon)
+    if not weapon then return end
+    pcall(function()
+        local wmd = weapon:getModData()
+
+        -- Cache base reload time on first application
+        if wmd["UT_gs3BaseReload"] == nil then
+            wmd["UT_gs3BaseReload"] = weapon:getReloadTime()
+        end
+        -- Cache base aiming time on first application
+        if wmd["UT_gs3BaseAim"] == nil then
+            wmd["UT_gs3BaseAim"] = weapon:getAimingTime()
+        end
+
+        local targetReload = math.floor(wmd["UT_gs3BaseReload"] * SPEED_MULT)
+        local targetAim    = math.floor(wmd["UT_gs3BaseAim"]    * SPEED_MULT)
+
+        -- Only write if the value drifted (avoids unnecessary Java calls every tick)
+        if weapon:getReloadTime() ~= targetReload then
+            weapon:setReloadTime(targetReload)
+        end
+        if weapon:getAimingTime() ~= targetAim then
+            weapon:setAimingTime(targetAim)
+        end
+    end)
+end
+
 local function onNewGame(player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
-    local moddata = player:getModData()
-    moddata["UT_gunspec3"]          = true
-    moddata["UT_reloadSpeedBonus"]  = 0.1
-    moddata["UT_aimSpeedBonus"]     = 0.1
+    -- Mark for save-load recovery; speed bonus applied live in onPlayerUpdate
+    player:getModData()["UT_gunspec3"] = true
 end
 
 local function onPlayerUpdate(player)
@@ -18,17 +52,20 @@ local function onPlayerUpdate(player)
     tickCounter = tickCounter + 1
     if tickCounter % 30 ~= 0 then return end
 
+    -- Ensure moddata key present (e.g. loaded save)
     local moddata = player:getModData()
-    -- Ensure moddata keys are present (e.g. loaded save)
     if not moddata["UT_gunspec3"] then
-        moddata["UT_gunspec3"]         = true
-        moddata["UT_reloadSpeedBonus"] = 0.1
-        moddata["UT_aimSpeedBonus"]    = 0.1
+        moddata["UT_gunspec3"] = true
     end
 
-    -- Jam immunity: unjam any currently equipped firearm
     local primary   = player:getPrimaryHandItem()
     local secondary = player:getSecondaryHandItem()
+
+    -- Apply reload/aim speed bonuses
+    applySpeedBonus(primary)
+    applySpeedBonus(secondary)
+
+    -- Jam immunity: unjam any currently equipped firearm
     if primary   then pcall(function() if primary:isJammed()   then primary:setJammed(false)   end end) end
     if secondary then pcall(function() if secondary:isJammed() then secondary:setJammed(false) end end) end
 end

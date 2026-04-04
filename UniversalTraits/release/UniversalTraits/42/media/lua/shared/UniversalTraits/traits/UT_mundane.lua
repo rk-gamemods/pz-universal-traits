@@ -9,7 +9,7 @@ local function onNewGame(player)
     UTCore.applyXPMultiplier(player, "Cooking", 0.8)
     UTCore.applyXPMultiplier(player, "Doctor", 0.8)
     UTCore.applyXPMultiplier(player, "Mechanics", 0.8)
-    UTCore.applyXPMultiplier(player, "Electrical", 0.8)
+    UTCore.applyXPMultiplier(player, "Electricity", 0.8)
     UTCore.applyXPMultiplier(player, "Aiming", 0.8)
     UTCore.applyXPMultiplier(player, "Reloading", 0.8)
 end

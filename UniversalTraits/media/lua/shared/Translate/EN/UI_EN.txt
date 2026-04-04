@@ -288,7 +288,7 @@ UI_EN = {
     UI_UT_squirrelDesc          = "You hoard everything you find, even when it weighs you down. Carry weight is increased but so is the tendency to overload.",
 
     UI_UT_antivaxxer            = "Anti-Vaxxer",
-    UI_UT_antivaxxerDesc        = "Your distrust of medicine makes you resistant to treatment. Medical items are less effective on you.",
+    UI_UT_antivaxxerDesc        = "Your mistrust of medicine runs deep. Taking antibiotics, painkillers, sleeping pills, or similar pharmaceuticals causes immediate anxiety (+0.20 stress per dose). Beta blockers are unaffected — you will take those.",
 
     UI_UT_flimsy                = "Flimsy",
     UI_UT_flimsyDesc            = "You are not built for physical exertion. Strength and endurance are reduced.",
@@ -417,7 +417,7 @@ UI_EN = {
     UI_UT_mundaneDesc           = "You were never exceptional at anything. XP gain in Carpentry, Cooking, First Aid, Mechanics, Electrical, Aiming, and Reloading is reduced to ×0.8 (−20%). Also disables special combat abilities from other traits (Martial Artist, Action Hero).",
 
     UI_UT_incomprehensive       = "Incomprehensive",
-    UI_UT_incomprehensiveDesc   = "Complex ideas just do not stick for you. Your effective skill cap is reduced by 2 in all skills.",
+    UI_UT_incomprehensiveDesc   = "Complex ideas just do not stick for you. Your skills cannot advance past level 8 in any discipline — all XP gains are blocked once you hit that ceiling.",
 
     UI_UT_photographicmemory    = "Photographic Memory",
     UI_UT_photographicmemoryDesc = "You learn everything faster. All XP gain is increased to ×1.5 (+50%). Reading is 3× faster. While reading, panic and stress are forced to 0 and boredom/unhappiness drop rapidly. Finishing a skill book grants a flat XP bonus by tier: +12 / +30 / +65 / +120 / +200.",
@@ -582,7 +582,7 @@ UI_EN = {
     UI_UT_alcoholic_IIIDesc     = "Your body demands alcohol. Every in-game minute while below 0.1 drunkenness, stress increases by +0.05. While below 0.05 drunkenness, panic also increases by +0.03 per minute.",
 
     UI_UT_addictedtocaffeine    = "Caffeine Addict",
-    UI_UT_addictedtocaffeineDesc = "Coffee is not a luxury, it is a necessity. Without caffeine, your focus crumbles and the headaches begin.",
+    UI_UT_addictedtocaffeineDesc = "Coffee is not a luxury, it is a necessity. Without recent caffeine, stress mounts by +0.06 every ten minutes. Drinking coffee, energy drinks, or other caffeinated items resets the clock and keeps withdrawal at bay.",
 
     UI_UT_immunocompromised     = "Immunocompromised",
     UI_UT_immunocompromisedDesc = "Your immune system is not up to the task. Infections take hold more easily and your body struggles to fight back.",
@@ -597,7 +597,7 @@ UI_EN = {
     UI_UT_nervouswreckDesc      = "Your nerves are always close to the edge. Each panic event adds +0.3 to panic. Additionally, every 10 in-game minutes while stress is above 0.7, panic increases by +0.05.",
 
     UI_UT_scardycat             = "Scaredy Cat",
-    UI_UT_scardycatDesc         = "You startle easily and panic often. Each time a panic event fires, panic is increased by an additional +0.15. When surrounded by many zombies, you may involuntarily scream and attract attention.",
+    UI_UT_scardycatDesc         = "You startle easily and panic hard. Whenever panic rises sharply, it surges an extra +0.15. When 8 or more zombies are spotted there is a small chance of an involuntary scream — a world-audible outburst that attracts nearby undead.",
 
     UI_UT_maniac                = "Maniac",
     UI_UT_maniacDesc            = "Combat wakes something up in you. Each time you kill a zombie, stress decreases by −0.15 and boredom decreases by −0.2.",
@@ -612,7 +612,7 @@ UI_EN = {
     UI_UT_wildplantsallergyDesc = "Foraged plants that others eat without concern leave you feeling ill. Wild food carries real risk for you.",
 
     UI_UT_allergic              = "Allergic",
-    UI_UT_allergicDesc          = "Your body reacts badly to things that others tolerate fine. Food allergies can turn a meal into a medical event.",
+    UI_UT_allergicDesc          = "Your immune system overreacts to ordinary food. Every meal carries a 30% chance your body treats it like a toxin — triggering nausea, vomiting, and health degradation until the episode passes on its own.",
 
     UI_UT_competitiveeater      = "Competitive Eater",
     UI_UT_competitiveeaterDesc  = "You eat with purpose and efficiency. Every meal is an event you approach with genuine enthusiasm and unusual results.",
@@ -621,7 +621,7 @@ UI_EN = {
     UI_UT_sensitivestomachDesc  = "Your digestive system does not take kindly to stress or poor food. Meals that others handle fine can leave you miserable.",
 
     UI_UT_butterfingers         = "Butterfingers",
-    UI_UT_butterfingersDesc     = "Things slip out of your hands at the worst moments. No matter how careful you try to be, stuff just ends up on the floor.",
+    UI_UT_butterfingersDesc     = "Things slip out of your hands at the worst moments. Every few minutes there is a small chance your primary hand item drops to the ground — no matter how tight your grip.",
 
     UI_UT_acrophobic            = "Acrophobic",
     UI_UT_acrophobicDesc        = "Heights make your stomach drop and your hands shake. The higher up you are, the harder it is to function.",
@@ -633,10 +633,10 @@ UI_EN = {
     UI_UT_motionsicknessDesc    = "Vehicles do not agree with you. Even short drives leave you nauseous and desperate for still ground.",
 
     UI_UT_physicallyactive      = "Physically Active",
-    UI_UT_physicallyactiveDesc  = "You have always pushed your body and it pays off. Exercise yields more fitness gains for you than it does for others.",
+    UI_UT_physicallyactiveDesc  = "You have always pushed your body and it pays off. Gain ×2 XP in Fitness and Sprinting. During exercise, stress and boredom steadily decrease. At Fitness level 10, gym exercises cost no endurance.",
 
     UI_UT_humanhamster          = "Human Hamster",
-    UI_UT_humanhamsterDesc      = "You have an overwhelming compulsion to hoard. Every container you pass demands to be checked and filled.",
+    UI_UT_humanhamsterDesc      = "You have an overwhelming compulsion to hoard. Grants +2 carry weight so you can stuff more in — but that space needs to be used. Stress builds when your inventory drops below 80% full or when you go without a backpack: mildly after 10 minutes, noticeably after 30, severely after an hour.",
 
     UI_UT_superimmune           = "Super Immune",
     UI_UT_superimmuneDesc       = "Your immune system is exceptional. Infections that would lay others low barely register with your body.",
@@ -654,7 +654,7 @@ UI_EN = {
     UI_UT_gunspecialist_IIDesc  = "You know firearms inside and out. Gain ×3 XP in Aiming and Reloading, and ×2 XP in Nimbleness.",
 
     UI_UT_gunspecialist_III     = "Gun Specialist III",
-    UI_UT_gunspecialist_IIIDesc = "Firearms are an extension of yourself. Gain ×3 XP in Aiming and Reloading, and ×2 XP in Nimbleness. Also grants +10% reload speed, +10% aim speed, and equipped weapons never jam.",
+    UI_UT_gunspecialist_IIIDesc = "Firearms are an extension of yourself. Gain ×3 XP in Aiming and Reloading, and ×2 XP in Nimbleness. Reload time and aim time are each reduced by 10%. Equipped weapons never jam.",
 
     -- ============================================================
     -- PHASE 3d — COMPLEX STATE TRAITS

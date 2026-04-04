@@ -2056,6 +2056,7 @@ module UniversalTraits
         Cost = 4,
         UIName = UI_UT_physicallyactive,
         UIDescription = UI_UT_physicallyactiveDesc,
+        XPBoosts = Fitness=1;Sprinting=1,
     }
 
     character_trait_definition UniversalTraits:UT_humanhamster
