@@ -17,8 +17,8 @@ local function onEveryMinute()
         -- Day: reduce stress
         stats:setStress(math.max(0, stress - 0.02))
     else
-        -- Night: increase stress
-        stats:setStress(math.min(1, stress + 0.01))
+        -- Night: increase stress (balanced to match day relief — net zero over a full day)
+        stats:setStress(math.min(1, stress + 0.02))
     end
 end
 

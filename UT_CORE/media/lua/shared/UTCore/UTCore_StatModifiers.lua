@@ -126,35 +126,146 @@ function UTCore.applyBleedDrainMult(player, mult)
     player:getModData()["UT_bleedDrainMult"] = mult
 end
 
---- applyVehicleMod(player, stateKey, mods)
--- Applies vehicle stat multipliers idempotently using a per-vehicle state key.
--- Records baseline values on first call, applies mods once, then no-ops.
--- mods table keys (all optional, default 1.0): maxSpeed, brakingForce,
---   engineQuality, engineLoudness, enginePower, mass
--- stateKey: unique string per driver tier, stored in vehicle moddata.
-function UTCore.applyVehicleMod(player, stateKey, mods)
-    if not player:isDriving() then return end
-    local vehicle = player:getVehicle()
-    if not vehicle then return end
+UTCore._vehicleTraitDefs = UTCore._vehicleTraitDefs or {}
+
+local function cacheVehicleBaseline(vehicle)
     local vmd = vehicle:getModData()
-    if vmd.UT_baseMaxSpeed == nil then
-        vmd.UT_baseMaxSpeed     = vehicle:getMaxSpeed()
-        vmd.UT_baseBrakingForce = vehicle:getBrakingForce()
-        vmd.UT_baseEnginePower  = vehicle:getEnginePower()
-        vmd.UT_baseMass         = vehicle:getMass()
-        vmd.UT_baseInitialMass  = vehicle:getInitialMass()
-        vmd[stateKey]           = "Normal"
+    if vmd.UT_baseMaxSpeed ~= nil then
+        return vmd
     end
-    if vmd[stateKey] == stateKey then return end
+
+    vmd.UT_baseMaxSpeed      = vehicle:getMaxSpeed()
+    vmd.UT_baseBrakingForce  = vehicle:getBrakingForce()
+    vmd.UT_baseEngineQuality = vehicle:getEngineQuality()
+    vmd.UT_baseEngineLoudness = vehicle:getEngineLoudness()
+    vmd.UT_baseEnginePower   = vehicle:getEnginePower()
+    vmd.UT_baseMass          = vehicle:getMass()
+    vmd.UT_baseInitialMass   = vehicle:getInitialMass()
+    return vmd
+end
+
+local function selectVehicleTrait(player)
+    local selected = nil
+
+    for _, def in ipairs(UTCore._vehicleTraitDefs) do
+        if UTCore.hasTrait(player, def.traitId) then
+            if not selected or def.priority > selected.priority then
+                selected = def
+            end
+        end
+    end
+
+    return selected
+end
+
+--- applyVehicleMod(player, stateKey, mods[, vehicleOverride])
+-- Applies vehicle stat multipliers from cached baseline values.
+-- Reapplying the same state is a no-op; switching states always recalculates from baseline.
+function UTCore.applyVehicleMod(player, stateKey, mods, vehicleOverride)
+    if not player then return end
+    if player.isDriving and not player:isDriving() then return end
+
+    local vehicle = vehicleOverride or (player.getVehicle and player:getVehicle())
+    if not vehicle then return end
+
+    local vmd = cacheVehicleBaseline(vehicle)
+    if vmd.UT_vehicleTraitState == stateKey then return end
+
     vehicle:setMaxSpeed(vmd.UT_baseMaxSpeed * (mods.maxSpeed or 1.0))
     vehicle:setBrakingForce(vmd.UT_baseBrakingForce * (mods.brakingForce or 1.0))
     vehicle:setEngineFeature(
-        vehicle:getEngineQuality() * (mods.engineQuality or 1.0),
-        vehicle:getEngineLoudness() * (mods.engineLoudness or 1.0),
+        vmd.UT_baseEngineQuality * (mods.engineQuality or 1.0),
+        vmd.UT_baseEngineLoudness * (mods.engineLoudness or 1.0),
         vmd.UT_baseEnginePower * (mods.enginePower or 1.0)
     )
     vehicle:setMass(vmd.UT_baseMass * (mods.mass or 1.0))
     vehicle:setInitialMass(vmd.UT_baseInitialMass * (mods.mass or 1.0))
     vehicle:updateTotalMass()
-    vmd[stateKey] = stateKey
+    vmd.UT_vehicleTraitState = stateKey
+end
+
+-- Restores a vehicle to its cached baseline values.
+function UTCore.restoreVehicleMod(vehicle)
+    if not vehicle then return end
+
+    local vmd = vehicle:getModData()
+    if vmd.UT_baseMaxSpeed == nil then return end
+
+    vehicle:setMaxSpeed(vmd.UT_baseMaxSpeed)
+    vehicle:setBrakingForce(vmd.UT_baseBrakingForce)
+    vehicle:setEngineFeature(vmd.UT_baseEngineQuality, vmd.UT_baseEngineLoudness, vmd.UT_baseEnginePower)
+    vehicle:setMass(vmd.UT_baseMass)
+    vehicle:setInitialMass(vmd.UT_baseInitialMass)
+    vehicle:updateTotalMass()
+    vmd.UT_vehicleTraitState = nil
+end
+
+-- Registers a vehicle trait so the shared enter/load/exit listeners can apply it.
+-- Higher priority wins if multiple vehicle traits are somehow active at once.
+function UTCore.registerVehicleTrait(traitId, stateKey, mods, priority)
+    for _, def in ipairs(UTCore._vehicleTraitDefs) do
+        if def.traitId == traitId then
+            def.stateKey = stateKey
+            def.mods = mods
+            def.priority = priority or 0
+            return
+        end
+    end
+
+    UTCore._vehicleTraitDefs[#UTCore._vehicleTraitDefs + 1] = {
+        traitId = traitId,
+        stateKey = stateKey,
+        mods = mods,
+        priority = priority or 0,
+    }
+end
+
+-- Syncs the active vehicle state for the player's current vehicle.
+-- Called on enter and on load so the effect is applied once, not every frame.
+function UTCore.syncVehicleTrait(player, vehicle)
+    if not player then return end
+
+    local targetVehicle = vehicle or (player.getVehicle and player:getVehicle())
+    if not targetVehicle then return end
+
+    if player.isDriving and not player:isDriving() then
+        UTCore.restoreVehicleMod(targetVehicle)
+        return
+    end
+
+    local selected = selectVehicleTrait(player)
+    if not selected then
+        UTCore.restoreVehicleMod(targetVehicle)
+        return
+    end
+
+    UTCore.applyVehicleMod(player, selected.stateKey, selected.mods, targetVehicle)
+end
+
+if not UTCore._vehicleTraitEventsRegistered then
+    local function onVehicleEnter(player, vehicle)
+        UTCore.syncVehicleTrait(player, vehicle)
+    end
+
+    local function onVehicleExit(player, vehicle)
+        UTCore.restoreVehicleMod(vehicle)
+    end
+
+    local function onCreatePlayer(_playerIndex, player)
+        UTCore.syncVehicleTrait(player)
+    end
+
+    if Events and Events.OnVehicleEnter then
+        Events.OnVehicleEnter.Add(onVehicleEnter)
+    end
+
+    if Events and Events.OnVehicleExit then
+        Events.OnVehicleExit.Add(onVehicleExit)
+    end
+
+    if Events and Events.OnCreatePlayer then
+        Events.OnCreatePlayer.Add(onCreatePlayer)
+    end
+
+    UTCore._vehicleTraitEventsRegistered = true
 end

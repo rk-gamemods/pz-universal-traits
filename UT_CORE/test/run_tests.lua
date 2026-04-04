@@ -127,7 +127,7 @@ end)
 test("registerPeriodicHandler stores handler", function()
     UTCore._periodicHandlers = {}
     UTCore.registerPeriodicHandler("test_trait", "EveryOneMinute", function(player) end)
-    assert_eq(UTCore._periodicHandlers["test_trait"] ~= nil, true)
+    assert_eq(UTCore._periodicHandlers["test_trait::EveryOneMinute"] ~= nil, true)
 end)
 
 -- registerPeriodicHandler idempotent
@@ -139,6 +139,15 @@ test("registerPeriodicHandler is idempotent", function()
     local count = 0
     for _ in pairs(UTCore._periodicHandlers) do count = count + 1 end
     assert_eq(count, 1)
+end)
+
+test("registerPeriodicHandler allows multiple events for one trait", function()
+    UTCore._periodicHandlers = {}
+    UTCore.registerPeriodicHandler("test_trait", "EveryOneMinute", function(player) end)
+    UTCore.registerPeriodicHandler("test_trait", "OnPlayerUpdate", function(player) end)
+    local count = 0
+    for _ in pairs(UTCore._periodicHandlers) do count = count + 1 end
+    assert_eq(count, 2, "expected one handler per trait+event pair")
 end)
 
 -- unregisterPeriodicHandler
@@ -312,6 +321,20 @@ test("WorkSpeedHook applies readSpeedMod to ISReadABook", function()
     assert(math.abs(result - 130) < 1, "expected ~130, got " .. tostring(result))
 end)
 
+test("WorkSpeedHook clamps zero duration to 1", function()
+    local p = MockPlayer({})
+    local action = MockTimedAction(p, "ISCraftItem", 0)
+    local result = UTCore.applyWorkDuration(action, 0)
+    assert_eq(result, 1, "expected zero duration to clamp to 1")
+end)
+
+test("WorkSpeedHook clamps negative duration to 1", function()
+    local p = MockPlayer({})
+    local action = MockTimedAction(p, "ISCraftItem", -25)
+    local result = UTCore.applyWorkDuration(action, -25)
+    assert_eq(result, 1, "expected negative duration to clamp to 1")
+end)
+
 test("ReadingHook getSkillBookCompletionXP returns tier bonus", function()
     SkillBook = { Cooking = { perk = "Cooking" } }
     local item = {
@@ -416,6 +439,42 @@ test("MeleeDelayHook does not apply when no relevant trait is present", function
     local p = MockPlayer({}, { primaryHandItem = weapon })
     UTCore._meleeDelayOnPlayerUpdate(p)
     assert_eq(p:getModData()["_lastMeleeDelay"], nil, "expected setMeleeDelay not called")
+end)
+
+-- Vehicle trait helpers
+test("Vehicle trait registration applies modifiers on vehicle enter", function()
+    UTCore._vehicleTraitDefs = {}
+    local vehicle = MockVehicle()
+    local player = MockPlayer({"UniversalTraits:UT_testdriver"}, { vehicle = vehicle })
+    UTCore.registerVehicleTrait("UniversalTraits:UT_testdriver", "UT_testdriverState", {
+        maxSpeed = 1.5,
+        brakingForce = 0.5,
+    }, 1)
+
+    Events.OnVehicleEnter.fire(player, vehicle)
+
+    assert_eq(vehicle:getMaxSpeed(), 150, "expected vehicle max speed multiplier on enter")
+    assert_eq(vehicle:getBrakingForce(), 5, "expected braking force multiplier on enter")
+end)
+
+test("Vehicle trait helpers restore the baseline on vehicle exit", function()
+    UTCore._vehicleTraitDefs = {}
+    local vehicle = MockVehicle()
+    local player = MockPlayer({"UniversalTraits:UT_testdriver"}, { vehicle = vehicle })
+    UTCore.registerVehicleTrait("UniversalTraits:UT_testdriver", "UT_testdriverState", {
+        maxSpeed = 1.5,
+        brakingForce = 0.5,
+        enginePower = 2.0,
+        mass = 0.75,
+    }, 1)
+
+    Events.OnVehicleEnter.fire(player, vehicle)
+    Events.OnVehicleExit.fire(player, vehicle)
+
+    assert_eq(vehicle:getMaxSpeed(), 100, "expected max speed restored")
+    assert_eq(vehicle:getBrakingForce(), 10, "expected braking restored")
+    assert_eq(vehicle:getEnginePower(), 100, "expected engine power restored")
+    assert_eq(vehicle:getMass(), 1000, "expected mass restored")
 end)
 
 -- ===== ZombieCollisionHook tests =====

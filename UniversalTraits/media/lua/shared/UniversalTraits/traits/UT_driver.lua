@@ -4,14 +4,9 @@
 
 local TRAIT_ID = "UniversalTraits:UT_driver"
 
-local function handler(player)
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
-    UTCore.applyVehicleMod(player, "UT_driverState", {
-        maxSpeed       = 1.2,
-        enginePower    = 1.2,
-        brakingForce   = 1.2,
-        engineLoudness = 0.8,
-    })
-end
-
-UTCore.registerPeriodicHandler(TRAIT_ID, "OnPlayerUpdate", handler)
+UTCore.registerVehicleTrait(TRAIT_ID, "UT_driverState", {
+    maxSpeed       = 1.2,
+    enginePower    = 1.2,
+    brakingForce   = 1.2,
+    engineLoudness = 0.8,
+}, 1)

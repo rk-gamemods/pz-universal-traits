@@ -1,7 +1,7 @@
 -- UT_idealweight.lua
 -- Your body fights to maintain ideal weight.
--- Weight >= 85 (overweight+): 2x calorie burn rate.
--- Weight <= 75 (underweight or worse): 0.5x calorie burn rate.
+-- Weight >= 84 (overweight+): 2x calorie burn rate.
+-- Weight <= 76 (underweight or worse): 0.5x calorie burn rate.
 -- Weight 75-85 (normal): no effect.
 --
 -- Implementation: each tick we measure the actual calorie delta the game applied
@@ -11,8 +11,8 @@
 -- Weight is cached from EveryOneMinute to avoid per-tick getNutrition calls.
 
 local TRAIT_ID              = "UniversalTraits:UT_idealweight"
-local OVERWEIGHT_THRESHOLD  = 85.0
-local UNDERWEIGHT_THRESHOLD = 75.0
+local OVERWEIGHT_THRESHOLD  = 84.0
+local UNDERWEIGHT_THRESHOLD = 76.0
 
 -- Cache weight every in-game minute
 UTCore.registerPeriodicHandler(TRAIT_ID, "EveryOneMinute", function(player)

@@ -27,33 +27,104 @@ end
 function isClient() return false end
 function isServer() return false end
 
+local function makeStats(opts)
+    return {
+        _endurance = opts.endurance or 1.0,
+        _maxEndurance = opts.maxEndurance or 1.0,
+        _panic = opts.panic or 0.0,
+        _stress = opts.stress or 0.0,
+        _hunger = opts.hunger or 0.0,
+        _thirst = opts.thirst or 0.0,
+        _fatigue = opts.fatigue or 0.0,
+        setStress = function(self, v) self._stress = v end,
+        getStress = function(self) return self._stress end,
+        setHunger = function(self, v) self._hunger = v end,
+        getHunger = function(self) return self._hunger end,
+        setThirst = function(self, v) self._thirst = v end,
+        getThirst = function(self) return self._thirst end,
+        setFatigue = function(self, v) self._fatigue = v end,
+        getFatigue = function(self) return self._fatigue end,
+        setPanic = function(self, v) self._panic = v end,
+        getPanic = function(self) return self._panic end,
+        setEndurance = function(self, v) self._endurance = v end,
+        getEndurance = function(self) return self._endurance end,
+        getMaxEndurance = function(self) return self._maxEndurance end,
+    }
+end
+
+local function makeBodyDamage(opts)
+    return {
+        _panicLevel = opts.panicLevel or 0,
+        _unhappinessLevel = opts.unhappinessLevel or 50,
+        _boredomLevel = opts.boredomLevel or 0,
+        _infectionLevel = opts.infectionLevel or 0,
+        getPanicLevel = function(self) return self._panicLevel end,
+        setPanicLevel = function(self, v) self._panicLevel = v end,
+        getUnhappinessLevel = function(self) return self._unhappinessLevel end,
+        setUnhappinessLevel = function(self, v) self._unhappinessLevel = v end,
+        getBoredomLevel = function(self) return self._boredomLevel end,
+        setBoredomLevel = function(self, v) self._boredomLevel = v end,
+        getInfectionLevel = function(self) return self._infectionLevel end,
+        setInfectionLevel = function(self, v) self._infectionLevel = v end,
+    }
+end
+
+local function makeNutrition(opts)
+    return {
+        _weight = opts.weight or 80.0,
+        _calories = opts.calories or 2000.0,
+        getWeight = function(self) return self._weight end,
+        setWeight = function(self, v) self._weight = v end,
+        getCalories = function(self) return self._calories end,
+        setCalories = function(self, v) self._calories = v end,
+    }
+end
+
+function MockVehicle(opts)
+    opts = opts or {}
+    local moddata = opts.moddata or {}
+    return {
+        _maxSpeed = opts.maxSpeed or 100,
+        _brakingForce = opts.brakingForce or 10,
+        _engineQuality = opts.engineQuality or 100,
+        _engineLoudness = opts.engineLoudness or 100,
+        _enginePower = opts.enginePower or 100,
+        _mass = opts.mass or 1000,
+        _initialMass = opts.initialMass or (opts.mass or 1000),
+        _updateTotalMassCalls = 0,
+        getModData = function(self) return moddata end,
+        getMaxSpeed = function(self) return self._maxSpeed end,
+        setMaxSpeed = function(self, v) self._maxSpeed = v end,
+        getBrakingForce = function(self) return self._brakingForce end,
+        setBrakingForce = function(self, v) self._brakingForce = v end,
+        getEngineQuality = function(self) return self._engineQuality end,
+        getEngineLoudness = function(self) return self._engineLoudness end,
+        getEnginePower = function(self) return self._enginePower end,
+        setEngineFeature = function(self, quality, loudness, power)
+            self._engineQuality = quality
+            self._engineLoudness = loudness
+            self._enginePower = power
+        end,
+        getMass = function(self) return self._mass end,
+        setMass = function(self, v) self._mass = v end,
+        getInitialMass = function(self) return self._initialMass end,
+        setInitialMass = function(self, v) self._initialMass = v end,
+        updateTotalMass = function(self) self._updateTotalMassCalls = self._updateTotalMassCalls + 1 end,
+    }
+end
+
 -- MockPlayer for trait moddata tests
-function MockPlayer(traitList)
-    local moddata = {}
+function MockPlayer(traitList, opts)
+    opts = opts or {}
+    local moddata = opts.moddata or {}
     local traits = {}
     for _, id in ipairs(traitList or {}) do traits[id] = true end
-    -- Mutable stats object (shared across getStats() calls)
-    local stats = {
-        _endurance = 1.0,
-        _panic     = 0.0,
-        setStress    = function() end, setHunger  = function() end,
-        setThirst    = function() end, setFatigue = function() end,
-        setPanic     = function(self, v) self._panic = v end,
-        getPanic     = function(self) return self._panic end,
-        setEndurance = function(self, v) self._endurance = v end,
-        getEndurance    = function(self) return self._endurance end,
-        getMaxEndurance = function(self) return 1.0 end,
-    }
-    -- Mutable bodyDamage object (shared across getBodyDamage() calls)
-    local bodyDamage = {
-        _panicLevel      = 0,
-        _unhappinessLevel = 50,
-        getPanicLevel         = function(self) return self._panicLevel end,
-        setPanicLevel         = function(self, v) self._panicLevel = v end,
-        getUnhappinessLevel   = function(self) return self._unhappinessLevel end,
-        setUnhappinessLevel   = function(self, v) self._unhappinessLevel = v end,
-    }
-    -- Mutable xp object
+    local stats = opts.stats or makeStats(opts)
+    local bodyDamage = opts.bodyDamage or makeBodyDamage(opts)
+    local nutrition = opts.nutrition or makeNutrition(opts)
+    local x = opts.x or 0
+    local y = opts.y or 0
+    local primaryHandItem = opts.primaryHandItem or nil
     local xp = {
         _log = {},
         AddXP = function(self, perk, amount) table.insert(self._log, { perk=perk, amount=amount }) end,
@@ -69,13 +140,18 @@ function MockPlayer(traitList)
         _bumpType     = "",
         _bumpedChr    = nil,
         _bumpFall     = false,
+        _driving      = opts.driving == nil and opts.vehicle ~= nil or opts.driving,
+        _playerNum    = opts.playerNum or 0,
+        _vehicle      = opts.vehicle,
         getModData = function(self) return moddata end,
         getTraits  = function(self)
             return { contains = function(_, id) return traits[id] == true end }
         end,
         getStats      = function(self) return stats end,
         getBodyDamage = function(self) return bodyDamage end,
+        setBodyDamage = function(self, value) bodyDamage = value end,
         getXp         = function(self) return xp end,
+        getXpCalls    = function(self) return xp._log end,
         getPerkLevel  = function(self, perk)
             return moddata["_perkLevel_" .. tostring(perk)] or 0
         end,
@@ -84,10 +160,29 @@ function MockPlayer(traitList)
         end,
         setMaxWeightBase = function(self, v) moddata["_maxWeight"] = v end,
         getMaxWeightBase = function(self) return moddata["_maxWeight"] or 8 end,
+        getX = function(self) return x end,
+        getY = function(self) return y end,
+        setX = function(self, v) x = v end,
+        setY = function(self, v) y = v end,
+        moveTo = function(self, nx, ny) x = nx; y = ny end,
+        isLocalPlayer = function(self) return true end,
+        getNutrition = function(self) return nutrition end,
+        getPlayerNum = function(self) return self._playerNum end,
+        isDriving = function(self) return self._driving end,
+        getVehicle = function(self) return self._vehicle end,
+        setVehicle = function(self, vehicle)
+            self._vehicle = vehicle
+            self._driving = vehicle ~= nil
+        end,
+        getPrimaryHandItem = function(self) return primaryHandItem end,
+        setPrimaryHandItem = function(self, item) primaryHandItem = item end,
+        setMeleeDelay = function(self, v) moddata["_lastMeleeDelay"] = v end,
         -- Runtime-behavior mocks
         setBumpFallDown   = function(self, v) self._bumpFallDown = v end,
         isSprinting       = function(self) return self._sprinting end,
         isRunning         = function(self) return self._running end,
+        setSprinting      = function(self, v) self._sprinting = v end,
+        setRunning        = function(self, v) self._running = v end,
         isMoving          = function(self) return self._moving end,
         isIndoors         = function(self) return self._indoors end,
         Say               = function(self, text) self._said = text end,
@@ -122,13 +217,135 @@ end
 UTCore.applyNoiseMod        = function(player, v) player:getModData()["UT_noiseMult"] = v end
 UTCore.applySleepQuality    = function(player, v) player:getModData()["UT_sleepQualMod"] = v end
 UTCore.applyPanicResistance = function(player, v) player:getModData()["UT_panicResist"] = v end
+UTCore.getModData = function(player, key, default)
+    local value = player:getModData()[key]
+    if value == nil then return default end
+    return value
+end
+UTCore.setModData = function(player, key, value)
+    player:getModData()[key] = value
+end
 UTCore.applySpawnCondition  = function(player, t) player:getModData()["_spawnCond"] = t end
 UTCore.applyBleedDecayMult  = function(player, mult, bandagedOnly)
     player:getModData()["UT_bleedDecayMult"]        = mult
     player:getModData()["UT_bleedDecayBandagedOnly"] = bandagedOnly and true or false
 end
 UTCore.applyBleedDrainMult  = function(player, mult) player:getModData()["UT_bleedDrainMult"] = mult end
-UTCore.registerPeriodicHandler = function(traitId, interval, fn) end  -- no-op stub
+UTCore._periodicHandlers = UTCore._periodicHandlers or {}
+UTCore._vehicleTraitDefs = UTCore._vehicleTraitDefs or {}
+local function periodicHandlerKey(traitId, interval)
+    return traitId .. "::" .. interval
+end
+UTCore.registerPeriodicHandler = function(traitId, interval, fn)
+    local key = periodicHandlerKey(traitId, interval)
+    if UTCore._periodicHandlers[key] then return end
+    local wrapped = function()
+        if getPlayer then
+            fn(getPlayer())
+        end
+    end
+    UTCore._periodicHandlers[key] = { traitId = traitId, event = interval, fn = fn, wrapped = wrapped }
+    if _G.Events and _G.Events[interval] then
+        _G.Events[interval].Add(wrapped)
+    end
+end
+UTCore.unregisterPeriodicHandler = function(traitId, interval)
+    local keys = {}
+    if interval then
+        keys[1] = periodicHandlerKey(traitId, interval)
+    else
+        local prefix = traitId .. "::"
+        for key in pairs(UTCore._periodicHandlers) do
+            if key:sub(1, #prefix) == prefix then
+                keys[#keys + 1] = key
+            end
+        end
+    end
+
+    for _, key in ipairs(keys) do
+        local entry = UTCore._periodicHandlers[key]
+        if entry and _G.Events and _G.Events[entry.event] then
+            _G.Events[entry.event].Remove(entry.wrapped)
+        end
+        UTCore._periodicHandlers[key] = nil
+    end
+end
+
+local function _cacheVehicleBaseline(vehicle)
+    local vmd = vehicle:getModData()
+    if vmd.UT_baseMaxSpeed ~= nil then return vmd end
+    vmd.UT_baseMaxSpeed = vehicle:getMaxSpeed()
+    vmd.UT_baseBrakingForce = vehicle:getBrakingForce()
+    vmd.UT_baseEngineQuality = vehicle:getEngineQuality()
+    vmd.UT_baseEngineLoudness = vehicle:getEngineLoudness()
+    vmd.UT_baseEnginePower = vehicle:getEnginePower()
+    vmd.UT_baseMass = vehicle:getMass()
+    vmd.UT_baseInitialMass = vehicle:getInitialMass()
+    return vmd
+end
+
+UTCore.applyVehicleMod = function(player, stateKey, mods)
+    if not player:isDriving() then return end
+    local vehicle = player:getVehicle()
+    if not vehicle then return end
+    local vmd = _cacheVehicleBaseline(vehicle)
+    if vmd.UT_vehicleTraitState == stateKey then return end
+    vehicle:setMaxSpeed(vmd.UT_baseMaxSpeed * (mods.maxSpeed or 1.0))
+    vehicle:setBrakingForce(vmd.UT_baseBrakingForce * (mods.brakingForce or 1.0))
+    vehicle:setEngineFeature(
+        vmd.UT_baseEngineQuality * (mods.engineQuality or 1.0),
+        vmd.UT_baseEngineLoudness * (mods.engineLoudness or 1.0),
+        vmd.UT_baseEnginePower * (mods.enginePower or 1.0)
+    )
+    vehicle:setMass(vmd.UT_baseMass * (mods.mass or 1.0))
+    vehicle:setInitialMass(vmd.UT_baseInitialMass * (mods.mass or 1.0))
+    vehicle:updateTotalMass()
+    vmd.UT_vehicleTraitState = stateKey
+end
+
+UTCore.restoreVehicleMod = function(vehicle)
+    if not vehicle then return end
+    local vmd = vehicle:getModData()
+    if vmd.UT_baseMaxSpeed == nil then return end
+    vehicle:setMaxSpeed(vmd.UT_baseMaxSpeed)
+    vehicle:setBrakingForce(vmd.UT_baseBrakingForce)
+    vehicle:setEngineFeature(vmd.UT_baseEngineQuality, vmd.UT_baseEngineLoudness, vmd.UT_baseEnginePower)
+    vehicle:setMass(vmd.UT_baseMass)
+    vehicle:setInitialMass(vmd.UT_baseInitialMass)
+    vehicle:updateTotalMass()
+    vmd.UT_vehicleTraitState = nil
+end
+
+UTCore.registerVehicleTrait = function(traitId, stateKey, mods, priority)
+    UTCore._vehicleTraitDefs[#UTCore._vehicleTraitDefs + 1] = {
+        traitId = traitId,
+        stateKey = stateKey,
+        mods = mods,
+        priority = priority or 0,
+    }
+end
+
+UTCore.syncVehicleTrait = function(player, vehicle)
+    local targetVehicle = vehicle or (player and player.getVehicle and player:getVehicle())
+    if not player or not targetVehicle then return end
+    if player.isDriving and not player:isDriving() then
+        UTCore.restoreVehicleMod(targetVehicle)
+        return
+    end
+    local selected = nil
+    for _, def in ipairs(UTCore._vehicleTraitDefs) do
+        if UTCore.hasTrait(player, def.traitId) then
+            if not selected or def.priority > selected.priority then
+                selected = def
+            end
+        end
+    end
+    if selected then
+        UTCore.applyVehicleMod(player, selected.stateKey, selected.mods)
+    else
+        UTCore.restoreVehicleMod(targetVehicle)
+    end
+end
 
 UTCore._zombieCollisionCallbacks = {}
 UTCore.registerZombieCollisionHandler = function(traitId, fn)
@@ -157,17 +374,33 @@ function MockZombie(opts)
     }
 end
 
+local function fireHandlers(eventTable, handlers, ...)
+    local args = { ... }
+    if args[1] == eventTable then
+        table.remove(args, 1)
+    end
+    for _, fn in ipairs(handlers) do
+        fn(table.unpack(args))
+    end
+end
+
 -- Events.OnNewGame mock
 -- PZ trait files call Events.OnNewGame.Add(fn) with dot notation (no self).
 -- The mock's Add must accept that: first arg IS the handler function.
 if not _G.Events then _G.Events = {} end
+if not _G.Events.AddXP then
+    local _xpHandlers = {}
+    _G.Events.AddXP = {
+        Add  = function(fn) table.insert(_xpHandlers, fn) end,
+        fire = function(...) fireHandlers(_G.Events.AddXP, _xpHandlers, ...) end,
+    }
+end
+
 if not _G.Events.OnNewGame then
     local _newGameHandlers = {}
     _G.Events.OnNewGame = {
         Add  = function(fn) table.insert(_newGameHandlers, fn) end,
-        fire = function(self, player)
-            for _, fn in ipairs(_newGameHandlers) do fn(player) end
-        end,
+        fire = function(...) fireHandlers(_G.Events.OnNewGame, _newGameHandlers, ...) end,
     }
 end
 
@@ -175,9 +408,7 @@ if not _G.Events.OnCreatePlayer then
     local _createPlayerHandlers = {}
     _G.Events.OnCreatePlayer = {
         Add  = function(fn) table.insert(_createPlayerHandlers, fn) end,
-        fire = function(self, playerIndex, player)
-            for _, fn in ipairs(_createPlayerHandlers) do fn(playerIndex, player) end
-        end,
+        fire = function(...) fireHandlers(_G.Events.OnCreatePlayer, _createPlayerHandlers, ...) end,
     }
 end
 
@@ -199,9 +430,38 @@ if not _G.Events.OnPlayerUpdate then
     local _updateHandlers = {}
     _G.Events.OnPlayerUpdate = {
         Add  = function(fn) table.insert(_updateHandlers, fn) end,
-        fire = function(self, player)
-            for _, fn in ipairs(_updateHandlers) do fn(player) end
+        Remove = function(fn)
+            for i, handler in ipairs(_updateHandlers) do
+                if handler == fn then table.remove(_updateHandlers, i) return end
+            end
         end,
+        fire = function(...) fireHandlers(_G.Events.OnPlayerUpdate, _updateHandlers, ...) end,
+    }
+end
+
+if not _G.Events.OnPlayerMove then
+    local _moveHandlers = {}
+    _G.Events.OnPlayerMove = {
+        Add  = function(fn) table.insert(_moveHandlers, fn) end,
+        Remove = function(fn)
+            for i, handler in ipairs(_moveHandlers) do
+                if handler == fn then table.remove(_moveHandlers, i) return end
+            end
+        end,
+        fire = function(...) fireHandlers(_G.Events.OnPlayerMove, _moveHandlers, ...) end,
+    }
+end
+
+if not _G.Events.OnGameBoot then
+    local _bootHandlers = {}
+    _G.Events.OnGameBoot = {
+        Add  = function(fn) table.insert(_bootHandlers, fn) end,
+        Remove = function(fn)
+            for i, handler in ipairs(_bootHandlers) do
+                if handler == fn then table.remove(_bootHandlers, i) return end
+            end
+        end,
+        fire = function(...) fireHandlers(_G.Events.OnGameBoot, _bootHandlers, ...) end,
     }
 end
 
@@ -211,22 +471,180 @@ if not _G.Events.OnWeaponHitCharacter then
     local _weaponHitHandlers = {}
     _G.Events.OnWeaponHitCharacter = {
         Add  = function(fn) table.insert(_weaponHitHandlers, fn) end,
-        fire = function(self, player, weapon, target)
-            for _, fn in ipairs(_weaponHitHandlers) do fn(player, weapon, target) end
-        end,
+        fire = function(...) fireHandlers(_G.Events.OnWeaponHitCharacter, _weaponHitHandlers, ...) end,
     }
 end
 
--- ZombRand stub: deterministic — always returns 0 (triggers any crit check with critchance > 0)
+if not _G.Events.OnVehicleEnter then
+    local _vehicleEnterHandlers = {}
+    _G.Events.OnVehicleEnter = {
+        Add  = function(fn) table.insert(_vehicleEnterHandlers, fn) end,
+        Remove = function(fn)
+            for i, handler in ipairs(_vehicleEnterHandlers) do
+                if handler == fn then table.remove(_vehicleEnterHandlers, i) return end
+            end
+        end,
+        fire = function(...) fireHandlers(_G.Events.OnVehicleEnter, _vehicleEnterHandlers, ...) end,
+    }
+end
+
+if not _G.Events.OnVehicleExit then
+    local _vehicleExitHandlers = {}
+    _G.Events.OnVehicleExit = {
+        Add  = function(fn) table.insert(_vehicleExitHandlers, fn) end,
+        Remove = function(fn)
+            for i, handler in ipairs(_vehicleExitHandlers) do
+                if handler == fn then table.remove(_vehicleExitHandlers, i) return end
+            end
+        end,
+        fire = function(...) fireHandlers(_G.Events.OnVehicleExit, _vehicleExitHandlers, ...) end,
+    }
+end
+
+local _mockGameTime = {
+    worldAgeHours = 0,
+    ticks = 0,
+}
+
+function setMockGameTime(worldAgeHours, ticks)
+    _mockGameTime.worldAgeHours = worldAgeHours or 0
+    _mockGameTime.ticks = ticks or 0
+end
+
+function advanceMockGameTimeHours(delta)
+    _mockGameTime.worldAgeHours = _mockGameTime.worldAgeHours + (delta or 0)
+end
+
+function advanceMockGameTicks(delta)
+    _mockGameTime.ticks = _mockGameTime.ticks + (delta or 0)
+end
+
+function getGameTime()
+    return {
+        getWorldAgeHours = function(self) return _mockGameTime.worldAgeHours end,
+        getTicks = function(self) return _mockGameTime.ticks end,
+    }
+end
+
+if not _G.getPlayer then
+    _G.getPlayer = function() return nil end
+end
+
+if not _G.BodyPartType then
+    _G.BodyPartType = { Neck = "Neck" }
+end
+
+function MockBodyPart(partType, isBleeding, isStemmed)
+    local _type = partType or "Torso_Upper"
+    local _bleeding = isBleeding or false
+    local _stemmed = isStemmed or false
+    local _health = 1.0
+    local addHealthCalls = 0
+    local reduceHealthCalls = 0
+    return {
+        getType = function(self) return _type end,
+        bleeding = function(self) return _bleeding end,
+        IsBleedingStemmed = function(self) return _stemmed end,
+        getHealth = function(self) return _health end,
+        AddHealth = function(self, v) addHealthCalls = addHealthCalls + 1; _health = _health + v end,
+        ReduceHealth = function(self, v) reduceHealthCalls = reduceHealthCalls + 1; _health = _health - v end,
+        getAddHealthCalls = function(self) return addHealthCalls end,
+        getReduceHealthCalls = function(self) return reduceHealthCalls end,
+    }
+end
+
+function MockBodyPartsList(parts)
+    local _parts = parts or {}
+    return {
+        size = function(self) return #_parts end,
+        get = function(self, i) return _parts[i + 1] end,
+    }
+end
+
+function MockBodyDamage(parts)
+    local list = MockBodyPartsList(parts)
+    local bleedingCount = 0
+    for _, p in ipairs(parts or {}) do
+        if p:bleeding() then bleedingCount = bleedingCount + 1 end
+    end
+    return {
+        getBodyParts = function(self) return list end,
+        getNumPartsBleeding = function(self) return bleedingCount end,
+    }
+end
+
+function MockTimedAction(player, actionType, baseDuration)
+    local character = player
+    local Type = actionType or "ISCraftItem"
+    local maxTime = baseDuration or 100
+    return {
+        character = character,
+        Type = Type,
+        getDuration = function(self) return maxTime end,
+    }
+end
+
+function MockWeapon(weaponType, meleeDelay, isTwoHand, isMelee)
+    local _type = weaponType or "HandAxe"
+    local _delay = meleeDelay or 0
+    local _twoHand = (isTwoHand == nil) and false or isTwoHand
+    local _melee = (isMelee == nil) and true or isMelee
+    local setDelayCalls = {}
+    return {
+        getType = function(self) return _type end,
+        getMeleeDelay = function(self) return _delay end,
+        setMeleeDelay = function(self, v)
+            table.insert(setDelayCalls, v)
+            _delay = v
+        end,
+        isTwoHandWeapon = function(self) return _twoHand end,
+        isMeleeWeapon = function(self) return _melee end,
+        getSetDelayCalls = function(self) return setDelayCalls end,
+    }
+end
+
+local _mockZombRand = {
+    default = 0,
+    queue = {},
+}
+
+function setMockZombRandDefault(value)
+    _mockZombRand.default = value or 0
+end
+
+function setMockZombRandSequence(values)
+    _mockZombRand.queue = {}
+    for _, value in ipairs(values or {}) do
+        table.insert(_mockZombRand.queue, value)
+    end
+end
+
+function resetMockZombRand()
+    _mockZombRand.default = 0
+    _mockZombRand.queue = {}
+end
+
+-- ZombRand stub: configurable queue with a deterministic default of 0.
 if not _G.ZombRand then
-    _G.ZombRand = function(n) return 0 end
+    _G.ZombRand = function(n)
+        local value = _mockZombRand.default
+        if #_mockZombRand.queue > 0 then
+            value = table.remove(_mockZombRand.queue, 1)
+        end
+        if n and n > 0 then
+            if value < 0 then value = 0 end
+            if value >= n then value = value % n end
+        end
+        return value
+    end
 end
 
 -- Perks stub: provides SmallBlunt and Nimble sentinels
 if not _G.Perks then
-    _G.Perks = { SmallBlunt = "SmallBlunt", Nimble = "Nimble" }
+    _G.Perks = { SmallBlunt = "SmallBlunt", Nimble = "Nimble", Strength = "Strength" }
 else
     _G.Perks.Nimble = _G.Perks.Nimble or "Nimble"
+    _G.Perks.Strength = _G.Perks.Strength or "Strength"
 end
 
 -- Events.OnPanic stub
@@ -234,9 +652,7 @@ if not _G.Events.OnPanic then
     local _panicHandlers = {}
     _G.Events.OnPanic = {
         Add  = function(fn) table.insert(_panicHandlers, fn) end,
-        fire = function(self, player)
-            for _, fn in ipairs(_panicHandlers) do fn(player) end
-        end,
+        fire = function(...) fireHandlers(_G.Events.OnPanic, _panicHandlers, ...) end,
     }
 end
 
@@ -246,8 +662,50 @@ if not _G.Events.EveryOneMinute then
     local _everyOneMinuteHandlers = {}
     _G.Events.EveryOneMinute = {
         Add  = function(fn) table.insert(_everyOneMinuteHandlers, fn) end,
-        fire = function(self)
-            for _, fn in ipairs(_everyOneMinuteHandlers) do fn() end
+        Remove = function(fn)
+            for i, handler in ipairs(_everyOneMinuteHandlers) do
+                if handler == fn then table.remove(_everyOneMinuteHandlers, i) return end
+            end
         end,
+        fire = function(...) fireHandlers(_G.Events.EveryOneMinute, _everyOneMinuteHandlers, ...) end,
     }
+end
+
+if not _G.Events.EveryTenMinutes then
+    local _everyTenMinutesHandlers = {}
+    _G.Events.EveryTenMinutes = {
+        Add  = function(fn) table.insert(_everyTenMinutesHandlers, fn) end,
+        Remove = function(fn)
+            for i, handler in ipairs(_everyTenMinutesHandlers) do
+                if handler == fn then table.remove(_everyTenMinutesHandlers, i) return end
+            end
+        end,
+        fire = function(...) fireHandlers(_G.Events.EveryTenMinutes, _everyTenMinutesHandlers, ...) end,
+    }
+end
+
+if not _G.Events.EveryHours then
+    local _everyHoursHandlers = {}
+    _G.Events.EveryHours = {
+        Add  = function(fn) table.insert(_everyHoursHandlers, fn) end,
+        Remove = function(fn)
+            for i, handler in ipairs(_everyHoursHandlers) do
+                if handler == fn then table.remove(_everyHoursHandlers, i) return end
+            end
+        end,
+        fire = function(...) fireHandlers(_G.Events.EveryHours, _everyHoursHandlers, ...) end,
+    }
+end
+
+if not UTCore._vehicleTraitEventsRegistered then
+    _G.Events.OnVehicleEnter.Add(function(player, vehicle)
+        UTCore.syncVehicleTrait(player, vehicle)
+    end)
+    _G.Events.OnVehicleExit.Add(function(player, vehicle)
+        UTCore.restoreVehicleMod(vehicle)
+    end)
+    _G.Events.OnCreatePlayer.Add(function(_playerIndex, player)
+        UTCore.syncVehicleTrait(player)
+    end)
+    UTCore._vehicleTraitEventsRegistered = true
 end

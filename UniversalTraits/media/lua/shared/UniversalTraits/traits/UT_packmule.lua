@@ -1,12 +1,12 @@
 -- UT_packmule.lua
--- Source: MoreTraits MoreTraits_UCWF.lua — packmule carry weight bonus.
--- OnNewGame: UTCore.applyCarryWeight(player, +2)
+-- Source: MoreTraits MoreTraits_UCWF.lua — boosted packmule carry weight bonus.
+-- OnCreatePlayer: UTCore.applyCarryWeight(player, +6)
 
 local TRAIT_ID = "UniversalTraits:UT_packmule"
 
 local function onCreatePlayer(_playerIndex, player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
-    UTCore.applyCarryWeight(player, 2)
+    UTCore.applyCarryWeight(player, 6)
 end
 
 Events.OnCreatePlayer.Add(onCreatePlayer)

@@ -1,9 +1,6 @@
 module UniversalTraits
 {
 
-    -- ============================================================
-    -- PHASE 1 — XP BOOST: PREPARED SERIES
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_preparedfood
     {
@@ -83,9 +80,6 @@ module UniversalTraits
     }
 
 
-    -- ============================================================
-    -- PHASE 1 — XP BOOST: MOVEMENT & STEALTH
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_swift
     {
@@ -219,9 +213,6 @@ module UniversalTraits
         XPBoosts = Fitness=1;Sprinting=1,
     }
 
-    -- ============================================================
-    -- PHASE 1 — XP BOOST: COMBAT (MELEE)
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_martial
     {
@@ -310,9 +301,6 @@ module UniversalTraits
         XPBoosts = Aiming=2,
     }
 
-    -- ============================================================
-    -- PHASE 1 — XP BOOST: COMBAT (PROWESS SERIES)
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_problunt
     {
@@ -362,9 +350,6 @@ module UniversalTraits
         XPBoosts = Spear=2,
     }
 
-    -- ============================================================
-    -- PHASE 1 — XP BOOST: COMBAT (SPECIALIZATION SERIES)
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_specweapons
     {
@@ -449,10 +434,6 @@ module UniversalTraits
         XPBoosts = Axe=4;LongBlade=4;LongBlunt=4;SmallBlade=4;SmallBlunt=4;Spear=4;Aiming=4;Reloading=4,
     }
 
-    -- ============================================================
-    -- PHASE 1 — XP BOOST: COMBATTRAITS WEAPON TREE
-    -- All weapon tree traits are mutually exclusive with each other.
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_heavyswing
     {
@@ -658,9 +639,6 @@ module UniversalTraits
         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades,
     }
 
-    -- ============================================================
-    -- PHASE 1 — XP BOOST: CRAFTING & KNOWLEDGE
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_ingenuitive
     {
@@ -856,6 +834,7 @@ module UniversalTraits
         Cost = 2,
         UIName = UI_UT_driver,
         UIDescription = UI_UT_driverDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_expertdriver;UniversalTraits:UT_poordriver,
     }
 
     character_trait_definition UniversalTraits:UT_amateurelectrician
@@ -869,9 +848,6 @@ module UniversalTraits
         XPBoosts = Electricity=1,
     }
 
-    -- ============================================================
-    -- PHASE 1 — XP BOOST: FILLERTRAITS
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_trackman
     {
@@ -917,20 +893,13 @@ module UniversalTraits
         XPBoosts = Maintenance=1,
     }
 
-    -- ============================================================
-    -- PHASE 1 — STAT MODIFIERS (SIMPLE)
-    -- NOTE: These have no XPBoosts. Their effects (carry weight,
-    -- speed, etc.) are handled by PZ engine stat fields if
-    -- supported, otherwise they will be promoted to Phase 2
-    -- (simple OnNewGame Lua) during implementation verification.
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_packmule
     {
         IsProfessionTrait = false,
         DisabledInMultiplayer = true,
         CharacterTrait = UniversalTraits:UT_packmule,
-        Cost = 7,
+        Cost = 3,
         UIName = UI_UT_packmule,
         UIDescription = UI_UT_packmuleDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy,
@@ -1135,9 +1104,6 @@ module UniversalTraits
         UIDescription = UI_UT_staunchDesc,
     }
 
-    -- ============================================================
-    -- PHASE 2 — LUA-DRIVEN: SPAWN / INVENTORY
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_preparedpack
     {
@@ -1149,9 +1115,6 @@ module UniversalTraits
         UIDescription = UI_UT_preparedpackDesc,
     }
 
-    -- ============================================================
-    -- PHASE 2 — LUA-DRIVEN: MOVEMENT
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_fast
     {
@@ -1194,7 +1157,7 @@ module UniversalTraits
         Cost = -5,
         UIName = UI_UT_lurcher,
         UIDescription = UI_UT_lurcherDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_fast,
+        MutuallyExclusiveTraits = UniversalTraits:UT_fast;UniversalTraits:UT_flailer,
     }
 
     character_trait_definition UniversalTraits:UT_sorelegs
@@ -1207,9 +1170,6 @@ module UniversalTraits
         UIDescription = UI_UT_sorelegsDesc,
     }
 
-    -- ============================================================
-    -- PHASE 2 — LUA-DRIVEN: WORK SPEED
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_quickworker
     {
@@ -1227,7 +1187,7 @@ module UniversalTraits
         IsProfessionTrait = false,
         DisabledInMultiplayer = true,
         CharacterTrait = UniversalTraits:UT_slowworker,
-        Cost = -9,
+        Cost = -6,
         UIName = UI_UT_slowworker,
         UIDescription = UI_UT_slowworkerDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_quickworker;UniversalTraits:UT_slack,
@@ -1238,15 +1198,12 @@ module UniversalTraits
         IsProfessionTrait = false,
         DisabledInMultiplayer = true,
         CharacterTrait = UniversalTraits:UT_slack,
-        Cost = -6,
+        Cost = -5,
         UIName = UI_UT_slack,
         UIDescription = UI_UT_slackDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_quickworker;UniversalTraits:UT_slowworker,
     }
 
-    -- ============================================================
-    -- PHASE 2 — LUA-DRIVEN: COMBAT & PHYSICAL
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_batteringram
     {
@@ -1297,6 +1254,7 @@ module UniversalTraits
         Cost = -4,
         UIName = UI_UT_flailer,
         UIDescription = UI_UT_flailerDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_lurcher,
     }
 
     character_trait_definition UniversalTraits:UT_fasthands
@@ -1320,9 +1278,6 @@ module UniversalTraits
         MutuallyExclusiveTraits = UniversalTraits:UT_glassbody,
     }
 
-    -- ============================================================
-    -- PHASE 2 — LUA-DRIVEN: BLEEDING
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_thickblood
     {
@@ -1332,7 +1287,7 @@ module UniversalTraits
         Cost = 4,
         UIName = UI_UT_thickblood,
         UIDescription = UI_UT_thickbloodDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavilybleedingwounds,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavilybleedingwounds;UniversalTraits:UT_weaklybleedingwounds,
     }
 
     character_trait_definition UniversalTraits:UT_heavilybleedingwounds
@@ -1354,12 +1309,9 @@ module UniversalTraits
         Cost = 3,
         UIName = UI_UT_weaklybleedingwounds,
         UIDescription = UI_UT_weaklybleedingwoundsDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_heavilybleedingwounds,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heavilybleedingwounds;UniversalTraits:UT_thickblood,
     }
 
-    -- ============================================================
-    -- PHASE 2 — LUA-DRIVEN: SLEEP & REST
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_restfulsleeper
     {
@@ -1369,6 +1321,7 @@ module UniversalTraits
         Cost = 6,
         UIName = UI_UT_restfulsleeper,
         UIDescription = UI_UT_restfulsleeperDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_quickrest,
     }
 
     character_trait_definition UniversalTraits:UT_quickrest
@@ -1379,6 +1332,7 @@ module UniversalTraits
         Cost = 3,
         UIName = UI_UT_quickrest,
         UIDescription = UI_UT_quickrestDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_restfulsleeper,
     }
 
     character_trait_definition UniversalTraits:UT_snorer
@@ -1391,9 +1345,6 @@ module UniversalTraits
         UIDescription = UI_UT_snorerDesc,
     }
 
-    -- ============================================================
-    -- PHASE 2 — LUA-DRIVEN: PSYCHOLOGY & MODIFIERS
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_unwavering
     {
@@ -1446,9 +1397,6 @@ module UniversalTraits
         UIDescription = UI_UT_photographicmemoryDesc,
     }
 
-    -- ============================================================
-    -- PHASE 2 — LUA-DRIVEN: XP PENALTIES
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_antigun
     {
@@ -1491,9 +1439,6 @@ module UniversalTraits
         UIDescription = UI_UT_onetrickponyDesc,
     }
 
-    -- ============================================================
-    -- PHASE 2 — LUA-DRIVEN: NO-XP SERIES
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_noxpshooter
     {
@@ -1556,9 +1501,6 @@ module UniversalTraits
         UIDescription = UI_UT_noxpsneakyDesc,
     }
 
-    -- ============================================================
-    -- PHASE 2 — LUA-DRIVEN: TIMED / CIRCADIAN
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_owlperson
     {
@@ -1582,9 +1524,6 @@ module UniversalTraits
         MutuallyExclusiveTraits = UniversalTraits:UT_owlperson,
     }
 
-    -- ============================================================
-    -- PHASE 2 — LUA-DRIVEN: VEHICLE
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_leadfoot
     {
@@ -1604,7 +1543,7 @@ module UniversalTraits
         Cost = 5,
         UIName = UI_UT_expertdriver,
         UIDescription = UI_UT_expertdriverDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_poordriver;UniversalTraits:UT_vehophobic,
+        MutuallyExclusiveTraits = UniversalTraits:UT_driver;UniversalTraits:UT_poordriver;UniversalTraits:UT_vehophobic,
     }
 
     character_trait_definition UniversalTraits:UT_poordriver
@@ -1615,12 +1554,9 @@ module UniversalTraits
         Cost = -5,
         UIName = UI_UT_poordriver,
         UIDescription = UI_UT_poordriverDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_expertdriver,
+        MutuallyExclusiveTraits = UniversalTraits:UT_driver;UniversalTraits:UT_expertdriver,
     }
 
-    -- ============================================================
-    -- PHASE 2 — LUA-DRIVEN: ITEM / CONSUMPTION
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_ironliver
     {
@@ -1630,6 +1566,7 @@ module UniversalTraits
         Cost = 3,
         UIName = UI_UT_ironliver,
         UIDescription = UI_UT_ironliverDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_alcoholic_I;UniversalTraits:UT_alcoholic_II;UniversalTraits:UT_alcoholic_III,
     }
 
     character_trait_definition UniversalTraits:UT_durability
@@ -1664,9 +1601,6 @@ module UniversalTraits
            MutuallyExclusiveTraits = UniversalTraits:UT_gourmand;UniversalTraits:UT_mundane,
     }
 
-    -- ============================================================
-    -- PHASE 3a — SPAWN-WITH-CONDITION
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_injured_I
     {
@@ -1710,9 +1644,6 @@ module UniversalTraits
         UIDescription = UI_UT_burnedDesc,
     }
 
-    -- ============================================================
-    -- PHASE 3b — PERIODIC-CHECK TRAITS
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_depressive
     {
@@ -1973,9 +1904,6 @@ module UniversalTraits
         MutuallyExclusiveTraits = UniversalTraits:UT_superimmune,
     }
 
-    -- ============================================================
-    -- PHASE 3c — EVENT-DRIVEN TRAITS
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_fearful
     {
@@ -2211,9 +2139,6 @@ module UniversalTraits
         MutuallyExclusiveTraits = UniversalTraits:UT_gunspecialist_I;UniversalTraits:UT_gunspecialist_II;UniversalTraits:UT_specguns,
     }
 
-    -- ============================================================
-    -- PHASE 3d — COMPLEX STATE TRAITS
-    -- ============================================================
 
     character_trait_definition UniversalTraits:UT_indefatigable
     {

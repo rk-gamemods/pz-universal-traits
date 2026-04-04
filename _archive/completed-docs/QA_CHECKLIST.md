@@ -65,21 +65,21 @@ Comparison: `UT_cangrabless` and `UT_cangrabmore` already correctly use `OnCreat
 
 ### High-risk untested traits
 
-- [ ] Vehicle traits (`UT_driver`, `UT_expertdriver`, `UT_poordriver`) — modify vehicle physics per tick, no tests, no vehicle mock
-- [ ] Stamina state machines (`UT_indefatigable`, `UT_hardy`, `UT_secondwind`) — complex multi-state logic with cooldowns
-- [ ] Infection traits (`UT_immuneresponse`, `UT_immunocompromised`, `UT_superimmune`) — no disease mock
+- [x] Vehicle traits (`UT_driver`, `UT_expertdriver`, `UT_poordriver`) — added vehicle mock coverage for each trait's applied modifiers
+- [x] Stamina state machines (`UT_indefatigable`, `UT_hardy`, `UT_secondwind`) — added cooldown and recovery-path tests
+- [x] Infection traits (`UT_immuneresponse`, `UT_immunocompromised`, `UT_superimmune`) — added infection/fatigue mock coverage
 
 ### Test infrastructure improvements
 
 - [ ] Unify MockPlayer implementations (UTCoreMocks.lua vs UTTestMocks.lua) — currently two diverged implementations
-- [ ] Add `ZombRand` mock with configurable return values (currently always returns 0 — can't test failure paths)
-- [ ] Add WorkSpeedHook negative/zero duration edge case test
+- [x] Add `ZombRand` mock with configurable return values (currently always returns 0 — can't test failure paths)
+- [x] Add WorkSpeedHook negative/zero duration edge case test
 
 ### Medium-risk untested traits
 
-- [ ] `UT_idealweight` — complex multi-handler weight stabilization, needs integration test
-- [ ] `UT_butterfingers` — item drop mechanic, needs inventory mock
-- [ ] All 6 `noxp*` traits — verify `disableXP` flag actually blocks XP through hook
+- [x] `UT_idealweight` — added integration coverage for overweight and underweight calorie adjustments
+- [x] `UT_butterfingers` — added timed roll coverage for the drop flag mechanic
+- [x] All 6 `noxp*` traits — verify `disableXP` flag actually blocks XP through hook
 
 ---
 
@@ -87,20 +87,27 @@ Comparison: `UT_cangrabless` and `UT_cangrabmore` already correctly use `OnCreat
 
 ### Performance
 
-- [ ] `UT_expertdriver` — OnPlayerUpdate without throttle, modifies 5+ vehicle properties per tick
-- [ ] `UT_poordriver` — OnPlayerUpdate without throttle, modifies 4+ vehicle properties per tick
-- [ ] Consider: add 15-30 tick throttle to vehicle traits (vehicle properties don't change 60x/sec)
+- [x] `UT_expertdriver` — moved off `OnPlayerUpdate`; now uses the shared event-driven vehicle trait path and restores baseline on exit
+- [x] `UT_poordriver` — moved off `OnPlayerUpdate`; now uses the shared event-driven vehicle trait path and restores baseline on exit
+- [x] Replace per-frame vehicle polling with enter/load sync + exit restore instead of adding a throttle band-aid
 
 ### Cost imbalances
 
-- [ ] `UT_preparedpack` (cost 1, +3 carry) vs `UT_packmule` (cost 7, +2 carry) — preparedpack is strictly better AND cheaper
-- [ ] `UT_quickworker` (+30%, cost 9) vs `UT_slowworker` (-25%, cost -9) — asymmetric effect, symmetric cost
+- [x] `UT_preparedpack` (cost 1, +3 carry) vs `UT_packmule` — rebalance to keep `Prepared: Pack` as the cheap starter option and raise `Pack Mule` to `+6` carry at cost `3`
+- [x] `UT_quickworker` (+30%, cost 9) vs `UT_slowworker` — reduce `UT_slowworker` cost from `-9` to `-5` and fix the stale description to match the real `+50%` work duration penalty
 
 ---
 
 ## Audit Metadata
 
-- **Date**: 2026-03-29
+- **Audit date**: 2026-03-29
+- **Verification update**: 2026-04-04
 - **Files audited**: 121 trait files, 13 UTCore modules, 2 test suites, 2 mock files, AGENTS.md, UI_EN.txt, UT_character_traits.txt
-- **Test results at audit time**: 41/41 UT_CORE, 46/48 UniversalTraits
-- **Pre-existing failures**: 2 (`UT_preparedcartography` registration)
+- **Current verified test results**: 52/52 UT_CORE, 70/70 UniversalTraits
+- **Current pre-existing failures**: 0
+
+---
+
+## Future Follow-Up / Review
+
+- [x] Design review: `UT_driver` is still not script-side mutually exclusive with `UT_expertdriver` or `UT_poordriver`. Runtime priority now prefers the stronger tier if multiple driver traits are somehow present, but character creation rules are still ambiguous and should be made explicit if that combination is not intended.

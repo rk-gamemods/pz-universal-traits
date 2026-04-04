@@ -42,7 +42,7 @@ UniversalTraits/                          ← repo root
   UT_CORE/
     media/lua/shared/UTCore/              ← source infrastructure files
     release/UT_CORE/42/media/           ← deployed copy (must be kept in sync)
-    test/run_tests.lua                    ← 45 tests (standard Lua 5.x)
+    test/run_tests.lua                    ← 52 tests (standard Lua 5.x)
     test/UTCoreMocks.lua                  ← mock IsoPlayer, Stats, BodyDamage
   UniversalTraits/
     media/registries.lua                  ← CharacterTrait.register() for all traits
@@ -53,7 +53,7 @@ UniversalTraits/                          ← repo root
       UT_MET.lua                          ← runtime mutual exclusivity table
       traits/UT_<id>.lua                  ← per-trait Lua effect files (121 files)
     release/UniversalTraits/42/media/   ← deployed copy (must be kept in sync)
-    test/run_tests.lua                    ← 50 tests (standard Lua 5.x)
+    test/run_tests.lua                    ← 70 tests (standard Lua 5.x)
     test/UTTestMocks.lua                  ← mock CharacterTrait
   planning/                               ← implementation plans
   research/                               ← source mod research
@@ -72,7 +72,7 @@ Run from repo root (`C:\Users\Admin\Documents\GIT\GameMods\PZMods\UTMods`):
 "C:\Users\Admin\AppData\Local\Programs\Lua\bin\lua.exe" UniversalTraits/test/run_tests.lua
 ```
 
-**Current passing counts:** 45 (UT_CORE) + 50 (UniversalTraits) = 95 passing.
+**Current passing counts:** 52 (UT_CORE) + 70 (UniversalTraits) = 122 passing.
 
 ---
 
@@ -161,6 +161,7 @@ In `UniversalTraits/media/scripts/UT_character_traits.txt`:
 - Character creation still reads `MutuallyExclusiveTraits` from `UT_character_traits.txt`; `UT_MET.lua` is only a runtime grouping table and does not populate the pregame UI by itself.
 - Script-side `addMutuallyExclusive()` is one-way. For character-creation behavior, keep intended `UniversalTraits:` exclusions explicit on both traits so selecting either side removes the other from the available list.
 - The real null-crash causes are unknown/unregistered trait ids in script/runtime mutual exclusions, or runtime code that appends `nil` into `getMutuallyExclusiveTraits()` / `setMutualExclusive()`.
+- Cross-mod `MutuallyExclusiveTraits` entries are only safe when the other mod is an explicit dependency and the exact foreign trait id has been verified in that mod's `media/registries.lua`. Do not guess third-party ids.
 - When static review cannot identify the bad entry, add a temporary client-side wrapper around `CharacterCreationProfession:doTestForMutuallyExclusiveTraits()` and log the selected trait id plus the unresolved `exclusiveTrait` before vanilla dereferences `:isFree()`.
 
 ---
@@ -262,9 +263,16 @@ Events.EveryOneMinute.Add(onEveryMinute)
 
 ### UTCore_Events.lua
 
-- `UTCore.registerPeriodicHandler(traitId, intervalEvent, handlerFn)` — idempotent
-- `UTCore.unregisterPeriodicHandler(traitId)` — removes from Events and registry
+- `UTCore.registerPeriodicHandler(traitId, intervalEvent, handlerFn)` — idempotent per trait+event pair (one trait can now register multiple different events safely)
+- `UTCore.unregisterPeriodicHandler(traitId, intervalEvent?)` — removes one trait+event pair or all handlers for that trait when no event is provided
 - `intervalEvent` values: `"EveryOneMinute"`, `"EveryTenMinutes"`, `"EveryHours"`, `"OnPlayerUpdate"`
+
+### Vehicle trait helpers
+
+- `UTCore.registerVehicleTrait(traitId, stateKey, mods, priority)` — registers an event-driven vehicle trait definition; higher priority wins if multiple vehicle traits are active
+- `UTCore.syncVehicleTrait(player, vehicle?)` — applies the selected registered vehicle trait from cached baseline values on vehicle enter or save-load
+- `UTCore.restoreVehicleMod(vehicle)` — restores cached baseline vehicle stats on exit
+- `UTCore.applyVehicleMod(player, stateKey, mods, vehicleOverride?)` — low-level baseline-based apply helper used by `syncVehicleTrait`
 
 ### UTCore_XPHook.lua
 
@@ -481,6 +489,11 @@ PZ loads via `dofile`, not `require`. Therefore:
 
 The test harness uses `UTCoreMocks.lua` / `UTTestMocks.lua` to stub PZ globals.
 When adding new PZ API calls to UTCore files, add corresponding mock support to the mock files.
+
+- `UT_CORE/test/UTCoreMocks.lua` is now just a thin loader around `UniversalTraits/test/UTTestMocks.lua`, so there is one shared `MockPlayer` / event implementation for both suites.
+- `UniversalTraits/test/UTTestMocks.lua` now has controllable `ZombRand`, mock game time (`getWorldAgeHours()`, `getTicks()`), vehicle mocks, nutrition mocks, body-part mocks, timed-action mocks, and functional `registerPeriodicHandler` / `registerVehicleTrait` stubs. Prefer those shared helpers over ad-hoc per-test stubs when adding more Phase 2/3 trait coverage.
+
+- Vehicle traits no longer poll every `OnPlayerUpdate`. They now register once and apply on vehicle enter / player creation, then restore the cached baseline on vehicle exit.
 
 For trait metadata integrity, test the script file directly when the bug lives in `UT_character_traits.txt` rather than runtime Lua. The character creator null-crash (`isFree of non-table: null`) came from broken script-side `MutuallyExclusiveTraits`, not from `UT_MET.lua` itself.
 

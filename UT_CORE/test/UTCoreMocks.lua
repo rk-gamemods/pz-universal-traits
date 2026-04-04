@@ -1,4 +1,10 @@
 -- UTCoreMocks.lua
+-- Shared test mock loader for UT_CORE.
+
+local source = debug.getinfo(1, "S").source:sub(2)
+local base = source:match("(.*[/\\])") or "./"
+
+dofile(base .. "../../UniversalTraits/test/UTTestMocks.lua")-- UTCoreMocks.lua
 -- Mock PZ globals for unit tests (standard Lua 5.x, NOT Kahlua).
 
 -- Mock IsoPlayer

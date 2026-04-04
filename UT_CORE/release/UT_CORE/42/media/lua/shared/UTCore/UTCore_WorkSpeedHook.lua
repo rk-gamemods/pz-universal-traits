@@ -1,7 +1,9 @@
 -- UTCore_WorkSpeedHook.lua
 -- At Events.OnGameBoot, wraps getDuration() on all global TimedAction tables.
--- Reads UT_workSpeedMod (general) and UT_readSpeedMod (ISReadABook only) from player moddata.
+-- Reads UT_workSpeedMod (general), UT_readSpeedMod (ISReadABook only), and
+-- UT_transferSpeedMult (ISInventoryTransferAction / ISReloadWeaponAction only).
 -- Modifiers are additive deltas: -0.5 = 50% faster, +0.5 = 50% slower.
+-- UT_transferSpeedMult is a multiplier (0.6 = 40% faster = delta -0.4).
 -- Minimum returned duration is always 1.
 
 UTCore = UTCore or {}
@@ -21,7 +23,19 @@ function UTCore.applyWorkDuration(timedAction, base)
         readMod = md["UT_readSpeedMod"] or 0
     end
 
-    local totalMod = workMod + readMod
+    -- Transfer speed: applies only to inventory moves and weapon reloads.
+    -- UT_transferSpeedMult is a multiplier (0.6 = 40% faster), converted here to
+    -- an additive delta so it combines correctly with the general work mod.
+    local transferMod = 0
+    if timedAction.Type == "ISInventoryTransferAction"
+    or timedAction.Type == "ISReloadWeaponAction" then
+        local mult = md["UT_transferSpeedMult"]
+        if mult and mult ~= 1.0 then
+            transferMod = mult - 1.0  -- e.g. 0.6 - 1.0 = -0.4 (40% faster)
+        end
+    end
+
+    local totalMod = workMod + readMod + transferMod
     if totalMod == 0 then return base end
 
     return math.max(1, math.floor(base * (1.0 + totalMod)))

@@ -5,7 +5,7 @@
 UTTraitsRegistries = {}
 
 -- ============================================================
--- PHASE 1 — XP BOOST: PREPARED SERIES
+-- PHASE 1 -- XP BOOST: PREPARED SERIES
 -- ============================================================
 UTTraitsRegistries.UT_preparedfood        = CharacterTrait.register("UniversalTraits:UT_preparedfood")
 UTTraitsRegistries.UT_preparedammo        = CharacterTrait.register("UniversalTraits:UT_preparedammo")
@@ -16,7 +16,7 @@ UTTraitsRegistries.UT_preparedweapons     = CharacterTrait.register("UniversalTr
 UTTraitsRegistries.UT_preparedcars        = CharacterTrait.register("UniversalTraits:UT_preparedcars")
 
 -- ============================================================
--- PHASE 1 — XP BOOST: MOVEMENT & STEALTH
+-- PHASE 1 -- XP BOOST: MOVEMENT & STEALTH
 -- ============================================================
 UTTraitsRegistries.UT_swift         = CharacterTrait.register("UniversalTraits:UT_swift")
 UTTraitsRegistries.UT_flexible      = CharacterTrait.register("UniversalTraits:UT_flexible")
@@ -32,7 +32,7 @@ UTTraitsRegistries.UT_sprintdemon   = CharacterTrait.register("UniversalTraits:U
 UTTraitsRegistries.UT_trekker       = CharacterTrait.register("UniversalTraits:UT_trekker")
 
 -- ============================================================
--- PHASE 1 — XP BOOST: COMBAT (MELEE)
+-- PHASE 1 -- XP BOOST: COMBAT (MELEE)
 -- ============================================================
 UTTraitsRegistries.UT_martial        = CharacterTrait.register("UniversalTraits:UT_martial")
 UTTraitsRegistries.UT_bladetwirl     = CharacterTrait.register("UniversalTraits:UT_bladetwirl")
@@ -44,7 +44,7 @@ UTTraitsRegistries.UT_cruelty        = CharacterTrait.register("UniversalTraits:
 UTTraitsRegistries.UT_sharpshooter   = CharacterTrait.register("UniversalTraits:UT_sharpshooter")
 
 -- ============================================================
--- PHASE 1 — XP BOOST: COMBAT (PROWESS SERIES)
+-- PHASE 1 -- XP BOOST: COMBAT (PROWESS SERIES)
 -- ============================================================
 UTTraitsRegistries.UT_problunt  = CharacterTrait.register("UniversalTraits:UT_problunt")
 UTTraitsRegistries.UT_problade  = CharacterTrait.register("UniversalTraits:UT_problade")
@@ -52,7 +52,7 @@ UTTraitsRegistries.UT_progun    = CharacterTrait.register("UniversalTraits:UT_pr
 UTTraitsRegistries.UT_prospear  = CharacterTrait.register("UniversalTraits:UT_prospear")
 
 -- ============================================================
--- PHASE 1 — XP BOOST: COMBAT (SPECIALIZATION SERIES)
+-- PHASE 1 -- XP BOOST: COMBAT (SPECIALIZATION SERIES)
 -- ============================================================
 UTTraitsRegistries.UT_specweapons = CharacterTrait.register("UniversalTraits:UT_specweapons")
 UTTraitsRegistries.UT_speccrafting = CharacterTrait.register("UniversalTraits:UT_speccrafting")
@@ -63,7 +63,7 @@ UTTraitsRegistries.UT_specaid     = CharacterTrait.register("UniversalTraits:UT_
 UTTraitsRegistries.UT_terminator  = CharacterTrait.register("UniversalTraits:UT_terminator")
 
 -- ============================================================
--- PHASE 1 — XP BOOST: COMBATTRAITS WEAPON TREE
+-- PHASE 1 -- XP BOOST: COMBATTRAITS WEAPON TREE
 -- ============================================================
 UTTraitsRegistries.UT_heavyswing       = CharacterTrait.register("UniversalTraits:UT_heavyswing")
 UTTraitsRegistries.UT_twohanded        = CharacterTrait.register("UniversalTraits:UT_twohanded")
@@ -84,7 +84,7 @@ UTTraitsRegistries.UT_short_blades     = CharacterTrait.register("UniversalTrait
 UTTraitsRegistries.UT_spears           = CharacterTrait.register("UniversalTraits:UT_spears")
 
 -- ============================================================
--- PHASE 1 — XP BOOST: CRAFTING & KNOWLEDGE
+-- PHASE 1 -- XP BOOST: CRAFTING & KNOWLEDGE
 -- ============================================================
 UTTraitsRegistries.UT_ingenuitive        = CharacterTrait.register("UniversalTraits:UT_ingenuitive")
 UTTraitsRegistries.UT_generator          = CharacterTrait.register("UniversalTraits:UT_generator")
@@ -107,7 +107,7 @@ UTTraitsRegistries.UT_driver             = CharacterTrait.register("UniversalTra
 UTTraitsRegistries.UT_amateurelectrician = CharacterTrait.register("UniversalTraits:UT_amateurelectrician")
 
 -- ============================================================
--- PHASE 1 — XP BOOST: FILLTERTRAITS
+-- PHASE 1 -- XP BOOST: FILLTERTRAITS
 -- ============================================================
 UTTraitsRegistries.UT_trackman      = CharacterTrait.register("UniversalTraits:UT_trackman")
 UTTraitsRegistries.UT_cleaver       = CharacterTrait.register("UniversalTraits:UT_cleaver")
@@ -115,7 +115,7 @@ UTTraitsRegistries.UT_woodsplitter  = CharacterTrait.register("UniversalTraits:U
 UTTraitsRegistries.UT_improviser    = CharacterTrait.register("UniversalTraits:UT_improviser")
 
 -- ============================================================
--- PHASE 1 — STAT MODIFIERS (SIMPLE, NO RUNTIME LUA)
+-- PHASE 1 -- STAT MODIFIERS (SIMPLE, NO RUNTIME LUA)
 -- ============================================================
 UTTraitsRegistries.UT_packmule      = CharacterTrait.register("UniversalTraits:UT_packmule")
 UTTraitsRegistries.UT_packmouse     = CharacterTrait.register("UniversalTraits:UT_packmouse")
@@ -139,12 +139,12 @@ UTTraitsRegistries.UT_sore          = CharacterTrait.register("UniversalTraits:U
 UTTraitsRegistries.UT_staunch       = CharacterTrait.register("UniversalTraits:UT_staunch")
 
 -- ============================================================
--- PHASE 2 — LUA-DRIVEN: SPAWN / INVENTORY
+-- PHASE 2 -- LUA-DRIVEN: SPAWN / INVENTORY
 -- ============================================================
 UTTraitsRegistries.UT_preparedpack      = CharacterTrait.register("UniversalTraits:UT_preparedpack")
 
 -- ============================================================
--- PHASE 2 — LUA-DRIVEN: MOVEMENT
+-- PHASE 2 -- LUA-DRIVEN: MOVEMENT
 -- ============================================================
 UTTraitsRegistries.UT_fast              = CharacterTrait.register("UniversalTraits:UT_fast")
 UTTraitsRegistries.UT_noodlelegs        = CharacterTrait.register("UniversalTraits:UT_noodlelegs")
@@ -153,14 +153,14 @@ UTTraitsRegistries.UT_lurcher           = CharacterTrait.register("UniversalTrai
 UTTraitsRegistries.UT_sorelegs          = CharacterTrait.register("UniversalTraits:UT_sorelegs")
 
 -- ============================================================
--- PHASE 2 — LUA-DRIVEN: WORK SPEED
+-- PHASE 2 -- LUA-DRIVEN: WORK SPEED
 -- ============================================================
 UTTraitsRegistries.UT_quickworker       = CharacterTrait.register("UniversalTraits:UT_quickworker")
 UTTraitsRegistries.UT_slowworker        = CharacterTrait.register("UniversalTraits:UT_slowworker")
 UTTraitsRegistries.UT_slack             = CharacterTrait.register("UniversalTraits:UT_slack")
 
 -- ============================================================
--- PHASE 2 — LUA-DRIVEN: COMBAT & PHYSICAL
+-- PHASE 2 -- LUA-DRIVEN: COMBAT & PHYSICAL
 -- ============================================================
 UTTraitsRegistries.UT_batteringram      = CharacterTrait.register("UniversalTraits:UT_batteringram")
 UTTraitsRegistries.UT_fitted            = CharacterTrait.register("UniversalTraits:UT_fitted")
@@ -171,21 +171,21 @@ UTTraitsRegistries.UT_fasthands         = CharacterTrait.register("UniversalTrai
 UTTraitsRegistries.UT_analgesia         = CharacterTrait.register("UniversalTraits:UT_analgesia")
 
 -- ============================================================
--- PHASE 2 — LUA-DRIVEN: BLEEDING
+-- PHASE 2 -- LUA-DRIVEN: BLEEDING
 -- ============================================================
 UTTraitsRegistries.UT_thickblood            = CharacterTrait.register("UniversalTraits:UT_thickblood")
 UTTraitsRegistries.UT_heavilybleedingwounds = CharacterTrait.register("UniversalTraits:UT_heavilybleedingwounds")
 UTTraitsRegistries.UT_weaklybleedingwounds  = CharacterTrait.register("UniversalTraits:UT_weaklybleedingwounds")
 
 -- ============================================================
--- PHASE 2 — LUA-DRIVEN: SLEEP & REST
+-- PHASE 2 -- LUA-DRIVEN: SLEEP & REST
 -- ============================================================
 UTTraitsRegistries.UT_restfulsleeper    = CharacterTrait.register("UniversalTraits:UT_restfulsleeper")
 UTTraitsRegistries.UT_quickrest         = CharacterTrait.register("UniversalTraits:UT_quickrest")
 UTTraitsRegistries.UT_snorer            = CharacterTrait.register("UniversalTraits:UT_snorer")
 
 -- ============================================================
--- PHASE 2 — LUA-DRIVEN: PSYCHOLOGY & MODIFIERS
+-- PHASE 2 -- LUA-DRIVEN: PSYCHOLOGY & MODIFIERS
 -- ============================================================
 UTTraitsRegistries.UT_unwavering        = CharacterTrait.register("UniversalTraits:UT_unwavering")
 UTTraitsRegistries.UT_idealweight       = CharacterTrait.register("UniversalTraits:UT_idealweight")
@@ -194,7 +194,7 @@ UTTraitsRegistries.UT_incomprehensive   = CharacterTrait.register("UniversalTrai
 UTTraitsRegistries.UT_photographicmemory = CharacterTrait.register("UniversalTraits:UT_photographicmemory")
 
 -- ============================================================
--- PHASE 2 — LUA-DRIVEN: XP PENALTIES
+-- PHASE 2 -- LUA-DRIVEN: XP PENALTIES
 -- ============================================================
 UTTraitsRegistries.UT_antigun           = CharacterTrait.register("UniversalTraits:UT_antigun")
 UTTraitsRegistries.UT_flatearther       = CharacterTrait.register("UniversalTraits:UT_flatearther")
@@ -202,7 +202,7 @@ UTTraitsRegistries.UT_luddite           = CharacterTrait.register("UniversalTrai
 UTTraitsRegistries.UT_onetrickpony      = CharacterTrait.register("UniversalTraits:UT_onetrickpony")
 
 -- ============================================================
--- PHASE 2 — LUA-DRIVEN: NO-XP SERIES
+-- PHASE 2 -- LUA-DRIVEN: NO-XP SERIES
 -- ============================================================
 UTTraitsRegistries.UT_noxpshooter       = CharacterTrait.register("UniversalTraits:UT_noxpshooter")
 UTTraitsRegistries.UT_noxptechnician    = CharacterTrait.register("UniversalTraits:UT_noxptechnician")
@@ -212,20 +212,20 @@ UTTraitsRegistries.UT_noxpmaintenance   = CharacterTrait.register("UniversalTrai
 UTTraitsRegistries.UT_noxpsneaky        = CharacterTrait.register("UniversalTraits:UT_noxpsneaky")
 
 -- ============================================================
--- PHASE 2 — LUA-DRIVEN: TIMED / CIRCADIAN
+-- PHASE 2 -- LUA-DRIVEN: TIMED / CIRCADIAN
 -- ============================================================
 UTTraitsRegistries.UT_owlperson         = CharacterTrait.register("UniversalTraits:UT_owlperson")
 UTTraitsRegistries.UT_larkperson        = CharacterTrait.register("UniversalTraits:UT_larkperson")
 
 -- ============================================================
--- PHASE 2 — LUA-DRIVEN: VEHICLE
+-- PHASE 2 -- LUA-DRIVEN: VEHICLE
 -- ============================================================
 UTTraitsRegistries.UT_leadfoot          = CharacterTrait.register("UniversalTraits:UT_leadfoot")
 UTTraitsRegistries.UT_expertdriver      = CharacterTrait.register("UniversalTraits:UT_expertdriver")
 UTTraitsRegistries.UT_poordriver        = CharacterTrait.register("UniversalTraits:UT_poordriver")
 
 -- ============================================================
--- PHASE 2 — LUA-DRIVEN: ITEM / CONSUMPTION
+-- PHASE 2 -- LUA-DRIVEN: ITEM / CONSUMPTION
 -- ============================================================
 UTTraitsRegistries.UT_ironliver         = CharacterTrait.register("UniversalTraits:UT_ironliver")
 UTTraitsRegistries.UT_durability        = CharacterTrait.register("UniversalTraits:UT_durability")
@@ -233,7 +233,7 @@ UTTraitsRegistries.UT_gourmand          = CharacterTrait.register("UniversalTrai
 UTTraitsRegistries.UT_ascetic           = CharacterTrait.register("UniversalTraits:UT_ascetic")
 
 -- ============================================================
--- PHASE 3a — SPAWN-WITH-CONDITION
+-- PHASE 3a -- SPAWN-WITH-CONDITION
 -- ============================================================
 UTTraitsRegistries.UT_injured_I         = CharacterTrait.register("UniversalTraits:UT_injured_I")
 UTTraitsRegistries.UT_injured_II        = CharacterTrait.register("UniversalTraits:UT_injured_II")
@@ -241,7 +241,7 @@ UTTraitsRegistries.UT_broke             = CharacterTrait.register("UniversalTrai
 UTTraitsRegistries.UT_burned            = CharacterTrait.register("UniversalTraits:UT_burned")
 
 -- ============================================================
--- PHASE 3b — PERIODIC-CHECK TRAITS
+-- PHASE 3b -- PERIODIC-CHECK TRAITS
 -- ============================================================
 UTTraitsRegistries.UT_depressive        = CharacterTrait.register("UniversalTraits:UT_depressive")
 UTTraitsRegistries.UT_paranoia          = CharacterTrait.register("UniversalTraits:UT_paranoia")
@@ -270,7 +270,7 @@ UTTraitsRegistries.UT_addictedtocaffeine = CharacterTrait.register("UniversalTra
 UTTraitsRegistries.UT_immunocompromised = CharacterTrait.register("UniversalTraits:UT_immunocompromised")
 
 -- ============================================================
--- PHASE 3c — EVENT-DRIVEN TRAITS
+-- PHASE 3c -- EVENT-DRIVEN TRAITS
 -- ============================================================
 UTTraitsRegistries.UT_fearful           = CharacterTrait.register("UniversalTraits:UT_fearful")
 UTTraitsRegistries.UT_nervouswreck      = CharacterTrait.register("UniversalTraits:UT_nervouswreck")
@@ -296,7 +296,7 @@ UTTraitsRegistries.UT_gunspecialist_II  = CharacterTrait.register("UniversalTrai
 UTTraitsRegistries.UT_gunspecialist_III = CharacterTrait.register("UniversalTraits:UT_gunspecialist_III")
 
 -- ============================================================
--- PHASE 3d — COMPLEX STATE TRAITS
+-- PHASE 3d -- COMPLEX STATE TRAITS
 -- ============================================================
 UTTraitsRegistries.UT_indefatigable     = CharacterTrait.register("UniversalTraits:UT_indefatigable")
 UTTraitsRegistries.UT_hardy             = CharacterTrait.register("UniversalTraits:UT_hardy")

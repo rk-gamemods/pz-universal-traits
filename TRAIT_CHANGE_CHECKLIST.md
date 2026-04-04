@@ -18,9 +18,12 @@ Use this for any change to a trait's behavior, cost, description, or exclusivity
 ## 3. Mutual Exclusivity
 
 - [ ] If the trait gained or lost incompatibilities, update `MutuallyExclusiveTraits` in `UT_character_traits.txt`
-- [ ] Make intended character-creation exclusions explicit on both traits; `UT_MET.lua` alone is not enough for the pregame UI
+- [ ] Make intended character-creation exclusions explicit on both traits; script-side mutual exclusion is one-way for the pregame UI, so selecting either side should still hide the other side
+- [ ] Treat `UniversalTraits/media/lua/shared/UniversalTraits/UT_MET.lua` as a reference table only; update it for UT runtime grouping or audits, but do not assume it drives character creation by itself
 - [ ] Ensure every `UniversalTraits:` id used in `CharacterTrait`, `GrantedTraits`, and `MutuallyExclusiveTraits` is registered in `media/registries.lua`
+- [ ] For cross-mod exclusions, only use a foreign trait id if that mod is a real hard dependency and you verified the exact namespaced id in that mod's `media/registries.lua`; unknown external ids are a known `isFree of non-table: null` crash path
 - [ ] If the trait belongs to a runtime group table, also update `UniversalTraits/media/lua/shared/UniversalTraits/UT_MET.lua`
+- [ ] If testing exclusivity with a changed mod list, verify `C:\Users\Admin\Zomboid\mods\default.txt` and do a full Exit to Desktop before retesting; `reloadlua` and menu-only reloads can leave stale modules or disabled mods confusing the result
 
 ## 4. Tests
 

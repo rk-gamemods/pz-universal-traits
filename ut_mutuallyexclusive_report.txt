@@ -1,0 +1,282 @@
+Line 325
+Trait: UniversalTraits:UT_problunt
+Current:             MutuallyExclusiveTraits = UniversalTraits:UT_problade;UniversalTraits:UT_progun;UniversalTraits:UT_prospear,
+Replace:             MutuallyExclusiveTraits = ,
+
+Line 337
+Trait: UniversalTraits:UT_problade
+Current:             MutuallyExclusiveTraits = UniversalTraits:UT_problunt;UniversalTraits:UT_progun;UniversalTraits:UT_prospear,
+Replace:             MutuallyExclusiveTraits = UniversalTraits:UT_problunt,
+
+Line 349
+Trait: UniversalTraits:UT_progun
+Current:             MutuallyExclusiveTraits = UniversalTraits:UT_problunt;UniversalTraits:UT_problade;UniversalTraits:UT_prospear,
+Replace:             MutuallyExclusiveTraits = UniversalTraits:UT_problunt;UniversalTraits:UT_problade,
+
+Line 378
+Trait: UniversalTraits:UT_specweapons
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_speccrafting;UniversalTraits:UT_specfood;UniversalTraits:UT_specguns;UniversalTraits:UT_specmove;UniversalTraits:UT_specaid,
+Replace:         MutuallyExclusiveTraits = ,
+
+Line 390
+Trait: UniversalTraits:UT_speccrafting
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_specfood;UniversalTraits:UT_specguns;UniversalTraits:UT_specmove;UniversalTraits:UT_specaid,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_specweapons,
+
+Line 402
+Trait: UniversalTraits:UT_specfood
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting;UniversalTraits:UT_specguns;UniversalTraits:UT_specmove;UniversalTraits:UT_specaid,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting,
+
+Line 414
+Trait: UniversalTraits:UT_specguns
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting;UniversalTraits:UT_specfood;UniversalTraits:UT_specmove;UniversalTraits:UT_specaid;UniversalTraits:UT_gunspecialist_I;UniversalTraits:UT_gunspecialist_II;UniversalTraits:UT_gunspecialist_III,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting;UniversalTraits:UT_specfood,
+
+Line 426
+Trait: UniversalTraits:UT_specmove
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting;UniversalTraits:UT_specfood;UniversalTraits:UT_specguns;UniversalTraits:UT_specaid,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_specweapons;UniversalTraits:UT_speccrafting;UniversalTraits:UT_specfood;UniversalTraits:UT_specguns,
+
+Line 466
+Trait: UniversalTraits:UT_heavyswing
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+Replace:         MutuallyExclusiveTraits = ,
+
+Line 478
+Trait: UniversalTraits:UT_twohanded
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing,
+
+Line 490
+Trait: UniversalTraits:UT_onehanded
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded,
+
+Line 502
+Trait: UniversalTraits:UT_axes
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded,
+
+Line 514
+Trait: UniversalTraits:UT_twohanded_axes
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes,
+
+Line 526
+Trait: UniversalTraits:UT_onehanded_axes
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes,
+
+Line 538
+Trait: UniversalTraits:UT_blunts
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes,
+
+Line 550
+Trait: UniversalTraits:UT_twohanded_blunts
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts,
+
+Line 562
+Trait: UniversalTraits:UT_onehanded_blunts
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts,
+
+Line 574
+Trait: UniversalTraits:UT_long_blunts
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts,
+
+Line 586
+Trait: UniversalTraits:UT_short_blunts
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts,
+
+Line 598
+Trait: UniversalTraits:UT_blades
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts,
+
+Line 610
+Trait: UniversalTraits:UT_twohanded_blades
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades,
+
+Line 622
+Trait: UniversalTraits:UT_onehanded_blades
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades,
+
+Line 634
+Trait: UniversalTraits:UT_long_blades
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_short_blades;UniversalTraits:UT_spears,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades,
+
+Line 646
+Trait: UniversalTraits:UT_short_blades
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades;UniversalTraits:UT_spears,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_heavyswing;UniversalTraits:UT_twohanded;UniversalTraits:UT_onehanded;UniversalTraits:UT_axes;UniversalTraits:UT_twohanded_axes;UniversalTraits:UT_onehanded_axes;UniversalTraits:UT_blunts;UniversalTraits:UT_twohanded_blunts;UniversalTraits:UT_onehanded_blunts;UniversalTraits:UT_long_blunts;UniversalTraits:UT_short_blunts;UniversalTraits:UT_blades;UniversalTraits:UT_twohanded_blades;UniversalTraits:UT_onehanded_blades;UniversalTraits:UT_long_blades,
+
+Line 936
+Trait: UniversalTraits:UT_packmule
+Current:             MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy,
+Replace:             MutuallyExclusiveTraits = ,
+
+Line 947
+Trait: UniversalTraits:UT_packmouse
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_packmule;UniversalTraits:UT_squirrel;UniversalTraits:UT_backpacker,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_packmule,
+
+Line 1018
+Trait: UniversalTraits:UT_squirrel
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_packmouse,
+
+Line 1059
+Trait: UniversalTraits:UT_lesssweaty
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_highsweaty,
+Replace:         MutuallyExclusiveTraits = ,
+
+Line 1081
+Trait: UniversalTraits:UT_cangrabmore
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_cangrabless,
+Replace:         MutuallyExclusiveTraits = ,
+
+Line 1103
+Trait: UniversalTraits:UT_backpacker
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_packmouse,
+
+Line 1164
+Trait: UniversalTraits:UT_fast
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_noodlelegs;UniversalTraits:UT_lurcher,
+Replace:         MutuallyExclusiveTraits = ,
+
+Line 1175
+Trait: UniversalTraits:UT_noodlelegs
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_fast;UniversalTraits:UT_pacer,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_fast,
+
+Line 1222
+Trait: UniversalTraits:UT_quickworker
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_slowworker;UniversalTraits:UT_slack,
+Replace:         MutuallyExclusiveTraits = ,
+
+Line 1233
+Trait: UniversalTraits:UT_slowworker
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_quickworker;UniversalTraits:UT_slack,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_quickworker,
+
+Line 1279
+Trait: UniversalTraits:UT_glassbody
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_analgesia,
+Replace:         MutuallyExclusiveTraits = ,
+
+Line 1335
+Trait: UniversalTraits:UT_thickblood
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_heavilybleedingwounds,
+Replace:         MutuallyExclusiveTraits = ,
+
+Line 1346
+Trait: UniversalTraits:UT_heavilybleedingwounds
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_thickblood;UniversalTraits:UT_weaklybleedingwounds,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_thickblood,
+
+Line 1426
+Trait: UniversalTraits:UT_mundane
+Current:             MutuallyExclusiveTraits = UniversalTraits:UT_ascetic;UniversalTraits:UT_anorexy,
+Replace:             MutuallyExclusiveTraits = ,
+
+Line 1461
+Trait: UniversalTraits:UT_antigun
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_noxpshooter,
+Replace:         MutuallyExclusiveTraits = ,
+
+Line 1571
+Trait: UniversalTraits:UT_owlperson
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_larkperson,
+Replace:         MutuallyExclusiveTraits = ,
+
+Line 1607
+Trait: UniversalTraits:UT_expertdriver
+Current:            MutuallyExclusiveTraits = UniversalTraits:UT_poordriver;UniversalTraits:UT_vehophobic,
+Replace:            MutuallyExclusiveTraits = ,
+
+Line 1653
+Trait: UniversalTraits:UT_gourmand
+Current:            MutuallyExclusiveTraits = UniversalTraits:UT_ascetic;UniversalTraits:UT_anorexy,
+Replace:            MutuallyExclusiveTraits = ,
+
+Line 1679
+Trait: UniversalTraits:UT_injured_I
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_injured_II,
+Replace:         MutuallyExclusiveTraits = ,
+
+Line 1725
+Trait: UniversalTraits:UT_depressive
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_optimist,
+Replace:         MutuallyExclusiveTraits = ,
+
+Line 1756
+Trait: UniversalTraits:UT_melancholic
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_optimist,
+Replace:         MutuallyExclusiveTraits = ,
+
+Line 1787
+Trait: UniversalTraits:UT_optimist
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_pessimist;UniversalTraits:UT_depressive;UniversalTraits:UT_melancholic,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_depressive;UniversalTraits:UT_melancholic,
+
+Line 1798
+Trait: UniversalTraits:UT_pessimist
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_optimist;UniversalTraits:UT_mstoptimist,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_optimist,
+
+Line 1930
+Trait: UniversalTraits:UT_alcoholic_I
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_alcoholic_II;UniversalTraits:UT_alcoholic_III,
+Replace:         MutuallyExclusiveTraits = ,
+
+Line 1941
+Trait: UniversalTraits:UT_alcoholic_II
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_alcoholic_I;UniversalTraits:UT_alcoholic_III,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_alcoholic_I,
+
+Line 1973
+Trait: UniversalTraits:UT_immunocompromised
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_superimmune,
+Replace:         MutuallyExclusiveTraits = ,
+
+Line 2028
+Trait: UniversalTraits:UT_anorexy
+Current:            MutuallyExclusiveTraits = UniversalTraits:UT_gourmand;UniversalTraits:UT_competitiveeater;UniversalTraits:UT_mundane,
+Replace:            MutuallyExclusiveTraits = UniversalTraits:UT_gourmand;UniversalTraits:UT_mundane,
+
+Line 2163
+Trait: UniversalTraits:UT_bouncer_I
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_bouncer_II,
+Replace:         MutuallyExclusiveTraits = ,
+
+Line 2187
+Trait: UniversalTraits:UT_gunspecialist_I
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_gunspecialist_II;UniversalTraits:UT_gunspecialist_III;UniversalTraits:UT_specguns,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_specguns,
+
+Line 2199
+Trait: UniversalTraits:UT_gunspecialist_II
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_gunspecialist_I;UniversalTraits:UT_gunspecialist_III;UniversalTraits:UT_specguns,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_gunspecialist_I;UniversalTraits:UT_specguns,
+
+Line 2226
+Trait: UniversalTraits:UT_indefatigable
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_hardy;UniversalTraits:UT_secondwind,
+Replace:         MutuallyExclusiveTraits = ,
+
+Line 2237
+Trait: UniversalTraits:UT_hardy
+Current:         MutuallyExclusiveTraits = UniversalTraits:UT_indefatigable;UniversalTraits:UT_secondwind,
+Replace:         MutuallyExclusiveTraits = UniversalTraits:UT_indefatigable,
+
+Pair coverage after transform: OK - every intended UT-to-UT pair remains represented by at least one backward reference.
+

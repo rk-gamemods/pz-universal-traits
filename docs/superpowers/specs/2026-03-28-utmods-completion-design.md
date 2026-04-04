@@ -21,6 +21,7 @@ All 199 traits are registered and all three implementation phases are structural
 ### Principle: Dumb Traits, Smart Core
 
 Individual trait Lua files (`traits/UT_*.lua`) only:
+
 1. Check `UTCore.hasTrait()` in a handler
 2. Call a UTCore helper to apply a modifier (or set moddata)
 3. Register with `UTCore.registerPeriodicHandler()` if periodic
@@ -36,11 +37,13 @@ All event hooks, throttling logic, B42 API calls, and modifier math live exclusi
 **Purpose:** Single `Events.AddXP` handler that intercepts every XP gain and applies stored multipliers or disables.
 
 **API added to UTCore:**
+
 - `UTCore.applyXPMultiplier(player, perkName, multiplier)` — already exists, writes `UT_xpMult_<perk>` ✓
 - `UTCore.disableXP(player, perkName)` — already exists, writes `UT_xpDisable_<perk>` ✓
 - `UTCore.trackXPPerk(player, perkName)` — NEW: called by the AddXP hook to track which perks earned XP this game-minute (for onetrickpony multi-skill penalty)
 
 **Handler logic:**
+
 ```
 Events.AddXP handler(player, perk, amount):
   1. Check UT_xpDisable_<perk> → if true, cancel XP (return 0 or suppress)
@@ -63,6 +66,7 @@ Events.AddXP handler(player, perk, amount):
 **Moddata key read:** `UT_speedMod` (float, delta; 0.2 = 20% faster, -0.2 = 20% slower)
 
 **Handler logic (from MoreTraits reference):**
+
 ```
 Events.OnPlayerMove handler():
   player = getPlayer(); if not player then return end
@@ -84,10 +88,12 @@ Events.OnPlayerMove handler():
 **Purpose:** Overrides `getDuration()` on all TimedActions at game boot to apply work speed and read speed modifiers.
 
 **Moddata keys read:**
+
 - `UT_workSpeedMod` (float, delta; -0.5 = 50% faster, +0.5 = 50% slower)
 - `UT_readSpeedMod` (float, delta; -0.3 = 30% faster read)
 
 **Hook pattern (from MoreTraits catch-all reference):**
+
 ```lua
 Events.OnGameBoot.Add(function()
   for _, timedAction in pairs(_G) do
@@ -104,12 +110,14 @@ end)
 ```
 
 `UTCore.applyWorkDuration(timedActionSelf, baseDuration)`:
+
 - Gets player from `timedActionSelf.character`
 - Reads `UT_workSpeedMod`
 - If `timedActionSelf.Type == "ISReadABook"`, also reads `UT_readSpeedMod`
 - Returns `math.max(1, baseDuration * (1 + workMod + readMod))`
 
 **Traits that use this:**
+
 - Work speed: `UT_quickworker` (-0.5), `UT_slowworker` (+0.5), `UT_slack` (+0.4)
 - Read speed: `UT_flatearther` (+0.3 = slower), `UT_photographicmemory` (-0.2 = faster)
 
@@ -122,6 +130,7 @@ end)
 **Moddata key read:** `UT_bleedMult` (float, multiplier; 0.5 = half bleed rate, 2.0 = double)
 
 **Handler logic (from MoreTraits bleed reference):**
+
 ```
 Events.OnPlayerUpdate throttle: every 30 ticks
   player = getPlayer(); if not player then return end
@@ -138,6 +147,7 @@ Events.OnPlayerUpdate throttle: every 30 ticks
 ```
 
 **Traits that use this:**
+
 - `UT_thickblood`: `UT_bleedMult = 0.4`
 - `UT_weaklybleedingwounds`: `UT_bleedMult = 0.6`
 - `UT_heavilybleedingwounds`: `UT_bleedMult = 2.0`
@@ -151,6 +161,7 @@ Events.OnPlayerUpdate throttle: every 30 ticks
 Add behavioral tests for each new hook module. Target: **25 tests** (up from 15).
 
 New test groups:
+
 - **XPHook (4 tests):** XP multiply, XP disable, multi-skill penalty triggers, multi-skill penalty does not fire for single-skill
 - **SpeedHook (3 tests):** Positive delta multiplied, negative delta multiplied, teleport guard clamps
 - **WorkSpeedHook (3 tests):** getDuration shortened, getDuration lengthened, read-type gets readSpeedMod applied
@@ -161,6 +172,7 @@ New test groups:
 Add spot-check tests for the 6 previously-gap traits. Target: **28 tests** (up from 21).
 
 New tests:
+
 - `UT_onetrickpony` sets `UT_multiSkillPenalty = true` in moddata
 - `UT_flatearther` sets `UT_readSpeedMod` in moddata
 - `UT_fast` sets `UT_speedMod` positive
@@ -191,6 +203,7 @@ New tests:
 ## Verification
 
 ### Unit tests (automated, pre-commit gate)
+
 ```bash
 "C:\Users\Admin\AppData\Local\Programs\Lua\bin\lua.exe" UT_CORE/test/run_tests.lua
 # Expected: 25 tests passing
@@ -200,13 +213,16 @@ New tests:
 ```
 
 ### In-game smoke test (manual, post-deploy)
+
 Deploy from source:
+
 ```bash
 cp -r UniversalTraits/media/. "C:/Users/Admin/Zomboid/mods/UniversalTraits/"
 cp -r UT_CORE/media/. "C:/Users/Admin/Zomboid/mods/UT_CORE/"
 ```
 
 Verification checklist:
+
 1. Start new game with `UT_fast` → observe movement is visibly faster
 2. Start new game with `UT_noodlelegs` → observe movement is visibly slower
 3. Start new game with `UT_quickworker` → time a crafting action, confirm it completes faster

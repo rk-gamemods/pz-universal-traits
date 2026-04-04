@@ -139,6 +139,7 @@ local function parseScriptTraitDefinitions(text)
             current = {
                 block_id = def,
                 character_trait = nil,
+                cost = nil,
                 granted_traits = {},
                 mutually_exclusive_traits = {},
             }
@@ -147,6 +148,11 @@ local function parseScriptTraitDefinitions(text)
             local character_trait = line:match("^%s*CharacterTrait%s*=%s*([^,%s]+)")
             if character_trait then
                 current.character_trait = character_trait
+            end
+
+            local cost = line:match("^%s*Cost%s*=%s*(-?%d+)")
+            if cost then
+                current.cost = tonumber(cost)
             end
 
             local granted = line:match("^%s*GrantedTraits%s*=%s*(.-),%s*$")
@@ -315,6 +321,23 @@ test("all 198 trait IDs registered with CharacterTrait", function()
     end
 end)
 
+test("script costs match the current balance decisions", function()
+    local file = io.open(base .. "../media/scripts/UT_character_traits.txt", "r")
+    assert_true(file ~= nil, "failed to open UT_character_traits.txt")
+    local defs = parseScriptTraitDefinitions(file:read("*a"))
+    file:close()
+
+    local costs = {}
+    for _, def in ipairs(defs) do
+        costs[def.block_id] = def.cost
+    end
+
+    assert_eq(costs["UniversalTraits:UT_packmule"], 3, "packmule cost")
+    assert_eq(costs["UniversalTraits:UT_preparedpack"], 1, "preparedpack cost")
+    assert_eq(costs["UniversalTraits:UT_quickworker"], 9, "quickworker cost")
+    assert_eq(costs["UniversalTraits:UT_slowworker"], -6, "slowworker cost")
+end)
+
 test("total registration count is 198", function()
     local count = 0
     for _ in pairs(CharacterTrait._registered) do count = count + 1 end
@@ -366,11 +389,9 @@ test("script trait definitions resolve cleanly and preserve UT_MET coverage", fu
 
     local grouped_traits = {
         UT_MET.Specialization,
-        UT_MET.WeaponAxes,
-        UT_MET.WeaponBlunts,
-        UT_MET.WeaponBlades,
-        UT_MET.HandType,
+        UT_MET.WeaponTree,
         UT_MET.Prowess,
+        UT_MET.Driving,
     }
 
     for _, group in ipairs(grouped_traits) do
@@ -391,16 +412,33 @@ end)
 -- All stubs are already provided by UTTestMocks.lua above.
 
 -- Helper: create a player that has the given traitId, fire OnNewGame, return player
-local function fireNewGame(traitId)
-    local p = MockPlayer({ traitId })
+local function fireNewGame(traitId, opts)
+    local p = MockPlayer({ traitId }, opts)
     Events.OnNewGame:fire(p)
     return p
 end
 
-local function fireCreatePlayer(traitId)
-    local p = MockPlayer({ traitId })
+local function fireCreatePlayer(traitId, opts)
+    local p = MockPlayer({ traitId }, opts)
     Events.OnCreatePlayer:fire(0, p)
     return p
+end
+
+local function withActivePlayer(player, fn)
+    local originalGetPlayer = _G.getPlayer
+    _G.getPlayer = function() return player end
+    local ok, err = pcall(fn)
+    _G.getPlayer = originalGetPlayer
+    if not ok then error(err, 0) end
+end
+
+local function xpWasCancelled(player, perk, amount)
+    for _, call in ipairs(player:getXp()._log) do
+        if call.perk == perk and call.amount == -(amount or 10) then
+            return true
+        end
+    end
+    return false
 end
 
 -- Load the 7 gap traits (registers their OnNewGame handlers at load time)
@@ -409,9 +447,30 @@ dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_flatearther.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_fast.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_noodlelegs.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_quickworker.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_slowworker.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmule.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_preparedpack.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_thickblood.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_heavilybleedingwounds.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_photographicmemory.lua")
+dofile(base .. "../../UT_CORE/media/lua/shared/UTCore/UTCore_XPHook.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_noxpshooter.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_noxptechnician.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_noxpaxe.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_noxpfirstaid.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_noxpmaintenance.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_noxpsneaky.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_driver.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_expertdriver.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_poordriver.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_indefatigable.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_hardy.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_secondwind.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_immuneresponse.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_immunocompromised.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_superimmune.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_butterfingers.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_idealweight.lua")
 
 test("UT_onetrickpony sets UT_multiSkillPenalty=true", function()
     local p = fireNewGame("UniversalTraits:UT_onetrickpony")
@@ -444,6 +503,16 @@ test("UT_quickworker sets UT_workSpeedMod < 0", function()
     local p = fireNewGame("UniversalTraits:UT_quickworker")
     local v = p:getModData()["UT_workSpeedMod"]
     assert_true(type(v) == "number" and v < 0, "expected UT_workSpeedMod < 0, got " .. tostring(v))
+end)
+
+test("UT_packmule applies the new +6 carry weight bonus", function()
+    local p = fireCreatePlayer("UniversalTraits:UT_packmule")
+    assert_eq(p:getMaxWeightBase(), 14, "expected base carry weight 14 after Pack Mule")
+end)
+
+test("UT_preparedpack keeps the +3 carry weight bonus", function()
+    local p = fireCreatePlayer("UniversalTraits:UT_preparedpack")
+    assert_eq(p:getMaxWeightBase(), 11, "expected base carry weight 11 after Prepared: Pack")
 end)
 
 -- UT_thickblood sets UT_bleedDecayMult=1.5 (faster clot) and UT_bleedDrainMult=0.5 (slower death)
@@ -877,6 +946,213 @@ test("batteringram with UT_martial damages zombie on collision", function()
     fireRamCollision(player, zombie)
     assert_true(zombie:getHealth() < 100,
         "expected zombie health reduced by martial synergy, got " .. tostring(zombie:getHealth()))
+end)
+
+-- ===== QA checklist follow-up coverage =====
+
+test("noxpshooter blocks Aiming and Reloading XP through the XP hook", function()
+    local player = fireNewGame("UniversalTraits:UT_noxpshooter")
+    Events.AddXP:fire(player, "Aiming", 10)
+    Events.AddXP:fire(player, "Reloading", 10)
+    assert_true(xpWasCancelled(player, "Aiming", 10), "expected Aiming XP to be cancelled")
+    assert_true(xpWasCancelled(player, "Reloading", 10), "expected Reloading XP to be cancelled")
+end)
+
+test("noxptechnician blocks Electricity and Mechanics XP through the XP hook", function()
+    local player = fireNewGame("UniversalTraits:UT_noxptechnician")
+    Events.AddXP:fire(player, "Electricity", 10)
+    Events.AddXP:fire(player, "Mechanics", 10)
+    assert_true(xpWasCancelled(player, "Electricity", 10), "expected Electricity XP to be cancelled")
+    assert_true(xpWasCancelled(player, "Mechanics", 10), "expected Mechanics XP to be cancelled")
+end)
+
+test("single-skill noxp traits block their matching XP through the hook", function()
+    local axePlayer = fireNewGame("UniversalTraits:UT_noxpaxe")
+    Events.AddXP:fire(axePlayer, "Axe", 10)
+    assert_true(xpWasCancelled(axePlayer, "Axe", 10), "expected Axe XP to be cancelled")
+
+    local firstAidPlayer = fireNewGame("UniversalTraits:UT_noxpfirstaid")
+    Events.AddXP:fire(firstAidPlayer, "Doctor", 10)
+    assert_true(xpWasCancelled(firstAidPlayer, "Doctor", 10), "expected Doctor XP to be cancelled")
+
+    local maintenancePlayer = fireNewGame("UniversalTraits:UT_noxpmaintenance")
+    Events.AddXP:fire(maintenancePlayer, "Maintenance", 10)
+    assert_true(xpWasCancelled(maintenancePlayer, "Maintenance", 10), "expected Maintenance XP to be cancelled")
+end)
+
+test("noxpsneaky blocks Sneaking and Lightfoot XP through the XP hook", function()
+    local player = fireNewGame("UniversalTraits:UT_noxpsneaky")
+    Events.AddXP:fire(player, "Sneaking", 10)
+    Events.AddXP:fire(player, "Lightfoot", 10)
+    assert_true(xpWasCancelled(player, "Sneaking", 10), "expected Sneaking XP to be cancelled")
+    assert_true(xpWasCancelled(player, "Lightfoot", 10), "expected Lightfoot XP to be cancelled")
+end)
+
+test("driver applies mild vehicle bonuses", function()
+    local vehicle = MockVehicle()
+    local player = MockPlayer({ "UniversalTraits:UT_driver" }, { vehicle = vehicle })
+    player:setVehicle(vehicle)
+    Events.OnVehicleEnter:fire(player, vehicle)
+    assert_eq(vehicle:getMaxSpeed(), 120, "expected +20% max speed")
+    assert_eq(vehicle:getBrakingForce(), 12, "expected +20% braking force")
+    assert_eq(vehicle:getEnginePower(), 120, "expected +20% engine power")
+    assert_eq(vehicle:getEngineLoudness(), 80, "expected 20% quieter engine")
+end)
+
+test("expertdriver applies the full vehicle bonus package", function()
+    local vehicle = MockVehicle()
+    local player = MockPlayer({ "UniversalTraits:UT_expertdriver" }, { vehicle = vehicle })
+    player:setVehicle(vehicle)
+    Events.OnVehicleEnter:fire(player, vehicle)
+    assert_eq(vehicle:getMaxSpeed(), 125, "expected +25% max speed")
+    assert_eq(vehicle:getBrakingForce(), 20, "expected 2x braking force")
+    assert_eq(vehicle:getEngineQuality(), 200, "expected 2x engine quality")
+    assert_eq(vehicle:getEngineLoudness(), 25, "expected 75% quieter engine")
+    assert_eq(vehicle:getEnginePower(), 300, "expected 3x engine power")
+    assert_eq(vehicle:getMass(), 500, "expected half vehicle mass")
+end)
+
+test("poordriver applies the full vehicle penalty package", function()
+    local vehicle = MockVehicle()
+    local player = MockPlayer({ "UniversalTraits:UT_poordriver" }, { vehicle = vehicle })
+    player:setVehicle(vehicle)
+    Events.OnVehicleEnter:fire(player, vehicle)
+    assert_eq(vehicle:getMaxSpeed(), 75, "expected -25% max speed")
+    assert_eq(vehicle:getBrakingForce(), 5, "expected half braking force")
+    assert_eq(vehicle:getEngineQuality(), 50, "expected half engine quality")
+    assert_eq(vehicle:getEngineLoudness(), 150, "expected 50% louder engine")
+    assert_eq(vehicle:getEnginePower(), 66, "expected 34% engine power penalty")
+    assert_true(math.abs(vehicle:getMass() - 1330) < 0.1, "expected +33% vehicle mass")
+end)
+
+test("vehicle traits restore the baseline stats on exit", function()
+    local vehicle = MockVehicle()
+    local player = MockPlayer({ "UniversalTraits:UT_expertdriver" }, { vehicle = vehicle })
+    player:setVehicle(vehicle)
+    Events.OnVehicleEnter:fire(player, vehicle)
+    Events.OnVehicleExit:fire(player, vehicle)
+    assert_eq(vehicle:getMaxSpeed(), 100, "expected max speed restored to baseline")
+    assert_eq(vehicle:getBrakingForce(), 10, "expected braking force restored to baseline")
+    assert_eq(vehicle:getEngineQuality(), 100, "expected engine quality restored to baseline")
+    assert_eq(vehicle:getEngineLoudness(), 100, "expected engine loudness restored to baseline")
+    assert_eq(vehicle:getEnginePower(), 100, "expected engine power restored to baseline")
+    assert_eq(vehicle:getMass(), 1000, "expected mass restored to baseline")
+end)
+
+test("indefatigable restores endurance after its exhaustion cooldown", function()
+    setMockGameTime(0, 0)
+    local player = MockPlayer({ "UniversalTraits:UT_indefatigable" }, { sprinting = true, endurance = 0.04 })
+    player._sprinting = true
+    withActivePlayer(player, function()
+        for _ = 1, 30 do Events.OnPlayerUpdate:fire(player) end
+        setMockGameTime(0.05, 0)
+        Events.EveryOneMinute:fire()
+    end)
+    assert_eq(player:getStats():getEndurance(), 0.5, "expected exhaustion recovery burst to set endurance to 0.5")
+    assert_true(player:getModData()["UT_indefRecovering"] == nil, "expected recovery flag to clear")
+end)
+
+test("hardy enters exhaustion state then grants the recovery bonus", function()
+    local player = MockPlayer({ "UniversalTraits:UT_hardy" }, { fatigue = 0.9, endurance = 0.4 })
+    withActivePlayer(player, function()
+        setMockGameTime(1.0, 0)
+        Events.EveryOneMinute:fire()
+        player:getStats():setFatigue(0.2)
+        player:getModData()["UT_hardyRestingMins"] = 9
+        setMockGameTime(1.2, 0)
+        Events.EveryOneMinute:fire()
+        setMockGameTime(1.21, 0)
+        Events.EveryOneMinute:fire()
+    end)
+    assert_true(player:getModData()["UT_hardyExhausted"] == nil, "expected exhausted state to clear")
+    assert_true(player:getModData()["UT_hardyBonus"] ~= nil, "expected hardy bonus window to start")
+    assert_true(player:getStats():getEndurance() > 0.4, "expected hardy bonus to increase endurance")
+end)
+
+test("secondwind triggers at low endurance and clears after cooldown", function()
+    setMockGameTime(0, 0)
+    local player = MockPlayer({ "UniversalTraits:UT_secondwind" }, { endurance = 0.1 })
+    player._sprinting = true
+    withActivePlayer(player, function()
+        for _ = 1, 15 do Events.OnPlayerUpdate:fire(player) end
+        assert_true(player:getModData()["UT_secondwindTriggered"] == true, "expected second wind to trigger")
+        setMockGameTime((10 / 60.0) + 0.01, 0)
+        Events.EveryOneMinute:fire()
+    end)
+    assert_true(player:getStats():getEndurance() > 0.1, "expected second wind to restore endurance")
+    assert_true(player:getModData()["UT_secondwindTriggered"] == nil, "expected second wind flag to clear after cooldown")
+end)
+
+test("immuneresponse reduces infection and fatigue every ten minutes", function()
+    local player = MockPlayer({ "UniversalTraits:UT_immuneresponse" }, { infectionLevel = 0.5, fatigue = 0.4 })
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_true(math.abs(player:getBodyDamage():getInfectionLevel() - 0.47) < 0.0001,
+        "expected infection to drop by 0.03")
+    assert_true(math.abs(player:getStats():getFatigue() - 0.38) < 0.0001,
+        "expected fatigue to drop by 0.02")
+end)
+
+test("immunocompromised marks the trait and increases infection over time", function()
+    local player = fireNewGame("UniversalTraits:UT_immunocompromised")
+    player:getBodyDamage():setInfectionLevel(0.5)
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+    end)
+    assert_eq(player:getModData()["UT_immunocompromised"], true, "expected immunocompromised flag")
+    assert_true(math.abs(player:getBodyDamage():getInfectionLevel() - 0.51) < 0.0001,
+        "expected infection to increase by 0.01")
+end)
+
+test("superimmune marks the trait and reduces infection over time", function()
+    local player = fireNewGame("UniversalTraits:UT_superimmune")
+    player:getBodyDamage():setInfectionLevel(0.5)
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+    end)
+    assert_eq(player:getModData()["UT_superimmune"], true, "expected superimmune flag")
+    assert_true(math.abs(player:getBodyDamage():getInfectionLevel() - 0.48) < 0.0001,
+        "expected infection to decrease by 0.02")
+end)
+
+test("butterfingers only flags a drop after 300 ticks and a successful roll", function()
+    resetMockZombRand()
+    local earlyPlayer = MockPlayer({ "UniversalTraits:UT_butterfingers" }, { playerNum = 101 })
+    setMockGameTime(0, 299)
+    Events.OnPlayerUpdate:fire(earlyPlayer)
+    assert_true(earlyPlayer:getModData()["UT_dropNext"] == nil, "expected no drop flag before 300 ticks")
+
+    local player = MockPlayer({ "UniversalTraits:UT_butterfingers" }, { playerNum = 102 })
+    setMockZombRandSequence({ 0 })
+    setMockGameTime(0, 300)
+    Events.OnPlayerUpdate:fire(player)
+    assert_eq(player:getModData()["UT_dropNext"], true, "expected drop flag after a successful roll")
+    resetMockZombRand()
+end)
+
+test("idealweight doubles calorie burn when overweight", function()
+    local player = MockPlayer({ "UniversalTraits:UT_idealweight" }, { weight = 85.0, calories = 2000.0 })
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+        Events.OnPlayerUpdate:fire(player)
+        player:getNutrition():setCalories(1990.0)
+        Events.OnPlayerUpdate:fire(player)
+    end)
+    assert_true(math.abs(player:getNutrition():getCalories() - 1980.0) < 0.0001,
+        "expected extra calorie burn at overweight values")
+end)
+
+test("idealweight halves calorie burn when underweight", function()
+    local player = MockPlayer({ "UniversalTraits:UT_idealweight" }, { weight = 75.0, calories = 2000.0 })
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+        Events.OnPlayerUpdate:fire(player)
+        player:getNutrition():setCalories(1990.0)
+        Events.OnPlayerUpdate:fire(player)
+    end)
+    assert_true(math.abs(player:getNutrition():getCalories() - 1995.0) < 0.0001,
+        "expected reduced calorie burn at underweight values")
 end)
 
 print(string.format("\n%d passed, %d failed", passed, failed))
