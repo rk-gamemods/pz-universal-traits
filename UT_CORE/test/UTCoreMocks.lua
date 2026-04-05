@@ -248,6 +248,8 @@ Events.OnWeaponHitCharacter   = _makeEventTable()
 Events.OnCreatePlayer         = _makeEventTable()
 Events.OnVehicleEnter         = _makeEventTable()
 Events.OnVehicleExit          = _makeEventTable()
+-- Reset registration flag so UTCore_StatModifiers re-registers into these fresh tables.
+if UTCore then UTCore._vehicleTraitEventsRegistered = false end
 
 _G.getPlayer = function() return nil end  -- tests override this
 
