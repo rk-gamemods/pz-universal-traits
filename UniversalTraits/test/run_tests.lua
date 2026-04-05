@@ -551,11 +551,13 @@ local function MockWeapon(typeName)
 end
 
 -- Helper: build a target mock with mutable health
-local function MockTarget(startHealth)
+local function MockTarget(startHealth, opts)
+    opts = opts or {}
     local hp = startHealth
     return {
         getHealth = function(self) return hp end,
         setHealth = function(self, v) hp = v end,
+        isZombie  = function(self) return opts.isZombie ~= false end,  -- defaults to true
     }
 end
 
@@ -607,6 +609,18 @@ test("actionhero skipped when player has UT_mundane", function()
 
     assert_eq(target:getHealth(), 100,
         "expected health unchanged when UT_mundane is active")
+end)
+
+test("actionhero skipped for non-zombie targets", function()
+    local spotted = MockSpottedList(5, 1)
+    local player  = MockActionPlayer({ "UniversalTraits:UT_actionhero" }, spotted)
+    local weapon  = MockWeapon("Axe")
+    local target  = MockTarget(100, { isZombie = false })
+
+    Events.OnWeaponHitCharacter:fire(player, weapon, target)
+
+    assert_eq(target:getHealth(), 100,
+        "expected health unchanged when target is not a zombie")
 end)
 
 -- ===== UT_bouncer_I stagger mechanic tests =====

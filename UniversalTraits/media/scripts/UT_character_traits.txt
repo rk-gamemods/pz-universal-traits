@@ -200,6 +200,7 @@ module UniversalTraits
         UIName = UI_UT_sprintdemon,
         UIDescription = UI_UT_sprintdemonDesc,
         XPBoosts = Sprinting=1,
+        MutuallyExclusiveTraits = UniversalTraits:UT_sundayrunner,
     }
 
     character_trait_definition UniversalTraits:UT_trekker
@@ -902,7 +903,7 @@ module UniversalTraits
         Cost = 3,
         UIName = UI_UT_packmule,
         UIDescription = UI_UT_packmuleDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy,
+        MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy;UniversalTraits:UT_backpacker,
     }
 
     character_trait_definition UniversalTraits:UT_packmouse
@@ -946,6 +947,7 @@ module UniversalTraits
         Cost = -3,
         UIName = UI_UT_badteeth,
         UIDescription = UI_UT_badteethDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_albino,
     }
 
     character_trait_definition UniversalTraits:UT_deprived
@@ -1018,6 +1020,7 @@ module UniversalTraits
         Cost = -1,
         UIName = UI_UT_sundayrunner,
         UIDescription = UI_UT_sundayrunnerDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_sprintdemon,
     }
 
     character_trait_definition UniversalTraits:UT_lesssweaty
@@ -1050,7 +1053,7 @@ module UniversalTraits
         Cost = 2,
         UIName = UI_UT_cangrabmore,
         UIDescription = UI_UT_cangrabmoreDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_cangrabless,
+        MutuallyExclusiveTraits = UniversalTraits:UT_cangrabless;base:weak,
     }
 
     character_trait_definition UniversalTraits:UT_cangrabless
@@ -1061,7 +1064,7 @@ module UniversalTraits
         Cost = -2,
         UIName = UI_UT_cangrabless,
         UIDescription = UI_UT_cangrablessDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_cangrabmore,
+        MutuallyExclusiveTraits = UniversalTraits:UT_cangrabmore;base:strong,
     }
 
     character_trait_definition UniversalTraits:UT_backpacker
@@ -1072,7 +1075,7 @@ module UniversalTraits
         Cost = 8,
         UIName = UI_UT_backpacker,
         UIDescription = UI_UT_backpackerDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy,
+        MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy;UniversalTraits:UT_packmule,
     }
 
     character_trait_definition UniversalTraits:UT_topheavy
@@ -1259,7 +1262,7 @@ module UniversalTraits
         Cost = -4,
         UIName = UI_UT_flailer,
         UIDescription = UI_UT_flailerDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_lurcher,
+        MutuallyExclusiveTraits = UniversalTraits:UT_lurcher;UniversalTraits:UT_scardycat,
     }
 
     character_trait_definition UniversalTraits:UT_fasthands
@@ -1280,7 +1283,7 @@ module UniversalTraits
         Cost = 12,
         UIName = UI_UT_analgesia,
         UIDescription = UI_UT_analgesiaDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_glassbody;UniversalTraits:UT_sore,
+        MutuallyExclusiveTraits = UniversalTraits:UT_glassbody;UniversalTraits:UT_sore;UniversalTraits:UT_fibromyalgia,
     }
 
 
@@ -1453,7 +1456,7 @@ module UniversalTraits
         Cost = 3,
         UIName = UI_UT_noxpshooter,
         UIDescription = UI_UT_noxpshooterDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_antigun,
+        MutuallyExclusiveTraits = UniversalTraits:UT_antigun;UniversalTraits:UT_noxptechnician;UniversalTraits:UT_noxpaxe;UniversalTraits:UT_noxpfirstaid;UniversalTraits:UT_noxpmaintenance;UniversalTraits:UT_noxpsneaky,
     }
 
     character_trait_definition UniversalTraits:UT_noxptechnician
@@ -1464,6 +1467,7 @@ module UniversalTraits
         Cost = 3,
         UIName = UI_UT_noxptechnician,
         UIDescription = UI_UT_noxptechnicianDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_noxpshooter;UniversalTraits:UT_noxpaxe;UniversalTraits:UT_noxpfirstaid;UniversalTraits:UT_noxpmaintenance;UniversalTraits:UT_noxpsneaky,
     }
 
     character_trait_definition UniversalTraits:UT_noxpaxe
@@ -1471,9 +1475,10 @@ module UniversalTraits
         IsProfessionTrait = false,
         DisabledInMultiplayer = true,
         CharacterTrait = UniversalTraits:UT_noxpaxe,
-        Cost = 2,
+        Cost = 3,
         UIName = UI_UT_noxpaxe,
         UIDescription = UI_UT_noxpaxeDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_noxpshooter;UniversalTraits:UT_noxptechnician;UniversalTraits:UT_noxpfirstaid;UniversalTraits:UT_noxpmaintenance;UniversalTraits:UT_noxpsneaky,
     }
 
     character_trait_definition UniversalTraits:UT_noxpfirstaid
@@ -1484,6 +1489,7 @@ module UniversalTraits
         Cost = 3,
         UIName = UI_UT_noxpfirstaid,
         UIDescription = UI_UT_noxpfirstaidDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_noxpshooter;UniversalTraits:UT_noxptechnician;UniversalTraits:UT_noxpaxe;UniversalTraits:UT_noxpmaintenance;UniversalTraits:UT_noxpsneaky,
     }
 
     character_trait_definition UniversalTraits:UT_noxpmaintenance
@@ -1494,6 +1500,7 @@ module UniversalTraits
         Cost = 3,
         UIName = UI_UT_noxpmaintenance,
         UIDescription = UI_UT_noxpmaintenanceDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_noxpshooter;UniversalTraits:UT_noxptechnician;UniversalTraits:UT_noxpaxe;UniversalTraits:UT_noxpfirstaid;UniversalTraits:UT_noxpsneaky,
     }
 
     character_trait_definition UniversalTraits:UT_noxpsneaky
@@ -1504,6 +1511,7 @@ module UniversalTraits
         Cost = 5,
         UIName = UI_UT_noxpsneaky,
         UIDescription = UI_UT_noxpsneakyDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_noxpshooter;UniversalTraits:UT_noxptechnician;UniversalTraits:UT_noxpaxe;UniversalTraits:UT_noxpfirstaid;UniversalTraits:UT_noxpmaintenance,
     }
 
 
@@ -1679,6 +1687,7 @@ module UniversalTraits
         Cost = -2,
         UIName = UI_UT_selfdestructive,
         UIDescription = UI_UT_selfdestructiveDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_optimist,
     }
 
     character_trait_definition UniversalTraits:UT_melancholic
@@ -1700,6 +1709,7 @@ module UniversalTraits
         Cost = 6,
         UIName = UI_UT_immuneresponse,
         UIDescription = UI_UT_immuneresponseDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_superimmune;UniversalTraits:UT_immunocompromised,
     }
 
     character_trait_definition UniversalTraits:UT_ravenous
@@ -1720,7 +1730,7 @@ module UniversalTraits
         Cost = 2,
         UIName = UI_UT_optimist,
         UIDescription = UI_UT_optimistDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_pessimist;UniversalTraits:UT_depressive;UniversalTraits:UT_melancholic,
+        MutuallyExclusiveTraits = UniversalTraits:UT_pessimist;UniversalTraits:UT_depressive;UniversalTraits:UT_melancholic;UniversalTraits:UT_selfdestructive;UniversalTraits:UT_mstoptimist,
     }
 
     character_trait_definition UniversalTraits:UT_pessimist
@@ -1742,7 +1752,7 @@ module UniversalTraits
         Cost = 3,
         UIName = UI_UT_mstoptimist,
         UIDescription = UI_UT_mstoptimistDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_pessimist,
+        MutuallyExclusiveTraits = UniversalTraits:UT_pessimist;UniversalTraits:UT_optimist,
     }
 
     character_trait_definition UniversalTraits:UT_adaptivemetabolism
@@ -1773,6 +1783,7 @@ module UniversalTraits
         Cost = -4,
         UIName = UI_UT_albino,
         UIDescription = UI_UT_albinoDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_badteeth,
     }
 
     character_trait_definition UniversalTraits:UT_fibromyalgia
@@ -1783,6 +1794,7 @@ module UniversalTraits
         Cost = -8,
         UIName = UI_UT_fibromyalgia,
         UIDescription = UI_UT_fibromyalgiaDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_analgesia,
     }
 
     character_trait_definition UniversalTraits:UT_bigorexia
@@ -1833,6 +1845,7 @@ module UniversalTraits
         Cost = -4,
         UIName = UI_UT_coldsensitive,
         UIDescription = UI_UT_coldsensitiveDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_heatsensitive,
     }
 
     character_trait_definition UniversalTraits:UT_heatsensitive
@@ -1843,6 +1856,7 @@ module UniversalTraits
         Cost = -4,
         UIName = UI_UT_heatsensitive,
         UIDescription = UI_UT_heatsensitiveDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_coldsensitive,
     }
 
     character_trait_definition UniversalTraits:UT_sedentary
@@ -1853,6 +1867,7 @@ module UniversalTraits
         Cost = -3,
         UIName = UI_UT_sedentary,
         UIDescription = UI_UT_sedentaryDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_physicallyactive;base:athletic;base:fit;base:strong,
     }
 
     character_trait_definition UniversalTraits:UT_alcoholic_I
@@ -1906,7 +1921,7 @@ module UniversalTraits
         Cost = -6,
         UIName = UI_UT_immunocompromised,
         UIDescription = UI_UT_immunocompromisedDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_superimmune,
+        MutuallyExclusiveTraits = UniversalTraits:UT_superimmune;UniversalTraits:UT_immuneresponse,
     }
 
 
@@ -1918,6 +1933,7 @@ module UniversalTraits
         Cost = -4,
         UIName = UI_UT_fearful,
         UIDescription = UI_UT_fearfulDesc,
+        MutuallyExclusiveTraits = base:brave;base:desensitized,
     }
 
     character_trait_definition UniversalTraits:UT_nervouswreck
@@ -1938,6 +1954,7 @@ module UniversalTraits
         Cost = -3,
         UIName = UI_UT_scardycat,
         UIDescription = UI_UT_scardycatDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_flailer;base:desensitized,
     }
 
     character_trait_definition UniversalTraits:UT_maniac
@@ -1948,6 +1965,7 @@ module UniversalTraits
         Cost = 4,
         UIName = UI_UT_maniac,
         UIDescription = UI_UT_maniacDesc,
+        MutuallyExclusiveTraits = base:hemophobic,
     }
 
     character_trait_definition UniversalTraits:UT_anorexy
@@ -1999,7 +2017,7 @@ module UniversalTraits
         Cost = 3,
         UIName = UI_UT_competitiveeater,
         UIDescription = UI_UT_competitiveeaterDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_anorexy,
+        MutuallyExclusiveTraits = UniversalTraits:UT_anorexy;UniversalTraits:UT_gourmand,
     }
 
     character_trait_definition UniversalTraits:UT_sensitivestomach
@@ -2040,7 +2058,7 @@ module UniversalTraits
         Cost = -4,
         UIName = UI_UT_vehophobic,
         UIDescription = UI_UT_vehophobicDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_expertdriver,
+        MutuallyExclusiveTraits = UniversalTraits:UT_expertdriver;UniversalTraits:UT_motionsickness,
     }
 
     character_trait_definition UniversalTraits:UT_motionsickness
@@ -2051,6 +2069,7 @@ module UniversalTraits
         Cost = -4,
         UIName = UI_UT_motionsickness,
         UIDescription = UI_UT_motionsicknessDesc,
+        MutuallyExclusiveTraits = UniversalTraits:UT_vehophobic,
     }
 
     character_trait_definition UniversalTraits:UT_physicallyactive
@@ -2069,7 +2088,7 @@ module UniversalTraits
         IsProfessionTrait = false,
         DisabledInMultiplayer = true,
         CharacterTrait = UniversalTraits:UT_humanhamster,
-        Cost = -3,
+        Cost = -1,
         UIName = UI_UT_humanhamster,
         UIDescription = UI_UT_humanhamsterDesc,
     }
@@ -2079,10 +2098,10 @@ module UniversalTraits
         IsProfessionTrait = false,
         DisabledInMultiplayer = true,
         CharacterTrait = UniversalTraits:UT_superimmune,
-        Cost = 8,
+        Cost = 10,
         UIName = UI_UT_superimmune,
         UIDescription = UI_UT_superimmuneDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_immunocompromised,
+        MutuallyExclusiveTraits = UniversalTraits:UT_immunocompromised;UniversalTraits:UT_immuneresponse,
     }
 
     character_trait_definition UniversalTraits:UT_bouncer_I
