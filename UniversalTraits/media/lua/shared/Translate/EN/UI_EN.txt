@@ -519,7 +519,7 @@ UI_EN = {
     UI_UT_paranoiaDesc          = "Every shadow hides something. Every 10 in-game minutes, panic increases by +0.06.",
 
     UI_UT_selfdestructive       = "Self-Destructive",
-    UI_UT_selfdestructiveDesc   = "You have always been your own worst enemy. You act against your own interests in ways that are hard to explain, even to yourself.",
+    UI_UT_selfdestructiveDesc   = "You act against your own interests without warning or reason. Every 10 minutes there is a 20% chance your stress spikes by +10% and fatigue by +5%.",
 
     UI_UT_melancholic           = "Melancholic",
     UI_UT_melancholicDesc       = "The world feels muted and grey. Every 10 in-game minutes, unhappiness increases by +5.",
@@ -540,7 +540,7 @@ UI_EN = {
     UI_UT_mstoptimistDesc       = "Even at the end of the world, you find something to be glad about. Every 10 in-game minutes, stress decreases by −0.08 when stress is above 0.6, or −0.03 otherwise.",
 
     UI_UT_adaptivemetabolism    = "Adaptive Metabolism",
-    UI_UT_adaptivemetabolismDesc = "Your body is remarkably good at making do with what it has. Your metabolism adjusts efficiently to changing conditions.",
+    UI_UT_adaptivemetabolismDesc = "Your metabolism adjusts to extremes. When hunger is above 70%, it drops by 0.05 per hour as your body adapts to scarcity. When hunger is below 10%, it rises by 0.02 per hour to keep your appetite active. No effect in the middle.",
 
     UI_UT_accmetabolism         = "Accelerated Metabolism",
     UI_UT_accmetabolismDesc     = "Everything runs fast inside you. Every 10 in-game minutes, hunger increases by +0.05 and thirst by +0.03.",
@@ -552,10 +552,10 @@ UI_EN = {
     UI_UT_fibromyalgiaDesc      = "Chronic pain is your constant companion. Every 10 in-game minutes, stress increases by +0.07 and fatigue by +0.05.",
 
     UI_UT_bigorexia             = "Bigorexia",
-    UI_UT_bigorexiaDesc         = "You are never big enough, never strong enough, never enough. Your mood suffers whenever your body does not match the image in your head.",
+    UI_UT_bigorexiaDesc         = "Your body image drives constant anxiety. Stress increases by +0.04 every 10 minutes. While your Strength perk is below level 5, the penalty is worse: +0.06 every 10 minutes instead.",
 
     UI_UT_weathersensitive      = "Weather Sensitive",
-    UI_UT_weathersensitiveDesc  = "Your mood shifts with the sky. Storms drag you down; clear days lift you up more than they should.",
+    UI_UT_weathersensitiveDesc  = "Your mood shifts with the sky. Heavy rain (above 30% intensity) raises stress by +0.05 every 10 minutes. Clear sky (cloud cover below 20%) eases stress by -0.02 every 10 minutes. Overcast but dry skies have no effect.",
 
     UI_UT_panicattacks          = "Panic Attacks",
     UI_UT_panicattacksDesc      = "Without warning, panic spikes by +0.4. Happens at roughly 5% chance per in-game minute — about 3 times per hour on average.",
@@ -615,10 +615,10 @@ UI_EN = {
     UI_UT_allergicDesc          = "Your immune system overreacts to ordinary food. Every meal carries a 30% chance your body treats it like a toxin — triggering nausea, vomiting, and health degradation until the episode passes on its own.",
 
     UI_UT_competitiveeater      = "Competitive Eater",
-    UI_UT_competitiveeaterDesc  = "You eat with purpose and efficiency. Every meal is an event you approach with genuine enthusiasm and unusual results.",
+    UI_UT_competitiveeaterDesc  = "You eat with purpose and efficiency. Each meal reduces boredom by 10 points and satisfies hunger by 5 extra on top of the food's normal effect.",
 
     UI_UT_sensitivestomach      = "Sensitive Stomach",
-    UI_UT_sensitivestomachDesc  = "Your digestive system does not take kindly to stress or poor food. Meals that others handle fine can leave you miserable.",
+    UI_UT_sensitivestomachDesc  = "Your stomach rebels against every meal. Eating causes lower torso pain while food is digesting. The more you eat in one sitting, the worse the pain gets.",
 
     UI_UT_butterfingers         = "Butterfingers",
     UI_UT_butterfingersDesc     = "Things slip out of your hands at the worst moments. Every few minutes there is a small chance your primary hand item drops to the ground — no matter how tight your grip.",
@@ -627,7 +627,7 @@ UI_EN = {
     UI_UT_acrophobicDesc        = "Any floor above ground level adds +0.05 panic per minute. The effect is flat — you don't need to be high up, just off the ground.",
 
     UI_UT_vehophobic            = "Vehophobic",
-    UI_UT_vehophobicDesc        = "Getting behind the wheel or into a vehicle fills you with dread. The fear is irrational but it is very real.",
+    UI_UT_vehophobicDesc        = "Being the driver fills you with dread — passengers are unaffected. Every ~30 ticks behind the wheel, panic increases by +0.01 and stress by +0.005.",
 
     UI_UT_motionsickness        = "Motion Sickness",
     UI_UT_motionsicknessDesc    = "Vehicles do not agree with you. Every minute spent in a vehicle, stress increases by +0.01.",

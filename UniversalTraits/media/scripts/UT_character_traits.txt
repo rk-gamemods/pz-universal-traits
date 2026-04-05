@@ -1676,7 +1676,7 @@ module UniversalTraits
         IsProfessionTrait = false,
         DisabledInMultiplayer = true,
         CharacterTrait = UniversalTraits:UT_selfdestructive,
-        Cost = -6,
+        Cost = -2,
         UIName = UI_UT_selfdestructive,
         UIDescription = UI_UT_selfdestructiveDesc,
     }
