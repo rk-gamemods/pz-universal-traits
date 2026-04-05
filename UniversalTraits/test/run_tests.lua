@@ -147,6 +147,8 @@ local function parseScriptTraitDefinitions(text)
                 block_id = def,
                 character_trait = nil,
                 cost = nil,
+                ui_name = nil,
+                ui_description = nil,
                 granted_traits = {},
                 mutually_exclusive_traits = {},
             }
@@ -160,6 +162,16 @@ local function parseScriptTraitDefinitions(text)
             local cost = line:match("^%s*Cost%s*=%s*(-?%d+)")
             if cost then
                 current.cost = tonumber(cost)
+            end
+
+            local ui_name = line:match("^%s*UIName%s*=%s*([^,%s]+)")
+            if ui_name then
+                current.ui_name = ui_name
+            end
+
+            local ui_description = line:match("^%s*UIDescription%s*=%s*([^,%s]+)")
+            if ui_description then
+                current.ui_description = ui_description
             end
 
             local granted = line:match("^%s*GrantedTraits%s*=%s*(.-),%s*$")
@@ -179,6 +191,72 @@ local function parseScriptTraitDefinitions(text)
     end
 
     return defs
+end
+
+local function parseTranslationKeys(text)
+    local keys = {}
+
+    for key in text:gmatch('"([A-Za-z0-9_]+)"%s*:') do
+        keys[key] = true
+    end
+
+    return keys
+end
+
+local function listTraitLuaFiles()
+    local dir = (base .. "../media/lua/shared/UniversalTraits/traits"):gsub("/", "\\")
+    local pipe = io.popen('cmd /c dir /b "' .. dir .. '\\UT_*.lua" 2>nul')
+    assert_true(pipe ~= nil, "failed to list trait lua files")
+
+    local files = {}
+    for line in pipe:lines() do
+        local trait_key = line:match("^(UT_[A-Za-z0-9_]+)%.lua$")
+        if trait_key then
+            files[trait_key] = true
+        end
+    end
+
+    pipe:close()
+    return files
+end
+
+local function loadTraitConsistencyState()
+    local registry_file = io.open(base .. "../media/registries.lua", "r")
+    assert_true(registry_file ~= nil, "failed to open registries.lua")
+    local registry_text = registry_file:read("*a")
+    registry_file:close()
+
+    local script_file = io.open(base .. "../media/scripts/UT_character_traits.txt", "r")
+    assert_true(script_file ~= nil, "failed to open UT_character_traits.txt")
+    local script_text = script_file:read("*a")
+    script_file:close()
+
+    local translation_file = io.open(base .. "../media/lua/shared/Translate/EN/UI.json", "r")
+    assert_true(translation_file ~= nil, "failed to open UI.json")
+    local translation_text = translation_file:read("*a")
+    translation_file:close()
+
+    local registered_ids = collectRegisteredIdsFromRegistries(registry_text)
+    local defs = parseScriptTraitDefinitions(script_text)
+    local translation_keys = parseTranslationKeys(translation_text)
+    local def_by_trait = {}
+    local script_trait_keys = {}
+
+    for _, def in ipairs(defs) do
+        def_by_trait[def.block_id] = def
+        local trait_key = def.block_id:match("^UniversalTraits:(UT_[A-Za-z0-9_]+)$")
+        if trait_key then
+            script_trait_keys[trait_key] = true
+        end
+    end
+
+    return {
+        registered_ids = registered_ids,
+        defs = defs,
+        def_by_trait = def_by_trait,
+        script_trait_keys = script_trait_keys,
+        translation_keys = translation_keys,
+    }
 end
 
 -- Verify all 199 expected trait IDs are registered in CharacterTrait._registered
@@ -352,19 +430,9 @@ test("total registration count is 198", function()
 end)
 
 test("script trait definitions resolve cleanly and preserve UT_MET coverage", function()
-    local registry_file = io.open(base .. "../media/registries.lua", "r")
-    assert_true(registry_file ~= nil, "failed to open registries.lua")
-    local registry_text = registry_file:read("*a")
-    registry_file:close()
-
-    local file = io.open(base .. "../media/scripts/UT_character_traits.txt", "r")
-    assert_true(file ~= nil, "failed to open UT_character_traits.txt")
-
-    local text = file:read("*a")
-    file:close()
-
-    local registered_ids = collectRegisteredIdsFromRegistries(registry_text)
-    local defs = parseScriptTraitDefinitions(text)
+    local state = loadTraitConsistencyState()
+    local registered_ids = state.registered_ids
+    local defs = state.defs
     local me_by_trait = {}
     local def_by_trait = {}
 
@@ -411,6 +479,72 @@ test("script trait definitions resolve cleanly and preserve UT_MET coverage", fu
                 end
             end
         end
+    end
+end)
+
+test("trait registry, scripts, and translations stay in sync", function()
+    local state = loadTraitConsistencyState()
+    local registered_ids = state.registered_ids
+    local defs = state.defs
+    local def_by_trait = state.def_by_trait
+    local script_trait_keys = state.script_trait_keys
+    local translation_keys = state.translation_keys
+
+    for registered_id in pairs(registered_ids) do
+        assert_true(def_by_trait[registered_id] ~= nil,
+            "registry entry missing script definition: " .. registered_id)
+    end
+
+    for _, def in ipairs(defs) do
+        local trait_key = def.block_id:match("^UniversalTraits:(UT_[A-Za-z0-9_]+)$")
+        assert_true(trait_key ~= nil, "unexpected trait id format: " .. tostring(def.block_id))
+        assert_true(type(def.ui_name) == "string" and def.ui_name ~= "",
+            def.block_id .. " missing UIName")
+        assert_true(type(def.ui_description) == "string" and def.ui_description ~= "",
+            def.block_id .. " missing UIDescription")
+        assert_true(translation_keys[def.ui_name] == true,
+            def.block_id .. " missing UIName key in UI.json: " .. def.ui_name)
+        assert_true(translation_keys[def.ui_description] == true,
+            def.block_id .. " missing UIDescription key in UI.json: " .. def.ui_description)
+    end
+
+    for key in pairs(translation_keys) do
+        local desc_trait_key = key:match("^UI_(UT_[A-Za-z0-9_]+)Desc$")
+        if desc_trait_key then
+            assert_true(script_trait_keys[desc_trait_key] == true,
+                "UI.json orphaned trait description key: " .. key)
+            assert_true(translation_keys["UI_" .. desc_trait_key] == true,
+                "UI.json missing paired name key: UI_" .. desc_trait_key)
+        else
+            local trait_key = key:match("^UI_(UT_[A-Za-z0-9_]+)$")
+            if trait_key then
+                assert_true(script_trait_keys[trait_key] == true,
+                    "UI.json orphaned trait name key: " .. key)
+                assert_true(translation_keys[key .. "Desc"] == true,
+                    "UI.json missing paired description key: " .. key .. "Desc")
+            end
+        end
+    end
+end)
+
+test("runtime trait lua files map to registered scripted traits", function()
+    local state = loadTraitConsistencyState()
+    local registered_ids = state.registered_ids
+    local def_by_trait = state.def_by_trait
+    local translation_keys = state.translation_keys
+    local trait_files = listTraitLuaFiles()
+
+    for trait_key in pairs(trait_files) do
+        local trait_id = "UniversalTraits:" .. trait_key
+        local def = def_by_trait[trait_id]
+        assert_true(registered_ids[trait_id] == true,
+            "trait lua file missing registry entry: " .. trait_key .. ".lua")
+        assert_true(def ~= nil,
+            "trait lua file missing script definition: " .. trait_key .. ".lua")
+        assert_true(translation_keys["UI_" .. trait_key] == true,
+            trait_key .. ".lua missing UI name key")
+        assert_true(translation_keys["UI_" .. trait_key .. "Desc"] == true,
+            trait_key .. ".lua missing UI description key")
     end
 end)
 
@@ -826,6 +960,7 @@ dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_flailer.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_lurcher.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_scardycat.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_pacer.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_trekker.lua")
 
 -- Helper: build a player with getSpottedList support
 local function MockUpdatePlayer(traitList, opts)
@@ -852,6 +987,12 @@ local function MockUpdatePlayer(traitList, opts)
         p:getModData()["UT_pacer_indoor_ticks"] = opts.indoorTicks
     end
     return p
+end
+
+local function firePlayerUpdates(player, count)
+    for _ = 1, count do
+        Events.OnPlayerUpdate:fire(player)
+    end
 end
 
 test("flailer stumble fires when panicked and sprinting", function()
@@ -900,6 +1041,44 @@ test("pacer applies unhappiness after 600 indoor ticks", function()
     assert_true(stats:get(CharacterStat.UNHAPPINESS) > startUnhappiness,
         "expected unhappiness to increase after 600 indoor ticks, got "
         .. tostring(stats:get(CharacterStat.UNHAPPINESS)))
+end)
+
+test("trekker restores walking endurance but preserves normal hunger rise", function()
+    local player = MockUpdatePlayer(
+        { "UniversalTraits:UT_trekker" },
+        { moving = true }
+    )
+    local stats = player:getStats()
+
+    stats:set(CharacterStat.ENDURANCE, 0.9)
+    stats:set(CharacterStat.HUNGER, 0.2)
+    firePlayerUpdates(player, 10)
+
+    stats:set(CharacterStat.ENDURANCE, 0.82)
+    stats:set(CharacterStat.HUNGER, 0.24)
+    firePlayerUpdates(player, 10)
+
+    assert_eq(stats:get(CharacterStat.ENDURANCE), 0.9,
+        "expected Trekker to refund endurance lost while walking")
+    assert_eq(stats:get(CharacterStat.HUNGER), 0.24,
+        "expected Trekker to leave normal hunger rise untouched")
+end)
+
+test("trekker does not refund endurance while idle", function()
+    local player = MockUpdatePlayer(
+        { "UniversalTraits:UT_trekker" },
+        { moving = false }
+    )
+    local stats = player:getStats()
+
+    stats:set(CharacterStat.ENDURANCE, 0.9)
+    firePlayerUpdates(player, 10)
+
+    stats:set(CharacterStat.ENDURANCE, 0.82)
+    firePlayerUpdates(player, 10)
+
+    assert_eq(stats:get(CharacterStat.ENDURANCE), 0.82,
+        "expected Trekker to leave idle endurance drain alone")
 end)
 
 -- ===== UT_batteringram collision tests =====

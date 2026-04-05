@@ -71,7 +71,9 @@ Run from repo root (`C:\Users\Admin\Documents\GIT\GameMods\PZMods\UTMods`):
 "C:\Users\Admin\AppData\Local\Programs\Lua\bin\lua.exe" UniversalTraits/test/run_tests.lua
 ```
 
-**Current passing counts:** 52 (UT_CORE) + 70 (UniversalTraits) = 122 passing.
+**Current passing counts:** 155 (UT_CORE) + 236 (UniversalTraits) = 391 passing.
+
+The UniversalTraits suite now includes a cross-file consistency audit that fails when registries, script definitions, translation keys, or `traits/UT_*.lua` files drift out of sync.
 
 ---
 
@@ -131,6 +133,13 @@ The `release/` folders hold only the minimal deployable mod package — no docs,
 
 Registration count test in `UniversalTraits/test/run_tests.lua` asserts **198**.
 When adding new traits, update this count and the test.
+
+The test suite also audits these relationships automatically:
+
+- every registered `UniversalTraits:UT_*` id must have a script definition
+- every script `UIName` and `UIDescription` key must exist in `UI.json`
+- every `UI_UT_*` / `UI_UT_*Desc` translation key must map back to a scripted trait
+- every runtime `traits/UT_*.lua` file must map to a registered and scripted trait
 
 ---
 
@@ -227,6 +236,8 @@ local function onEveryMinute()
 end
 Events.EveryOneMinute.Add(onEveryMinute)
 ```
+
+Trekker-specific note: vanilla B42 does not apply the exercise hunger stat path just for walking. In decompiled [IsoGameCharacter.java](c:/Users/Admin/Documents/GIT/GameMods/PZMods/PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java), walking still uses the normal hunger increase path; only running or `SwipeStatePlayer` switch to `hungerIncreaseWhenExercise`. Keep `UT_trekker` limited to walking endurance refund and do not zero out hunger drift.
 
 ---
 
