@@ -4,15 +4,23 @@
 
 UTCore = UTCore or {}
 
---- Nil-safe hasTrait check.
+-- Cache CharacterTrait objects by string ID to avoid repeated registry lookups.
+local _traitCache = {}
+
+--- Nil-safe hasTrait check (B42.16+ registry API).
 -- @param player IsoPlayer
 -- @param traitId string  full namespaced ID e.g. "UniversalTraits:UT_swift"
 -- @return boolean
 function UTCore.hasTrait(player, traitId)
     if not player then return false end
-    local traits = player:getTraits()
-    if not traits then return false end
-    return traits:contains(traitId)
+    if not instanceof(player, "IsoGameCharacter") then return false end
+    local ct = _traitCache[traitId]
+    if ct == nil then
+        ct = CharacterTrait.get(ResourceLocation.of(traitId))
+        _traitCache[traitId] = ct or false
+    end
+    if ct == false then return false end
+    return player:hasTrait(ct)
 end
 
 local function safeCall(target, methodName)

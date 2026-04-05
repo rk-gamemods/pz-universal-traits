@@ -15,30 +15,80 @@ function MockPlayer(traits, opts)
     local maxWeight = 8
     local primaryHandItem = opts.primaryHandItem or nil
     local perkLevels = opts.perkLevels or {}
+    -- B42.16: pre-register traits so CharacterTrait.get() resolves them
+    local traitSet = {}
+    for _, id in ipairs(t) do
+        traitSet[id] = true
+        local rl = ResourceLocation.of(id)
+        local key = rl._ns .. ":" .. rl._path
+        if not CharacterTrait._byKey[key] then
+            CharacterTrait.register(id)
+        end
+    end
     local statsData = {
-        panic     = 0,
-        stress    = 0,
-        hunger    = 0,
-        thirst    = 0,
-        fatigue   = 0,
-        endurance = 1,
-        pain      = 0,
+        panic       = 0,
+        stress      = 0,
+        hunger      = 0,
+        thirst      = 0,
+        fatigue     = 0,
+        endurance   = 1,
+        pain        = 0,
+        boredom     = 0,
+        drunkenness = 0,
+        unhappiness = 0,
     }
     local stats = {
-        getPanic     = function(self) return statsData.panic end,
-        setPanic     = function(self, v) statsData.panic = v end,
-        getPain      = function(self) return statsData.pain end,
-        setPain      = function(self, v) statsData.pain = v end,
-        getStress    = function(self) return statsData.stress end,
-        setStress    = function(self, v) statsData.stress = v end,
-        getHunger    = function(self) return statsData.hunger end,
-        setHunger    = function(self, v) statsData.hunger = v end,
-        getThirst    = function(self) return statsData.thirst end,
-        setThirst    = function(self, v) statsData.thirst = v end,
-        getFatigue   = function(self) return statsData.fatigue end,
-        setFatigue   = function(self, v) statsData.fatigue = v end,
-        getEndurance = function(self) return statsData.endurance end,
-        setEndurance = function(self, v) statsData.endurance = v end,
+        getPanic       = function(self) return statsData.panic end,
+        setPanic       = function(self, v) statsData.panic = v end,
+        getPain        = function(self) return statsData.pain end,
+        setPain        = function(self, v) statsData.pain = v end,
+        getStress      = function(self) return statsData.stress end,
+        setStress      = function(self, v) statsData.stress = v end,
+        getHunger      = function(self) return statsData.hunger end,
+        setHunger      = function(self, v) statsData.hunger = v end,
+        getThirst      = function(self) return statsData.thirst end,
+        setThirst      = function(self, v) statsData.thirst = v end,
+        getFatigue     = function(self) return statsData.fatigue end,
+        setFatigue     = function(self, v) statsData.fatigue = v end,
+        getEndurance   = function(self) return statsData.endurance end,
+        setEndurance   = function(self, v) statsData.endurance = v end,
+        getBoredom     = function(self) return statsData.boredom end,
+        setBoredom     = function(self, v) statsData.boredom = v end,
+        getDrunkenness = function(self) return statsData.drunkenness end,
+        setDrunkenness = function(self, v) statsData.drunkenness = v end,
+        getUnhappiness = function(self) return statsData.unhappiness end,
+        setUnhappiness = function(self, v) statsData.unhappiness = v end,
+        -- Generic CharacterStat interface (B42.16)
+        get = function(self, stat)
+            local map = {
+                [CharacterStat.PAIN] = statsData.pain, [CharacterStat.PANIC] = statsData.panic,
+                [CharacterStat.STRESS] = statsData.stress, [CharacterStat.HUNGER] = statsData.hunger,
+                [CharacterStat.THIRST] = statsData.thirst, [CharacterStat.BOREDOM] = statsData.boredom,
+                [CharacterStat.FATIGUE] = statsData.fatigue, [CharacterStat.UNHAPPINESS] = statsData.unhappiness,
+            }
+            return map[stat] or 0
+        end,
+        set = function(self, stat, v)
+            local setters = {
+                [CharacterStat.PAIN] = function(val) statsData.pain = val end,
+                [CharacterStat.PANIC] = function(val) statsData.panic = val end,
+                [CharacterStat.STRESS] = function(val) statsData.stress = val end,
+                [CharacterStat.HUNGER] = function(val) statsData.hunger = val end,
+                [CharacterStat.THIRST] = function(val) statsData.thirst = val end,
+                [CharacterStat.BOREDOM] = function(val) statsData.boredom = val end,
+                [CharacterStat.FATIGUE] = function(val) statsData.fatigue = val end,
+                [CharacterStat.UNHAPPINESS] = function(val) statsData.unhappiness = val end,
+            }
+            if setters[stat] then setters[stat](v) end
+        end,
+        add = function(self, stat, delta)
+            local cur = self:get(stat)
+            self:set(stat, cur + delta)
+        end,
+        remove = function(self, stat, delta)
+            local cur = self:get(stat)
+            self:set(stat, cur - delta)
+        end,
     }
     local x, y = 0, 0
     local xpCalls = {}
@@ -51,7 +101,27 @@ function MockPlayer(traits, opts)
     local _bumpFall   = false
     local _sprinting  = false
     local _running    = false
+    local _driving    = opts.driving or false
+    local _vehicle    = opts.vehicle or nil
+    local _inventory  = opts.inventory or nil
+    local _outside    = (opts.outside == nil) and true or opts.outside
+    local _moving     = opts.moving or false
+    local _z          = opts.z or 0
+    local _nutrition  = opts.nutrition or {
+        getWeight    = function(self) return 80 end,
+        getCalories  = function(self) return 2000 end,
+        setCalories  = function(self, v) end,
+        getCarbohydrates = function(self) return 50 end,
+        getProteins  = function(self) return 50 end,
+        getLipids    = function(self) return 50 end,
+    }
     return {
+        -- B42.16 hasTrait(CharacterTrait): takes a CharacterTrait object
+        hasTrait = function(self, ct)
+            if not ct then return false end
+            return traitSet[ct._id] == true
+        end,
+        -- Legacy getTraits for backward compat
         getTraits = function(self)
             return {
                 contains = function(_, id)
@@ -62,6 +132,20 @@ function MockPlayer(traits, opts)
                 end
             }
         end,
+        getCharacterTraits = function(self)
+            local knownList = {}
+            for _, id in ipairs(t) do
+                local rl = ResourceLocation.of(id)
+                local ct = CharacterTrait._byKey[rl._ns .. ":" .. rl._path]
+                if ct then knownList[#knownList + 1] = ct end
+            end
+            return {
+                getKnownTraits = function() return { size = function() return #knownList end, get = function(_, i) return knownList[i + 1] end } end,
+                add = function(_, ct) if ct and ct._id then traitSet[ct._id] = true end end,
+                remove = function(_, ct) if ct and ct._id then traitSet[ct._id] = nil end end,
+            }
+        end,
+        _mockType = "IsoPlayer",
         getModData          = function(self) return moddata end,
         getMaxWeightBase    = function(self) return maxWeight end,
         setMaxWeightBase    = function(self, v) maxWeight = v end,
@@ -102,6 +186,15 @@ function MockPlayer(traits, opts)
         setSleeping          = function(self, v) _sleeping = v end,
         makeNoise            = function(self, v) table.insert(_noiseCalls, v) end,
         getNoiseCalls        = function(self) return _noiseCalls end,
+        isDriving            = function(self) return _driving end,
+        getVehicle           = function(self) return _vehicle end,
+        setDriving           = function(self, v) _driving = v end,
+        setVehicle           = function(self, v) _vehicle = v end,
+        getInventory         = function(self) return _inventory end,
+        isOutside            = function(self) return _outside end,
+        isMoving             = function(self) return _moving end,
+        getZ                 = function(self) return _z end,
+        getNutrition         = function(self) return _nutrition end,
     }
 end
 
@@ -152,6 +245,8 @@ Events.OnPlayerMove           = _makeEventTable()
 Events.OnGameBoot             = _makeEventTable()
 Events.OnWeaponHitCharacter   = _makeEventTable()
 Events.OnCreatePlayer         = _makeEventTable()
+Events.OnVehicleEnter         = _makeEventTable()
+Events.OnVehicleExit          = _makeEventTable()
 
 _G.getPlayer = function() return nil end  -- tests override this
 

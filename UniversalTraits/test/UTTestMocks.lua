@@ -1,15 +1,52 @@
 -- UTTestMocks.lua
 -- Mock PZ globals for UniversalTraits unit tests.
 
+-- ============================================================
+-- B42.16 Registry API mocks
+-- ============================================================
+
+-- instanceof: PZ global that checks Java class hierarchy.
+-- In tests, MockPlayer objects are tagged with _mockType = "IsoGameCharacter".
+function instanceof(obj, className)
+    if obj == nil then return false end
+    if type(obj) ~= "table" then return false end
+    if obj._mockType == className then return true end
+    -- IsoPlayer is-a IsoGameCharacter
+    if className == "IsoGameCharacter" and obj._mockType == "IsoPlayer" then return true end
+    return false
+end
+
+-- ResourceLocation mock: mirrors PZ's ResourceLocation.of("namespace:path").
+ResourceLocation = {
+    of = function(id)
+        if not id or id == "" then error("Identifier cannot be null or empty") end
+        local ns, path = id:match("^([^:]+):(.+)$")
+        if not ns then ns = "base"; path = id end
+        return { _ns = ns:lower(), _path = path:lower(), toString = function(self) return self._ns .. ":" .. self._path end }
+    end,
+}
+
 -- Mock CharacterTrait registry (captures register() calls)
+-- B42.16: register() returns an object; get() looks it up by ResourceLocation.
 CharacterTrait = {
     _registered = {},
+    _byKey = {},
     register = function(id)
         CharacterTrait._registered[id] = true
-        return id
+        local rl = ResourceLocation.of(id)
+        local key = rl._ns .. ":" .. rl._path
+        local ct = { _id = id, _key = key }
+        CharacterTrait._byKey[key] = ct
+        return ct
+    end,
+    get = function(rl)
+        if not rl then return nil end
+        local key = rl._ns .. ":" .. rl._path
+        return CharacterTrait._byKey[key]
     end,
     reset = function()
         CharacterTrait._registered = {}
+        CharacterTrait._byKey = {}
     end,
 }
 
@@ -168,6 +205,14 @@ function MockPlayer(traitList, opts)
     local moddata = opts.moddata or {}
     local traits = {}
     for _, id in ipairs(traitList or {}) do traits[id] = true end
+    -- B42.16: register trait objects so CharacterTrait.get() can resolve them
+    for _, id in ipairs(traitList or {}) do
+        local rl = ResourceLocation.of(id)
+        local key = rl._ns .. ":" .. rl._path
+        if not CharacterTrait._byKey[key] then
+            CharacterTrait.register(id)
+        end
+    end
     local stats = opts.stats or makeStats(opts)
     local bodyDamage = opts.bodyDamage or makeBodyDamage(opts)
     local nutrition = opts.nutrition or makeNutrition(opts)
@@ -197,9 +242,29 @@ function MockPlayer(traitList, opts)
         _playerNum    = opts.playerNum or 0,
         _vehicle      = opts.vehicle,
         getModData = function(self) return moddata end,
+        -- B42.16 hasTrait(CharacterTrait): takes a CharacterTrait object, not a string
+        hasTrait = function(self, ct)
+            if not ct then return false end
+            return traits[ct._id] == true
+        end,
+        -- Legacy getTraits for backward compat with any remaining string-based checks
         getTraits  = function(self)
             return { contains = function(_, id) return traits[id] == true end }
         end,
+        getCharacterTraits = function(self)
+            local knownList = {}
+            for id, _ in pairs(traits) do
+                local rl = ResourceLocation.of(id)
+                local ct = CharacterTrait._byKey[rl._ns .. ":" .. rl._path]
+                if ct then knownList[#knownList + 1] = ct end
+            end
+            return {
+                getKnownTraits = function() return { size = function() return #knownList end, get = function(_, i) return knownList[i + 1] end } end,
+                add = function(_, ct) if ct and ct._id then traits[ct._id] = true end end,
+                remove = function(_, ct) if ct and ct._id then traits[ct._id] = nil end end,
+            }
+        end,
+        _mockType = "IsoPlayer",
         getStats      = function(self) return stats end,
         getBodyDamage = function(self) return bodyDamage end,
         setBodyDamage = function(self, value) bodyDamage = value end,

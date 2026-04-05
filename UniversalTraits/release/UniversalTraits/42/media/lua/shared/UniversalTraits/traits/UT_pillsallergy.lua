@@ -1,11 +1,4 @@
 -- UT_pillsallergy.lua
--- Pills allergy: medicine reaction marker
-
-local TRAIT_ID = "UniversalTraits:UT_pillsallergy"
-
-local function onNewGame(player)
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
-    player:getModData()["UT_pillsAllergyFlag"] = true
-end
-
-Events.OnNewGame.Add(onNewGame)
+-- Pills allergy: food sickness reaction when consuming any medication.
+-- Mechanic implemented in UT_ItemConsumptionHooks.lua (ISEatFoodAction override).
+-- Taking any medication raises food sickness by +15.

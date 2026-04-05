@@ -39,82 +39,89 @@ local function assert_contains(list, value, msg)
 end
 
 -- registries.lua populates UTTraitsRegistries
+-- B42.16: CharacterTrait.register() returns a CharacterTrait object (table with _id),
+-- not a string. Tests verify the _id field matches the expected namespace:path.
+local function assert_trait_registered(actual, expectedId)
+    assert_true(type(actual) == "table", expectedId .. " should be a CharacterTrait object (table), got " .. type(actual))
+    assert_eq(actual._id, expectedId)
+end
+
 test("UTTraitsRegistries table exists", function()
     assert_true(type(UTTraitsRegistries) == "table", "UTTraitsRegistries should be a table")
 end)
 
 test("UT_preparedfood registered", function()
-    assert_eq(UTTraitsRegistries.UT_preparedfood, "UniversalTraits:UT_preparedfood")
+    assert_trait_registered(UTTraitsRegistries.UT_preparedfood, "UniversalTraits:UT_preparedfood")
 end)
 
 test("UT_swift registered", function()
-    assert_eq(UTTraitsRegistries.UT_swift, "UniversalTraits:UT_swift")
+    assert_trait_registered(UTTraitsRegistries.UT_swift, "UniversalTraits:UT_swift")
 end)
 
 test("UT_martial registered", function()
-    assert_eq(UTTraitsRegistries.UT_martial, "UniversalTraits:UT_martial")
+    assert_trait_registered(UTTraitsRegistries.UT_martial, "UniversalTraits:UT_martial")
 end)
 
 test("UT_terminator registered", function()
-    assert_eq(UTTraitsRegistries.UT_terminator, "UniversalTraits:UT_terminator")
+    assert_trait_registered(UTTraitsRegistries.UT_terminator, "UniversalTraits:UT_terminator")
 end)
 
 test("UT_spears registered", function()
-    assert_eq(UTTraitsRegistries.UT_spears, "UniversalTraits:UT_spears")
+    assert_trait_registered(UTTraitsRegistries.UT_spears, "UniversalTraits:UT_spears")
 end)
 
 test("UT_ingenuitive registered", function()
-    assert_eq(UTTraitsRegistries.UT_ingenuitive, "UniversalTraits:UT_ingenuitive")
+    assert_trait_registered(UTTraitsRegistries.UT_ingenuitive, "UniversalTraits:UT_ingenuitive")
 end)
 
 test("UT_packmule registered", function()
-    assert_eq(UTTraitsRegistries.UT_packmule, "UniversalTraits:UT_packmule")
+    assert_trait_registered(UTTraitsRegistries.UT_packmule, "UniversalTraits:UT_packmule")
 end)
 
 test("UT_staunch registered", function()
-    assert_eq(UTTraitsRegistries.UT_staunch, "UniversalTraits:UT_staunch")
+    assert_trait_registered(UTTraitsRegistries.UT_staunch, "UniversalTraits:UT_staunch")
 end)
 
 -- Phase 2 spot-checks
 test("UT_fast registered", function()
-    assert_eq(UTTraitsRegistries.UT_fast, "UniversalTraits:UT_fast")
+    assert_trait_registered(UTTraitsRegistries.UT_fast, "UniversalTraits:UT_fast")
 end)
 
 test("UT_analgesia registered", function()
-    assert_eq(UTTraitsRegistries.UT_analgesia, "UniversalTraits:UT_analgesia")
+    assert_trait_registered(UTTraitsRegistries.UT_analgesia, "UniversalTraits:UT_analgesia")
 end)
 
 test("UT_noxpshooter registered", function()
-    assert_eq(UTTraitsRegistries.UT_noxpshooter, "UniversalTraits:UT_noxpshooter")
+    assert_trait_registered(UTTraitsRegistries.UT_noxpshooter, "UniversalTraits:UT_noxpshooter")
 end)
 
 test("UT_photographicmemory registered", function()
-    assert_eq(UTTraitsRegistries.UT_photographicmemory, "UniversalTraits:UT_photographicmemory")
+    assert_trait_registered(UTTraitsRegistries.UT_photographicmemory, "UniversalTraits:UT_photographicmemory")
 end)
 
 test("UT_gourmand registered", function()
-    assert_eq(UTTraitsRegistries.UT_gourmand, "UniversalTraits:UT_gourmand")
+    assert_trait_registered(UTTraitsRegistries.UT_gourmand, "UniversalTraits:UT_gourmand")
 end)
 
 -- Phase 3 spot-checks
 test("UT_depressive registered", function()
-    assert_eq(UTTraitsRegistries.UT_depressive, "UniversalTraits:UT_depressive")
+    assert_trait_registered(UTTraitsRegistries.UT_depressive, "UniversalTraits:UT_depressive")
 end)
 
 test("UT_alcoholic_II registered", function()
-    assert_eq(UTTraitsRegistries.UT_alcoholic_II, "UniversalTraits:UT_alcoholic_II")
+    assert_trait_registered(UTTraitsRegistries.UT_alcoholic_II, "UniversalTraits:UT_alcoholic_II")
 end)
 
 test("UT_gunspecialist_II registered", function()
-    assert_eq(UTTraitsRegistries.UT_gunspecialist_II, "UniversalTraits:UT_gunspecialist_II")
+    assert_trait_registered(UTTraitsRegistries.UT_gunspecialist_II, "UniversalTraits:UT_gunspecialist_II")
 end)
 
 test("UT_superimmune registered", function()
-    assert_eq(UTTraitsRegistries.UT_superimmune, "UniversalTraits:UT_superimmune")
+    assert_trait_registered(UTTraitsRegistries.UT_superimmune, "UniversalTraits:UT_superimmune")
 end)
 
 test("UT_indefatigable registered", function()
-    assert_eq(UTTraitsRegistries.UT_indefatigable, "UniversalTraits:UT_indefatigable")
+    assert_trait_registered(UTTraitsRegistries.UT_indefatigable, "UniversalTraits:UT_indefatigable")
 end)
 
 local function collectRegisteredIdsFromRegistries(text)

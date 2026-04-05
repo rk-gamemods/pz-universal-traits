@@ -40,6 +40,13 @@ end
 local function assert_eq(a, b, msg)
     if a ~= b then error((msg or "") .. " expected=" .. tostring(b) .. " got=" .. tostring(a), 2) end
 end
+local function assert_true(v, msg)
+    if not v then error((msg or "expected true, got falsy"), 2) end
+end
+-- Export for dofile'd test modules
+_G.test = test
+_G.assert_eq = assert_eq
+_G.assert_true = assert_true
 
 -- hasTrait
 test("hasTrait returns true when player has trait", function()
@@ -466,9 +473,10 @@ test("MeleeDelayHook uses strength-scaled formula for UT_heavyswing", function()
         perkLevels = { Strength = 5 },
     })
     -- Perks global not defined in test env; getPerkLevel uses key "Strength"
+    local _savedPerks = _G.Perks
     _G.Perks = { Strength = "Strength" }
     UTCore._meleeDelayOnPlayerUpdate(p)
-    _G.Perks = nil
+    _G.Perks = _savedPerks
     -- newDelay = 20 - 20 * (5 * 0.1) = 20 - 10 = 10
     assert_eq(p:getModData()["_lastMeleeDelay"], 10, "expected delay 10 (strength-scaled)")
 end)
@@ -838,6 +846,9 @@ test("WorkSpeedHook does not apply transferSpeedMult to ISCraftItem", function()
     local result = UTCore.applyWorkDuration(action, 100)
     assert_eq(result, 100, "expected no transfer mod on a craft action")
 end)
+
+-- ===== PZ API Surface Tests =====
+dofile(base .. "test_pz_api_surface.lua")
 
 print(string.format("\n%d passed, %d failed", passed, failed))
 if failed > 0 then os.exit(1) end

@@ -36,6 +36,8 @@ The following P0 and P1 issues were implemented and are no longer outstanding as
 | File | Change |
 |------|--------|
 | `UT_character_traits.txt` | Added `XPBoosts = Fitness=1;Sprinting=1` to `UT_physicallyactive` script block |
+| `UT_character_traits.txt` | FIXED: `LongBlunt` → `Blunt` in 11 XPBoosts entries (B42 has no LongBlunt perk; valid names are Blunt and SmallBlunt). Affected traits: UT_blunttwirl, UT_cruelty, UT_problunt, UT_specweapons, UT_specallround, UT_specallaround(?), UT_twohanded_blunts, UT_onehanded_blunts, UT_long_blunts (all blunt-category traits) |
+| `UT_character_traits.txt` | FIXED: `Metalworking` → `MetalWelding` in UT_speccrafting XPBoosts (B42 perk is MetalWelding, not Metalworking) |
 
 ### Translation File Modified
 
