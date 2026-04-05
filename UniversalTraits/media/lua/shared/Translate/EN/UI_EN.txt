@@ -561,7 +561,7 @@ UI_EN = {
     UI_UT_panicattacksDesc      = "Without warning, panic spikes by +0.4. Happens at roughly 5% chance per in-game minute — about 3 times per hour on average.",
 
     UI_UT_fearofthedark         = "Fear of the Dark",
-    UI_UT_fearofthedarkDesc     = "Darkness is not just inconvenient for you, it is genuinely frightening. Being in the dark wears away at your composure.",
+    UI_UT_fearofthedarkDesc        = "Actual darkness terrifies you — not night time, but real darkness. When the light level around you drops below 30%, panic rises by +0.04 every minute. Above 70% light, panic slowly eases by -0.01 per minute. Indoor lighting counts; being outside at noon counts. A dark basement at midday is just as frightening as being outside at midnight.",
 
     UI_UT_coldsensitive         = "Cold Sensitive",
     UI_UT_coldsensitiveDesc     = "Cold cuts through you faster than it should. When your body temperature drops below 36°C, stress increases by +0.08 and fatigue by +0.05 every 10 minutes.",

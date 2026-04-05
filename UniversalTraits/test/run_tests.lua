@@ -1175,29 +1175,29 @@ Events.OnGameStart.fire()
 
 -- ─── UT_fearofthedark ─────────────────────────────────────────────────────────
 
-test("fearofthedark raises panic at night", function()
-    local player = MockPlayer({ "UniversalTraits:UT_fearofthedark" }, { panic = 0.1 })
-    setMockTimeOfDay(0.1)  -- nighttime (< 0.25)
+test("fearofthedark raises panic in darkness (lightLevel < 0.3)", function()
+    local sq = { getLightLevel = function() return 0.1 end }
+    local player = MockPlayer({ "UniversalTraits:UT_fearofthedark" }, { panic = 0.1, square = sq })
     withActivePlayer(player, function()
         Events.EveryOneMinute:fire()
     end)
     local panic = player:getStats():getPanic()
-    assert_eq(math.floor(panic * 1000 + 0.5) / 1000, 0.14, "panic should be 0.1 + 0.04 = 0.14 at night")
+    assert_eq(math.floor(panic * 1000 + 0.5) / 1000, 0.14, "panic should be 0.1 + 0.04 = 0.14 in darkness")
 end)
 
-test("fearofthedark reduces panic during daytime", function()
-    local player = MockPlayer({ "UniversalTraits:UT_fearofthedark" }, { panic = 0.1 })
-    setMockTimeOfDay(0.5)  -- daytime (0.25–0.75)
+test("fearofthedark reduces panic in bright light (lightLevel > 0.7)", function()
+    local sq = { getLightLevel = function() return 0.9 end }
+    local player = MockPlayer({ "UniversalTraits:UT_fearofthedark" }, { panic = 0.1, square = sq })
     withActivePlayer(player, function()
         Events.EveryOneMinute:fire()
     end)
     local panic = player:getStats():getPanic()
-    assert_eq(math.floor(panic * 1000 + 0.5) / 1000, 0.09, "panic should be 0.1 - 0.01 = 0.09 during day")
+    assert_eq(math.floor(panic * 1000 + 0.5) / 1000, 0.09, "panic should be 0.1 - 0.01 = 0.09 in bright light")
 end)
 
 test("fearofthedark does not affect player without the trait", function()
-    local player = MockPlayer({}, { panic = 0.1 })
-    setMockTimeOfDay(0.1)
+    local sq = { getLightLevel = function() return 0.1 end }
+    local player = MockPlayer({}, { panic = 0.1, square = sq })
     withActivePlayer(player, function()
         Events.EveryOneMinute:fire()
     end)
