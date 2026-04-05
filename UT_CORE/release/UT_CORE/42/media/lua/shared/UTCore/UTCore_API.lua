@@ -17,9 +17,9 @@ function UTCore.hasTrait(player, traitId)
     local ct = _traitCache[traitId]
     if ct == nil then
         ct = CharacterTrait.get(ResourceLocation.of(traitId))
-        _traitCache[traitId] = ct or false
+        if ct then _traitCache[traitId] = ct end
     end
-    if ct == false then return false end
+    if not ct then return false end
     return player:hasTrait(ct)
 end
 

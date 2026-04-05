@@ -23,9 +23,6 @@ sync_and_deploy() {
     cp "$mod_info" "$release_root/"
     cp "$mod_info" "$release_root/42/"
 
-    # Remove dev-only files that must not ship
-    rm -f "$release_media/lua/shared/Translate/EN/UI_EN.txt"
-
     # Clean deploy: delete old, copy fresh
     rm -rf "$dest"
     cp -r "$release_root/." "$dest/"

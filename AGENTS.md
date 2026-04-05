@@ -47,8 +47,7 @@ UniversalTraits/                          ← repo root
   UniversalTraits/
     media/registries.lua                  ← CharacterTrait.register() for all traits
     media/scripts/UT_character_traits.txt ← script-block definitions
-    media/lua/shared/Translate/EN/UI_EN.txt ← translation source text
-    media/lua/shared/Translate/EN/UI.json  ← generated translation JSON used by deployed mod
+    media/lua/shared/Translate/EN/UI.json  ← translation source text used by the game
     media/lua/shared/UniversalTraits/
       UT_MET.lua                          ← runtime mutual exclusivity table
       traits/UT_<id>.lua                  ← per-trait Lua effect files (121 files)
@@ -178,17 +177,20 @@ UTTraitsRegistries.UT_<id> = CharacterTrait.register("UniversalTraits:UT_<id>")
 
 ## Translation Format
 
-In `UniversalTraits/media/lua/shared/Translate/EN/UI_EN.txt`:
+In `UniversalTraits/media/lua/shared/Translate/EN/UI.json`:
 
-```lua
-UI_UT_<id>             = "Display Name",
-UI_UT_<id>Desc         = "Flavor text description.",
+```json
+{
+  "UI_UT_<id>": "Display Name",
+  "UI_UT_<id>Desc": "Flavor text description."
+}
 ```
 
-Note: Script blocks reference `UI_UT_<id>desc` (lowercase d), translations use `UI_UT_<id>Desc`
-(capital D). These are separate namespaces — both exist and both are needed.
+Project Zomboid loads translation JSON files directly through `zombie.core.Translator`
+using the pattern `media/lua/shared/Translate/<LANG>/<NAME>.json`. `UI_EN.txt` is not
+required by the game and should not exist in source, release, or live copies.
 
-After editing `UI_EN.txt`, regenerate `UniversalTraits/media/lua/shared/Translate/EN/UI.json` by running `convert_translations.lua`, then sync the generated JSON into release and live copies. Do not assume `UI_EN.txt` alone is enough for the in-game deployed text.
+Edit `UI.json` directly, then sync that JSON into release and live copies.
 
 ---
 

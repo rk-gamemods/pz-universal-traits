@@ -163,7 +163,6 @@ end
 -- Reapplying the same state is a no-op; switching states always recalculates from baseline.
 function UTCore.applyVehicleMod(player, stateKey, mods, vehicleOverride)
     if not player then return end
-    if player.isDriving and not player:isDriving() then return end
 
     local vehicle = vehicleOverride or (player.getVehicle and player:getVehicle())
     if not vehicle then return end
@@ -228,7 +227,8 @@ function UTCore.syncVehicleTrait(player, vehicle)
     local targetVehicle = vehicle or (player.getVehicle and player:getVehicle())
     if not targetVehicle then return end
 
-    if player.isDriving and not player:isDriving() then
+    -- If called without an explicit vehicle (e.g. OnCreatePlayer), check if still driving.
+    if not vehicle and player.isDriving and not player:isDriving() then
         UTCore.restoreVehicleMod(targetVehicle)
         return
     end
