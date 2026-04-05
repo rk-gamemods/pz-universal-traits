@@ -40,7 +40,7 @@ Use this for any change to a trait's behavior, cost, description, or exclusivity
 
 - [ ] Sync `UT_CORE/release/UT_CORE/42/media/` from `UT_CORE/media/` if UT_CORE changed
 - [ ] Sync `UniversalTraits/release/UniversalTraits/42/media/` from `UniversalTraits/media/`
-- [ ] If translations changed, verify `UI.json` was synced into source, release, and live copies and that `UI_EN.txt` is absent
+- [ ] If translations changed, verify `UI.json` was synced into source, release, and live copies and that no legacy text translation file reappeared
 - [ ] Copy root `mod.info` into each release package root
 - [ ] Deploy live to `C:\Users\Admin\Zomboid\mods\<ModName>\42\media\`
 - [ ] Verify source, release, and live hashes match for any runtime file changed

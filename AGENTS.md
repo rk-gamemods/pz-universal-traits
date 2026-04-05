@@ -187,8 +187,9 @@ In `UniversalTraits/media/lua/shared/Translate/EN/UI.json`:
 ```
 
 Project Zomboid loads translation JSON files directly through `zombie.core.Translator`
-using the pattern `media/lua/shared/Translate/<LANG>/<NAME>.json`. `UI_EN.txt` is not
-required by the game and should not exist in source, release, or live copies.
+using the pattern `media/lua/shared/Translate/<LANG>/<NAME>.json`. Legacy text
+translation source files are not required by the game and should not exist in
+source, release, or live copies.
 
 Edit `UI.json` directly, then sync that JSON into release and live copies.
 

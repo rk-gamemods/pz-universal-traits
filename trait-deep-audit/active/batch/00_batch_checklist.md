@@ -43,7 +43,7 @@ The following P0 and P1 issues were implemented and are no longer outstanding as
 
 | File | Changes |
 |------|---------|
-| `Translate/EN/UI_EN.txt` | Updated descriptions for: UT_allergic, UT_antivaxxer, UT_physicallyactive, UT_humanhamster, UT_scardycat, UT_butterfingers, UT_incomprehensive, UT_gunspecialist_III, UT_addictedtocaffeine — all descriptions now accurately reflect implemented mechanics with specific values |
+| `Translate/EN/UI.json` | Updated descriptions for: UT_allergic, UT_antivaxxer, UT_physicallyactive, UT_humanhamster, UT_scardycat, UT_butterfingers, UT_incomprehensive, UT_gunspecialist_III, UT_addictedtocaffeine — all descriptions now accurately reflect implemented mechanics with specific values |
 
 ### P0 False Positives (Confirmed Functional — No Code Change Needed)
 
