@@ -10,16 +10,16 @@ local function handler(player)
     local bd = player:getBodyDamage()
     if not bd then return end
     local stats = player:getStats()
-    local wetness = bd:getWetness()
+    local wetness = stats:get(CharacterStat.WETNESS)
 
     if player:isSprinting() then
-        bd:setWetness(math.min(wetness + 0.05, 1.0))
+        stats:set(CharacterStat.WETNESS, math.min(wetness + 5, 100))
         stats:add(CharacterStat.THIRST, 0.03)
     elseif player:isRunning() then
-        bd:setWetness(math.min(wetness + 0.03, 1.0))
+        stats:set(CharacterStat.WETNESS, math.min(wetness + 3, 100))
         stats:add(CharacterStat.THIRST, 0.02)
     else
-        bd:setWetness(math.min(wetness + 0.01, 1.0))
+        stats:set(CharacterStat.WETNESS, math.min(wetness + 1, 100))
     end
 end
 
@@ -29,7 +29,7 @@ local function onWeaponSwing(attacker, weapon, target, hitPoint)
     local bd = attacker:getBodyDamage()
     if not bd then return end
     local stats = attacker:getStats()
-    bd:setWetness(math.min(bd:getWetness() + 0.02, 1.0))
+    stats:set(CharacterStat.WETNESS, math.min(stats:get(CharacterStat.WETNESS) + 2, 100))
     stats:add(CharacterStat.THIRST, 0.01)
 end
 

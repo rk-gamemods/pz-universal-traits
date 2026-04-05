@@ -132,7 +132,7 @@ end)
 test("applySpawnStats sets panic via stats", function()
     local p = MockPlayer()
     UTCore.applySpawnStats(p, { panic = 0.75 })
-    assert_eq(p:getStats():getPanic(), 0.75)
+    assert_eq(p:getStats():get(CharacterStat.PANIC), 0.75)
 end)
 
 -- registerPeriodicHandler
@@ -396,23 +396,18 @@ test("ReadingHook applyReadingMoodEffects clears panic and stress and improves m
     local p = MockPlayer({})
     p:getModData()["UT_readCalm"] = true
     p:getModData()["UT_readMoodBonus"] = 5
-    p:getStats():setPanic(20)
-    p:getStats():setStress(15)
-    p:setBodyDamage({
-        _boredom = 30,
-        _unhappy = 40,
-        getBoredomLevel = function(self) return self._boredom end,
-        setBoredomLevel = function(self, v) self._boredom = v end,
-        getUnhappinessLevel = function(self) return self._unhappy end,
-        setUnhappinessLevel = function(self, v) self._unhappy = v end,
-    })
+    p:getStats():set(CharacterStat.PANIC, 20)
+    p:getStats():set(CharacterStat.STRESS, 15)
+    p:getStats():set(CharacterStat.BOREDOM, 30)
+    p:getStats():set(CharacterStat.UNHAPPINESS, 40)
+    p:setBodyDamage({})
 
     UTCore.applyReadingMoodEffects(p, 1.0)
 
-    assert_eq(p:getStats():getPanic(), 0)
-    assert_eq(p:getStats():getStress(), 0)
-    assert_eq(p:getBodyDamage():getBoredomLevel(), 25)
-    assert_eq(p:getBodyDamage():getUnhappinessLevel(), 35)
+    assert_eq(p:getStats():get(CharacterStat.PANIC), 0)
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0)
+    assert_eq(p:getStats():get(CharacterStat.BOREDOM), 25)
+    assert_eq(p:getStats():get(CharacterStat.UNHAPPINESS), 35)
 end)
 
 test("ReadingHook awards flat XP when a skill book is completed", function()
@@ -637,19 +632,19 @@ end)
 
 test("PainHook zeroes pain when UT_painImmune is true", function()
     local p = MockPlayer({})
-    p:getStats():setPain(50)
+    p:getStats():set(CharacterStat.PAIN, 50)
     p:getModData()["UT_painImmune"] = true
     _G.getPlayer = function() return p end
     Events.OnPlayerUpdate.fire(p)
     _G.getPlayer = function() return nil end
-    assert_eq(p:getStats():getPain(), 0, "expected pain cleared to 0")
+    assert_eq(p:getStats():get(CharacterStat.PAIN), 0, "expected pain cleared to 0")
 end)
 
 test("PainHook does not touch pain when UT_painImmune is absent", function()
     local p = MockPlayer({})
-    p:getStats():setPain(50)
+    p:getStats():set(CharacterStat.PAIN, 50)
     Events.OnPlayerUpdate.fire(p)
-    assert_eq(p:getStats():getPain(), 50, "expected pain unchanged when trait not set")
+    assert_eq(p:getStats():get(CharacterStat.PAIN), 50, "expected pain unchanged when trait not set")
 end)
 
 -- ===== DamageMultHook tests =====
@@ -787,13 +782,13 @@ end)
 test("SleepQualityHook reduces fatigue while sleeping", function()
     local p = MockPlayer({})
     p:getModData()["UT_sleepQualMod"] = 0.5
-    p:setSleeping(true)
-    p:getStats():setFatigue(0.5)
+    p:setAsleep(true)
+    p:getStats():set(CharacterStat.FATIGUE, 0.5)
     _G.getPlayer = function() return p end
     Events.EveryOneMinute.fire()
     _G.getPlayer = function() return nil end
     -- expected: 0.5 - (0.5 * 0.001) = 0.4995
-    local fatigue = p:getStats():getFatigue()
+    local fatigue = p:getStats():get(CharacterStat.FATIGUE)
     assert(fatigue < 0.5, "expected fatigue to decrease while sleeping")
     assert(math.abs(fatigue - 0.4995) < 0.0001,
         "expected fatigue ~0.4995, got " .. tostring(fatigue))
@@ -802,23 +797,23 @@ end)
 test("SleepQualityHook skips when not sleeping", function()
     local p = MockPlayer({})
     p:getModData()["UT_sleepQualMod"] = 0.5
-    p:setSleeping(false)
-    p:getStats():setFatigue(0.5)
+    p:setAsleep(false)
+    p:getStats():set(CharacterStat.FATIGUE, 0.5)
     _G.getPlayer = function() return p end
     Events.EveryOneMinute.fire()
     _G.getPlayer = function() return nil end
-    assert_eq(p:getStats():getFatigue(), 0.5, "expected fatigue unchanged when awake")
+    assert_eq(p:getStats():get(CharacterStat.FATIGUE), 0.5, "expected fatigue unchanged when awake")
 end)
 
 test("SleepQualityHook clamps fatigue at 0", function()
     local p = MockPlayer({})
     p:getModData()["UT_sleepQualMod"] = 0.5
-    p:setSleeping(true)
-    p:getStats():setFatigue(0.0)
+    p:setAsleep(true)
+    p:getStats():set(CharacterStat.FATIGUE, 0.0)
     _G.getPlayer = function() return p end
     Events.EveryOneMinute.fire()
     _G.getPlayer = function() return nil end
-    assert_eq(p:getStats():getFatigue(), 0.0, "expected fatigue not to go below 0")
+    assert_eq(p:getStats():get(CharacterStat.FATIGUE), 0.0, "expected fatigue not to go below 0")
 end)
 
 -- ===== WorkSpeedHook: transferSpeedMult branch =====

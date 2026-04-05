@@ -8,13 +8,13 @@ local function handler()
     if not player then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
     local stats = player:getStats()
-    local hunger = stats:getHunger()
+    local hunger = stats:get(CharacterStat.HUNGER)
     if hunger > 0.7 then
         -- Body adapts to scarcity, reduces hunger sensation
-        stats:setHunger(math.max(0, hunger - 0.05))
+        stats:set(CharacterStat.HUNGER, math.max(0, hunger - 0.05))
     elseif hunger < 0.1 then
         -- Body maintains appetite when well-fed
-        stats:setHunger(math.min(1, hunger + 0.02))
+        stats:set(CharacterStat.HUNGER, math.min(1, hunger + 0.02))
     end
 end
 

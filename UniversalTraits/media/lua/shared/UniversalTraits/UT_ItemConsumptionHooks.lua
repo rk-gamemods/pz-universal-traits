@@ -71,7 +71,7 @@ local function applyEatEffects(character, item)
     if isMedicationItem(item) and UTCore.hasTrait(character, "UniversalTraits:UT_antivaxxer") then
         pcall(function()
             local stats = character:getStats()
-            stats:setStress(math.min(1, stats:getStress() + 0.20))
+            stats:set(CharacterStat.STRESS, math.min(1, stats:get(CharacterStat.STRESS) + 0.20))
         end)
     end
 
@@ -79,13 +79,13 @@ local function applyEatEffects(character, item)
     if isFoodItem(item) and UTCore.hasTrait(character, "UniversalTraits:UT_allergic") then
         if ZombRand(100) < 30 then
             pcall(function()
-                local bd = character:getBodyDamage()
-                local current = bd:getFoodSicknessLevel()
-                -- Spike adds 20 sickness units (scale is 0–100+).
+                local stats = character:getStats()
+                local current = stats:get(CharacterStat.FOOD_SICKNESS)
+                -- Spike adds 20 sickness units (scale is 0–100).
                 -- A 20-point spike causes nausea/vomiting if it exceeds the player's
                 -- current tolerance. Treatable by resting and staying hydrated;
                 -- the sickness drains naturally over ~30 min of game time.
-                bd:setFoodSicknessLevel(math.min(100, current + 20))
+                stats:set(CharacterStat.FOOD_SICKNESS, math.min(100, current + 20))
             end)
         end
     end
@@ -93,16 +93,16 @@ local function applyEatEffects(character, item)
     -- UT_pillsallergy: food sickness +15 when any medication is consumed
     if isMedicationItem(item) and UTCore.hasTrait(character, "UniversalTraits:UT_pillsallergy") then
         pcall(function()
-            local bd = character:getBodyDamage()
-            bd:setFoodSicknessLevel(math.min(100, bd:getFoodSicknessLevel() + 15))
+            local stats = character:getStats()
+            stats:set(CharacterStat.FOOD_SICKNESS, math.min(100, stats:get(CharacterStat.FOOD_SICKNESS) + 15))
         end)
     end
 
     -- UT_wildplantsallergy: food sickness +20 when any foraged item is consumed
     if isWildPlantItem(item) and UTCore.hasTrait(character, "UniversalTraits:UT_wildplantsallergy") then
         pcall(function()
-            local bd = character:getBodyDamage()
-            bd:setFoodSicknessLevel(math.min(100, bd:getFoodSicknessLevel() + 20))
+            local stats = character:getStats()
+            stats:set(CharacterStat.FOOD_SICKNESS, math.min(100, stats:get(CharacterStat.FOOD_SICKNESS) + 20))
         end)
     end
 end

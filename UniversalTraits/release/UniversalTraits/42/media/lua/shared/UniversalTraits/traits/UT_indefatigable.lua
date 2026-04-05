@@ -16,7 +16,7 @@ local function onPlayerUpdate(player)
 
     if moddata["UT_indefRecovering"] then return end
 
-    local endurance = stats:getEndurance()
+    local endurance = stats:get(CharacterStat.ENDURANCE)
     if endurance < 0.05 then
         moddata["UT_indefCooldown"] = getGameTime():getWorldAgeHours()
         moddata["UT_indefRecovering"] = true
@@ -24,7 +24,7 @@ local function onPlayerUpdate(player)
     end
 
     if (player:isSprinting() or player:isRunning()) and endurance > 0.1 then
-        stats:setEndurance(math.min(stats:getMaxEndurance(), endurance + 0.005))
+        stats:set(CharacterStat.ENDURANCE, math.min(CharacterStat.ENDURANCE:getMaximumValue(), endurance + 0.005))
     end
 end
 
@@ -44,7 +44,7 @@ local function onEveryMinute()
 
     local elapsed = getGameTime():getWorldAgeHours() - cooldownStart
     if elapsed >= (COOLDOWN_MINUTES / 60.0) then
-        player:getStats():setEndurance(0.5)
+        player:getStats():set(CharacterStat.ENDURANCE, 0.5)
         moddata["UT_indefRecovering"] = nil
         moddata["UT_indefCooldown"] = nil
     end

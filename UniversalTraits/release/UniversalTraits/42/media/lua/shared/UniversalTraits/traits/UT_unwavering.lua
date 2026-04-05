@@ -10,9 +10,9 @@ local function handler()
     if not player then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
     local stats = player:getStats()
-    local panic = stats:getPanic()
-    if panic > 0.1 then
-        stats:setPanic(math.max(0, panic - 0.1))
+    local panic = stats:get(CharacterStat.PANIC)
+    if panic > 10 then
+        stats:set(CharacterStat.PANIC, math.max(0, panic - 10))
     end
 end
 

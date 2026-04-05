@@ -65,81 +65,62 @@ function isClient() return false end
 function isServer() return false end
 
 local function makeStats(opts)
+    -- B42.16: only generic get/set/add/remove via CharacterStat keys
+    local data = {
+        [CharacterStat.ENDURANCE]        = opts.endurance or 1.0,
+        [CharacterStat.PANIC]            = opts.panic or 0.0,
+        [CharacterStat.STRESS]           = opts.stress or 0.0,
+        [CharacterStat.HUNGER]           = opts.hunger or 0.0,
+        [CharacterStat.THIRST]           = opts.thirst or 0.0,
+        [CharacterStat.FATIGUE]          = opts.fatigue or 0.0,
+        [CharacterStat.BOREDOM]          = opts.boredom or 0.0,
+        [CharacterStat.PAIN]             = opts.pain or 0.0,
+        [CharacterStat.INTOXICATION]     = opts.intoxication or opts.drunkenness or 0.0,
+        [CharacterStat.UNHAPPINESS]      = opts.unhappiness or 0.0,
+        [CharacterStat.WETNESS]          = opts.wetness or 0.0,
+        [CharacterStat.ZOMBIE_INFECTION] = opts.zombieInfection or 0.0,
+        [CharacterStat.ZOMBIE_FEVER]     = opts.zombieFever or 0.0,
+        [CharacterStat.FOOD_SICKNESS]    = opts.foodSickness or 0.0,
+    }
+    local charStatAccum = {}
     return {
-        _endurance = opts.endurance or 1.0,
-        _maxEndurance = opts.maxEndurance or 1.0,
-        _panic = opts.panic or 0.0,
-        _stress = opts.stress or 0.0,
-        _hunger = opts.hunger or 0.0,
-        _thirst = opts.thirst or 0.0,
-        _fatigue = opts.fatigue or 0.0,
-        _boredom = opts.boredom or 0.0,
-        setStress = function(self, v) self._stress = v end,
-        getStress = function(self) return self._stress end,
-        setHunger = function(self, v) self._hunger = v end,
-        getHunger = function(self) return self._hunger end,
-        setThirst = function(self, v) self._thirst = v end,
-        getThirst = function(self) return self._thirst end,
-        setFatigue = function(self, v) self._fatigue = v end,
-        getFatigue = function(self) return self._fatigue end,
-        setPanic = function(self, v) self._panic = v end,
-        getPanic = function(self) return self._panic end,
-        setEndurance = function(self, v) self._endurance = v end,
-        getEndurance = function(self) return self._endurance end,
-        getMaxEndurance = function(self) return self._maxEndurance end,
-        setBoredom        = function(self, v) self._boredom = v end,
-        getBoredom        = function(self) return self._boredom end,
-        _drunkenness      = opts.drunkenness or 0.0,
-        getDrunkenness    = function(self) return self._drunkenness end,
-        setDrunkenness    = function(self, v) self._drunkenness = v end,
-        _charStatAccum    = {},
-        add    = function(self, key, delta)
-            local k = tostring(key)
-            self._charStatAccum[k] = (self._charStatAccum[k] or 0) + delta
+        _charStatAccum = charStatAccum,
+        get = function(self, stat)
+            return data[stat] or 0
         end,
-        remove = function(self, key, delta)
-            local k = tostring(key)
-            self._charStatAccum[k] = (self._charStatAccum[k] or 0) - delta
+        set = function(self, stat, v)
+            data[stat] = v
         end,
-        get    = function(self, key)
-            local k = tostring(key)
-            if k == "Stress"       then return self._stress       * 100 end
-            if k == "Panic"        then return self._panic        * 100 end
-            if k == "Fatigue"      then return self._fatigue      * 100 end
-            if k == "Boredom"      then return self._boredom      * 100 end
-            if k == "Hunger"       then return self._hunger       * 100 end
-            if k == "Thirst"       then return self._thirst       * 100 end
-            return 0
+        add = function(self, stat, delta)
+            data[stat] = (data[stat] or 0) + delta
+            charStatAccum[stat] = (charStatAccum[stat] or 0) + delta
+        end,
+        remove = function(self, stat, delta)
+            data[stat] = (data[stat] or 0) - delta
+            charStatAccum[stat] = (charStatAccum[stat] or 0) - delta
         end,
     }
 end
 
-local function makeBodyDamage(opts)
+local function makeBodyDamage(opts, statsRef)
     return {
-        _panicLevel = opts.panicLevel or 0,
-        _unhappinessLevel = opts.unhappinessLevel or 50,
-        _boredomLevel = opts.boredomLevel or 0,
-        _infectionLevel = opts.infectionLevel or 0,
-        _foodSicknessLevel = opts.foodSicknessLevel or 0,
-        getPanicLevel = function(self) return self._panicLevel end,
-        setPanicLevel = function(self, v) self._panicLevel = v end,
-        getUnhappinessLevel = function(self) return self._unhappinessLevel end,
-        setUnhappinessLevel = function(self, v) self._unhappinessLevel = v end,
-        getBoredomLevel = function(self) return self._boredomLevel end,
-        setBoredomLevel = function(self, v) self._boredomLevel = v end,
-        getInfectionLevel = function(self) return self._infectionLevel end,
-        setInfectionLevel = function(self, v) self._infectionLevel = v end,
-        getFoodSicknessLevel   = function(self) return self._foodSicknessLevel end,
-        setFoodSicknessLevel   = function(self, v) self._foodSicknessLevel = v end,
-        _wetness               = opts.wetness or 0.0,
-        getWetness             = function(self) return self._wetness end,
-        setWetness             = function(self, v) self._wetness = v end,
-        _healthFromFoodTimer   = opts.healthFromFoodTimer or 0,
-        getHealthFromFoodTimer = function(self) return self._healthFromFoodTimer end,
-        setHealthFromFoodTimer = function(self, v) self._healthFromFoodTimer = v end,
+        -- B42.16: getPanicReductionValue/setPanicReductionValue still on BodyDamage
         _panicReductionValue   = opts.panicReductionValue or 0.06,
         getPanicReductionValue = function(self) return self._panicReductionValue end,
         setPanicReductionValue = function(self, v) self._panicReductionValue = v end,
+        -- B42.16: getApparentInfectionLevel = max(ZOMBIE_FEVER, ZOMBIE_INFECTION, FOOD_SICKNESS)
+        getApparentInfectionLevel = function(self)
+            if statsRef then
+                local zi = statsRef:get(CharacterStat.ZOMBIE_INFECTION) or 0
+                local zf = statsRef:get(CharacterStat.ZOMBIE_FEVER) or 0
+                local fs = statsRef:get(CharacterStat.FOOD_SICKNESS) or 0
+                return math.max(zi, zf, fs)
+            end
+            return 0
+        end,
+        _healthFromFoodTimer   = opts.healthFromFoodTimer or 0,
+        getHealthFromFoodTimer = function(self) return self._healthFromFoodTimer end,
+        setHealthFromFoodTimer = function(self, v) self._healthFromFoodTimer = v end,
         _bodyParts             = {},
         getBodyPart            = function(self, partType)
             local key = tostring(partType)
@@ -214,7 +195,7 @@ function MockPlayer(traitList, opts)
         end
     end
     local stats = opts.stats or makeStats(opts)
-    local bodyDamage = opts.bodyDamage or makeBodyDamage(opts)
+    local bodyDamage = opts.bodyDamage or makeBodyDamage(opts, stats)
     local nutrition = opts.nutrition or makeNutrition(opts)
     local x = opts.x or 0
     local y = opts.y or 0
@@ -328,6 +309,8 @@ function MockPlayer(traitList, opts)
         _sleeping            = opts.sleeping or false,
         isSleeping           = function(self) return self._sleeping end,
         setSleeping          = function(self, v) self._sleeping = v end,
+        isAsleep             = function(self) return self._sleeping end,
+        setAsleep            = function(self, v) self._sleeping = v end,
         _backpack            = opts.backpack or nil,
         getClothingItem_Back = function(self) return self._backpack end,
         isOutside            = function(self) return not self._indoors end,
@@ -378,7 +361,8 @@ UTCore.stripSpawnItems      = UTCore.stripSpawnItems or function(player)
     player:getModData()["_stripCalled"] = true
 end
 UTCore.applyStatFloor       = UTCore.applyStatFloor or function(player, key, floor)
-    player:getModData()["UT_statFloor_" .. tostring(key)] = floor
+    local name = (type(key) == "table" and key._name) or tostring(key)
+    player:getModData()["UT_statFloor_" .. name] = floor
 end
 UTCore._periodicHandlers = UTCore._periodicHandlers or {}
 UTCore._vehicleTraitDefs = UTCore._vehicleTraitDefs or {}
@@ -1021,17 +1005,39 @@ end
 -- Extended stubs for Phase-4 behavioral tests (70 new traits)
 -- ============================================================
 
--- CharacterStat global (used by sloth, squirrel, sundayrunner, couchdweller, sore, fearful)
+-- CharacterStat global (B42.16 — all named getters/setters replaced with generic get/set)
 if not _G.CharacterStat then
+    local function makeStat(name, min, max, default)
+        return {
+            _name = name,
+            getMaximumValue = function(self) return max end,
+            getMinimumValue = function(self) return min end,
+            getDefaultValue = function(self) return default end,
+            clamp = function(self, v) return math.max(min, math.min(max, v)) end,
+        }
+    end
     _G.CharacterStat = {
-        STRESS       = "Stress",
-        BOREDOM      = "Boredom",
-        HUNGER       = "Hunger",
-        THIRST       = "Thirst",
-        UNHAPPINESS  = "Unhappiness",
-        FATIGUE      = "Fatigue",
-        PAIN         = "Pain",
-        PANIC        = "Panic",
+        ANGER            = makeStat("Anger", 0, 1, 0),
+        BOREDOM          = makeStat("Boredom", 0, 100, 0),
+        DISCOMFORT       = makeStat("Discomfort", 0, 100, 0),
+        ENDURANCE        = makeStat("Endurance", 0, 1, 1),
+        FATIGUE          = makeStat("Fatigue", 0, 1, 0),
+        FITNESS          = makeStat("Fitness", -1, 1, 0),
+        FOOD_SICKNESS    = makeStat("FoodSickness", 0, 100, 0),
+        HUNGER           = makeStat("Hunger", 0, 1, 0),
+        IDLENESS         = makeStat("Idleness", 0, 1, 0),
+        INTOXICATION     = makeStat("Intoxication", 0, 100, 0),
+        MORALE           = makeStat("Morale", 0, 1, 1),
+        PAIN             = makeStat("Pain", 0, 100, 0),
+        PANIC            = makeStat("Panic", 0, 100, 0),
+        SICKNESS         = makeStat("Sickness", 0, 1, 0),
+        STRESS           = makeStat("Stress", 0, 1, 0),
+        TEMPERATURE      = makeStat("Temperature", 20, 40, 37),
+        THIRST           = makeStat("Thirst", 0, 1, 0),
+        UNHAPPINESS      = makeStat("Unhappiness", 0, 100, 0),
+        WETNESS          = makeStat("Wetness", 0, 100, 0),
+        ZOMBIE_FEVER     = makeStat("ZombieFever", 0, 100, 0),
+        ZOMBIE_INFECTION = makeStat("ZombieInfection", 0, 100, 0),
     }
 end
 

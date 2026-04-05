@@ -12,7 +12,7 @@
 -- A mult of 2.0 emits 5 units of extra noise (total 10), attracting zombies
 -- within a short radius even through walls if sufficiently loud.
 --
--- Requires player:isSleeping() which returns true during the PZ sleep cycle.
+-- Requires player:isAsleep() which returns true during the PZ sleep cycle.
 -- If the API is unavailable (version mismatch), the hook exits silently.
 
 UTCore = UTCore or {}
@@ -28,7 +28,7 @@ local function onEveryMinute()
     if not mult or mult <= 1.0 then return end
 
     -- Only emit when actually sleeping
-    local ok, sleeping = pcall(function() return player:isSleeping() end)
+    local ok, sleeping = pcall(function() return player:isAsleep() end)
     if not (ok and sleeping) then return end
 
     -- Emit noise: extra amount above baseline sleeping noise

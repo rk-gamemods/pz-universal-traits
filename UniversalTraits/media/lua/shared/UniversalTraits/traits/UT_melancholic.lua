@@ -7,8 +7,8 @@ local function handler()
     local player = getPlayer()
     if not player then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
-    local body = player:getBodyDamage()
-    body:setUnhappinessLevel(math.min(100, body:getUnhappinessLevel() + 5))
+    local stats = player:getStats()
+    stats:set(CharacterStat.UNHAPPINESS, math.min(100, stats:get(CharacterStat.UNHAPPINESS) + 5))
 end
 
 Events.EveryTenMinutes.Add(handler)

@@ -15,7 +15,7 @@
 -- compared to baseline, which is noticeable across multiple nights. This is modest
 -- rather than overwhelming, matching the 6-point Cost.
 --
--- Requires player:isSleeping() and player:getStats():setFatigue().
+-- Requires player:isAsleep() and player:getStats():set(CharacterStat.FATIGUE, ).
 -- Capped at 0 — player cannot go below fully rested.
 
 UTCore = UTCore or {}
@@ -30,15 +30,15 @@ local function onEveryMinute()
     local delta = md["UT_sleepQualMod"]
     if not delta or delta <= 0 then return end
 
-    local ok, sleeping = pcall(function() return player:isSleeping() end)
+    local ok, sleeping = pcall(function() return player:isAsleep() end)
     if not (ok and sleeping) then return end
 
     local stats = player:getStats()
     if not stats then return end
 
-    local fatigue = stats:getFatigue()
+    local fatigue = stats:get(CharacterStat.FATIGUE)
     local reduction = delta * PER_MINUTE_SCALE
-    stats:setFatigue(math.max(0, fatigue - reduction))
+    stats:set(CharacterStat.FATIGUE, math.max(0, fatigue - reduction))
 end
 
 if Events and Events.EveryOneMinute then

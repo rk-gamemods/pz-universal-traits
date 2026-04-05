@@ -16,8 +16,8 @@ local function onPlayerUpdate(player)
 
     if moddata["UT_secondwindTriggered"] then return end
 
-    if player:isSprinting() and stats:getEndurance() <= 0.1 then
-        stats:setEndurance(math.min(stats:getMaxEndurance(), stats:getEndurance() + 0.3))
+    if player:isSprinting() and stats:get(CharacterStat.ENDURANCE) <= 0.1 then
+        stats:set(CharacterStat.ENDURANCE, math.min(CharacterStat.ENDURANCE:getMaximumValue(), stats:get(CharacterStat.ENDURANCE) + 0.3))
         moddata["UT_secondwindCooldown"] = getGameTime():getWorldAgeHours()
         moddata["UT_secondwindTriggered"] = true
     end

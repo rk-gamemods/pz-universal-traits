@@ -31,7 +31,7 @@ local function installFitnessHook()
         if player and UTCore.hasTrait(player, TRAIT_ID) then
             if player:getPerkLevel(Perks.Fitness) >= 10 then
                 pcall(function()
-                    preEndurance = player:getStats():getEndurance()
+                    preEndurance = player:getStats():get(CharacterStat.ENDURANCE)
                 end)
             end
         end
@@ -45,16 +45,16 @@ local function installFitnessHook()
             local stats = player:getStats()
 
             -- Stress relief from exercise
-            stats:setStress(math.max(0, stats:getStress() - 0.015))
+            stats:set(CharacterStat.STRESS, math.max(0, stats:get(CharacterStat.STRESS) - 0.015))
 
             -- Boredom relief from exercise
-            stats:setBoredom(math.max(0, stats:getBoredom() - 5))
+            stats:set(CharacterStat.BOREDOM, math.max(0, stats:get(CharacterStat.BOREDOM) - 5))
 
             -- Fitness 10: restore any endurance lost to this exercise loop
             if preEndurance ~= nil then
-                local postEndurance = stats:getEndurance()
+                local postEndurance = stats:get(CharacterStat.ENDURANCE)
                 if postEndurance < preEndurance then
-                    stats:setEndurance(preEndurance)
+                    stats:set(CharacterStat.ENDURANCE, preEndurance)
                 end
             end
         end)

@@ -11,8 +11,8 @@ local function handler()
     md.UT_alcoholicI_ticks = (md.UT_alcoholicI_ticks or 0) + 1
     if md.UT_alcoholicI_ticks % 3 ~= 0 then return end
     local stats = player:getStats()
-    if stats:getDrunkenness() < 0.05 then
-        stats:setStress(math.min(1, stats:getStress() + 0.05))
+    if stats:get(CharacterStat.INTOXICATION) < 5 then
+        stats:set(CharacterStat.STRESS, math.min(1, stats:get(CharacterStat.STRESS) + 0.05))
     end
 end
 

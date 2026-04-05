@@ -31,7 +31,7 @@ local function onPlayerUpdate(player)
     -- Must have panic moodle active
     local panicLevel = 0
     pcall(function()
-        panicLevel = player:getBodyDamage():getPanicLevel()
+        panicLevel = player:getStats():get(CharacterStat.PANIC)
     end)
     if panicLevel <= 0 then return end
 

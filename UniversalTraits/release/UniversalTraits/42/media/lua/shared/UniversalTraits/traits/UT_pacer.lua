@@ -35,8 +35,8 @@ local function onPlayerUpdate(player)
     -- After 600 ticks indoors, apply unhappiness penalty
     if md["UT_pacer_indoor_ticks"] >= 600 then
         pcall(function()
-            local bd = player:getBodyDamage()
-            bd:setUnhappinessLevel(math.min(100, bd:getUnhappinessLevel() + 2))
+            local stats = player:getStats()
+            stats:set(CharacterStat.UNHAPPINESS, math.min(100, stats:get(CharacterStat.UNHAPPINESS) + 2))
         end)
         md["UT_pacer_indoor_ticks"] = 0
     end

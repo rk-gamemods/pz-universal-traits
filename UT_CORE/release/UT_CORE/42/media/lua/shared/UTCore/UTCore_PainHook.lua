@@ -17,8 +17,8 @@ local function onPlayerUpdate(player)
     local stats = player:getStats()
     if not stats then return end
 
-    if stats:getPain() > 0 then
-        stats:setPain(0)
+    if stats:get(CharacterStat.PAIN) > 0 then
+        stats:set(CharacterStat.PAIN, 0)
     end
 end
 

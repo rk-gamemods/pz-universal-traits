@@ -17,12 +17,12 @@ local function onEveryMinute()
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
 
     local stats = player:getStats()
-    local current = stats:getPanic()
+    local current = stats:get(CharacterStat.PANIC)
     local playerId = tostring(player)
     local prev = prevPanic[playerId]
 
-    if prev ~= nil and (current - prev) >= 0.05 then
-        stats:setPanic(math.min(1, current + 0.15))
+    if prev ~= nil and (current - prev) >= 5 then
+        stats:set(CharacterStat.PANIC, math.min(100, current + 15))
     end
 
     prevPanic[playerId] = current

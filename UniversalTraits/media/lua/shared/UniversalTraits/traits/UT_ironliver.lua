@@ -9,10 +9,10 @@ local function onEveryMinute()
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
 
     local stats = player:getStats()
-    local drunkenness = stats:getDrunkenness()
+    local drunkenness = stats:get(CharacterStat.INTOXICATION)
 
-    if drunkenness > 0.1 then
-        stats:setDrunkenness(drunkenness * 0.9)
+    if drunkenness > 10 then
+        stats:set(CharacterStat.INTOXICATION, drunkenness * 0.9)
         player:getModData()["UT_drunkReductionApplied"] = true
     end
 end

@@ -19,8 +19,8 @@ local function onPlayerUpdate(player)
 
     local stats = player:getStats()
     pcall(function()
-        stats:setPanic(math.min(1, stats:getPanic() + 0.01))
-        stats:setStress(math.min(1, stats:getStress() + 0.005))
+        stats:set(CharacterStat.PANIC, math.min(100, stats:get(CharacterStat.PANIC) + 1))
+        stats:set(CharacterStat.STRESS, math.min(1, stats:get(CharacterStat.STRESS) + 0.005))
     end)
     md["UT_vehophobic_cooldown"] = 30
 end

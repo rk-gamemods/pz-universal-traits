@@ -8,12 +8,12 @@ local function handler()
     if not player then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
     local stats = player:getStats()
-    local drunkenness = stats:getDrunkenness()
-    if drunkenness < 0.1 then
-        stats:setStress(math.min(1, stats:getStress() + 0.05))
+    local drunkenness = stats:get(CharacterStat.INTOXICATION)
+    if drunkenness < 10 then
+        stats:set(CharacterStat.STRESS, math.min(1, stats:get(CharacterStat.STRESS) + 0.05))
     end
-    if drunkenness < 0.05 then
-        stats:setPanic(math.min(1, stats:getPanic() + 0.03))
+    if drunkenness < 5 then
+        stats:set(CharacterStat.PANIC, math.min(100, stats:get(CharacterStat.PANIC) + 3))
     end
 end
 

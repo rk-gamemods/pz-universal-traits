@@ -17,9 +17,9 @@ local function handler()
     local lightLevel = sq:getLightLevel(player:getPlayerNum())
     local stats = player:getStats()
     if lightLevel < 0.3 then
-        stats:setPanic(math.min(1, stats:getPanic() + 0.04))
+        stats:set(CharacterStat.PANIC, math.min(100, stats:get(CharacterStat.PANIC) + 4))
     elseif lightLevel > 0.7 then
-        stats:setPanic(math.max(0, stats:getPanic() - 0.01))
+        stats:set(CharacterStat.PANIC, math.max(0, stats:get(CharacterStat.PANIC) - 1))
     end
 end
 

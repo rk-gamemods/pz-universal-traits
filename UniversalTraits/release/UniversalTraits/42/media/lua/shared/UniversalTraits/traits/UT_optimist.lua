@@ -8,8 +8,8 @@ local function handler()
     if not player then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
     local stats = player:getStats()
-    stats:setStress(math.max(0, stats:getStress() - 0.06))
-    stats:setPanic(math.max(0, stats:getPanic() - 0.04))
+    stats:set(CharacterStat.STRESS, math.max(0, stats:get(CharacterStat.STRESS) - 0.06))
+    stats:set(CharacterStat.PANIC, math.max(0, stats:get(CharacterStat.PANIC) - 4))
 end
 
 Events.EveryTenMinutes.Add(handler)

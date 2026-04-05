@@ -13,10 +13,10 @@ local function handler()
     local precip = cm:getPrecipitationIntensity()
     if precip > 0.3 then
         -- Raining: stress goes up
-        stats:setStress(math.min(1, stats:getStress() + 0.05))
+        stats:set(CharacterStat.STRESS, math.min(1, stats:get(CharacterStat.STRESS) + 0.05))
     elseif cm:getCloudIntensity() < 0.2 then
         -- Clear and sunny: small stress relief
-        stats:setStress(math.max(0, stats:getStress() - 0.02))
+        stats:set(CharacterStat.STRESS, math.max(0, stats:get(CharacterStat.STRESS) - 0.02))
     end
     -- Overcast but dry: no effect
 end

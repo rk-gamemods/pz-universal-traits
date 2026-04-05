@@ -10,7 +10,7 @@ local function onEveryOneMinute()
 
     if player:getZ() > 0 then
         local stats = player:getStats()
-        stats:setPanic(math.min(1, stats:getPanic() + 0.05))
+        stats:set(CharacterStat.PANIC, math.min(100, stats:get(CharacterStat.PANIC) + 5))
     end
 end
 

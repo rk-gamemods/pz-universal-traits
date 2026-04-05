@@ -8,7 +8,7 @@ local function handler()
     if not player then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
     local stats = player:getStats()
-    stats:setEndurance(math.max(0, stats:getEndurance() - 0.01))
+    stats:set(CharacterStat.ENDURANCE, math.max(0, stats:get(CharacterStat.ENDURANCE) - 0.01))
     player:getModData()["UT_sedentaryPenalty"] = true
 end
 

@@ -11,8 +11,8 @@ local function handler()
         local timeOfDay = getGameTime():getTimeOfDay()
         if timeOfDay >= 0.25 and timeOfDay <= 0.75 then
             local stats = player:getStats()
-            stats:setStress(math.min(1, stats:getStress() + 0.03))
-            stats:setFatigue(math.min(1, stats:getFatigue() + 0.02))
+            stats:set(CharacterStat.STRESS, math.min(1, stats:get(CharacterStat.STRESS) + 0.03))
+            stats:set(CharacterStat.FATIGUE, math.min(1, stats:get(CharacterStat.FATIGUE) + 0.02))
             player:getModData()["UT_albinoDamage"] = true
         else
             player:getModData()["UT_albinoDamage"] = false

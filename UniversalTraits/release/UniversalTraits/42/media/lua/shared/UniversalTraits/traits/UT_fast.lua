@@ -18,8 +18,8 @@ local function onPlayerUpdate(player)
     md["UT_fast_tick"] = 0
 
     local stats = player:getStats()
-    if stats:getEndurance() < stats:getMaxEndurance() then
-        stats:setEndurance(math.min(stats:getEndurance() + 0.01, stats:getMaxEndurance()))
+    if stats:get(CharacterStat.ENDURANCE) < CharacterStat.ENDURANCE:getMaximumValue() then
+        stats:set(CharacterStat.ENDURANCE, math.min(stats:get(CharacterStat.ENDURANCE) + 0.01, CharacterStat.ENDURANCE:getMaximumValue()))
     end
 end
 

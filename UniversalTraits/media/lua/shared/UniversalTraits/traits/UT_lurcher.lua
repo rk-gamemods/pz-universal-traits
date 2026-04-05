@@ -32,7 +32,7 @@ local function onPlayerUpdate(player)
     -- Must have low endurance (< 0.3)
     local endurance = 1.0
     pcall(function()
-        endurance = player:getStats():getEndurance()
+        endurance = player:getStats():get(CharacterStat.ENDURANCE)
     end)
     if endurance >= 0.3 then return end
 

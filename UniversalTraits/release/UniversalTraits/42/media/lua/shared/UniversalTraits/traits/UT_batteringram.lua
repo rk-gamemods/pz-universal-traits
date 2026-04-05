@@ -29,9 +29,9 @@ local function onZombieCollision(player, zombie)
     -- Drain endurance per collision
     local stats = player:getStats()
     if not stats then return end
-    local endurance = stats:getEndurance()
+    local endurance = stats:get(CharacterStat.ENDURANCE)
     endurance = math.max(0, endurance - ENDURANCE_DRAIN)
-    stats:setEndurance(endurance)
+    stats:set(CharacterStat.ENDURANCE, endurance)
 
     -- Martial arts synergy: delegate entirely to UT_martial so the formula stays in one place
     if UTCore.hasTrait(player, MARTIAL_TRAIT) then

@@ -63,13 +63,13 @@ local function onWeaponHitCharacter(player, weapon, target)
 
     local stats = player.getStats and player:getStats()
     local endurance = 1.0
-    if stats and stats.getEndurance then
-        endurance = stats:getEndurance()
+    if stats then
+        endurance = stats:get(CharacterStat.ENDURANCE)
     end
 
     -- Always drain endurance on bare-hand hit
-    if stats and stats.setEndurance then
-        stats:setEndurance(math.max(0, endurance - 0.001))
+    if stats then
+        stats:set(CharacterStat.ENDURANCE, math.max(0, endurance - 0.001))
     end
 
     UT_martial.applyBonusDamage(player, target, endurance)

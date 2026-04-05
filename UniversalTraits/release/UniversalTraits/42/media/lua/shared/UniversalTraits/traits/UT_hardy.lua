@@ -10,14 +10,14 @@ local function onEveryMinute()
 
     local stats = player:getStats()
     local moddata = player:getModData()
-    local fatigue = stats:getFatigue()
+    local fatigue = stats:get(CharacterStat.FATIGUE)
     local now = getGameTime():getWorldAgeHours()
 
     -- Bonus phase
     if moddata["UT_hardyBonus"] then
         local bonusAge = now - moddata["UT_hardyBonus"]
         if bonusAge < (5 / 60.0) then
-            stats:setEndurance(math.min(stats:getMaxEndurance(), stats:getEndurance() + 0.002))
+            stats:set(CharacterStat.ENDURANCE, math.min(CharacterStat.ENDURANCE:getMaximumValue(), stats:get(CharacterStat.ENDURANCE) + 0.002))
         else
             moddata["UT_hardyBonus"] = nil
         end
@@ -31,7 +31,7 @@ local function onEveryMinute()
             moddata["UT_hardyRestingMins"] = 0
         end
     else
-        stats:setStress(math.min(1, stats:getStress() + 0.02))
+        stats:set(CharacterStat.STRESS, math.min(1, stats:get(CharacterStat.STRESS) + 0.02))
         if fatigue < 0.3 then
             moddata["UT_hardyRestingMins"] = (moddata["UT_hardyRestingMins"] or 0) + 1
         else

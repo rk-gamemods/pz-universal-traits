@@ -9,7 +9,7 @@ local function handler()
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
     if ZombRand(20) == 0 then
         local stats = player:getStats()
-        stats:setPanic(math.min(1, stats:getPanic() + 0.4))
+        stats:set(CharacterStat.PANIC, math.min(100, stats:get(CharacterStat.PANIC) + 40))
     end
 end
 

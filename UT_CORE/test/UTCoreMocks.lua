@@ -26,45 +26,29 @@ function MockPlayer(traits, opts)
         end
     end
     local statsData = {
-        panic       = 0,
-        stress      = 0,
-        hunger      = 0,
-        thirst      = 0,
-        fatigue     = 0,
-        endurance   = 1,
-        pain        = 0,
-        boredom     = 0,
-        drunkenness = 0,
-        unhappiness = 0,
+        panic          = 0,
+        stress         = 0,
+        hunger         = 0,
+        thirst         = 0,
+        fatigue        = 0,
+        endurance      = 1,
+        pain           = 0,
+        boredom        = 0,
+        intoxication   = 0,
+        unhappiness    = 0,
+        wetness        = 0,
+        zombie_infection = 0,
     }
     local stats = {
-        getPanic       = function(self) return statsData.panic end,
-        setPanic       = function(self, v) statsData.panic = v end,
-        getPain        = function(self) return statsData.pain end,
-        setPain        = function(self, v) statsData.pain = v end,
-        getStress      = function(self) return statsData.stress end,
-        setStress      = function(self, v) statsData.stress = v end,
-        getHunger      = function(self) return statsData.hunger end,
-        setHunger      = function(self, v) statsData.hunger = v end,
-        getThirst      = function(self) return statsData.thirst end,
-        setThirst      = function(self, v) statsData.thirst = v end,
-        getFatigue     = function(self) return statsData.fatigue end,
-        setFatigue     = function(self, v) statsData.fatigue = v end,
-        getEndurance   = function(self) return statsData.endurance end,
-        setEndurance   = function(self, v) statsData.endurance = v end,
-        getBoredom     = function(self) return statsData.boredom end,
-        setBoredom     = function(self, v) statsData.boredom = v end,
-        getDrunkenness = function(self) return statsData.drunkenness end,
-        setDrunkenness = function(self, v) statsData.drunkenness = v end,
-        getUnhappiness = function(self) return statsData.unhappiness end,
-        setUnhappiness = function(self, v) statsData.unhappiness = v end,
-        -- Generic CharacterStat interface (B42.16)
+        -- Generic CharacterStat interface (B42.16 — only API)
         get = function(self, stat)
             local map = {
                 [CharacterStat.PAIN] = statsData.pain, [CharacterStat.PANIC] = statsData.panic,
                 [CharacterStat.STRESS] = statsData.stress, [CharacterStat.HUNGER] = statsData.hunger,
                 [CharacterStat.THIRST] = statsData.thirst, [CharacterStat.BOREDOM] = statsData.boredom,
                 [CharacterStat.FATIGUE] = statsData.fatigue, [CharacterStat.UNHAPPINESS] = statsData.unhappiness,
+                [CharacterStat.ENDURANCE] = statsData.endurance, [CharacterStat.INTOXICATION] = statsData.intoxication,
+                [CharacterStat.WETNESS] = statsData.wetness, [CharacterStat.ZOMBIE_INFECTION] = statsData.zombie_infection,
             }
             return map[stat] or 0
         end,
@@ -78,6 +62,10 @@ function MockPlayer(traits, opts)
                 [CharacterStat.BOREDOM] = function(val) statsData.boredom = val end,
                 [CharacterStat.FATIGUE] = function(val) statsData.fatigue = val end,
                 [CharacterStat.UNHAPPINESS] = function(val) statsData.unhappiness = val end,
+                [CharacterStat.ENDURANCE] = function(val) statsData.endurance = val end,
+                [CharacterStat.INTOXICATION] = function(val) statsData.intoxication = val end,
+                [CharacterStat.WETNESS] = function(val) statsData.wetness = val end,
+                [CharacterStat.ZOMBIE_INFECTION] = function(val) statsData.zombie_infection = val end,
             }
             if setters[stat] then setters[stat](v) end
         end,
@@ -184,6 +172,8 @@ function MockPlayer(traits, opts)
         setHealth            = function(self, v) _health = v end,
         isSleeping           = function(self) return _sleeping end,
         setSleeping          = function(self, v) _sleeping = v end,
+        isAsleep             = function(self) return _sleeping end,
+        setAsleep            = function(self, v) _sleeping = v end,
         makeNoise            = function(self, v) table.insert(_noiseCalls, v) end,
         getNoiseCalls        = function(self) return _noiseCalls end,
         isDriving            = function(self) return _driving end,

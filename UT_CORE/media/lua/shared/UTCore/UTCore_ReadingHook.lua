@@ -40,24 +40,18 @@ function UTCore.applyReadingMoodEffects(player, tickScale)
     local md = player:getModData()
 
     if md["UT_readCalm"] then
-        if stats.setPanic then stats:setPanic(0) end
-        if stats.setStress then stats:setStress(0) end
+        stats:set(CharacterStat.PANIC, 0)
+        stats:set(CharacterStat.STRESS, 0)
     end
 
     local moodBonus = md["UT_readMoodBonus"] or 0
     if moodBonus <= 0 then return end
 
-    if bd.getBoredomLevel and bd.setBoredomLevel then
-        local boredom = bd:getBoredomLevel()
-        bd:setBoredomLevel(clampMinZero(boredom - (moodBonus * scale)))
-    end
+    local boredom = stats:get(CharacterStat.BOREDOM)
+    stats:set(CharacterStat.BOREDOM, clampMinZero(boredom - (moodBonus * scale)))
 
-    local getUnhappy = bd.getUnhappinessLevel or bd.getUnhappynessLevel
-    local setUnhappy = bd.setUnhappinessLevel or bd.setUnhappynessLevel
-    if getUnhappy and setUnhappy then
-        local unhappy = getUnhappy(bd)
-        setUnhappy(bd, clampMinZero(unhappy - (moodBonus * scale)))
-    end
+    local unhappy = stats:get(CharacterStat.UNHAPPINESS)
+    stats:set(CharacterStat.UNHAPPINESS, clampMinZero(unhappy - (moodBonus * scale)))
 end
 
 function UTCore.tryAwardSkillBookCompletionXP(player, item, startPages, endPages)

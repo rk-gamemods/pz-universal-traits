@@ -8,10 +8,10 @@ local function handler()
     if not player then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
     local stats = player:getStats()
-    if stats:getStress() > 0.6 then
-        stats:setStress(math.max(0, stats:getStress() - 0.08))
+    if stats:get(CharacterStat.STRESS) > 0.6 then
+        stats:set(CharacterStat.STRESS, math.max(0, stats:get(CharacterStat.STRESS) - 0.08))
     else
-        stats:setStress(math.max(0, stats:getStress() - 0.03))
+        stats:set(CharacterStat.STRESS, math.max(0, stats:get(CharacterStat.STRESS) - 0.03))
     end
 end
 

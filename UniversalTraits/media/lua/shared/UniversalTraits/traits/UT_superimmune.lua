@@ -15,9 +15,10 @@ local function onEveryOneMinute()
 
     local bodyDamage = player:getBodyDamage()
     if bodyDamage then
-        local infectionLevel = bodyDamage:getInfectionLevel()
+        local infectionLevel = bodyDamage:getApparentInfectionLevel()
         if infectionLevel and infectionLevel > 0 then
-            bodyDamage:setInfectionLevel(math.max(0, infectionLevel - 0.02))
+            player:getStats():set(CharacterStat.ZOMBIE_INFECTION, math.max(0, infectionLevel - 2))
+
         end
     end
 end

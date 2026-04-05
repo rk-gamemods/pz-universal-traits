@@ -839,10 +839,10 @@ local function MockUpdatePlayer(traitList, opts)
         end
     end
     if opts.endurance ~= nil then
-        p:getStats()._endurance = opts.endurance
+        p:getStats():set(CharacterStat.ENDURANCE, opts.endurance)
     end
     if opts.panicLevel ~= nil then
-        p:getBodyDamage()._panicLevel = opts.panicLevel
+        p:getStats():set(CharacterStat.PANIC, opts.panicLevel)
     end
     if opts.nimble ~= nil then
         p:setPerkLevel(Perks.Nimble, opts.nimble)
@@ -893,18 +893,18 @@ test("pacer applies unhappiness after 600 indoor ticks", function()
         { "UniversalTraits:UT_pacer" },
         { indoors = true, indoorTicks = 599 }
     )
-    local bd = player:getBodyDamage()
-    local startUnhappiness = bd._unhappinessLevel  -- 50
+    local stats = player:getStats()
+    local startUnhappiness = stats:get(CharacterStat.UNHAPPINESS)
     Events.OnPlayerUpdate:fire(player)
-    assert_true(bd._unhappinessLevel > startUnhappiness,
+    assert_true(stats:get(CharacterStat.UNHAPPINESS) > startUnhappiness,
         "expected unhappiness to increase after 600 indoor ticks, got "
-        .. tostring(bd._unhappinessLevel))
+        .. tostring(stats:get(CharacterStat.UNHAPPINESS)))
 end)
 
 -- ===== UT_batteringram collision tests =====
 UTCore._zombieCollisionCallbacks = {}  -- reset before batteringram tests
 -- Load the collision hook so declareZombieCollisionHandler is available
-dofile("UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua")
+dofile(base .. "../../UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_batteringram.lua")
 
 local function fireRamCollision(player, zombie)
@@ -945,7 +945,7 @@ test("batteringram drains endurance on each collision", function()
     player._sprinting = true
     local zombie = MockZombie()
     fireRamCollision(player, zombie)
-    assert_true(player:getStats():getEndurance() < 1.0,
+    assert_true(player:getStats():get(CharacterStat.ENDURANCE) < 1.0,
         "expected endurance < 1.0 after collision")
 end)
 
@@ -1069,7 +1069,7 @@ test("indefatigable restores endurance after its exhaustion cooldown", function(
         setMockGameTime(0.05, 0)
         Events.EveryOneMinute:fire()
     end)
-    assert_eq(player:getStats():getEndurance(), 0.5, "expected exhaustion recovery burst to set endurance to 0.5")
+    assert_eq(player:getStats():get(CharacterStat.ENDURANCE), 0.5, "expected exhaustion recovery burst to set endurance to 0.5")
     assert_true(player:getModData()["UT_indefRecovering"] == nil, "expected recovery flag to clear")
 end)
 
@@ -1078,7 +1078,7 @@ test("hardy enters exhaustion state then grants the recovery bonus", function()
     withActivePlayer(player, function()
         setMockGameTime(1.0, 0)
         Events.EveryOneMinute:fire()
-        player:getStats():setFatigue(0.2)
+        player:getStats():set(CharacterStat.FATIGUE, 0.2)
         player:getModData()["UT_hardyRestingMins"] = 9
         setMockGameTime(1.2, 0)
         Events.EveryOneMinute:fire()
@@ -1087,7 +1087,7 @@ test("hardy enters exhaustion state then grants the recovery bonus", function()
     end)
     assert_true(player:getModData()["UT_hardyExhausted"] == nil, "expected exhausted state to clear")
     assert_true(player:getModData()["UT_hardyBonus"] ~= nil, "expected hardy bonus window to start")
-    assert_true(player:getStats():getEndurance() > 0.4, "expected hardy bonus to increase endurance")
+    assert_true(player:getStats():get(CharacterStat.ENDURANCE) > 0.4, "expected hardy bonus to increase endurance")
 end)
 
 test("secondwind triggers at low endurance and clears after cooldown", function()
@@ -1100,41 +1100,41 @@ test("secondwind triggers at low endurance and clears after cooldown", function(
         setMockGameTime((10 / 60.0) + 0.01, 0)
         Events.EveryOneMinute:fire()
     end)
-    assert_true(player:getStats():getEndurance() > 0.1, "expected second wind to restore endurance")
+    assert_true(player:getStats():get(CharacterStat.ENDURANCE) > 0.1, "expected second wind to restore endurance")
     assert_true(player:getModData()["UT_secondwindTriggered"] == nil, "expected second wind flag to clear after cooldown")
 end)
 
 test("immuneresponse reduces infection and fatigue every ten minutes", function()
-    local player = MockPlayer({ "UniversalTraits:UT_immuneresponse" }, { infectionLevel = 0.5, fatigue = 0.4 })
+    local player = MockPlayer({ "UniversalTraits:UT_immuneresponse" }, { zombieInfection = 50, fatigue = 0.4 })
     withActivePlayer(player, function()
         Events.EveryTenMinutes:fire()
     end)
-    assert_true(math.abs(player:getBodyDamage():getInfectionLevel() - 0.47) < 0.0001,
-        "expected infection to drop by 0.03")
-    assert_true(math.abs(player:getStats():getFatigue() - 0.38) < 0.0001,
+    assert_true(math.abs(player:getBodyDamage():getApparentInfectionLevel() - 47) < 0.1,
+        "expected infection to drop by 3 (50→47)")
+    assert_true(math.abs(player:getStats():get(CharacterStat.FATIGUE) - 0.38) < 0.0001,
         "expected fatigue to drop by 0.02")
 end)
 
 test("immunocompromised marks the trait and increases infection over time", function()
     local player = fireNewGame("UniversalTraits:UT_immunocompromised")
-    player:getBodyDamage():setInfectionLevel(0.5)
+    player:getStats():set(CharacterStat.ZOMBIE_INFECTION, 50)
     withActivePlayer(player, function()
         Events.EveryOneMinute:fire()
     end)
     assert_eq(player:getModData()["UT_immunocompromised"], true, "expected immunocompromised flag")
-    assert_true(math.abs(player:getBodyDamage():getInfectionLevel() - 0.51) < 0.0001,
-        "expected infection to increase by 0.01")
+    assert_true(math.abs(player:getBodyDamage():getApparentInfectionLevel() - 51) < 0.1,
+        "expected infection to increase by 1 (50→51)")
 end)
 
 test("superimmune marks the trait and reduces infection over time", function()
     local player = fireNewGame("UniversalTraits:UT_superimmune")
-    player:getBodyDamage():setInfectionLevel(0.5)
+    player:getStats():set(CharacterStat.ZOMBIE_INFECTION, 50)
     withActivePlayer(player, function()
         Events.EveryOneMinute:fire()
     end)
     assert_eq(player:getModData()["UT_superimmune"], true, "expected superimmune flag")
-    assert_true(math.abs(player:getBodyDamage():getInfectionLevel() - 0.48) < 0.0001,
-        "expected infection to decrease by 0.02")
+    assert_true(math.abs(player:getBodyDamage():getApparentInfectionLevel() - 48) < 0.1,
+        "expected infection to decrease by 2 (50→48)")
 end)
 
 test("butterfingers only flags a drop after 300 ticks and a successful roll", function()
@@ -1198,31 +1198,31 @@ Events.OnGameStart.fire()
 
 test("fearofthedark raises panic in darkness (lightLevel < 0.3)", function()
     local sq = { getLightLevel = function() return 0.1 end }
-    local player = MockPlayer({ "UniversalTraits:UT_fearofthedark" }, { panic = 0.1, square = sq })
+    local player = MockPlayer({ "UniversalTraits:UT_fearofthedark" }, { panic = 10, square = sq })
     withActivePlayer(player, function()
         Events.EveryOneMinute:fire()
     end)
-    local panic = player:getStats():getPanic()
-    assert_eq(math.floor(panic * 1000 + 0.5) / 1000, 0.14, "panic should be 0.1 + 0.04 = 0.14 in darkness")
+    local panic = player:getStats():get(CharacterStat.PANIC)
+    assert_eq(panic, 14, "panic should be 10 + 4 = 14 in darkness")
 end)
 
 test("fearofthedark reduces panic in bright light (lightLevel > 0.7)", function()
     local sq = { getLightLevel = function() return 0.9 end }
-    local player = MockPlayer({ "UniversalTraits:UT_fearofthedark" }, { panic = 0.1, square = sq })
+    local player = MockPlayer({ "UniversalTraits:UT_fearofthedark" }, { panic = 10, square = sq })
     withActivePlayer(player, function()
         Events.EveryOneMinute:fire()
     end)
-    local panic = player:getStats():getPanic()
-    assert_eq(math.floor(panic * 1000 + 0.5) / 1000, 0.09, "panic should be 0.1 - 0.01 = 0.09 in bright light")
+    local panic = player:getStats():get(CharacterStat.PANIC)
+    assert_eq(panic, 9, "panic should be 10 - 1 = 9 in bright light")
 end)
 
 test("fearofthedark does not affect player without the trait", function()
     local sq = { getLightLevel = function() return 0.1 end }
-    local player = MockPlayer({}, { panic = 0.1, square = sq })
+    local player = MockPlayer({}, { panic = 10, square = sq })
     withActivePlayer(player, function()
         Events.EveryOneMinute:fire()
     end)
-    assert_eq(player:getStats():getPanic(), 0.1, "panic unchanged without trait")
+    assert_eq(player:getStats():get(CharacterStat.PANIC), 10, "panic unchanged without trait")
 end)
 
 -- ─── UT_mundane ───────────────────────────────────────────────────────────────
@@ -1248,7 +1248,7 @@ test("addictedtocaffeine adds stress when no caffeine flag set", function()
     withActivePlayer(player, function()
         Events.EveryTenMinutes:fire()
     end)
-    local stress = player:getStats():getStress()
+    local stress = player:getStats():get(CharacterStat.STRESS)
     assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.06,
         "stress should be +0.06 when no UT_hadCaffeine flag")
 end)
@@ -1259,7 +1259,7 @@ test("addictedtocaffeine skips stress when caffeine flag is set", function()
     withActivePlayer(player, function()
         Events.EveryTenMinutes:fire()
     end)
-    assert_eq(player:getStats():getStress(), 0.0, "no stress added when UT_hadCaffeine is set")
+    assert_eq(player:getStats():get(CharacterStat.STRESS), 0.0, "no stress added when UT_hadCaffeine is set")
 end)
 
 test("addictedtocaffeine clears UT_hadCaffeine flag each tick", function()
@@ -1277,7 +1277,7 @@ test("addictedtocaffeine does not affect player without the trait", function()
     withActivePlayer(player, function()
         Events.EveryTenMinutes:fire()
     end)
-    assert_eq(player:getStats():getStress(), 0.0, "no stress added without trait")
+    assert_eq(player:getStats():get(CharacterStat.STRESS), 0.0, "no stress added without trait")
 end)
 
 -- ─── UT_ItemConsumptionHooks: UT_allergic ─────────────────────────────────────
@@ -1287,7 +1287,7 @@ test("allergic adds food sickness spike on guaranteed roll", function()
     setMockZombRandSequence({ 0 })  -- 0 < 30 → spike fires
     local action = { character = player, item = MockItem("Chips") }
     ISEatFoodAction.perform(action)
-    local sickness = player:getBodyDamage():getFoodSicknessLevel()
+    local sickness = player:getStats():get(CharacterStat.FOOD_SICKNESS)
     assert_eq(sickness, 20, "food sickness should be +20 on successful allergic roll")
 end)
 
@@ -1296,7 +1296,7 @@ test("allergic does not spike on failed roll", function()
     setMockZombRandSequence({ 30 })  -- 30 is NOT < 30 → no spike
     local action = { character = player, item = MockItem("Chips") }
     ISEatFoodAction.perform(action)
-    assert_eq(player:getBodyDamage():getFoodSicknessLevel(), 0,
+    assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 0,
         "no food sickness when roll fails")
 end)
 
@@ -1305,7 +1305,7 @@ test("allergic does not trigger for medication items", function()
     setMockZombRandSequence({ 0 })  -- guaranteed roll but item is medication
     local action = { character = player, item = MockItem("Antibiotics") }
     ISEatFoodAction.perform(action)
-    assert_eq(player:getBodyDamage():getFoodSicknessLevel(), 0,
+    assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 0,
         "no food sickness when item is medication (not food)")
 end)
 
@@ -1314,7 +1314,7 @@ test("allergic does not affect player without the trait", function()
     setMockZombRandSequence({ 0 })
     local action = { character = player, item = MockItem("Chips") }
     ISEatFoodAction.perform(action)
-    assert_eq(player:getBodyDamage():getFoodSicknessLevel(), 0,
+    assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 0,
         "non-allergic player unaffected")
 end)
 
@@ -1324,7 +1324,7 @@ test("antivaxxer adds stress when medication eaten", function()
     local player = MockPlayer({ "UniversalTraits:UT_antivaxxer" }, { stress = 0.0 })
     local action = { character = player, item = MockItem("Painkiller") }
     ISEatFoodAction.perform(action)
-    local stress = player:getStats():getStress()
+    local stress = player:getStats():get(CharacterStat.STRESS)
     assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.20,
         "stress should be +0.20 when medication consumed")
 end)
@@ -1333,7 +1333,7 @@ test("antivaxxer skips beta blocker", function()
     local player = MockPlayer({ "UniversalTraits:UT_antivaxxer" }, { stress = 0.0 })
     local action = { character = player, item = MockItem("BetaBlocker") }
     ISEatFoodAction.perform(action)
-    assert_eq(player:getStats():getStress(), 0.0,
+    assert_eq(player:getStats():get(CharacterStat.STRESS), 0.0,
         "beta blocker should not trigger antivaxxer stress")
 end)
 
@@ -1341,7 +1341,7 @@ test("antivaxxer does not affect player without the trait", function()
     local player = MockPlayer({}, { stress = 0.0 })
     local action = { character = player, item = MockItem("Painkiller") }
     ISEatFoodAction.perform(action)
-    assert_eq(player:getStats():getStress(), 0.0,
+    assert_eq(player:getStats():get(CharacterStat.STRESS), 0.0,
         "non-antivaxxer player unaffected")
 end)
 
@@ -1367,7 +1367,7 @@ test("humanhamster no stress when craving below 10", function()
     withActivePlayer(player, function()
         Events.EveryOneMinute:fire()
     end)
-    assert_eq(player:getStats():getStress(), 0.0, "no stress at craving < 10")
+    assert_eq(player:getStats():get(CharacterStat.STRESS), 0.0, "no stress at craving < 10")
 end)
 
 test("humanhamster adds mild stress at craving 10–29", function()
@@ -1380,7 +1380,7 @@ test("humanhamster adds mild stress at craving 10–29", function()
     withActivePlayer(player, function()
         Events.EveryOneMinute:fire()
     end)
-    local stress = player:getStats():getStress()
+    local stress = player:getStats():get(CharacterStat.STRESS)
     assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.02, "mild stress (+0.02) at craving 10")
 end)
 
@@ -1394,7 +1394,7 @@ test("humanhamster adds severe stress at craving 60+", function()
     withActivePlayer(player, function()
         Events.EveryOneMinute:fire()
     end)
-    local stress = player:getStats():getStress()
+    local stress = player:getStats():get(CharacterStat.STRESS)
     assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.08, "severe stress (+0.08) at craving 60")
 end)
 
@@ -1409,7 +1409,7 @@ test("humanhamster resets craving when 80pct full with backpack", function()
         Events.EveryOneMinute:fire()
     end)
     assert_eq(player:getModData()["UT_hamsterCraving"], 0, "craving resets when satisfied")
-    assert_eq(player:getStats():getStress(), 0.0, "no stress when satisfied")
+    assert_eq(player:getStats():get(CharacterStat.STRESS), 0.0, "no stress when satisfied")
 end)
 
 -- ─── UT_physicallyactive ──────────────────────────────────────────────────────
@@ -1421,7 +1421,7 @@ test("physicallyactive reduces stress per exercise loop", function()
     local player = MockPlayer({ "UniversalTraits:UT_physicallyactive" }, { stress = 0.5 })
     local action = { character = player }
     ISFitnessAction.exeLooped(action)
-    local stress = player:getStats():getStress()
+    local stress = player:getStats():get(CharacterStat.STRESS)
     assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.485,
         "stress should decrease by 0.015 per exercise loop")
 end)
@@ -1430,7 +1430,7 @@ test("physicallyactive reduces boredom per exercise loop", function()
     local player = MockPlayer({ "UniversalTraits:UT_physicallyactive" }, { boredom = 50 })
     local action = { character = player }
     ISFitnessAction.exeLooped(action)
-    assert_eq(player:getStats():getBoredom(), 45, "boredom should decrease by 5 per exercise loop")
+    assert_eq(player:getStats():get(CharacterStat.BOREDOM), 45, "boredom should decrease by 5 per exercise loop")
 end)
 
 test("physicallyactive at Fitness 10 restores endurance after exercise", function()
@@ -1442,7 +1442,7 @@ test("physicallyactive at Fitness 10 restores endurance after exercise", functio
     local action = { character = player }
     ISFitnessAction.exeLooped(action)
     -- Endurance unchanged (original stub doesn't drain it), no error expected
-    assert_true(player:getStats():getEndurance() >= 0.0, "endurance should remain non-negative")
+    assert_true(player:getStats():get(CharacterStat.ENDURANCE) >= 0.0, "endurance should remain non-negative")
 end)
 
 -- ─── UT_gunspecialist_III ─────────────────────────────────────────────────────
@@ -1480,29 +1480,29 @@ end)
 
 -- ─── UT_scardycat: panic cascade ──────────────────────────────────────────────
 
-test("scardycat panic cascade fires when panic rises by 0.05 or more", function()
+test("scardycat panic cascade fires when panic rises by 5 or more", function()
     -- Two EveryOneMinute calls: first to set prevPanic, second to detect the rise
-    local player = MockPlayer({ "UniversalTraits:UT_scardycat" }, { panic = 0.10 })
+    local player = MockPlayer({ "UniversalTraits:UT_scardycat" }, { panic = 10 })
     withActivePlayer(player, function()
-        Events.EveryOneMinute:fire()  -- prevPanic[id] = 0.10
-        player:getStats():setPanic(0.20)  -- panic rose by 0.10 (>= 0.05)
-        Events.EveryOneMinute:fire()  -- cascade: 0.20 + 0.15 = 0.35
+        Events.EveryOneMinute:fire()  -- prevPanic[id] = 10
+        player:getStats():set(CharacterStat.PANIC, 20)  -- panic rose by 10 (>= 5)
+        Events.EveryOneMinute:fire()  -- cascade: 20 + 15 = 35
     end)
-    local panic = player:getStats():getPanic()
-    assert_true(panic >= 0.34 and panic <= 0.36,
-        "panic cascade should add 0.15 when panic rises >= 0.05 in a minute (got " .. tostring(panic) .. ")")
+    local panic = player:getStats():get(CharacterStat.PANIC)
+    assert_true(panic >= 34 and panic <= 36,
+        "panic cascade should add 15 when panic rises >= 5 in a minute (got " .. tostring(panic) .. ")")
 end)
 
-test("scardycat no cascade when panic does not rise by 0.05", function()
-    local player = MockPlayer({ "UniversalTraits:UT_scardycat" }, { panic = 0.20 })
+test("scardycat no cascade when panic does not rise by 5", function()
+    local player = MockPlayer({ "UniversalTraits:UT_scardycat" }, { panic = 20 })
     withActivePlayer(player, function()
-        Events.EveryOneMinute:fire()  -- prevPanic[id] = 0.20
-        player:getStats():setPanic(0.23)  -- rose only 0.03 (< 0.05)
+        Events.EveryOneMinute:fire()  -- prevPanic[id] = 20
+        player:getStats():set(CharacterStat.PANIC, 23)  -- rose only 3 (< 5)
         Events.EveryOneMinute:fire()  -- no cascade
     end)
-    local panic = player:getStats():getPanic()
-    assert_true(panic < 0.30,
-        "no cascade should fire when panic rose less than 0.05 (got " .. tostring(panic) .. ")")
+    local panic = player:getStats():get(CharacterStat.PANIC)
+    assert_true(panic < 30,
+        "no cascade should fire when panic rose less than 5 (got " .. tostring(panic) .. ")")
 end)
 
 -- ─── UT_butterfingers: drop execution ─────────────────────────────────────────
@@ -1539,23 +1539,19 @@ end)
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_melancholic.lua")
 
 test("melancholic raises unhappiness by 5 every 10 minutes", function()
-    local player = MockPlayer({ "UniversalTraits:UT_melancholic" })
-    local bd = player:getBodyDamage()
-    bd._unhappinessLevel = 20
+    local player = MockPlayer({ "UniversalTraits:UT_melancholic" }, { unhappiness = 20 })
     withActivePlayer(player, function()
         Events.EveryTenMinutes:fire()
     end)
-    assert_eq(bd:getUnhappinessLevel(), 25, "unhappiness should be 20 + 5 = 25")
+    assert_eq(player:getStats():get(CharacterStat.UNHAPPINESS), 25, "unhappiness should be 20 + 5 = 25")
 end)
 
 test("melancholic unhappiness caps at 100", function()
-    local player = MockPlayer({ "UniversalTraits:UT_melancholic" })
-    local bd = player:getBodyDamage()
-    bd._unhappinessLevel = 98
+    local player = MockPlayer({ "UniversalTraits:UT_melancholic" }, { unhappiness = 98 })
     withActivePlayer(player, function()
         Events.EveryTenMinutes:fire()
     end)
-    assert_eq(bd:getUnhappinessLevel(), 100, "unhappiness should cap at 100")
+    assert_eq(player:getStats():get(CharacterStat.UNHAPPINESS), 100, "unhappiness should cap at 100")
 end)
 
 test("melancholic does NOT raise stress", function()
@@ -1563,17 +1559,15 @@ test("melancholic does NOT raise stress", function()
     withActivePlayer(player, function()
         Events.EveryTenMinutes:fire()
     end)
-    assert_eq(player:getStats():getStress(), 0.0, "stress should be unchanged by melancholic")
+    assert_eq(player:getStats():get(CharacterStat.STRESS), 0.0, "stress should be unchanged by melancholic")
 end)
 
 test("melancholic does not affect player without the trait", function()
-    local player = MockPlayer({})
-    local bd = player:getBodyDamage()
-    bd._unhappinessLevel = 20
+    local player = MockPlayer({}, { unhappiness = 20 })
     withActivePlayer(player, function()
         Events.EveryTenMinutes:fire()
     end)
-    assert_eq(bd:getUnhappinessLevel(), 20, "unhappiness unchanged without trait")
+    assert_eq(player:getStats():get(CharacterStat.UNHAPPINESS), 20, "unhappiness unchanged without trait")
 end)
 
 -- ===== UT_weathersensitive behavioral tests (code changed: real weather check) =====
@@ -1585,7 +1579,7 @@ test("weathersensitive raises stress when raining (precip > 0.3)", function()
     withActivePlayer(player, function()
         Events.EveryTenMinutes:fire()
     end)
-    local stress = player:getStats():getStress()
+    local stress = player:getStats():get(CharacterStat.STRESS)
     assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.25,
         "stress should be 0.2 + 0.05 = 0.25 when raining")
 end)
@@ -1596,7 +1590,7 @@ test("weathersensitive reduces stress when clear and sunny (clouds < 0.2)", func
     withActivePlayer(player, function()
         Events.EveryTenMinutes:fire()
     end)
-    local stress = player:getStats():getStress()
+    local stress = player:getStats():get(CharacterStat.STRESS)
     assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.38,
         "stress should be 0.4 - 0.02 = 0.38 when sunny")
 end)
@@ -1607,7 +1601,7 @@ test("weathersensitive does nothing when overcast but dry (no rain, clouds >= 0.
     withActivePlayer(player, function()
         Events.EveryTenMinutes:fire()
     end)
-    assert_eq(player:getStats():getStress(), 0.3, "stress unchanged when overcast but dry")
+    assert_eq(player:getStats():get(CharacterStat.STRESS), 0.3, "stress unchanged when overcast but dry")
 end)
 
 test("weathersensitive does not affect player without the trait", function()
@@ -1616,7 +1610,7 @@ test("weathersensitive does not affect player without the trait", function()
     withActivePlayer(player, function()
         Events.EveryTenMinutes:fire()
     end)
-    assert_eq(player:getStats():getStress(), 0.2, "stress unchanged without trait")
+    assert_eq(player:getStats():get(CharacterStat.STRESS), 0.2, "stress unchanged without trait")
 end)
 
 -- ===== UT_topheavy behavioral tests (code fixed: delta -3 not +2) =====
@@ -1652,30 +1646,29 @@ end)
 -- ===== UT_unwavering behavioral tests (code changed: EveryTenMinutes panic drain) =====
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_unwavering.lua")
 
-test("unwavering drains panic by 0.1 when above 0.1", function()
-    local player = MockPlayer({ "UniversalTraits:UT_unwavering" }, { panic = 0.5 })
+test("unwavering drains panic by 10 when above 10", function()
+    local player = MockPlayer({ "UniversalTraits:UT_unwavering" }, { panic = 50 })
     withActivePlayer(player, function()
         Events.EveryTenMinutes:fire()
     end)
-    local panic = player:getStats():getPanic()
-    assert_eq(math.floor(panic * 100 + 0.5) / 100, 0.40,
-        "panic should be 0.5 - 0.1 = 0.4 after drain")
+    local panic = player:getStats():get(CharacterStat.PANIC)
+    assert_eq(panic, 40, "panic should be 50 - 10 = 40 after drain")
 end)
 
-test("unwavering does not drain panic when at or below 0.1", function()
-    local player = MockPlayer({ "UniversalTraits:UT_unwavering" }, { panic = 0.1 })
+test("unwavering does not drain panic when at or below 10", function()
+    local player = MockPlayer({ "UniversalTraits:UT_unwavering" }, { panic = 10 })
     withActivePlayer(player, function()
         Events.EveryTenMinutes:fire()
     end)
-    assert_eq(player:getStats():getPanic(), 0.1, "panic unchanged when at 0.1 threshold")
+    assert_eq(player:getStats():get(CharacterStat.PANIC), 10, "panic unchanged when at 10 threshold")
 end)
 
 test("unwavering does not affect player without the trait", function()
-    local player = MockPlayer({}, { panic = 0.5 })
+    local player = MockPlayer({}, { panic = 50 })
     withActivePlayer(player, function()
         Events.EveryTenMinutes:fire()
     end)
-    assert_eq(player:getStats():getPanic(), 0.5, "panic unchanged without trait")
+    assert_eq(player:getStats():get(CharacterStat.PANIC), 50, "panic unchanged without trait")
 end)
 
 -- ===== UT_pillsallergy behavioral tests (hook in UT_ItemConsumptionHooks.lua) =====
@@ -1684,7 +1677,7 @@ test("pillsallergy adds sickness 15 when medication consumed", function()
     local player = MockPlayer({ "UniversalTraits:UT_pillsallergy" })
     local action = { character = player, item = MockItem("Painkiller") }
     ISEatFoodAction.perform(action)
-    assert_eq(player:getBodyDamage():getFoodSicknessLevel(), 15,
+    assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 15,
         "food sickness should be +15 after medication consumed with pillsallergy")
 end)
 
@@ -1692,7 +1685,7 @@ test("pillsallergy does not trigger on non-medication food", function()
     local player = MockPlayer({ "UniversalTraits:UT_pillsallergy" })
     local action = { character = player, item = MockItem("Chips") }
     ISEatFoodAction.perform(action)
-    assert_eq(player:getBodyDamage():getFoodSicknessLevel(), 0,
+    assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 0,
         "no sickness when non-medication item consumed with pillsallergy")
 end)
 
@@ -1700,7 +1693,7 @@ test("pillsallergy does not affect player without the trait", function()
     local player = MockPlayer({})
     local action = { character = player, item = MockItem("Painkiller") }
     ISEatFoodAction.perform(action)
-    assert_eq(player:getBodyDamage():getFoodSicknessLevel(), 0,
+    assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 0,
         "no sickness when player lacks pillsallergy trait")
 end)
 
@@ -1710,7 +1703,7 @@ test("wildplantsallergy adds sickness 20 when foraged item consumed", function()
     local player = MockPlayer({ "UniversalTraits:UT_wildplantsallergy" })
     local action = { character = player, item = MockItem("Berries", { forageCategory = "WildPlants" }) }
     ISEatFoodAction.perform(action)
-    assert_eq(player:getBodyDamage():getFoodSicknessLevel(), 20,
+    assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 20,
         "food sickness should be +20 after foraged item consumed with wildplantsallergy")
 end)
 
@@ -1718,7 +1711,7 @@ test("wildplantsallergy does not trigger on non-foraged food", function()
     local player = MockPlayer({ "UniversalTraits:UT_wildplantsallergy" })
     local action = { character = player, item = MockItem("Chips") }
     ISEatFoodAction.perform(action)
-    assert_eq(player:getBodyDamage():getFoodSicknessLevel(), 0,
+    assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 0,
         "no sickness when non-foraged item consumed with wildplantsallergy")
 end)
 
@@ -1726,7 +1719,7 @@ test("wildplantsallergy does not affect player without the trait", function()
     local player = MockPlayer({})
     local action = { character = player, item = MockItem("Berries", { forageCategory = "WildPlants" }) }
     ISEatFoodAction.perform(action)
-    assert_eq(player:getBodyDamage():getFoodSicknessLevel(), 0,
+    assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 0,
         "no sickness when player lacks wildplantsallergy trait")
 end)
 
@@ -1984,109 +1977,109 @@ end)
 test("depressive raises stress by 0.08 each EveryTenMinutes", function()
     local p = MockPlayer({ "UniversalTraits:UT_depressive" }, { stress = 0.0 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_eq(math.floor(p:getStats():getStress() * 1000 + 0.5) / 1000, 0.08,
+    assert_eq(math.floor(p:getStats():get(CharacterStat.STRESS) * 1000 + 0.5) / 1000, 0.08,
         "expected stress 0.08 after one ETM tick")
 end)
 test("depressive does not affect player without trait", function()
     local p = MockPlayer({}, { stress = 0.0 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_eq(p:getStats():getStress(), 0.0, "stress unchanged without trait")
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.0, "stress unchanged without trait")
 end)
 
 test("fibromyalgia raises stress and fatigue each EveryTenMinutes", function()
     local p = MockPlayer({ "UniversalTraits:UT_fibromyalgia" }, { stress = 0.0, fatigue = 0.0 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_true(p:getStats():getStress() > 0,  "stress should increase")
-    assert_true(p:getStats():getFatigue() > 0, "fatigue should increase")
+    assert_true(p:getStats():get(CharacterStat.STRESS) > 0,  "stress should increase")
+    assert_true(p:getStats():get(CharacterStat.FATIGUE) > 0, "fatigue should increase")
 end)
 
 test("optimist reduces stress and panic each EveryTenMinutes", function()
     local p = MockPlayer({ "UniversalTraits:UT_optimist" }, { stress = 0.5, panic = 0.4 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_true(p:getStats():getStress() < 0.5, "stress should decrease")
-    assert_true(p:getStats():getPanic()  < 0.4, "panic should decrease")
+    assert_true(p:getStats():get(CharacterStat.STRESS) < 0.5, "stress should decrease")
+    assert_true(p:getStats():get(CharacterStat.PANIC)  < 0.4, "panic should decrease")
 end)
 
-test("paranoia raises panic by 0.06 each EveryTenMinutes", function()
-    local p = MockPlayer({ "UniversalTraits:UT_paranoia" }, { panic = 0.0 })
+test("paranoia raises panic by 6 each EveryTenMinutes", function()
+    local p = MockPlayer({ "UniversalTraits:UT_paranoia" }, { panic = 0 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_eq(math.floor(p:getStats():getPanic() * 1000 + 0.5) / 1000, 0.06,
-        "expected panic 0.06 after one ETM tick")
+    assert_eq(p:getStats():get(CharacterStat.PANIC), 6,
+        "expected panic 6 after one ETM tick")
 end)
 
 test("pessimist raises stress by 0.05 each EveryTenMinutes", function()
     local p = MockPlayer({ "UniversalTraits:UT_pessimist" }, { stress = 0.0 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_eq(math.floor(p:getStats():getStress() * 1000 + 0.5) / 1000, 0.05,
+    assert_eq(math.floor(p:getStats():get(CharacterStat.STRESS) * 1000 + 0.5) / 1000, 0.05,
         "expected stress 0.05 after one ETM tick")
 end)
 
 test("ravenous raises hunger by 0.1 each EveryTenMinutes", function()
     local p = MockPlayer({ "UniversalTraits:UT_ravenous" }, { hunger = 0.0 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_eq(math.floor(p:getStats():getHunger() * 1000 + 0.5) / 1000, 0.1,
+    assert_eq(math.floor(p:getStats():get(CharacterStat.HUNGER) * 1000 + 0.5) / 1000, 0.1,
         "expected hunger 0.1 after one ETM tick")
 end)
 
 test("accmetabolism raises hunger and thirst each EveryTenMinutes", function()
     local p = MockPlayer({ "UniversalTraits:UT_accmetabolism" }, { hunger = 0.0, thirst = 0.0 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_true(p:getStats():getHunger() > 0, "hunger should increase")
-    assert_true(p:getStats():getThirst() > 0, "thirst should increase")
+    assert_true(p:getStats():get(CharacterStat.HUNGER) > 0, "hunger should increase")
+    assert_true(p:getStats():get(CharacterStat.THIRST) > 0, "thirst should increase")
 end)
 
 test("mstoptimist applies large stress reduction when stress > 0.6", function()
     local p = MockPlayer({ "UniversalTraits:UT_mstoptimist" }, { stress = 0.8 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_true(p:getStats():getStress() < 0.8, "stress should decrease")
-    assert_eq(math.floor(p:getStats():getStress() * 1000 + 0.5) / 1000, 0.72,
+    assert_true(p:getStats():get(CharacterStat.STRESS) < 0.8, "stress should decrease")
+    assert_eq(math.floor(p:getStats():get(CharacterStat.STRESS) * 1000 + 0.5) / 1000, 0.72,
         "expected -0.08 at high stress: 0.8-0.08=0.72")
 end)
 test("mstoptimist applies small stress reduction when stress <= 0.6", function()
     local p = MockPlayer({ "UniversalTraits:UT_mstoptimist" }, { stress = 0.5 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_eq(math.floor(p:getStats():getStress() * 1000 + 0.5) / 1000, 0.47,
+    assert_eq(math.floor(p:getStats():get(CharacterStat.STRESS) * 1000 + 0.5) / 1000, 0.47,
         "expected -0.03 at low stress: 0.5-0.03=0.47")
 end)
 
 test("bigorexia adds baseline stress each EveryTenMinutes", function()
     local p = MockPlayer({ "UniversalTraits:UT_bigorexia" }, { stress = 0.0 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_true(p:getStats():getStress() >= 0.04,
-        "expected at least +0.04 baseline stress, got " .. tostring(p:getStats():getStress()))
+    assert_true(p:getStats():get(CharacterStat.STRESS) >= 0.04,
+        "expected at least +0.04 baseline stress, got " .. tostring(p:getStats():get(CharacterStat.STRESS)))
 end)
 test("bigorexia adds extra stress when Strength < 5", function()
     local p = MockPlayer({ "UniversalTraits:UT_bigorexia" }, { stress = 0.0 })
     -- default Strength perk level = 0 (< 5) → extra +0.02
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_eq(math.floor(p:getStats():getStress() * 1000 + 0.5) / 1000, 0.06,
+    assert_eq(math.floor(p:getStats():get(CharacterStat.STRESS) * 1000 + 0.5) / 1000, 0.06,
         "expected 0.04+0.02=0.06 stress when Strength<5")
 end)
 
 test("coldsensitive raises stress and fatigue when bodyTemp < 36", function()
     local p = MockPlayer({ "UniversalTraits:UT_coldsensitive" }, { bodyTemp = 35.0 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_true(p:getStats():getStress() > 0,  "stress should increase when cold")
-    assert_true(p:getStats():getFatigue() > 0, "fatigue should increase when cold")
+    assert_true(p:getStats():get(CharacterStat.STRESS) > 0,  "stress should increase when cold")
+    assert_true(p:getStats():get(CharacterStat.FATIGUE) > 0, "fatigue should increase when cold")
 end)
 test("coldsensitive does NOT fire when bodyTemp >= 36", function()
     local p = MockPlayer({ "UniversalTraits:UT_coldsensitive" }, { bodyTemp = 37.0 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_eq(p:getStats():getStress(),  0.0, "no stress when warm")
-    assert_eq(p:getStats():getFatigue(), 0.0, "no fatigue when warm")
+    assert_eq(p:getStats():get(CharacterStat.STRESS),  0.0, "no stress when warm")
+    assert_eq(p:getStats():get(CharacterStat.FATIGUE), 0.0, "no fatigue when warm")
 end)
 
 test("heatsensitive raises stress and fatigue when bodyTemp > 38", function()
     local p = MockPlayer({ "UniversalTraits:UT_heatsensitive" }, { bodyTemp = 39.0 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_true(p:getStats():getStress() > 0,  "stress should increase when hot")
-    assert_true(p:getStats():getFatigue() > 0, "fatigue should increase when hot")
+    assert_true(p:getStats():get(CharacterStat.STRESS) > 0,  "stress should increase when hot")
+    assert_true(p:getStats():get(CharacterStat.FATIGUE) > 0, "fatigue should increase when hot")
 end)
 test("heatsensitive does NOT fire when bodyTemp <= 38", function()
     local p = MockPlayer({ "UniversalTraits:UT_heatsensitive" }, { bodyTemp = 37.0 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_eq(p:getStats():getStress(),  0.0, "no stress when cool")
-    assert_eq(p:getStats():getFatigue(), 0.0, "no fatigue when cool")
+    assert_eq(p:getStats():get(CharacterStat.STRESS),  0.0, "no stress when cool")
+    assert_eq(p:getStats():get(CharacterStat.FATIGUE), 0.0, "no fatigue when cool")
 end)
 
 test("alcoholic_I fires stress spike on every 3rd EveryTenMinutes when sober", function()
@@ -2095,26 +2088,26 @@ test("alcoholic_I fires stress spike on every 3rd EveryTenMinutes when sober", f
     withActivePlayer(p, function()
         for _ = 1, 9 do Events.EveryTenMinutes:fire() end
     end)
-    assert_true(p:getStats():getStress() > 0,
+    assert_true(p:getStats():get(CharacterStat.STRESS) > 0,
         "expected stress to increase at least once in 9 ETM fires while sober")
 end)
-test("alcoholic_I does NOT fire stress when drunkenness >= 0.05", function()
-    local p = MockPlayer({ "UniversalTraits:UT_alcoholic_I" }, { stress = 0.0, drunkenness = 0.1 })
+test("alcoholic_I does NOT fire stress when intoxication >= 5", function()
+    local p = MockPlayer({ "UniversalTraits:UT_alcoholic_I" }, { stress = 0.0, intoxication = 10 })
     withActivePlayer(p, function()
         for _ = 1, 9 do Events.EveryTenMinutes:fire() end
     end)
-    assert_eq(p:getStats():getStress(), 0.0, "no stress when not sober enough")
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.0, "no stress when not sober enough")
 end)
 
-test("alcoholic_II raises stress when drunkenness < 0.05 each EveryTenMinutes", function()
-    local p = MockPlayer({ "UniversalTraits:UT_alcoholic_II" }, { stress = 0.0, drunkenness = 0.0 })
+test("alcoholic_II raises stress when intoxication < 5 each EveryTenMinutes", function()
+    local p = MockPlayer({ "UniversalTraits:UT_alcoholic_II" }, { stress = 0.0, intoxication = 0 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_true(p:getStats():getStress() > 0, "stress should increase when sober")
+    assert_true(p:getStats():get(CharacterStat.STRESS) > 0, "stress should increase when sober")
 end)
-test("alcoholic_II does NOT fire when drunkenness >= 0.05", function()
-    local p = MockPlayer({ "UniversalTraits:UT_alcoholic_II" }, { stress = 0.0, drunkenness = 0.1 })
+test("alcoholic_II does NOT fire when intoxication >= 5", function()
+    local p = MockPlayer({ "UniversalTraits:UT_alcoholic_II" }, { stress = 0.0, intoxication = 10 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_eq(p:getStats():getStress(), 0.0, "no stress when drunk")
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.0, "no stress when drunk")
 end)
 
 test("selfdestructive can fire stress and fatigue spike (guaranteed roll)", function()
@@ -2122,15 +2115,15 @@ test("selfdestructive can fire stress and fatigue spike (guaranteed roll)", func
     resetMockZombRand()
     local p = MockPlayer({ "UniversalTraits:UT_selfdestructive" }, { stress = 0.0, fatigue = 0.0 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_true(p:getStats():getStress() > 0,  "stress should spike on guaranteed roll")
-    assert_true(p:getStats():getFatigue() > 0, "fatigue should spike on guaranteed roll")
+    assert_true(p:getStats():get(CharacterStat.STRESS) > 0,  "stress should spike on guaranteed roll")
+    assert_true(p:getStats():get(CharacterStat.FATIGUE) > 0, "fatigue should spike on guaranteed roll")
 end)
 test("selfdestructive does NOT fire when roll fails", function()
     setMockZombRandDefault(5)  -- 5 is not < 2 → no spike
     local p = MockPlayer({ "UniversalTraits:UT_selfdestructive" }, { stress = 0.0, fatigue = 0.0 })
     withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
-    assert_eq(p:getStats():getStress(),  0.0, "no stress when roll fails")
-    assert_eq(p:getStats():getFatigue(), 0.0, "no fatigue when roll fails")
+    assert_eq(p:getStats():get(CharacterStat.STRESS),  0.0, "no stress when roll fails")
+    assert_eq(p:getStats():get(CharacterStat.FATIGUE), 0.0, "no fatigue when roll fails")
     resetMockZombRand()
 end)
 
@@ -2140,13 +2133,13 @@ test("acrophobic raises panic when z > 0", function()
     local p = MockPlayer({ "UniversalTraits:UT_acrophobic" }, { panic = 0.0 })
     p._z = 1
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_true(p:getStats():getPanic() > 0, "panic should increase when elevated")
+    assert_true(p:getStats():get(CharacterStat.PANIC) > 0, "panic should increase when elevated")
 end)
 test("acrophobic does NOT fire when z == 0", function()
     local p = MockPlayer({ "UniversalTraits:UT_acrophobic" }, { panic = 0.0 })
     -- _z defaults to 0
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_eq(p:getStats():getPanic(), 0.0, "no panic at ground level")
+    assert_eq(p:getStats():get(CharacterStat.PANIC), 0.0, "no panic at ground level")
 end)
 
 test("albino raises stress and fatigue when outdoors during daytime", function()
@@ -2154,83 +2147,83 @@ test("albino raises stress and fatigue when outdoors during daytime", function()
     -- default _indoors = false → isOutside() = true
     local p = MockPlayer({ "UniversalTraits:UT_albino" }, { stress = 0.0, fatigue = 0.0 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_true(p:getStats():getStress() > 0,  "stress should increase outdoors at midday")
-    assert_true(p:getStats():getFatigue() > 0, "fatigue should increase outdoors at midday")
+    assert_true(p:getStats():get(CharacterStat.STRESS) > 0,  "stress should increase outdoors at midday")
+    assert_true(p:getStats():get(CharacterStat.FATIGUE) > 0, "fatigue should increase outdoors at midday")
 end)
 test("albino does NOT fire when indoors", function()
     setMockTimeOfDay(0.5)
     local p = MockPlayer({ "UniversalTraits:UT_albino" }, { stress = 0.0, fatigue = 0.0 })
     p._indoors = true
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_eq(p:getStats():getStress(),  0.0, "no effect when indoors")
-    assert_eq(p:getStats():getFatigue(), 0.0, "no effect when indoors")
+    assert_eq(p:getStats():get(CharacterStat.STRESS),  0.0, "no effect when indoors")
+    assert_eq(p:getStats():get(CharacterStat.FATIGUE), 0.0, "no effect when indoors")
 end)
 
-test("alcoholic_III raises stress when drunkenness < 0.1 each minute", function()
-    local p = MockPlayer({ "UniversalTraits:UT_alcoholic_III" }, { stress = 0.0, drunkenness = 0.0 })
+test("alcoholic_III raises stress when intoxication < 10 each minute", function()
+    local p = MockPlayer({ "UniversalTraits:UT_alcoholic_III" }, { stress = 0.0, intoxication = 0 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_true(p:getStats():getStress() > 0, "stress should increase when low drunkenness")
+    assert_true(p:getStats():get(CharacterStat.STRESS) > 0, "stress should increase when low drunkenness")
 end)
-test("alcoholic_III raises panic when drunkenness < 0.05 each minute", function()
-    local p = MockPlayer({ "UniversalTraits:UT_alcoholic_III" }, { panic = 0.0, drunkenness = 0.0 })
+test("alcoholic_III raises panic when intoxication < 5 each minute", function()
+    local p = MockPlayer({ "UniversalTraits:UT_alcoholic_III" }, { panic = 0, intoxication = 0 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_true(p:getStats():getPanic() > 0, "panic should increase when below panic threshold")
+    assert_true(p:getStats():get(CharacterStat.PANIC) > 0, "panic should increase when below panic threshold")
 end)
-test("alcoholic_III does NOT fire when drunkenness >= 0.1", function()
-    local p = MockPlayer({ "UniversalTraits:UT_alcoholic_III" }, { stress = 0.0, drunkenness = 0.2 })
+test("alcoholic_III does NOT fire when intoxication >= 10", function()
+    local p = MockPlayer({ "UniversalTraits:UT_alcoholic_III" }, { stress = 0.0, intoxication = 20 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_eq(p:getStats():getStress(), 0.0, "no stress when properly drunk")
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.0, "no stress when properly drunk")
 end)
 
-test("ironliver reduces drunkenness by 10pct when > 0.1", function()
-    local p = MockPlayer({ "UniversalTraits:UT_ironliver" }, { drunkenness = 0.5 })
+test("ironliver reduces intoxication by 10pct when > 10", function()
+    local p = MockPlayer({ "UniversalTraits:UT_ironliver" }, { intoxication = 50 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_eq(math.floor(p:getStats():getDrunkenness() * 1000 + 0.5) / 1000, 0.45,
-        "expected drunkenness 0.5 * 0.9 = 0.45")
+    assert_eq(p:getStats():get(CharacterStat.INTOXICATION), 45,
+        "expected intoxication 50 * 0.9 = 45")
 end)
-test("ironliver does NOT fire when drunkenness <= 0.1", function()
-    local p = MockPlayer({ "UniversalTraits:UT_ironliver" }, { drunkenness = 0.05 })
+test("ironliver does NOT fire when intoxication <= 10", function()
+    local p = MockPlayer({ "UniversalTraits:UT_ironliver" }, { intoxication = 5 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_eq(p:getStats():getDrunkenness(), 0.05, "drunkenness should stay at 0.05")
+    assert_eq(p:getStats():get(CharacterStat.INTOXICATION), 5, "intoxication should stay at 5")
 end)
 
 test("larkperson reduces stress during daytime", function()
     setMockTimeOfDay(0.5)  -- midday
     local p = MockPlayer({ "UniversalTraits:UT_larkperson" }, { stress = 0.5 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_true(p:getStats():getStress() < 0.5, "stress should decrease during day")
+    assert_true(p:getStats():get(CharacterStat.STRESS) < 0.5, "stress should decrease during day")
 end)
 test("larkperson increases stress at night", function()
     setMockTimeOfDay(0.1)  -- night
     local p = MockPlayer({ "UniversalTraits:UT_larkperson" }, { stress = 0.3 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_true(p:getStats():getStress() > 0.3, "stress should increase at night")
+    assert_true(p:getStats():get(CharacterStat.STRESS) > 0.3, "stress should increase at night")
 end)
 
 test("owlperson reduces stress at night", function()
     setMockTimeOfDay(0.1)  -- night
     local p = MockPlayer({ "UniversalTraits:UT_owlperson" }, { stress = 0.5 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_true(p:getStats():getStress() < 0.5, "stress should decrease at night")
+    assert_true(p:getStats():get(CharacterStat.STRESS) < 0.5, "stress should decrease at night")
 end)
 test("owlperson increases stress during day", function()
     setMockTimeOfDay(0.5)  -- midday
     local p = MockPlayer({ "UniversalTraits:UT_owlperson" }, { stress = 0.3 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_true(p:getStats():getStress() > 0.3, "stress should increase during day")
+    assert_true(p:getStats():get(CharacterStat.STRESS) > 0.3, "stress should increase during day")
 end)
 
 test("panicattacks adds panic spike on guaranteed roll", function()
     resetMockZombRand()  -- ZombRand(20) → 0 == 0 → fires
     local p = MockPlayer({ "UniversalTraits:UT_panicattacks" }, { panic = 0.0 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_true(p:getStats():getPanic() > 0, "panic should spike on guaranteed roll")
+    assert_true(p:getStats():get(CharacterStat.PANIC) > 0, "panic should spike on guaranteed roll")
 end)
 test("panicattacks does NOT fire when roll fails", function()
     setMockZombRandDefault(5)  -- 5 != 0 → no spike
     local p = MockPlayer({ "UniversalTraits:UT_panicattacks" }, { panic = 0.0 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_eq(p:getStats():getPanic(), 0.0, "no spike when roll fails")
+    assert_eq(p:getStats():get(CharacterStat.PANIC), 0.0, "no spike when roll fails")
     resetMockZombRand()
 end)
 
@@ -2238,39 +2231,36 @@ test("maniac reduces stress and boredom on zombie kill", function()
     local p = MockPlayer({ "UniversalTraits:UT_maniac" }, { stress = 0.5, boredom = 0.5 })
     local zombie = MockZombie()
     Events.OnZombieDead:fire(p, zombie)
-    assert_true(p:getStats():getStress()  < 0.5, "stress should decrease on kill")
-    assert_true(p:getStats():getBoredom() < 0.5, "boredom should decrease on kill")
+    assert_true(p:getStats():get(CharacterStat.STRESS)  < 0.5, "stress should decrease on kill")
+    assert_true(p:getStats():get(CharacterStat.BOREDOM) < 0.5, "boredom should decrease on kill")
 end)
 test("maniac does not affect player without trait", function()
     local p = MockPlayer({}, { stress = 0.5, boredom = 0.5 })
     Events.OnZombieDead:fire(p, MockZombie())
-    assert_eq(p:getStats():getStress(),  0.5, "stress unchanged without trait")
-    assert_eq(p:getStats():getBoredom(), 0.5, "boredom unchanged without trait")
+    assert_eq(p:getStats():get(CharacterStat.STRESS),  0.5, "stress unchanged without trait")
+    assert_eq(p:getStats():get(CharacterStat.BOREDOM), 0.5, "boredom unchanged without trait")
 end)
 
 test("lesssweaty reduces wetness when not sleeping and wetness > 0", function()
     setMockClimate(0.0, 0.5)  -- not raining, indoors
-    local p = MockPlayer({ "UniversalTraits:UT_lesssweaty" })
-    p:getBodyDamage()._wetness = 0.5
+    local p = MockPlayer({ "UniversalTraits:UT_lesssweaty" }, { wetness = 50 })
     p._sleeping = false
-    p._indoors  = true   -- isOutside() = false → indoor reduction = 0.03
+    p._indoors  = true   -- isOutside() = false → indoor reduction = 3
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_true(p:getBodyDamage():getWetness() < 0.5, "wetness should decrease")
+    assert_true(p:getStats():get(CharacterStat.WETNESS) < 50, "wetness should decrease")
 end)
 test("lesssweaty skips when player is sleeping", function()
-    local p = MockPlayer({ "UniversalTraits:UT_lesssweaty" })
-    p:getBodyDamage()._wetness = 0.5
+    local p = MockPlayer({ "UniversalTraits:UT_lesssweaty" }, { wetness = 50 })
     p._sleeping = true
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_eq(p:getBodyDamage():getWetness(), 0.5, "wetness unchanged when sleeping")
+    assert_eq(p:getStats():get(CharacterStat.WETNESS), 50, "wetness unchanged when sleeping")
 end)
 
 test("highsweaty increases wetness when sprinting", function()
-    local p = MockPlayer({ "UniversalTraits:UT_highsweaty" })
+    local p = MockPlayer({ "UniversalTraits:UT_highsweaty" }, { wetness = 0 })
     p._sprinting = true
-    p:getBodyDamage()._wetness = 0.0
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_true(p:getBodyDamage():getWetness() > 0, "wetness should increase when sprinting")
+    assert_true(p:getStats():get(CharacterStat.WETNESS) > 0, "wetness should increase when sprinting")
 end)
 
 -- ─── Group 7: EveryHours ─────────────────────────────────────────────────────
@@ -2278,23 +2268,23 @@ end)
 test("adaptivemetabolism reduces hunger when hunger > 0.7", function()
     local p = MockPlayer({ "UniversalTraits:UT_adaptivemetabolism" }, { hunger = 0.8 })
     withActivePlayer(p, function() Events.EveryHours:fire() end)
-    assert_true(p:getStats():getHunger() < 0.8, "hunger should decrease when high")
+    assert_true(p:getStats():get(CharacterStat.HUNGER) < 0.8, "hunger should decrease when high")
 end)
 test("adaptivemetabolism increases hunger when hunger < 0.1", function()
     local p = MockPlayer({ "UniversalTraits:UT_adaptivemetabolism" }, { hunger = 0.05 })
     withActivePlayer(p, function() Events.EveryHours:fire() end)
-    assert_true(p:getStats():getHunger() > 0.05, "hunger should increase when very low")
+    assert_true(p:getStats():get(CharacterStat.HUNGER) > 0.05, "hunger should increase when very low")
 end)
 test("adaptivemetabolism does nothing when hunger is mid-range", function()
     local p = MockPlayer({ "UniversalTraits:UT_adaptivemetabolism" }, { hunger = 0.5 })
     withActivePlayer(p, function() Events.EveryHours:fire() end)
-    assert_eq(p:getStats():getHunger(), 0.5, "hunger unchanged at mid-range")
+    assert_eq(p:getStats():get(CharacterStat.HUNGER), 0.5, "hunger unchanged at mid-range")
 end)
 
 test("sedentary reduces endurance each in-game hour", function()
     local p = MockPlayer({ "UniversalTraits:UT_sedentary" }, { endurance = 0.9 })
     withActivePlayer(p, function() Events.EveryHours:fire() end)
-    assert_true(p:getStats():getEndurance() < 0.9, "endurance should decrease")
+    assert_true(p:getStats():get(CharacterStat.ENDURANCE) < 0.9, "endurance should decrease")
     assert_eq(p:getModData()["UT_sedentaryPenalty"], true, "penalty flag should be set")
 end)
 
@@ -2325,7 +2315,7 @@ test("sloth records fatigue removal when not running or sprinting", function()
     p._running   = false
     p._sprinting = false
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    local accum = p:getStats()._charStatAccum["Fatigue"]
+    local accum = p:getStats()._charStatAccum[CharacterStat.FATIGUE]
     assert_true(type(accum) == "number" and accum < 0,
         "expected fatigue charstat removal, got " .. tostring(accum))
 end)
@@ -2333,14 +2323,14 @@ test("sloth skips when sprinting", function()
     local p = MockPlayer({ "UniversalTraits:UT_sloth" })
     p._sprinting = true
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_eq(p:getStats()._charStatAccum["Fatigue"], nil, "no fatigue removal when sprinting")
+    assert_eq(p:getStats()._charStatAccum[CharacterStat.FATIGUE], nil, "no fatigue removal when sprinting")
 end)
 
 test("squirrel records fatigue removal when running", function()
     local p = MockPlayer({ "UniversalTraits:UT_squirrel" })
     p._running = true
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    local accum = p:getStats()._charStatAccum["Fatigue"]
+    local accum = p:getStats()._charStatAccum[CharacterStat.FATIGUE]
     assert_true(type(accum) == "number" and accum < 0,
         "expected fatigue charstat removal when running, got " .. tostring(accum))
 end)
@@ -2349,14 +2339,14 @@ test("squirrel skips when not running or sprinting", function()
     p._running   = false
     p._sprinting = false
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_eq(p:getStats()._charStatAccum["Fatigue"], nil, "no fatigue removal when idle")
+    assert_eq(p:getStats()._charStatAccum[CharacterStat.FATIGUE], nil, "no fatigue removal when idle")
 end)
 
 test("sundayrunner records unhappiness addition when sprinting", function()
     local p = MockPlayer({ "UniversalTraits:UT_sundayrunner" })
     p._sprinting = true
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    local accum = p:getStats()._charStatAccum["Unhappiness"]
+    local accum = p:getStats()._charStatAccum[CharacterStat.UNHAPPINESS]
     assert_true(type(accum) == "number" and accum > 0,
         "expected unhappiness increase when sprinting, got " .. tostring(accum))
 end)
@@ -2364,7 +2354,7 @@ test("sundayrunner skips when not sprinting", function()
     local p = MockPlayer({ "UniversalTraits:UT_sundayrunner" })
     p._sprinting = false
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_eq(p:getStats()._charStatAccum["Unhappiness"], nil,
+    assert_eq(p:getStats()._charStatAccum[CharacterStat.UNHAPPINESS], nil,
         "no unhappiness change when not sprinting")
 end)
 
@@ -2372,7 +2362,7 @@ test("couchdweller records boredom and unhappiness removal when indoors", functi
     local p = MockPlayer({ "UniversalTraits:UT_couchdweller" })
     p._indoors = true   -- isOutside() = false → handler proceeds
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    local boredom = p:getStats()._charStatAccum["Boredom"]
+    local boredom = p:getStats()._charStatAccum[CharacterStat.BOREDOM]
     assert_true(type(boredom) == "number" and boredom < 0,
         "expected boredom removal when indoors, got " .. tostring(boredom))
 end)
@@ -2380,7 +2370,7 @@ test("couchdweller skips when outdoors", function()
     local p = MockPlayer({ "UniversalTraits:UT_couchdweller" })
     p._indoors = false   -- isOutside() = true → handler returns early
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_eq(p:getStats()._charStatAccum["Boredom"], nil,
+    assert_eq(p:getStats()._charStatAccum[CharacterStat.BOREDOM], nil,
         "no boredom removal when outdoors")
 end)
 
@@ -2408,14 +2398,14 @@ test("motionsickness raises stress when in vehicle after 60 ticks", function()
         { vehicle = vehicle, playerNum = 300, stress = 0.0 })
     setMockGameTime(0, 300)  -- tick 300 >> lastCheckTick[300]+60
     Events.OnPlayerUpdate:fire(p)
-    assert_true(p:getStats():getStress() > 0.0, "stress should increase while in vehicle")
+    assert_true(p:getStats():get(CharacterStat.STRESS) > 0.0, "stress should increase while in vehicle")
 end)
 test("motionsickness does NOT fire when not in vehicle", function()
     local p = MockPlayer({ "UniversalTraits:UT_motionsickness" },
         { playerNum = 301, stress = 0.0 })
     setMockGameTime(0, 600)
     Events.OnPlayerUpdate:fire(p)
-    assert_eq(p:getStats():getStress(), 0.0, "no stress without vehicle")
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.0, "no stress without vehicle")
 end)
 
 test("vehophobic raises panic and stress when driving (past cooldown)", function()
@@ -2430,19 +2420,19 @@ test("vehophobic skips when not driving", function()
     local p = MockPlayer({ "UniversalTraits:UT_vehophobic" },
         { driving = false, panic = 0.0 })
     Events.OnPlayerUpdate:fire(p)
-    assert_eq(p:getStats():getPanic(), 0.0, "no panic when not driving")
+    assert_eq(p:getStats():get(CharacterStat.PANIC), 0.0, "no panic when not driving")
 end)
 
 test("fearful emits sound and sets cooldown at high panic (guaranteed roll)", function()
-    resetMockZombRand()  -- ZombRand(0, 1000) → 0; panic * 100 = 80 → chance = 3+8 = 11; 0 ≤ 11 → fires
-    local p = MockPlayer({ "UniversalTraits:UT_fearful" }, { panic = 0.8 })
+    resetMockZombRand()  -- ZombRand(0, 1000) → 0; panic 80 → chance = 3+8 = 11; 0 ≤ 11 → fires
+    local p = MockPlayer({ "UniversalTraits:UT_fearful" }, { panic = 80 })
     Events.OnPlayerUpdate:fire(p)
     assert_true(p._said == "!" or p:getModData()["UT_fearful_cooldown"] == 60,
         "expected fearful to emit sound or set cooldown at high panic")
 end)
-test("fearful does not fire when panic < 0.05 (below threshold)", function()
+test("fearful does not fire when panic < 5 (below threshold)", function()
     resetMockZombRand()
-    local p = MockPlayer({ "UniversalTraits:UT_fearful" }, { panic = 0.0 })
+    local p = MockPlayer({ "UniversalTraits:UT_fearful" }, { panic = 0 })
     Events.OnPlayerUpdate:fire(p)
     assert_eq(p._said, nil, "no sound when panic is below threshold")
 end)
@@ -2480,7 +2470,7 @@ test("anorexy records stress via CharacterStat.add on rising food timer", functi
     Events.OnPlayerUpdate:fire(p)   -- first call: sets prevTimer=100, no trigger
     p:getBodyDamage()._healthFromFoodTimer = 200  -- jump +100 > 50 → triggers
     Events.OnPlayerUpdate:fire(p)
-    local stressAccum = p:getStats()._charStatAccum["Stress"]
+    local stressAccum = p:getStats()._charStatAccum[CharacterStat.STRESS]
     assert_true(type(stressAccum) == "number" and stressAccum > 0,
         "expected stress charstat addition, got " .. tostring(stressAccum))
 end)
@@ -2488,7 +2478,7 @@ test("anorexy does not fire on first update (no prev state)", function()
     local p = MockPlayer({ "UniversalTraits:UT_anorexy" })
     p:getBodyDamage()._healthFromFoodTimer = 200  -- no prev → no trigger
     Events.OnPlayerUpdate:fire(p)
-    assert_eq(p:getStats()._charStatAccum["Stress"], nil,
+    assert_eq(p:getStats()._charStatAccum[CharacterStat.STRESS], nil,
         "no stress on first call when prev is nil")
 end)
 
@@ -2513,8 +2503,8 @@ test("competitiveeater records boredom and hunger removal on rising food timer",
     Events.OnPlayerUpdate:fire(p)  -- set prev
     p:getBodyDamage()._healthFromFoodTimer = 200  -- jump > 50 → trigger
     Events.OnPlayerUpdate:fire(p)
-    local boredomAccum = p:getStats()._charStatAccum["Boredom"]
-    local hungerAccum  = p:getStats()._charStatAccum["Hunger"]
+    local boredomAccum = p:getStats()._charStatAccum[CharacterStat.BOREDOM]
+    local hungerAccum  = p:getStats()._charStatAccum[CharacterStat.HUNGER]
     assert_true(type(boredomAccum) == "number" and boredomAccum < 0,
         "expected boredom charstat removal, got " .. tostring(boredomAccum))
     assert_true(type(hungerAccum) == "number" and hungerAccum < 0,
@@ -2532,7 +2522,7 @@ end)
 test("ascetic reduces hunger via EveryOneMinute passive benefit", function()
     local p = MockPlayer({ "UniversalTraits:UT_ascetic" }, { hunger = 0.5 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_true(p:getStats():getHunger() < 0.5,
+    assert_true(p:getStats():get(CharacterStat.HUNGER) < 0.5,
         "expected hunger to decrease from ascetic passive hunger rate reduction")
 end)
 test("ascetic OnPlayerUpdate runs without error", function()

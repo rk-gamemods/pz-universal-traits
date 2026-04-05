@@ -55,9 +55,9 @@ local function onEveryMinute()
     local stats = player:getStats()
     if not stats then return end
 
-    local hunger = stats:getHunger()
+    local hunger = stats:get(CharacterStat.HUNGER)
     if hunger > 0 then
-        stats:setHunger(math.max(0, hunger - HUNGER_REDUCTION_PER_MIN))
+        stats:set(CharacterStat.HUNGER, math.max(0, hunger - HUNGER_REDUCTION_PER_MIN))
     end
 end
 

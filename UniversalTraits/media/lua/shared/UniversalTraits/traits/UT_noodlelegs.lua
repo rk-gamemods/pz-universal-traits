@@ -18,9 +18,9 @@ local function onPlayerUpdate(player)
     md["UT_noodlelegs_tick"] = 0
 
     local stats = player:getStats()
-    local cur = stats:getEndurance()
+    local cur = stats:get(CharacterStat.ENDURANCE)
     if cur > 0 then
-        stats:setEndurance(math.max(cur - 0.005, 0))
+        stats:set(CharacterStat.ENDURANCE, math.max(cur - 0.005, 0))
     end
 end
 

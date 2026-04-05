@@ -73,7 +73,7 @@ local function onEveryMinute()
 
     if stress > 0 then
         local stats = player:getStats()
-        stats:setStress(math.min(1, stats:getStress() + stress))
+        stats:set(CharacterStat.STRESS, math.min(1, stats:get(CharacterStat.STRESS) + stress))
     end
 end
 

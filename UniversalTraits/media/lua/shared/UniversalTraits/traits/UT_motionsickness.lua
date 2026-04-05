@@ -18,7 +18,7 @@ local function onPlayerUpdate(player)
 
     if player:getVehicle() ~= nil then
         local stats = player:getStats()
-        stats:setStress(math.min(1, stats:getStress() + 0.01))
+        stats:set(CharacterStat.STRESS, math.min(1, stats:get(CharacterStat.STRESS) + 0.01))
     end
 end
 

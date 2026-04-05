@@ -10,17 +10,17 @@ function UTCore.applySpawnStats(player, statTable)
     local stats = player:getStats()
     for k, v in pairs(statTable) do
         if k == "panic" then
-            stats:setPanic(v)
+            stats:set(CharacterStat.PANIC, v)
         elseif k == "stress" then
-            stats:setStress(v)
+            stats:set(CharacterStat.STRESS, v)
         elseif k == "hunger" then
-            stats:setHunger(v)
+            stats:set(CharacterStat.HUNGER, v)
         elseif k == "thirst" then
-            stats:setThirst(v)
+            stats:set(CharacterStat.THIRST, v)
         elseif k == "fatigue" then
-            stats:setFatigue(v)
+            stats:set(CharacterStat.FATIGUE, v)
         elseif k == "endurance" then
-            stats:setEndurance(v)
+            stats:set(CharacterStat.ENDURANCE, v)
         elseif k == "carryDelta" then
             UTCore.applyCarryWeight(player, v)
         end

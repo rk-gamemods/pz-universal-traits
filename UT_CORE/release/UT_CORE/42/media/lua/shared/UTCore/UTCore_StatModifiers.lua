@@ -52,12 +52,12 @@ function UTCore.applyPanicResistance(player, amount)
     player:getModData()["UT_panicResist"] = amount
 end
 
--- Calls player:getStats():setStress(current + amount) directly if amount > 0.
+-- Calls player:getStats():set(CharacterStat.STRESS, current + amount) directly if amount > 0.
 -- Stores "UT_moodMod" = amount in moddata for periodic checks.
 function UTCore.applyMoodModifier(player, amount)
     if amount > 0 then
         local stats = player:getStats()
-        stats:setStress(stats:getStress() + amount)
+        stats:set(CharacterStat.STRESS, stats:get(CharacterStat.STRESS) + amount)
     end
     player:getModData()["UT_moodMod"] = amount
 end

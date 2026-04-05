@@ -8,7 +8,7 @@ local function handler()
     if not player then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
     local stats = player:getStats()
-    stats:setHunger(math.min(1, stats:getHunger() + 0.1))
+    stats:set(CharacterStat.HUNGER, math.min(1, stats:get(CharacterStat.HUNGER) + 0.1))
 end
 
 Events.EveryTenMinutes.Add(handler)
