@@ -344,6 +344,20 @@ end
 UTCore.applyNoiseMod        = function(player, v) player:getModData()["UT_noiseMult"] = v end
 UTCore.applySleepQuality    = function(player, v) player:getModData()["UT_sleepQualMod"] = v end
 UTCore.applyPanicResistance = function(player, v) player:getModData()["UT_panicResist"] = v end
+UTCore.applyWetnessReductionProfile = function(player, indoor, outdoor, rain)
+    local md = player:getModData()
+    md["UT_wetnessReductionIndoor"] = indoor
+    md["UT_wetnessReductionOutdoor"] = outdoor
+    md["UT_wetnessReductionRain"] = rain
+end
+UTCore.applyThermalRegulationProfile = function(player, comfortFloor, warmThreshold, hotThreshold, warmCooling, hotCooling)
+    local md = player:getModData()
+    md["UT_thermalComfortFloor"] = comfortFloor
+    md["UT_thermalWarmThreshold"] = warmThreshold
+    md["UT_thermalHotThreshold"] = hotThreshold
+    md["UT_thermalWarmCooling"] = warmCooling
+    md["UT_thermalHotCooling"] = hotCooling
+end
 UTCore.getModData = function(player, key, default)
     local value = player:getModData()[key]
     if value == nil then return default end

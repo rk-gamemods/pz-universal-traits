@@ -254,6 +254,8 @@ Events.EveryOneMinute.Add(onEveryMinute)
 - `UTCore.applyMoodModifier(player, amount)` — stores `UT_moodMod`; also calls `setStress` if amount > 0
 - `UTCore.applySleepQuality(player, delta)` — stores `UT_sleepQualMod` in moddata
 - `UTCore.applyNoiseMod(player, multiplier)` — stores `UT_noiseMult` in moddata
+- `UTCore.applyWetnessReductionProfile(player, indoorReduction, outdoorReduction, rainReduction)` — stores generic wetness-reduction values in moddata for shared thermal handling
+- `UTCore.applyThermalRegulationProfile(player, comfortFloor, warmThreshold, hotThreshold, warmCooling, hotCooling)` — stores generic temperature-relief thresholds and cooling values in moddata
 
 ### UT_martial.lua (public API)
 
@@ -337,6 +339,13 @@ Events.EveryOneMinute.Add(onEveryMinute)
 - Detects the **rising edge** of `player:isBumped()` with a zombie as the bump source
 - On each real zombie collision (false→true transition of `isBumped()`), confirms the bumped entity is a zombie via `pcall(chr:isAlwaysKnockedDown())` — `isAlwaysKnockedDown()` is exclusive to `IsoZombie`, so pcall success = zombie type confirmed
 - Fires all registered callbacks with `(player, zombie)` before the native stagger animation locks in
+
+### UTCore_ThermalRegulationHook.lua
+
+- Registered via `Events.EveryOneMinute` — reads generic wetness-reduction and thermal-regulation values from moddata
+- Applies indoor/outdoor/rain wetness reduction through `CharacterStat.WETNESS`
+- Applies gradual temperature relief through `CharacterStat.TEMPERATURE` using trait-provided thresholds and cooling magnitudes
+- Intended boundary: traits supply their own numbers through `UTCore.applyWetnessReductionProfile(...)` and `UTCore.applyThermalRegulationProfile(...)`; the hook stays generic and game-facing
 - **Cannot be throttled** — rising-edge detection requires checking every tick (exception to the throttle rule)
 - `UTCore._zombieCollisionCallbacks` — table of `traitId → fn(player, zombie)`
 
@@ -435,6 +444,12 @@ B42 speed is modified via `player:Move(Vector2)` in OnPlayerUpdate — complex a
 For UT_ traits, speed effects are stored as moddata flags (`UT_speedMod`, `UT_speedBoost`) rather than
 directly calling Move(). This is consistent with how MoreTraits handles it.
 
+### Trait logic vs UT_CORE connectors
+
+Keep trait-specific tuning in the trait file and keep UT_CORE generic. Traits should call UT_CORE APIs with their own numbers; UT_CORE hooks should be the only layer that talks to the game for shared connector behavior.
+
+Reference pattern: `UT_lesssweaty.lua` owns the Less Sweaty constants and calls `UTCore.applyWetnessReductionProfile(...)` plus `UTCore.applyThermalRegulationProfile(...)`, while `UTCore_ThermalRegulationHook.lua` performs the actual `CharacterStat.WETNESS` and `CharacterStat.TEMPERATURE` writes every in-game minute.
+
 ### Conditional handler registration (preferred for ongoing handlers)
 
 For traits with event-driven or collision callbacks, prefer registering the handler
@@ -474,6 +489,8 @@ Additional reading/XP keys:
 - `UT_xpMult_All` — global XP multiplier applied to all perks by `UTCore_XPHook`
 - `UT_readCalm` — if true, reading forces panic and stress to 0 via `UTCore_ReadingHook`
 - `UT_readMoodBonus` — per-tick boredom/unhappiness reduction while reading
+- `UT_wetnessReductionIndoor` / `UT_wetnessReductionOutdoor` / `UT_wetnessReductionRain` — generic wetness reduction profile consumed by `UTCore_ThermalRegulationHook`
+- `UT_thermalComfortFloor` / `UT_thermalWarmThreshold` / `UT_thermalHotThreshold` / `UT_thermalWarmCooling` / `UT_thermalHotCooling` — generic temperature-relief profile consumed by `UTCore_ThermalRegulationHook`
 
 ### Cooldown tracking
 
@@ -545,6 +562,7 @@ All 6 previously documented gaps are now resolved. See new UTCore hook modules:
 - **UTCore_SpeedHook.lua** — handles OnPlayerMove speed delta (fast, noodlelegs, lurcher, pacer, sorelegs)
 - **UTCore_WorkSpeedHook.lua** — handles getDuration override (quickworker, slowworker, slack, flatearther, photographicmemory)
 - **UTCore_BleedHook.lua** — handles bleed rate via BodyPart health adjustment (thickblood, weaklybleeding, heavilybleeding)
+- **UTCore_ThermalRegulationHook.lua** — handles generic wetness reduction and thermal relief through shared moddata profiles (Less Sweaty is the reference caller)
 
 ### Remaining deferred work
 

@@ -25,6 +25,7 @@ dofile(base .. "../media/lua/shared/UTCore/UTCore_DamageMultHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_FractureHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_NoiseHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_SleepQualityHook.lua")
+dofile(base .. "../media/lua/shared/UTCore/UTCore_ThermalRegulationHook.lua")
 
 local passed, failed = 0, 0
 local function test(name, fn)
@@ -42,6 +43,13 @@ local function assert_eq(a, b, msg)
 end
 local function assert_true(v, msg)
     if not v then error((msg or "expected true, got falsy"), 2) end
+end
+local function withActivePlayer(player, fn)
+    local originalGetPlayer = _G.getPlayer
+    _G.getPlayer = function() return player end
+    local ok, err = pcall(fn)
+    _G.getPlayer = originalGetPlayer
+    if not ok then error(err, 0) end
 end
 -- Export for dofile'd test modules
 _G.test = test
@@ -121,6 +129,24 @@ test("applyXPMultiplier stores in moddata", function()
     assert_eq(p:getModData()["UT_xpMult_Aiming"], 2.0)
 end)
 
+test("applyWetnessReductionProfile stores wetness values in moddata", function()
+    local p = MockPlayer()
+    UTCore.applyWetnessReductionProfile(p, 3.0, 1.5, 0.5)
+    assert_eq(p:getModData()["UT_wetnessReductionIndoor"], 3.0)
+    assert_eq(p:getModData()["UT_wetnessReductionOutdoor"], 1.5)
+    assert_eq(p:getModData()["UT_wetnessReductionRain"], 0.5)
+end)
+
+test("applyThermalRegulationProfile stores thermal values in moddata", function()
+    local p = MockPlayer()
+    UTCore.applyThermalRegulationProfile(p, 37.0, 37.2, 37.7, 0.08, 0.12)
+    assert_eq(p:getModData()["UT_thermalComfortFloor"], 37.0)
+    assert_eq(p:getModData()["UT_thermalWarmThreshold"], 37.2)
+    assert_eq(p:getModData()["UT_thermalHotThreshold"], 37.7)
+    assert_eq(p:getModData()["UT_thermalWarmCooling"], 0.08)
+    assert_eq(p:getModData()["UT_thermalHotCooling"], 0.12)
+end)
+
 -- disableXP
 test("disableXP stores flag in moddata", function()
     local p = MockPlayer()
@@ -168,6 +194,41 @@ test("unregisterPeriodicHandler removes handler", function()
     UTCore.registerPeriodicHandler("test_trait2", "EveryTenMinutes", function(player) end)
     UTCore.unregisterPeriodicHandler("test_trait2")
     assert_eq(UTCore._periodicHandlers["test_trait2"], nil)
+end)
+
+test("ThermalRegulationHook reduces indoor wetness each minute when configured", function()
+    setMockClimate(0.0, 0.5)
+    local p = MockPlayer({}, { outside = false })
+    p:getStats():set(CharacterStat.WETNESS, 50)
+    UTCore.applyWetnessReductionProfile(p, 3.0, 1.5, 0.5)
+    withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
+    assert_eq(p:getStats():get(CharacterStat.WETNESS), 47, "expected indoor wetness reduction of 3")
+end)
+
+test("ThermalRegulationHook cools mild overheating when configured", function()
+    local p = MockPlayer({}, { bodyTemp = 37.4 })
+    UTCore.applyThermalRegulationProfile(p, 37.0, 37.2, 37.7, 0.08, 0.12)
+    withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
+    local temp = p:getStats():get(CharacterStat.TEMPERATURE)
+    assert_true(math.abs(temp - 37.32) < 0.0001, "expected mild overheating to cool by 0.08")
+end)
+
+test("ThermalRegulationHook cools strong overheating when configured", function()
+    local p = MockPlayer({}, { bodyTemp = 37.9 })
+    UTCore.applyThermalRegulationProfile(p, 37.0, 37.2, 37.7, 0.08, 0.12)
+    withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
+    local temp = p:getStats():get(CharacterStat.TEMPERATURE)
+    assert_true(math.abs(temp - 37.78) < 0.0001, "expected strong overheating to cool by 0.12")
+end)
+
+test("ThermalRegulationHook skips while sleeping", function()
+    local p = MockPlayer({}, { bodyTemp = 37.9, sleeping = true })
+    p:getStats():set(CharacterStat.WETNESS, 50)
+    UTCore.applyWetnessReductionProfile(p, 3.0, 1.5, 0.5)
+    UTCore.applyThermalRegulationProfile(p, 37.0, 37.2, 37.7, 0.08, 0.12)
+    withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
+    assert_eq(p:getStats():get(CharacterStat.WETNESS), 50, "wetness unchanged while sleeping")
+    assert_true(math.abs(p:getStats():get(CharacterStat.TEMPERATURE) - 37.9) < 0.0001, "temperature unchanged while sleeping")
 end)
 
 -- XPHook: XP multiplier

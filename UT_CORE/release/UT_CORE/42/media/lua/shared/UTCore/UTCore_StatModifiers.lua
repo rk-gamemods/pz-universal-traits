@@ -72,6 +72,26 @@ function UTCore.applyNoiseMod(player, multiplier)
     player:getModData()["UT_noiseMult"] = multiplier
 end
 
+-- Stores indoor/outdoor/rain wetness reduction values in moddata.
+-- UTCore_ThermalRegulationHook reads these every in-game minute.
+function UTCore.applyWetnessReductionProfile(player, indoorReduction, outdoorReduction, rainReduction)
+    local md = player:getModData()
+    md["UT_wetnessReductionIndoor"] = indoorReduction
+    md["UT_wetnessReductionOutdoor"] = outdoorReduction
+    md["UT_wetnessReductionRain"] = rainReduction
+end
+
+-- Stores thermal regulation thresholds and cooling magnitudes in moddata.
+-- UTCore_ThermalRegulationHook reads these every in-game minute.
+function UTCore.applyThermalRegulationProfile(player, comfortFloor, warmThreshold, hotThreshold, warmCooling, hotCooling)
+    local md = player:getModData()
+    md["UT_thermalComfortFloor"] = comfortFloor
+    md["UT_thermalWarmThreshold"] = warmThreshold
+    md["UT_thermalHotThreshold"] = hotThreshold
+    md["UT_thermalWarmCooling"] = warmCooling
+    md["UT_thermalHotCooling"] = hotCooling
+end
+
 --- applyStrengthCarryWeight(player, bonus)
 -- Sets carry weight dynamically based on Strength: base = 5 + Strength + bonus.
 -- Call every OnPlayerUpdate tick for strength-scaled carry weight traits.

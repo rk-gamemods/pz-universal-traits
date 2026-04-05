@@ -38,6 +38,7 @@ function MockPlayer(traits, opts)
         unhappiness    = 0,
         wetness        = 0,
         zombie_infection = 0,
+        temperature    = opts.bodyTemp or 37.0,
     }
     local stats = {
         -- Generic CharacterStat interface (B42.16 — only API)
@@ -49,6 +50,7 @@ function MockPlayer(traits, opts)
                 [CharacterStat.FATIGUE] = statsData.fatigue, [CharacterStat.UNHAPPINESS] = statsData.unhappiness,
                 [CharacterStat.ENDURANCE] = statsData.endurance, [CharacterStat.INTOXICATION] = statsData.intoxication,
                 [CharacterStat.WETNESS] = statsData.wetness, [CharacterStat.ZOMBIE_INFECTION] = statsData.zombie_infection,
+                [CharacterStat.TEMPERATURE] = statsData.temperature,
             }
             return map[stat] or 0
         end,
@@ -66,6 +68,7 @@ function MockPlayer(traits, opts)
                 [CharacterStat.INTOXICATION] = function(val) statsData.intoxication = val end,
                 [CharacterStat.WETNESS] = function(val) statsData.wetness = val end,
                 [CharacterStat.ZOMBIE_INFECTION] = function(val) statsData.zombie_infection = val end,
+                [CharacterStat.TEMPERATURE] = function(val) statsData.temperature = val end,
             }
             if setters[stat] then setters[stat](v) end
         end,

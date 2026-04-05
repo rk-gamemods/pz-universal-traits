@@ -1028,7 +1028,7 @@ module UniversalTraits
         IsProfessionTrait = false,
         DisabledInMultiplayer = true,
         CharacterTrait = UniversalTraits:UT_lesssweaty,
-        Cost = 2,
+        Cost = 4,
         UIName = UI_UT_lesssweaty,
         UIDescription = UI_UT_lesssweatyDesc,
         MutuallyExclusiveTraits = UniversalTraits:UT_highsweaty,
