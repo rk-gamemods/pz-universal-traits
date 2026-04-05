@@ -237,7 +237,7 @@ end
 Events.EveryOneMinute.Add(onEveryMinute)
 ```
 
-Trekker-specific note: vanilla B42 does not apply the exercise hunger stat path just for walking. In decompiled [IsoGameCharacter.java](c:/Users/Admin/Documents/GIT/GameMods/PZMods/PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java), walking still uses the normal hunger increase path; only running or `SwipeStatePlayer` switch to `hungerIncreaseWhenExercise`. Keep `UT_trekker` limited to walking endurance refund and do not zero out hunger drift.
+Trekker-specific note: vanilla B42 splits hunger stat and calorie burn. In decompiled [IsoGameCharacter.java](c:/Users/Admin/Documents/GIT/GameMods/PZMods/PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java), walking still uses the normal hunger-stat path; only running or `SwipeStatePlayer` switch to `hungerIncreaseWhenExercise`. In [Nutrition.java](c:/Users/Admin/Documents/GIT/GameMods/PZMods/PZCodebase/Java/source/zombie/characters/BodyDamage/Nutrition.java), walking calorie burn is `0.13 * 0.6 = 0.078` versus idle `0.016`, so Trekker should leave `CharacterStat.HUNGER` alone but refund `62/78 ~= 79.49%` of walking calorie loss to bring it back to the idle-rate equivalent, while still refunding walking endurance loss.
 
 ---
 

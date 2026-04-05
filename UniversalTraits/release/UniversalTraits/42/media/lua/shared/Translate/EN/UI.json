@@ -36,7 +36,7 @@
     "UI_UT_sprintdemon": "Sprint Demon",
     "UI_UT_sprintdemonDesc": "You were born to run. Start at Sprinting level 1.",
     "UI_UT_trekker": "Trekker",
-    "UI_UT_trekkerDesc": "+1 to Fitness and Sprinting. Walking does not drain endurance, and hunger still follows the normal passive rate.",
+    "UI_UT_trekkerDesc": "+1 to Fitness and Sprinting. Walking does not drain endurance, and the extra walking calorie burn is reduced back to the normal passive rate.",
     "UI_UT_martial": "Martial Artist",
     "UI_UT_martialDesc": "Your hands are lethal weapons. Bare-hand strikes have a chance to land a critical hit dealing 3× damage (0.6 vs 0.2 base). Critical hit chance scales with Short Blunt skill (5% base + 5% per level). All damage scaled by endurance (×0.35 at empty to ×1.35 at full). Grants Short Blunt experience on each hit.",
     "UI_UT_bladetwirl": "Blade Twirl",

@@ -1043,42 +1043,53 @@ test("pacer applies unhappiness after 600 indoor ticks", function()
         .. tostring(stats:get(CharacterStat.UNHAPPINESS)))
 end)
 
-test("trekker restores walking endurance but preserves normal hunger rise", function()
+test("trekker restores walking endurance and normalizes walking calorie burn", function()
     local player = MockUpdatePlayer(
         { "UniversalTraits:UT_trekker" },
         { moving = true }
     )
     local stats = player:getStats()
+    local nutrition = player:getNutrition()
+    local expectedCalories = 1990.0 + (2000.0 - 1990.0) * ((0.13 * 0.6 - 0.016) / (0.13 * 0.6))
 
     stats:set(CharacterStat.ENDURANCE, 0.9)
     stats:set(CharacterStat.HUNGER, 0.2)
-    firePlayerUpdates(player, 10)
+    nutrition:setCalories(2000.0)
+    firePlayerUpdates(player, 1)
 
     stats:set(CharacterStat.ENDURANCE, 0.82)
     stats:set(CharacterStat.HUNGER, 0.24)
-    firePlayerUpdates(player, 10)
+    nutrition:setCalories(1990.0)
+    firePlayerUpdates(player, 1)
 
     assert_eq(stats:get(CharacterStat.ENDURANCE), 0.9,
         "expected Trekker to refund endurance lost while walking")
     assert_eq(stats:get(CharacterStat.HUNGER), 0.24,
         "expected Trekker to leave normal hunger rise untouched")
+    assert_true(math.abs(nutrition:getCalories() - expectedCalories) < 0.0001,
+        "expected Trekker to refund walking calories down to the idle-rate equivalent")
 end)
 
-test("trekker does not refund endurance while idle", function()
+test("trekker does not affect idle endurance or calories", function()
     local player = MockUpdatePlayer(
         { "UniversalTraits:UT_trekker" },
         { moving = false }
     )
     local stats = player:getStats()
+    local nutrition = player:getNutrition()
 
     stats:set(CharacterStat.ENDURANCE, 0.9)
-    firePlayerUpdates(player, 10)
+    nutrition:setCalories(2000.0)
+    firePlayerUpdates(player, 1)
 
     stats:set(CharacterStat.ENDURANCE, 0.82)
-    firePlayerUpdates(player, 10)
+    nutrition:setCalories(1990.0)
+    firePlayerUpdates(player, 1)
 
     assert_eq(stats:get(CharacterStat.ENDURANCE), 0.82,
         "expected Trekker to leave idle endurance drain alone")
+    assert_eq(nutrition:getCalories(), 1990.0,
+        "expected Trekker to leave idle calorie burn alone")
 end)
 
 -- ===== UT_batteringram collision tests =====
