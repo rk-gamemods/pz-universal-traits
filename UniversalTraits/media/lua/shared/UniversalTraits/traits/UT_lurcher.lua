@@ -45,7 +45,7 @@ local function onPlayerUpdate(player)
     if chance <= 0 then return end
 
     if ZombRand(100) < chance then
-        pcall(function() player:setBumpFallDown(true) end)
+        pcall(function() player:setBumpFall(true) end)
         md["UT_lurcher_cooldown"] = 30
     end
 end

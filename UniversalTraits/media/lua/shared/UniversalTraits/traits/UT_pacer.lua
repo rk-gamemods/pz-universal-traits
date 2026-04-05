@@ -19,9 +19,9 @@ local function onPlayerUpdate(player)
         md["UT_pacer_indoor_ticks"] = 0
     end
 
-    -- Check if indoors
+    -- Check if indoors (isIndoors removed in B42 -- use not isOutside())
     local indoors = false
-    local ok, result = pcall(function() return player:isIndoors() end)
+    local ok, result = pcall(function() return not player:isOutside() end)
     if ok then indoors = result end
 
     if not indoors then

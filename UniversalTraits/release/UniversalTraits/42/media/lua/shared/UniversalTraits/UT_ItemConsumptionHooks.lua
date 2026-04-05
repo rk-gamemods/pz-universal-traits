@@ -49,11 +49,11 @@ local function isFoodItem(item)
     return not isMedicationItem(item)
 end
 
--- Checks whether an item is a foraged wild plant (has a forage category in B42)
+-- Checks whether an item is a foraged wild plant (has forage categories in B42)
 local function isWildPlantItem(item)
     if not item then return false end
-    local ok, cat = pcall(function() return item:getForageCategory() end)
-    return ok and cat ~= nil
+    local ok, cats = pcall(function() return item:getScriptItem():getForageFocusCategories() end)
+    return ok and cats ~= nil and not cats:isEmpty()
 end
 
 -- ─── ISEatFoodAction override ──────────────────────────────────────────────────

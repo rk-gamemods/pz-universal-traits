@@ -36,7 +36,7 @@ local function onEveryMinute()
     if extraNoise <= 0 then return end
 
     pcall(function()
-        player:makeNoise(extraNoise)
+        player:addWorldSoundUnlessInvisible(extraNoise, 1, false)
     end)
 end
 

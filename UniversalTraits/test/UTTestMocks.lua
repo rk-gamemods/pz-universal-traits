@@ -81,6 +81,7 @@ local function makeStats(opts)
         [CharacterStat.ZOMBIE_INFECTION] = opts.zombieInfection or 0.0,
         [CharacterStat.ZOMBIE_FEVER]     = opts.zombieFever or 0.0,
         [CharacterStat.FOOD_SICKNESS]    = opts.foodSickness or 0.0,
+        [CharacterStat.TEMPERATURE]      = opts.bodyTemp or 37.0,
     }
     local charStatAccum = {}
     return {
@@ -280,7 +281,7 @@ function MockPlayer(traitList, opts)
         getWornItems         = function(self) return wornItems end,
         getInventory         = function(self) return inventory end,
         getCurrentSquare     = function(self) return square end,
-        removeFromHands      = function(self)
+        removeFromHands      = function(self, _item)
             primaryHandItem   = nil
             secondaryHandItem = nil
         end,
@@ -881,15 +882,26 @@ end
 -- ============================================================
 
 -- MockItem — lightweight item stub for consumption hook tests
--- opts.forageCategory: if set, getForageCategory() returns that value (simulates a foraged wild item)
+-- opts.forageCategory: if set, getScriptItem():getForageFocusCategories() returns a non-empty set
 function MockItem(typeName, opts)
     opts = opts or {}
     local forageCategory = opts.forageCategory
+    -- Build the scriptItem with a forage category set compatible with B42 API
+    local scriptItem = {
+        getForageFocusCategories = function(self)
+            if forageCategory then
+                -- Return a non-empty set-like object
+                return { isEmpty = function() return false end }
+            else
+                return { isEmpty = function() return true end }
+            end
+        end,
+    }
     return {
         _type = typeName,
         getType           = function(self) return self._type end,
         getFullType       = function(self) return self._type end,
-        getForageCategory = function(self) return forageCategory end,
+        getScriptItem     = function(self) return scriptItem end,
     }
 end
 
@@ -940,8 +952,9 @@ end
 function MockInventory(currentWeight, maxWeight)
     local _items = {}
     return {
-        getWeight    = function(self) return currentWeight or 0 end,
-        getMaxWeight = function(self) return maxWeight or 8 end,
+        getWeight        = function(self) return currentWeight or 0 end,
+        getCapacityWeight = function(self) return currentWeight or 0 end,
+        getMaxWeight     = function(self) return maxWeight or 8 end,
         Remove       = function(self, item)
             for i, v in ipairs(_items) do
                 if v == item then table.remove(_items, i); return end

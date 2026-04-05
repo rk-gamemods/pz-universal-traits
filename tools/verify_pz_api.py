@@ -72,6 +72,7 @@ JAVA_CLASS_FILES = {
     "ClimateManager": "zombie/iso/weather/ClimateManager.java",
     "Literature": "zombie/inventory/types/Literature.java",
     "WornItems": "zombie/characters/WornItems/WornItems.java",
+    "WornItem": "zombie/characters/WornItems/WornItem.java",
     "PerkFactory": "zombie/characters/skills/PerkFactory.java",
 }
 
@@ -108,7 +109,8 @@ RECEIVER_MAP = {
     "weapon":      ["HandWeapon", "InventoryItem"],
     "primary":     ["HandWeapon", "InventoryItem"],
     "secondary":   ["HandWeapon", "InventoryItem"],
-    "wornItem":    ["WornItems", "InventoryItem"],
+    # wornItem is WornItem (singular — the element type from wornItems:get(i))
+    "wornItem":    ["WornItem"],
 
     # Body parts
     "part":        ["BodyPart"],
@@ -372,7 +374,11 @@ MOD_CALL_RE = re.compile(
 
 
 def count_args_from_position(line: str, paren_start: int) -> int:
-    """Count arguments by tracking parentheses depth from the opening paren."""
+    """Count arguments by tracking parentheses depth from the opening paren.
+    
+    Returns -1 if the call spans multiple lines (closing paren not found on
+    this line) — callers should skip arg-count checks in that case.
+    """
     depth = 1
     i = paren_start + 1
     arg_count = 0
@@ -402,6 +408,10 @@ def count_args_from_position(line: str, paren_start: int) -> int:
 
     if has_content:
         arg_count += 1  # last arg (no trailing comma)
+
+    # If depth > 0, the closing paren was never found on this line (multiline call)
+    if depth > 0:
+        return -1
     return arg_count
 
 
@@ -527,6 +537,15 @@ def verify_call(
         java_methods = java_index[class_name]
         if method in java_methods:
             overloads = java_methods[method]
+            # If arg_count == -1 the call spans multiple lines; skip arg check
+            if call.arg_count == -1:
+                return VerifyResult(
+                    status="OK",
+                    call=call,
+                    matched_class=class_name,
+                    matched_method=method,
+                    detail=f"Method exists (multiline call — arg count not checked)",
+                )
             # Check if any overload matches our arg count
             matching = [m for m in overloads if m.param_count == call.arg_count]
             any_overload = overloads[0]
@@ -576,6 +595,9 @@ JAVA_INHERITANCE = {
     "Clothing": ["InventoryItem"],
     "Literature": ["InventoryItem"],
     "BaseVehicle": ["IsoMovingObject", "IsoObject"],
+    # WornItem and WornItems are standalone (not in InventoryItem hierarchy)
+    "WornItem": [],
+    "WornItems": [],
 }
 
 

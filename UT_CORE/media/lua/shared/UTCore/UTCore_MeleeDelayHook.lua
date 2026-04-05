@@ -28,7 +28,7 @@ local function getWeaponCategory(weapon)
 
     -- Two-handed / one-handed fallback via API
     if weapon.isTwoHandWeapon and weapon:isTwoHandWeapon() then return "twohanded" end
-    if weapon.isMeleeWeapon and weapon:isMeleeWeapon() then return "onehanded" end
+    if weapon.isRanged and not weapon:isRanged() then return "onehanded" end
 
     return "other"
 end
@@ -72,9 +72,9 @@ local function onPlayerUpdate(player)
     if not player or not player.isLocalPlayer or not player:isLocalPlayer() then return end
 
     local weapon = player.getPrimaryHandItem and player:getPrimaryHandItem()
-    if not weapon or not weapon.getMeleeDelay then return end
+    if not weapon then return end
 
-    local meleeDelay = weapon:getMeleeDelay()
+    local meleeDelay = player:getMeleeDelay()
     if not meleeDelay or meleeDelay <= 0 then return end
 
     -- Prevent re-application within the same swing

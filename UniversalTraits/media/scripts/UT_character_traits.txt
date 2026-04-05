@@ -693,7 +693,7 @@ module UniversalTraits
         Cost = 5,
         UIName = UI_UT_scrounger,
         UIDescription = UI_UT_scroungerDesc,
-        XPBoosts = Scavenging=1,
+        XPBoosts = PlantScavenging=1,
     }
 
     character_trait_definition UniversalTraits:UT_natural
@@ -737,7 +737,7 @@ module UniversalTraits
         Cost = 6,
         UIName = UI_UT_antique,
         UIDescription = UI_UT_antiqueDesc,
-        XPBoosts = Scavenging=1,
+        XPBoosts = PlantScavenging=1,
     }
 
     character_trait_definition UniversalTraits:UT_blissful
@@ -770,7 +770,7 @@ module UniversalTraits
         Cost = 7,
         UIName = UI_UT_graverobber,
         UIDescription = UI_UT_graverobberDesc,
-        XPBoosts = Scavenging=2,
+        XPBoosts = PlantScavenging=2,
     }
 
     character_trait_definition UniversalTraits:UT_vagabond
@@ -1106,7 +1106,7 @@ module UniversalTraits
         DisabledInMultiplayer = true,
         CharacterTrait = UniversalTraits:UT_staunch,
         Cost = 10,
-        XPBoosts = FirstAid=1,
+        XPBoosts = Doctor=1,
         UIName = UI_UT_staunch,
         UIDescription = UI_UT_staunchDesc,
     }

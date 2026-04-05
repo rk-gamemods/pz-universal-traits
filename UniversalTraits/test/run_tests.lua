@@ -860,8 +860,8 @@ test("flailer stumble fires when panicked and sprinting", function()
     )
     -- cooldown starts nil (=> 0), ZombRand returns 0 (< 5) => stumble fires
     Events.OnPlayerUpdate:fire(player)
-    assert_true(player._bumpFallDown == true,
-        "expected _bumpFallDown=true after flailer stumble, got " .. tostring(player._bumpFallDown))
+    assert_true(player._bumpFall == true,
+        "expected _bumpFall=true after flailer stumble, got " .. tostring(player._bumpFall))
 end)
 
 test("lurcher stumble fires when fatigued and moving", function()
@@ -871,8 +871,8 @@ test("lurcher stumble fires when fatigued and moving", function()
     )
     -- cooldown starts nil (=> 0), ZombRand returns 0 (< 3) => stumble fires
     Events.OnPlayerUpdate:fire(player)
-    assert_true(player._bumpFallDown == true,
-        "expected _bumpFallDown=true after lurcher stumble, got " .. tostring(player._bumpFallDown))
+    assert_true(player._bumpFall == true,
+        "expected _bumpFall=true after lurcher stumble, got " .. tostring(player._bumpFall))
 end)
 
 test("scardycat screams when 10 zombies spotted", function()

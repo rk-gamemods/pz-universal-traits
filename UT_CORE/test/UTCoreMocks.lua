@@ -159,6 +159,13 @@ function MockPlayer(traits, opts)
         setPrimaryHandItem   = function(self, item) primaryHandItem = item end,
         getPerkLevel         = function(self, perk) return perkLevels[perk] or 0 end,
         setMeleeDelay        = function(self, v) moddata["_lastMeleeDelay"] = v end,
+        getMeleeDelay        = function(self)
+            -- B42.16: delay is on the character; delegate to weapon mock for test setup compatibility
+            if primaryHandItem and primaryHandItem.getMeleeDelay then
+                return primaryHandItem:getMeleeDelay()
+            end
+            return opts.meleeDelay or 0
+        end,
         isSprinting          = function(self) return _sprinting end,
         isRunning            = function(self) return _running end,
         setSprinting         = function(self, v) _sprinting = v end,
@@ -175,6 +182,10 @@ function MockPlayer(traits, opts)
         isAsleep             = function(self) return _sleeping end,
         setAsleep            = function(self, v) _sleeping = v end,
         makeNoise            = function(self, v) table.insert(_noiseCalls, v) end,
+        addWorldSoundUnlessInvisible = function(self, radius, _volume, _stress)
+            -- B42.16 replacement for makeNoise; track radius so NoiseHook tests still pass
+            table.insert(_noiseCalls, radius)
+        end,
         getNoiseCalls        = function(self) return _noiseCalls end,
         isDriving            = function(self) return _driving end,
         getVehicle           = function(self) return _vehicle end,
@@ -275,6 +286,7 @@ function MockBodyPart(partType, isBleeding, isStemmed)
         getReduceHealthCalls = function(self) return reduceHealthCalls end,
         isFractured          = function(self) return _fractured end,
         setFractured         = function(self, v) _fractured = v end,
+        getFractureTime      = function(self) return _fractured and 1 or 0 end,
     }
 end
 

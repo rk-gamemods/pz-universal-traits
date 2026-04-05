@@ -23,7 +23,7 @@ local function onPlayerUpdate(player)
             local item = player:getPrimaryHandItem()
             if item then
                 -- Remove from hands and inventory, then place on the ground tile
-                player:removeFromHands()
+                player:removeFromHands(item)
                 player:getInventory():Remove(item)
                 local square = player:getCurrentSquare()
                 if square then

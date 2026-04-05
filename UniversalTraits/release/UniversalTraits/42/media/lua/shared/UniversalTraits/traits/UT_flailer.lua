@@ -37,7 +37,7 @@ local function onPlayerUpdate(player)
 
     -- 5% chance to stumble
     if ZombRand(100) < 5 then
-        pcall(function() player:setBumpFallDown(true) end)
+        pcall(function() player:setBumpFall(true) end)
         md["UT_flailer_cooldown"] = 30
     end
 end

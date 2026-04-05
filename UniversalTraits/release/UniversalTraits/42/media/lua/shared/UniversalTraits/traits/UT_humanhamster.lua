@@ -44,7 +44,7 @@ local function onEveryMinute()
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
 
     local inv         = player:getInventory()
-    local weight      = inv:getWeight()
+    local weight      = inv:getCapacityWeight()
     local maxWeight   = player:getMaxWeightBase()
     local fullness    = (maxWeight > 0) and (weight / maxWeight) or 0
     local wearingBag  = hasBackpack(player)

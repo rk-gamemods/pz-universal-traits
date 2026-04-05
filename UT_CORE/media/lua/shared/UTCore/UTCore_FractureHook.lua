@@ -54,7 +54,7 @@ local function onWeaponHitCharacter(attacker, weapon, target)
     local eligible = {}
     for _, partType in ipairs(ELIGIBLE_PART_TYPES) do
         local ok, part = pcall(function() return bd:getBodyPart(partType) end)
-        if ok and part and not part:isFractured() then
+        if ok and part and not (part:getFractureTime() > 0) then
             eligible[#eligible + 1] = part
         end
     end
