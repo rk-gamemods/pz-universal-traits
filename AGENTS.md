@@ -239,6 +239,8 @@ Events.EveryOneMinute.Add(onEveryMinute)
 
 Trekker-specific note: vanilla B42 splits hunger stat and calorie burn. In decompiled [IsoGameCharacter.java](c:/Users/Admin/Documents/GIT/GameMods/PZMods/PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java), walking still uses the normal hunger-stat path; only running or `SwipeStatePlayer` switch to `hungerIncreaseWhenExercise`. In [Nutrition.java](c:/Users/Admin/Documents/GIT/GameMods/PZMods/PZCodebase/Java/source/zombie/characters/BodyDamage/Nutrition.java), walking calorie burn is `0.13 * 0.6 = 0.078` versus idle `0.016`, so Trekker should leave `CharacterStat.HUNGER` alone but refund `62/78 ~= 79.49%` of walking calorie loss to bring it back to the idle-rate equivalent, while still refunding walking endurance loss.
 
+Translation copy note: `UT_couchdweller` is a positive indoor-comfort trait in runtime (`EveryOneMinute` boredom and unhappiness reduction while indoors), so its display name/description must be framed positively. `UT_cangrabmore` and `UT_cangrabless` are the MoreSimpleTraits carry-capacity ports (`setMaxWeightBase(9)` / `setMaxWeightBase(7)`), not zombie-grab-chance traits, so their descriptions must explicitly mention base carry weight.
+
 ---
 
 ## UTCore API Reference
