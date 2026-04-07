@@ -373,6 +373,49 @@ test("XPHook does not apply skill cap without UT_skillCapReduction set", functio
     assert_eq(blocked, false, "no cap should apply when UT_skillCapReduction is not set")
 end)
 
+-- XPHook: Java enum object regression (Kahlua __concat crash)
+-- These tests pass a MockJavaPerk (table with __tostring, no __concat) as the perk
+-- argument — the same type the real PZ engine sends. If any XPHook code path uses
+-- '..' directly on `perk` instead of tostring(perk), it crashes here in standard Lua
+-- exactly as it would crash in Kahlua with "__concat not defined for operands".
+
+test("XPHook disable path does not crash on Java enum perk object", function()
+    local p = MockPlayer({})
+    local perkObj = MockJavaPerk("Cooking")
+    p:getModData()["UT_xpDisable_Cooking"] = true
+    Events.AddXP.fire(p, perkObj, 10)
+    local cancelled = false
+    for _, c in ipairs(p:getXpCalls()) do
+        if tostring(c.perk) == "Cooking" and c.amount == -10 then cancelled = true end
+    end
+    assert_eq(cancelled, true, "XP disable should cancel via tostring(perk) key lookup")
+end)
+
+test("XPHook multiplier path does not crash on Java enum perk object", function()
+    local p = MockPlayer({})
+    local perkObj = MockJavaPerk("Doctor")
+    p:getModData()["UT_xpMult_Doctor"] = 2.0
+    Events.AddXP.fire(p, perkObj, 10)
+    local bonus = nil
+    for _, c in ipairs(p:getXpCalls()) do
+        if tostring(c.perk) == "Doctor" then bonus = c.amount end
+    end
+    assert_eq(bonus, 10, "XP multiplier 2x on 10 should add +10 bonus via tostring(perk) key")
+end)
+
+test("XPHook skill cap path does not crash on Java enum perk object", function()
+    local perkObj = MockJavaPerk("Aiming")
+    -- perkObj is used as the table key so UTCoreMocks getPerkLevel(p, perkObj) → 8
+    local p = MockPlayer({}, { perkLevels = { [perkObj] = 8 } })
+    p:getModData()["UT_skillCapReduction"] = 2
+    Events.AddXP.fire(p, perkObj, 10)
+    local blocked = false
+    for _, c in ipairs(p:getXpCalls()) do
+        if tostring(c.perk) == "Aiming" and c.amount == -10 then blocked = true end
+    end
+    assert_eq(blocked, true, "skill cap should block XP via tostring(perk) key when perk is a Java enum object")
+end)
+
 -- =====================================================================
 -- SpeedHook tests (delta-scaling via nextX/nextY)
 -- These simulate the engine frame pipeline:

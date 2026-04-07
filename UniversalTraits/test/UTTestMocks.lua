@@ -938,6 +938,19 @@ else
     _G.Perks.Strength = _G.Perks.Strength or "Strength"
 end
 
+-- MockJavaPerk: simulates a PZ Java Perks enum object passed from the engine.
+-- In Kahlua, perk args arrive as Java objects: tostring() works, but '..' concat
+-- fails with "__concat not defined for operands" unless the code calls tostring()
+-- first. Standard Lua mirrors this: a plain table with __tostring but no __concat
+-- causes "attempt to concatenate a table value" when used with '..'.
+-- Use this in XPHook tests to catch any regression where perk is not tostring()'d.
+function MockJavaPerk(name)
+    return setmetatable({ _name = name }, {
+        __tostring = function(t) return t._name end,
+        -- intentionally NO __concat: concatenation must crash if ..'d directly
+    })
+end
+
 -- Events.OnPanic stub
 if not _G.Events.OnPanic then
     local _panicHandlers = {}
