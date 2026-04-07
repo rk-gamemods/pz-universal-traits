@@ -315,27 +315,114 @@ function MockPlayer(traitList, opts)
         _backpack            = opts.backpack or nil,
         getClothingItem_Back = function(self) return self._backpack end,
         isOutside            = function(self) return not self._indoors end,
+        _falling             = opts.falling or false,
+        isFalling            = function(self) return self._falling end,
+        setFalling           = function(self, v) self._falling = v end,
+        _currentActionState  = opts.currentActionState or "idle",
+        getCurrentActionContextStateName = function(self) return self._currentActionState end,
     }
     return player
 end
 
 -- UTCore stub for trait tests
 UTCore = UTCore or {}
+
+local function ensureModifierBuckets(player)
+    local md = player:getModData()
+    local buckets = md["UT_modifierBuckets"]
+    if type(buckets) ~= "table" then
+        buckets = {}
+        md["UT_modifierBuckets"] = buckets
+    end
+    if type(buckets.speedAdd) ~= "table" then buckets.speedAdd = {} end
+    if type(buckets.workAdd) ~= "table" then buckets.workAdd = {} end
+    if type(buckets.transferMult) ~= "table" then buckets.transferMult = {} end
+    if type(buckets.carryFlatAdd) ~= "table" then buckets.carryFlatAdd = {} end
+    if type(buckets.carryStrengthAdd) ~= "table" then buckets.carryStrengthAdd = {} end
+    return md, buckets
+end
+
+local function sumBucket(bucket)
+    local total = 0
+    for _, value in pairs(bucket) do
+        if type(value) == "number" then
+            total = total + value
+        end
+    end
+    return total
+end
+
+local function productBucket(bucket)
+    local total = 1.0
+    for _, value in pairs(bucket) do
+        if type(value) == "number" then
+            total = total * value
+        end
+    end
+    return total
+end
+
+local function hasEntries(bucket)
+    for _ in pairs(bucket) do
+        return true
+    end
+    return false
+end
+
+function UTCore.refreshAggregatedModifierCache(player)
+    local md, buckets = ensureModifierBuckets(player)
+    md["UT_speedMod"] = sumBucket(buckets.speedAdd)
+    md["UT_workSpeedMod"] = sumBucket(buckets.workAdd)
+    md["UT_transferSpeedMult"] = productBucket(buckets.transferMult)
+    md["UT_carryFlatMod"] = sumBucket(buckets.carryFlatAdd)
+    md["UT_carryStrengthBonus"] = sumBucket(buckets.carryStrengthAdd)
+    return md
+end
+
+function UTCore.reconcileAggregatedModifiers(player)
+    local md, buckets = ensureModifierBuckets(player)
+    UTCore.refreshAggregatedModifierCache(player)
+
+    local carryFlat = md["UT_carryFlatMod"] or 0
+    local carryStrengthBonus = md["UT_carryStrengthBonus"] or 0
+    if hasEntries(buckets.carryStrengthAdd) or carryFlat ~= 0 then
+        local strength = player:getPerkLevel(Perks.Strength)
+        local base = hasEntries(buckets.carryStrengthAdd) and (5 + strength) or 8
+        player:setMaxWeightBase(base + carryStrengthBonus + carryFlat)
+    end
+end
+
 UTCore.hasTrait = function(player, traitId)
     if not player then return false end
     return player:getTraits():contains(traitId)
 end
-UTCore.applySpeedModifier   = function(player, v) player:getModData()["UT_speedMod"] = v end
-UTCore.applyWorkSpeed       = function(player, v) player:getModData()["UT_workSpeedMod"] = v end
+UTCore.applySpeedModifier   = function(player, v, sourceId)
+    local _, buckets = ensureModifierBuckets(player)
+    buckets.speedAdd[sourceId or "__anonymous"] = v
+    UTCore.refreshAggregatedModifierCache(player)
+end
+UTCore.applyWorkSpeed       = function(player, v, sourceId)
+    local _, buckets = ensureModifierBuckets(player)
+    buckets.workAdd[sourceId or "__anonymous"] = v
+    UTCore.refreshAggregatedModifierCache(player)
+end
+UTCore.applyTransferSpeedMultiplier = function(player, v, sourceId)
+    local _, buckets = ensureModifierBuckets(player)
+    buckets.transferMult[sourceId or "__anonymous"] = v
+    UTCore.refreshAggregatedModifierCache(player)
+end
 UTCore.applyBleedRate       = function(player, v) player:getModData()["UT_bleedMult"] = v end
 UTCore.applyXPMultiplier    = function(player, perk, v) player:getModData()["UT_xpMult_" .. perk] = v end
 UTCore.disableXP            = function(player, perk) player:getModData()["UT_xpDisable_" .. perk] = true end
-UTCore.applyCarryWeight     = function(player, v)
-    player:setMaxWeightBase(player:getMaxWeightBase() + v)
+UTCore.applyCarryWeight     = function(player, v, sourceId)
+    local _, buckets = ensureModifierBuckets(player)
+    buckets.carryFlatAdd[sourceId or "__anonymous"] = v
+    UTCore.reconcileAggregatedModifiers(player)
 end
-UTCore.applyStrengthCarryWeight = function(player, bonus)
-    local strength = player:getPerkLevel(Perks.Strength)
-    player:setMaxWeightBase(5 + strength + bonus)
+UTCore.applyStrengthCarryWeight = function(player, bonus, sourceId)
+    local _, buckets = ensureModifierBuckets(player)
+    buckets.carryStrengthAdd[sourceId or "__anonymous"] = bonus
+    UTCore.reconcileAggregatedModifiers(player)
 end
 UTCore.applyMoodModifier    = function(player, v) player:getModData()["UT_moodMod"] = v end
 UTCore.applySpawnStats      = function(player, t)
@@ -623,6 +710,14 @@ if not _G.Events.OnWeaponHitCharacter then
     }
 end
 
+if not _G.Events.OnActionAdded then
+    local _actionAddedHandlers = {}
+    _G.Events.OnActionAdded = {
+        Add  = function(fn) table.insert(_actionAddedHandlers, fn) end,
+        fire = function(...) fireHandlers(_G.Events.OnActionAdded, _actionAddedHandlers, ...) end,
+    }
+end
+
 if not _G.Events.OnVehicleEnter then
     local _vehicleEnterHandlers = {}
     _G.Events.OnVehicleEnter = {
@@ -702,6 +797,15 @@ if not _G.getPlayer then
     _G.getPlayer = function() return nil end
 end
 
+if not _G.getSpecificPlayer then
+    _G.getSpecificPlayer = function(index)
+        if index == 0 then
+            return _G.getPlayer()
+        end
+        return nil
+    end
+end
+
 if not _G.BodyPartType then
     _G.BodyPartType = { Neck = "Neck" }
 end
@@ -761,7 +865,13 @@ function MockTimedAction(player, actionType, baseDuration)
     return {
         character = character,
         Type = Type,
+        maxTime = maxTime,
         getDuration = function(self) return maxTime end,
+        getMaxTime = function(self) return self.maxTime end,
+        setMaxTime = function(self, value)
+            self.maxTime = value
+            maxTime = value
+        end,
     }
 end
 

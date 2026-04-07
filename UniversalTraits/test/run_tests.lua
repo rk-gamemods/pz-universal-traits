@@ -220,6 +220,11 @@ local function listTraitLuaFiles()
     return files
 end
 
+local function compileLuaFile(path)
+    local chunk, err = loadfile(path)
+    assert_true(chunk ~= nil, "syntax error in " .. path .. ": " .. tostring(err))
+end
+
 local function loadTraitConsistencyState()
     local registry_file = io.open(base .. "../media/registries.lua", "r")
     assert_true(registry_file ~= nil, "failed to open registries.lua")
@@ -548,6 +553,14 @@ test("runtime trait lua files map to registered scripted traits", function()
     end
 end)
 
+test("all runtime trait lua files compile", function()
+    local trait_files = listTraitLuaFiles()
+
+    for trait_key in pairs(trait_files) do
+        compileLuaFile(base .. "../media/lua/shared/UniversalTraits/traits/" .. trait_key .. ".lua")
+    end
+end)
+
 -- ===== Per-trait moddata spot checks =====
 -- Trait files use UTCore.hasTrait, UTCore.apply*, and Events.OnNewGame / OnCreatePlayer.
 -- All stubs are already provided by UTTestMocks.lua above.
@@ -605,6 +618,10 @@ dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_noxpsneaky.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_driver.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_expertdriver.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_poordriver.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_blissful.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_marathonrunner.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_olympian.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_strongnimble.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_indefatigable.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_hardy.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_secondwind.lua")
@@ -1041,6 +1058,61 @@ test("pacer applies unhappiness after 600 indoor ticks", function()
     assert_true(stats:get(CharacterStat.UNHAPPINESS) > startUnhappiness,
         "expected unhappiness to increase after 600 indoor ticks, got "
         .. tostring(stats:get(CharacterStat.UNHAPPINESS)))
+end)
+
+test("blissful reduces unhappiness after 100 updates without nil API calls", function()
+    local player = MockPlayer({ "UniversalTraits:UT_blissful" }, { unhappiness = 10 })
+
+    firePlayerUpdates(player, 100)
+
+    assert_eq(player:getStats():get(CharacterStat.UNHAPPINESS), 9,
+        "expected blissful to reduce unhappiness by 1 after 100 updates")
+end)
+
+test("marathonrunner refunds part of endurance and fatigue loss without nil API calls", function()
+    local player = MockPlayer({ "UniversalTraits:UT_marathonrunner" }, { endurance = 0.8, fatigue = 0.2 })
+
+    withActivePlayer(player, function()
+        for _ = 1, 5 do
+            Events.OnPlayerUpdate:fire(player)
+        end
+        player:getStats():set(CharacterStat.ENDURANCE, 0.5)
+        player:getStats():set(CharacterStat.FATIGUE, 0.5)
+        for _ = 1, 5 do
+            Events.OnPlayerUpdate:fire(player)
+        end
+    end)
+
+    assert_true(player:getStats():get(CharacterStat.ENDURANCE) > 0.5, "expected endurance refund after drain")
+    assert_true(player:getStats():get(CharacterStat.FATIGUE) < 0.5, "expected fatigue refund after rise")
+end)
+
+test("olympian refunds part of endurance and fatigue loss without nil API calls", function()
+    local player = MockPlayer({ "UniversalTraits:UT_olympian" }, { endurance = 0.8, fatigue = 0.2 })
+
+    withActivePlayer(player, function()
+        for _ = 1, 5 do
+            Events.OnPlayerUpdate:fire(player)
+        end
+        player:getStats():set(CharacterStat.ENDURANCE, 0.5)
+        player:getStats():set(CharacterStat.FATIGUE, 0.5)
+        for _ = 1, 5 do
+            Events.OnPlayerUpdate:fire(player)
+        end
+    end)
+
+    assert_true(player:getStats():get(CharacterStat.ENDURANCE) > 0.5, "expected endurance refund after drain")
+    assert_true(player:getStats():get(CharacterStat.FATIGUE) < 0.5, "expected fatigue refund after rise")
+end)
+
+test("strongnimble update tolerates missing stopFalling API", function()
+    local player = MockPlayer({ "UniversalTraits:UT_strongnimble" }, { currentActionState = "climbfence", falling = true })
+
+    withActivePlayer(player, function()
+        Events.OnPlayerUpdate:fire(player)
+    end)
+
+    assert_eq(player:isFalling(), true, "expected smoke test to complete even when stopFalling is unavailable")
 end)
 
 test("trekker restores walking endurance and normalizes walking calorie burn", function()
@@ -1936,6 +2008,8 @@ dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_broke.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_burned.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_injured_I.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_injured_II.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_paramedic.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_pitcrew.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_anemic.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_cangrabless.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_cangrabmore.lua")
@@ -2108,14 +2182,44 @@ end)
 test("injured_I applies spawn condition and stress=0.3 on new game", function()
     local p = fireNewGame("UniversalTraits:UT_injured_I")
     assert_true(p:getModData()["_spawnCond"] ~= nil, "expected _spawnCond set")
+    assert_eq(#p:getModData()["_spawnCond"].scratches, 2, "expected 2 scratched parts")
     assert_eq(p:getModData()["_spawn_stress"], 0.3, "_spawn_stress")
 end)
 
 test("injured_II applies spawn condition and stress=0.6 on new game", function()
     local p = fireNewGame("UniversalTraits:UT_injured_II")
     assert_true(p:getModData()["_spawnCond"] ~= nil, "expected _spawnCond set")
+    assert_eq(#p:getModData()["_spawnCond"].cuts, 4, "expected 4 cut parts")
     assert_eq(p:getModData()["_spawn_stress"],  0.6, "_spawn_stress")
     assert_eq(p:getModData()["_spawn_fatigue"], 0.4, "_spawn_fatigue")
+end)
+
+test("paramedic on new game tolerates missing UTCore medical hook", function()
+    local p = fireNewGame("UniversalTraits:UT_paramedic")
+    assert_true(p:getModData()["UT_paramedicActive"] == true, "expected UT_paramedicActive=true")
+end)
+
+test("pitcrew on new game tolerates missing UTCore mechanics hook", function()
+    local p = fireNewGame("UniversalTraits:UT_pitcrew")
+    assert_true(p:getModData()["UT_pitcrewActive"] == true, "expected UT_pitcrewActive=true")
+end)
+
+test("paramedic halves medical action maxTime", function()
+    local p = MockPlayer({ "UniversalTraits:UT_paramedic" })
+    local action = MockTimedAction(p, "ISMedicalCheckAction", 120)
+    withActivePlayer(p, function()
+        Events.OnActionAdded:fire(action)
+    end)
+    assert_eq(action.maxTime, 60, "expected medical action maxTime halved")
+end)
+
+test("pitcrew halves mechanic action maxTime", function()
+    local p = MockPlayer({ "UniversalTraits:UT_pitcrew" })
+    local action = MockTimedAction(p, "ISRepairVehicleAction", 120)
+    withActivePlayer(p, function()
+        Events.OnActionAdded:fire(action)
+    end)
+    assert_eq(action.maxTime, 60, "expected mechanic action maxTime halved")
 end)
 
 -- ─── Group 4: OnCreatePlayer ─────────────────────────────────────────────────

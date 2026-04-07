@@ -33,6 +33,14 @@ Two-mod layout targeting Project Zomboid Build 42 (Kahlua/Lua 5.x):
 
 **Goal:** ~200 traits, all `UT_`-prefixed, no vanilla overrides, single-player only (`DisabledInMultiplayer = true`).
 
+## Current Investigation Note (2026-04-06)
+
+- **ROOT CAUSE CONFIRMED AND FIXED:** `UTCore_SpeedHook.lua` used `setX()`/`setY()` during `OnPlayerMove`, which clobbered `nextX`/`scriptNextX` and destroyed pending movement deltas. This created a position-pinning feedback loop where the player couldn't move via keyboard.
+- **Fix applied:** SpeedHook now uses `setNextX()`/`setNextY()` to scale the pending animation delta without touching `x` or `scriptNextX`. This preserves the engine's frame pipeline.
+- **Secondary fix:** `UT_natural.lua` was caching derived `getMoveSpeed()` (which includes injury speed) and replaying it into raw `setMoveSpeed()`. Now delegates to `UTCore.applySpeedModifier()` unified API.
+- **Engine contract tests added:** 22 tests parse the PZ Java source to verify the exact engine patterns our fix depends on. If a PZ update changes `setX()`, `setNextX()`, `preupdate()`, `moveUnmoddedInternal()`, or the frame pipeline order, these tests will fail and flag it immediately.
+- Conflict note: TchernoLib remains a structural risk because it uses the same fragile setX/setY rewriting pattern, but there is still no proof that its speed framework is active in the failing run.
+
 ---
 
 ## Repo Structure
@@ -71,7 +79,7 @@ Run from repo root (`C:\Users\Admin\Documents\GIT\GameMods\PZMods\UTMods`):
 "C:\Users\Admin\AppData\Local\Programs\Lua\bin\lua.exe" UniversalTraits/test/run_tests.lua
 ```
 
-**Current passing counts:** 155 (UT_CORE) + 236 (UniversalTraits) = 391 passing.
+**Current passing counts:** 189 (UT_CORE) + 240 (UniversalTraits) = 429 passing.
 
 The UniversalTraits suite now includes a cross-file consistency audit that fails when registries, script definitions, translation keys, or `traits/UT_*.lua` files drift out of sync.
 
@@ -224,6 +232,22 @@ Events.OnCreatePlayer.Add(onCreatePlayer)
 
 Use `OnNewGame` only for one-time spawn effects (moddata flags, spawn conditions).
 Use `OnCreatePlayer` for anything that sets transient engine state (carry weight, handler registration).
+
+Kahlua parser gotcha: do not write method-existence guards as `obj:method and obj:method()`.
+That is invalid Lua syntax in PZ and fails at load with `function arguments expected near 'and'`.
+Use `obj.method and obj:method()` when you need to test whether a Java-backed method exists before calling it.
+
+Verified B42 runtime API gotcha: `Stats` uses only generic `get(CharacterStat.*)` / `set(CharacterStat.*, value)` accessors for endurance and fatigue. Do not call legacy-style `stats:getEndurance()`, `stats:setEndurance()`, `bodyDamage:getFatigue()`, or `bodyDamage:setFatigue()` in trait code.
+
+Verified B42 mood API gotcha: unhappiness is read and written through `player:getStats():get(CharacterStat.UNHAPPINESS)` / `set(CharacterStat.UNHAPPINESS, value)`. Do not call `bodyDamage:getUnhappynessLevel()`, `bodyDamage:setUnhappynessLevel()`, or spelling variants from trait code.
+
+Verified B42 player-action gotcha: `IsoPlayer:getCurrentAction()` and `IsoPlayer:stopFalling()` are not exposed to Lua in this workspace's B42 sources. `getCurrentActionContextStateName()` exists and can be queried safely, `isFalling()` exists, but there is no verified public Lua API here to cancel a fall once it has started.
+
+Timed-action gotcha: PZ Lua timed actions commonly expose their class identity through `action.Type` and duration through the mutable `action.maxTime` field. Do not assume `tostring(action)` or `action:getMaxTime()` / `action:setMaxTime()` exist on B42 timed-action objects unless you have verified that specific action type.
+
+Optional-helper gotcha: if a trait comment says a UT_CORE helper is optional, guard it explicitly with `if UTCore.someHelper then ... end` before calling it. Wrapping a nil function call in `pcall()` still surfaces a user-visible Kahlua error dialog.
+
+Spawn-wound gotcha: reducing a body part's health alone is not the same as creating a visible wound. For traits that are meant to start with actual injuries, use wound setters such as `setScratched`, `setCut`, or `setDeepWounded` rather than only `setHealth`.
 
 For periodic handlers, use `getPlayer()` (no args):
 

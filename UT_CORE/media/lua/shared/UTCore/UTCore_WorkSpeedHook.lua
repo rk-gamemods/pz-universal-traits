@@ -16,6 +16,10 @@ function UTCore.applyWorkDuration(timedAction, base)
     local player = timedAction.character
     if not player then return base end
 
+    if UTCore.refreshAggregatedModifierCache then
+        UTCore.refreshAggregatedModifierCache(player)
+    end
+
     local md = player:getModData()
     local workMod = md["UT_workSpeedMod"] or 0
     local readMod = 0

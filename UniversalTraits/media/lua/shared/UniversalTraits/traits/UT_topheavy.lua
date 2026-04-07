@@ -6,7 +6,7 @@ local TRAIT_ID = "UniversalTraits:UT_topheavy"
 
 local function handler(player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
-    UTCore.applyStrengthCarryWeight(player, -3)
+    UTCore.applyStrengthCarryWeight(player, -3, TRAIT_ID)
 end
 
 UTCore.registerPeriodicHandler(TRAIT_ID, "OnPlayerUpdate", handler)

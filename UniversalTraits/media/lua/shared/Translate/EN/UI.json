@@ -120,7 +120,7 @@
     "UI_UT_scrounger": "Scrounger",
     "UI_UT_scroungerDesc": "When opening a container for the first time, 30% chance to find an additional item.",
     "UI_UT_natural": "Natural",
-    "UI_UT_naturalDesc": "+1 to Cooking skill. Movement speed +10%, reduced by 2% per clothing item worn.",
+    "UI_UT_naturalDesc": "+1 to Cooking skill. Movement speed +10%, reduced by 2% per clothing item worn (minimum 0%; bonus cannot go negative).",
     "UI_UT_wildsman": "Wildsman",
     "UI_UT_wildsmanDesc": "+1 to Plant Scavenging and Fishing. 30% more forage yield. Fish you catch are 50% larger.",
     "UI_UT_mushroomer": "Mushroomer",

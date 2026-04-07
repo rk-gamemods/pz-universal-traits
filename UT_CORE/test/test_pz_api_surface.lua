@@ -121,6 +121,38 @@ test("API:Player — position methods exist", function()
     assert(type(p.setY) == "function", "setY")
 end)
 
+-- nextX/nextY: used by SpeedHook for safe delta-scaling (IsoMovingObject API)
+test("API:Player — getNextX/setNextX/getNextY/setNextY exist", function()
+    local p = MockPlayer({})
+    assert(type(p.getNextX) == "function", "getNextX must exist")
+    assert(type(p.getNextY) == "function", "getNextY must exist")
+    assert(type(p.setNextX) == "function", "setNextX must exist")
+    assert(type(p.setNextY) == "function", "setNextY must exist")
+end)
+
+test("API:Player — setNextX/getNextX round-trip", function()
+    local p = MockPlayer({})
+    p:setNextX(42.5)
+    assert_eq(p:getNextX(), 42.5, "setNextX/getNextX round-trip")
+end)
+
+test("API:Player — setNextX does NOT modify x (safe write)", function()
+    local p = MockPlayer({})
+    p:moveTo(10, 20)
+    p:setNextX(15)
+    assert_eq(p:getX(), 10, "setNextX must NOT change x")
+    assert_eq(p:getNextX(), 15, "setNextX must change nextX")
+end)
+
+test("API:Player — setX DOES modify nextX (clobber behavior)", function()
+    local p = MockPlayer({})
+    p:moveTo(0, 0)
+    p:setNextX(5.0)  -- set nextX to 5
+    p:setX(3.0)      -- setX should clobber nextX to 3
+    assert_eq(p:getX(), 3.0, "setX must change x")
+    assert_eq(p:getNextX(), 3.0, "setX must ALSO clobber nextX (mirrors engine)")
+end)
+
 test("API:Player — isAsleep() exists (B42.16, replaces isSleeping)", function()
     local p = MockPlayer({})
     assert(type(p.isAsleep) == "function", "isAsleep must be a function")

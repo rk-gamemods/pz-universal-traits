@@ -6,7 +6,7 @@ local TRAIT_ID = "UniversalTraits:UT_gimp"
 
 local function onCreatePlayer(playerIndex, player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
-    UTCore.applySpeedModifier(player, -0.5)
+    UTCore.applySpeedModifier(player, -0.5, TRAIT_ID)
 end
 
 Events.OnCreatePlayer.Add(onCreatePlayer)

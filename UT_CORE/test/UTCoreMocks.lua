@@ -82,6 +82,7 @@ function MockPlayer(traits, opts)
         end,
     }
     local x, y = 0, 0
+    local nx, ny = 0, 0  -- nextX/nextY: engine pending movement targets
     local xpCalls = {}
     local bodyDamage = nil
     local _health     = opts.health or 100
@@ -152,10 +153,22 @@ function MockPlayer(traits, opts)
         getXpCalls          = function(self) return xpCalls end,
         getX                = function(self) return x end,
         getY                = function(self) return y end,
-        setX                = function(self, v) x = v end,
-        setY                = function(self, v) y = v end,
+        -- Mirrors IsoMovingObject.setX(): clobbers x, nextX, and scriptNextX to same value.
+        -- This is the root cause of the SpeedHook bug — calling setX() during update()
+        -- destroys the pending deferred movement stored in nextX.
+        setX                = function(self, v) x = v; nx = v end,
+        setY                = function(self, v) y = v; ny = v end,
+        -- nextX/nextY: engine's pending movement target. In real PZ:
+        --   preupdate()  sets nextX = x
+        --   doDeferredMovement() adds animation delta to nextX
+        --   postupdate() commits dx = nextX - x back into x
+        -- Safe to write: setNextX only sets nx, does NOT clobber x or scriptNextX.
+        getNextX            = function(self) return nx end,
+        getNextY            = function(self) return ny end,
+        setNextX            = function(self, v) nx = v end,
+        setNextY            = function(self, v) ny = v end,
         isLocalPlayer        = function(self) return true end,
-        moveTo               = function(self, nx, ny) x = nx; y = ny end,
+        moveTo               = function(self, mx, my) x = mx; y = my; nx = mx; ny = my end,
         getBodyDamage        = function(self) return bodyDamage end,
         setBodyDamage        = function(self, bd) bodyDamage = bd end,
         getPrimaryHandItem   = function(self) return primaryHandItem end,

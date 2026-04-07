@@ -111,8 +111,24 @@ end)
 -- applyCarryWeight
 test("applyCarryWeight adds delta to base weight", function()
     local p = MockPlayer()
-    UTCore.applyCarryWeight(p, 4)
+    UTCore.applyCarryWeight(p, 4, "test_carry")
+    UTCore.reconcileAggregatedModifiers(p)
     assert_eq(p:getMaxWeightBase(), 12)
+end)
+
+test("aggregated speed modifiers stack and clamp above zero movement", function()
+    local p = MockPlayer()
+    UTCore.applySpeedModifier(p, -0.6, "trait_a")
+    UTCore.applySpeedModifier(p, -0.5, "trait_b")
+    assert_eq(p:getModData()["UT_speedMod"], -0.75)
+end)
+
+test("carry reconciliation combines flat and strength-based bonuses without overwrite", function()
+    local p = MockPlayer({}, { perkLevels = { Strength = 5 } })
+    UTCore.applyCarryWeight(p, 6, "packmule")
+    UTCore.applyStrengthCarryWeight(p, 4, "backpacker")
+    UTCore.reconcileAggregatedModifiers(p)
+    assert_eq(p:getMaxWeightBase(), 20)
 end)
 
 -- applyBleedRate
@@ -357,45 +373,140 @@ test("XPHook does not apply skill cap without UT_skillCapReduction set", functio
     assert_eq(blocked, false, "no cap should apply when UT_skillCapReduction is not set")
 end)
 
--- SpeedHook: positive speedMod amplifies movement
-test("SpeedHook positive speedMod amplifies movement", function()
+-- =====================================================================
+-- SpeedHook tests (delta-scaling via nextX/nextY)
+-- These simulate the engine frame pipeline:
+--   1. moveTo(x,y) sets x and nextX to the same value (like preupdate)
+--   2. setNextX(x + delta) simulates doDeferredMovement adding animation delta
+--   3. Events.OnPlayerMove.fire() runs the SpeedHook
+--   4. Assert that nextX was scaled correctly (getNextX)
+-- =====================================================================
+
+-- SpeedHook: positive speedMod amplifies pending delta
+test("SpeedHook positive speedMod amplifies pending delta", function()
     local player = MockPlayer({})
     player:getModData()["UT_speedMod"] = 0.5
     _G.getPlayer = function() return player end
+    -- Simulate: player at (0,0), engine wrote pending delta of +0.5 into nextX
+    -- (real walking is ~0.06/frame; 0.5 is sprinting-ish but under the 1.5 cap)
     player:moveTo(0, 0)
-    Events.OnPlayerMove.fire()   -- stores prevX/prevY
-    player:moveTo(2, 0)
-    Events.OnPlayerMove.fire()   -- should amplify: 0 + 2*1.5 = 3.0
-    local result = player:getX()
-    assert(math.abs(result - 3.0) < 0.01, "expected X ~3.0, got " .. tostring(result))
+    player:setNextX(0.5)  -- doDeferredMovement accumulated +0.5
+    Events.OnPlayerMove.fire()
+    -- SpeedHook should scale: nextX = 0 + 0.5 * 1.5 = 0.75
+    local result = player:getNextX()
+    assert(math.abs(result - 0.75) < 0.01, "expected nextX ~0.75, got " .. tostring(result))
+    -- x should NOT be modified (only nextX changes)
+    assert(math.abs(player:getX() - 0.0) < 0.01, "x should remain at 0.0")
     _G.getPlayer = function() return nil end
 end)
 
--- SpeedHook: negative speedMod reduces movement
-test("SpeedHook negative speedMod reduces movement", function()
+-- SpeedHook: negative speedMod reduces pending delta
+test("SpeedHook negative speedMod reduces pending delta", function()
     local player = MockPlayer({})
     player:getModData()["UT_speedMod"] = -0.3
     _G.getPlayer = function() return player end
     player:moveTo(0, 0)
-    Events.OnPlayerMove.fire()   -- stores prevX/prevY
-    player:moveTo(2, 0)
-    Events.OnPlayerMove.fire()   -- should reduce: 0 + 2*0.7 = 1.4
-    local result = player:getX()
-    assert(math.abs(result - 1.4) < 0.01, "expected X ~1.4, got " .. tostring(result))
+    player:setNextX(0.5)
+    Events.OnPlayerMove.fire()
+    -- nextX = 0 + 0.5 * 0.7 = 0.35
+    local result = player:getNextX()
+    assert(math.abs(result - 0.35) < 0.01, "expected nextX ~0.35, got " .. tostring(result))
     _G.getPlayer = function() return nil end
 end)
 
--- SpeedHook: teleport guard skips adjustment when delta > 5
-test("SpeedHook teleport guard skips adjustment when delta > 5", function()
+-- SpeedHook: zero speedMod leaves delta unchanged (early return)
+test("SpeedHook zero speedMod is a no-op", function()
+    local player = MockPlayer({})
+    player:getModData()["UT_speedMod"] = 0
+    _G.getPlayer = function() return player end
+    player:moveTo(0, 0)
+    player:setNextX(2.0)
+    Events.OnPlayerMove.fire()
+    assert(math.abs(player:getNextX() - 2.0) < 0.01, "nextX should be unchanged at 2.0")
+    _G.getPlayer = function() return nil end
+end)
+
+-- SpeedHook: nil speedMod leaves delta unchanged (early return)
+test("SpeedHook nil speedMod is a no-op", function()
+    local player = MockPlayer({})
+    -- UT_speedMod not set at all
+    _G.getPlayer = function() return player end
+    player:moveTo(0, 0)
+    player:setNextX(2.0)
+    Events.OnPlayerMove.fire()
+    assert(math.abs(player:getNextX() - 2.0) < 0.01, "nextX should be unchanged at 2.0")
+    _G.getPlayer = function() return nil end
+end)
+
+-- SpeedHook: no pending movement (dx=dy=0) is a no-op
+test("SpeedHook skips when no pending movement (dx=dy=0)", function()
+    local player = MockPlayer({})
+    player:getModData()["UT_speedMod"] = 0.5
+    _G.getPlayer = function() return player end
+    player:moveTo(5, 3)
+    -- nextX already equals x (no pending movement)
+    Events.OnPlayerMove.fire()
+    assert(math.abs(player:getNextX() - 5.0) < 0.01, "nextX unchanged when no delta")
+    _G.getPlayer = function() return nil end
+end)
+
+-- SpeedHook: teleport guard skips when pending delta > 5
+test("SpeedHook teleport guard skips when pending delta > 5", function()
     local player = MockPlayer({})
     player:getModData()["UT_speedMod"] = 0.5
     _G.getPlayer = function() return player end
     player:moveTo(0, 0)
-    Events.OnPlayerMove.fire()   -- stores prevX/prevY
-    player:moveTo(10, 0)
-    Events.OnPlayerMove.fire()   -- delta=10 > 5, should skip
-    local result = player:getX()
-    assert(math.abs(result - 10.0) < 0.01, "expected X ~10.0 (no amplification), got " .. tostring(result))
+    player:setNextX(10.0)   -- delta=10 > TELEPORT_GUARD=5
+    Events.OnPlayerMove.fire()
+    -- Should NOT scale — teleport guard skips
+    assert(math.abs(player:getNextX() - 10.0) < 0.01, "nextX should be unchanged (teleport guard)")
+    _G.getPlayer = function() return nil end
+end)
+
+-- SpeedHook: per-frame delta cap prevents extreme jumps
+test("SpeedHook per-frame delta cap prevents extreme movement", function()
+    local player = MockPlayer({})
+    player:getModData()["UT_speedMod"] = 1.0  -- 2x speed
+    _G.getPlayer = function() return player end
+    player:moveTo(0, 0)
+    player:setNextX(1.0)
+    player:setNextY(1.0)
+    Events.OnPlayerMove.fire()
+    -- Scaled delta would be (2.0, 2.0), length ~2.83, exceeds MAX_DELTA_PER_FRAME=1.5
+    local nx = player:getNextX()
+    local ny = player:getNextY()
+    local scaledLen = math.sqrt((nx * nx) + (ny * ny))
+    assert(scaledLen <= 1.51, "scaled delta length should be capped at ~1.5, got " .. tostring(scaledLen))
+    -- Direction should be preserved (45 degrees, so nx ~= ny)
+    assert(math.abs(nx - ny) < 0.01, "direction should be preserved (nx ~= ny)")
+    _G.getPlayer = function() return nil end
+end)
+
+-- SpeedHook: does NOT call setX (no position-pinning)
+test("SpeedHook never calls setX (no position-pinning bug)", function()
+    local player = MockPlayer({})
+    player:getModData()["UT_speedMod"] = 0.3
+    _G.getPlayer = function() return player end
+    player:moveTo(5.0, 3.0)
+    player:setNextX(7.0)  -- pending delta = 2.0
+    player:setNextY(4.0)  -- pending delta = 1.0
+    Events.OnPlayerMove.fire()
+    -- x must remain exactly 5.0 (setX was never called)
+    assert_eq(player:getX(), 5.0, "x must not change — SpeedHook must not call setX")
+    assert_eq(player:getY(), 3.0, "y must not change — SpeedHook must not call setY")
+    _G.getPlayer = function() return nil end
+end)
+
+-- SpeedHook: Y axis is scaled too
+test("SpeedHook scales Y axis delta too", function()
+    local player = MockPlayer({})
+    player:getModData()["UT_speedMod"] = 0.5
+    _G.getPlayer = function() return player end
+    player:moveTo(0, 0)
+    player:setNextY(0.5)  -- only Y movement
+    Events.OnPlayerMove.fire()
+    -- nextY = 0 + 0.5 * 1.5 = 0.75
+    assert(math.abs(player:getNextY() - 0.75) < 0.01, "expected nextY ~0.75, got " .. tostring(player:getNextY()))
     _G.getPlayer = function() return nil end
 end)
 
@@ -905,6 +1016,12 @@ end)
 
 -- ===== PZ API Surface Tests =====
 dofile(base .. "test_pz_api_surface.lua")
+
+-- ===== Engine Contract Tests =====
+-- These verify that the PZ Java engine source still matches the patterns
+-- our SpeedHook depends on. Failures mean a PZ update may have changed
+-- the movement pipeline and the SpeedHook needs re-validation.
+dofile(base .. "test_engine_contracts.lua")
 
 print(string.format("\n%d passed, %d failed", passed, failed))
 if failed > 0 then os.exit(1) end

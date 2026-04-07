@@ -4,12 +4,21 @@
 
 local TRAIT_ID = "UniversalTraits:UT_pacer"
 
-local function onNewGame(player)
+local function applyTrait(player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
-    player:getModData()["UT_speedMod"] = 0.15
+    UTCore.applySpeedModifier(player, 0.15, TRAIT_ID)
+end
+
+local function onNewGame(player)
+    applyTrait(player)
+end
+
+local function onCreatePlayer(_playerIndex, player)
+    applyTrait(player)
 end
 
 Events.OnNewGame.Add(onNewGame)
+Events.OnCreatePlayer.Add(onCreatePlayer)
 
 local function onPlayerUpdate(player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end

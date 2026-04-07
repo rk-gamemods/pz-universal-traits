@@ -3,9 +3,17 @@
 
 local TRAIT_ID = "UniversalTraits:UT_noodlelegs"
 
-local function onNewGame(player)
+local function applyTrait(player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
-    player:getModData()["UT_speedMod"] = -0.2
+    UTCore.applySpeedModifier(player, -0.2, TRAIT_ID)
+end
+
+local function onNewGame(player)
+    applyTrait(player)
+end
+
+local function onCreatePlayer(_playerIndex, player)
+    applyTrait(player)
 end
 
 local function onPlayerUpdate(player)
@@ -25,4 +33,5 @@ local function onPlayerUpdate(player)
 end
 
 Events.OnNewGame.Add(onNewGame)
+Events.OnCreatePlayer.Add(onCreatePlayer)
 Events.OnPlayerUpdate.Add(onPlayerUpdate)

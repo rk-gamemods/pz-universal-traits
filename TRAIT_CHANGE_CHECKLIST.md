@@ -29,6 +29,7 @@ Use this for any change to a trait's behavior, cost, description, or exclusivity
 - [ ] Update or add trait tests in `UniversalTraits/test/run_tests.lua`
 - [ ] Update or add `UT_CORE/test/run_tests.lua` if shared hooks/helpers changed
 - [ ] Update mocks if new PZ API methods or events were introduced
+- [ ] Ensure the UniversalTraits consistency audit still passes: registries, `UT_character_traits.txt`, `UI.json`, and `traits/UT_*.lua` must all agree
 - [ ] Run both suites from repo root:
 
 ```bash

@@ -6,7 +6,7 @@ local TRAIT_ID = "UniversalTraits:UT_backpacker"
 
 local function handler(player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
-    UTCore.applyStrengthCarryWeight(player, 4)
+    UTCore.applyStrengthCarryWeight(player, 4, TRAIT_ID)
 end
 
 UTCore.registerPeriodicHandler(TRAIT_ID, "OnPlayerUpdate", handler)

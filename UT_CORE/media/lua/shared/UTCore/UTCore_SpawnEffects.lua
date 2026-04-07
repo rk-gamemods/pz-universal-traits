@@ -28,7 +28,10 @@ function UTCore.applySpawnStats(player, statTable)
 end
 
 -- Applies spawn conditions: injuries, fractures, and burn severity.
--- conditionTable.injuries  = array of BodyPartType integer IDs to injure (setHealth(0.5))
+-- conditionTable.injuries  = array of BodyPartType integer IDs to damage directly (legacy path)
+-- conditionTable.scratches = array of BodyPartType integer IDs to apply scratched wounds
+-- conditionTable.cuts      = array of BodyPartType integer IDs to apply cut wounds
+-- conditionTable.deepWounds = array of BodyPartType integer IDs to apply deep wounds
 -- conditionTable.fractures = array of BodyPartType integer IDs to fracture (setFractured(true))
 -- conditionTable.burnSeverity = 0.0-1.0 float applied to all body parts
 function UTCore.applySpawnCondition(player, conditionTable)
@@ -37,6 +40,24 @@ function UTCore.applySpawnCondition(player, conditionTable)
     if conditionTable.injuries then
         for _, partId in ipairs(conditionTable.injuries) do
             bodyDamage:getBodyPart(partId):setHealth(0.5)
+        end
+    end
+
+    if conditionTable.scratches then
+        for _, partId in ipairs(conditionTable.scratches) do
+            bodyDamage:getBodyPart(partId):setScratched(true, true)
+        end
+    end
+
+    if conditionTable.cuts then
+        for _, partId in ipairs(conditionTable.cuts) do
+            bodyDamage:getBodyPart(partId):setCut(true, true)
+        end
+    end
+
+    if conditionTable.deepWounds then
+        for _, partId in ipairs(conditionTable.deepWounds) do
+            bodyDamage:getBodyPart(partId):setDeepWounded(true)
         end
     end
 

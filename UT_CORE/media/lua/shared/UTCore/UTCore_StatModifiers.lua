@@ -4,16 +4,189 @@
 
 UTCore = UTCore or {}
 
--- Stores speed delta in ModData for OnPlayerUpdate handler.
--- amount is a float delta, e.g. 0.3 for +30% speed.
-function UTCore.applySpeedModifier(player, amount)
-    player:getModData()["UT_speedMod"] = amount
+local MODIFIER_BUCKETS_KEY = "UT_modifierBuckets"
+local MODIFIER_BUCKET_VERSION_KEY = "UT_modifierBucketsVersion"
+local MODIFIER_BUCKETS_VERSION = 2
+
+local SPEED_BUCKET = "speedAdd"
+local WORK_BUCKET = "workAdd"
+local TRANSFER_BUCKET = "transferMult"
+local CARRY_FLAT_BUCKET = "carryFlatAdd"
+local CARRY_STRENGTH_BUCKET = "carryStrengthAdd"
+
+local LEGACY_SPEED_SOURCE = "__legacy_speed"
+local LEGACY_WORK_SOURCE = "__legacy_work"
+local LEGACY_TRANSFER_SOURCE = "__legacy_transfer"
+
+-- Speed modifier clamp range. UT_speedMod is added to 1.0 to get the factor:
+--   SPEED_MIN_DELTA = -0.75 → factor = 0.25 → 75% slower than normal
+--   SPEED_MAX_DELTA =  1.0  → factor = 2.0  → 100% faster (2x speed)
+-- At 2x sprint (~30 km/h), still well below PZ car speeds (80-100+ km/h).
+local SPEED_MIN_DELTA = -0.75
+local SPEED_MAX_DELTA = 1.0
+local WORK_MIN_DELTA = -0.75
+local WORK_MAX_DELTA = 2.0
+local TRANSFER_MIN_MULT = 0.25
+local TRANSFER_MAX_MULT = 2.0
+local DEFAULT_CARRY_BASE = 8
+
+local function clamp(value, minValue, maxValue)
+    if value < minValue then return minValue end
+    if value > maxValue then return maxValue end
+    return value
 end
 
--- Calls player:setMaxWeightBase(base + delta).
-function UTCore.applyCarryWeight(player, delta)
-    local base = player:getMaxWeightBase()
-    player:setMaxWeightBase(base + delta)
+local function hasEntries(tbl)
+    if type(tbl) ~= "table" then return false end
+    for _ in pairs(tbl) do
+        return true
+    end
+    return false
+end
+
+local function ensureModifierBuckets(player)
+    local md = player:getModData()
+    local buckets = md[MODIFIER_BUCKETS_KEY]
+    if type(buckets) ~= "table" then
+        buckets = {}
+        md[MODIFIER_BUCKETS_KEY] = buckets
+    end
+
+    if type(buckets[SPEED_BUCKET]) ~= "table" then buckets[SPEED_BUCKET] = {} end
+    if type(buckets[WORK_BUCKET]) ~= "table" then buckets[WORK_BUCKET] = {} end
+    if type(buckets[TRANSFER_BUCKET]) ~= "table" then buckets[TRANSFER_BUCKET] = {} end
+    if type(buckets[CARRY_FLAT_BUCKET]) ~= "table" then buckets[CARRY_FLAT_BUCKET] = {} end
+    if type(buckets[CARRY_STRENGTH_BUCKET]) ~= "table" then buckets[CARRY_STRENGTH_BUCKET] = {} end
+
+    return md, buckets
+end
+
+local function migrateLegacyBuckets(player)
+    local md, buckets = ensureModifierBuckets(player)
+    if md[MODIFIER_BUCKET_VERSION_KEY] == MODIFIER_BUCKETS_VERSION then
+        return md, buckets
+    end
+
+    if not hasEntries(buckets[SPEED_BUCKET]) and md["UT_speedMod"] ~= nil and md["UT_speedMod"] ~= 0 then
+        buckets[SPEED_BUCKET][LEGACY_SPEED_SOURCE] = md["UT_speedMod"]
+    end
+
+    if not hasEntries(buckets[WORK_BUCKET]) and md["UT_workSpeedMod"] ~= nil and md["UT_workSpeedMod"] ~= 0 then
+        buckets[WORK_BUCKET][LEGACY_WORK_SOURCE] = md["UT_workSpeedMod"]
+    end
+
+    if not hasEntries(buckets[TRANSFER_BUCKET]) and md["UT_transferSpeedMult"] ~= nil and md["UT_transferSpeedMult"] ~= 1.0 then
+        buckets[TRANSFER_BUCKET][LEGACY_TRANSFER_SOURCE] = md["UT_transferSpeedMult"]
+    end
+
+    md[MODIFIER_BUCKET_VERSION_KEY] = MODIFIER_BUCKETS_VERSION
+    return md, buckets
+end
+
+local function setBucketValue(player, bucketName, sourceId, value, legacySource)
+    if not player then return end
+
+    local md, buckets = migrateLegacyBuckets(player)
+    local bucket = buckets[bucketName]
+    local key = sourceId or "__anonymous"
+
+    if legacySource then
+        bucket[legacySource] = nil
+    end
+
+    if value == nil then
+        bucket[key] = nil
+    else
+        bucket[key] = value
+    end
+
+    md[MODIFIER_BUCKET_VERSION_KEY] = MODIFIER_BUCKETS_VERSION
+end
+
+local function sumBucket(bucket)
+    local total = 0
+    for _, value in pairs(bucket) do
+        if type(value) == "number" then
+            total = total + value
+        end
+    end
+    return total
+end
+
+local function productBucket(bucket)
+    local total = 1.0
+    for _, value in pairs(bucket) do
+        if type(value) == "number" then
+            total = total * value
+        end
+    end
+    return total
+end
+
+function UTCore.refreshAggregatedModifierCache(player)
+    if not player then return nil end
+
+    local md, buckets = migrateLegacyBuckets(player)
+
+    local speedMod = clamp(sumBucket(buckets[SPEED_BUCKET]), SPEED_MIN_DELTA, SPEED_MAX_DELTA)
+    local workMod = clamp(sumBucket(buckets[WORK_BUCKET]), WORK_MIN_DELTA, WORK_MAX_DELTA)
+    local transferMult = clamp(productBucket(buckets[TRANSFER_BUCKET]), TRANSFER_MIN_MULT, TRANSFER_MAX_MULT)
+    local carryFlat = sumBucket(buckets[CARRY_FLAT_BUCKET])
+    local carryStrengthBonus = sumBucket(buckets[CARRY_STRENGTH_BUCKET])
+
+    md["UT_speedMod"] = speedMod
+    md["UT_workSpeedMod"] = workMod
+    md["UT_transferSpeedMult"] = transferMult
+    md["UT_carryFlatMod"] = carryFlat
+    md["UT_carryStrengthBonus"] = carryStrengthBonus
+
+    local carryTarget = nil
+    if hasEntries(buckets[CARRY_STRENGTH_BUCKET]) or carryFlat ~= 0 then
+        local strength = 0
+        if player.getPerkLevel then
+            strength = player:getPerkLevel(Perks.Strength)
+        end
+
+        local carryBase = hasEntries(buckets[CARRY_STRENGTH_BUCKET]) and (5 + strength) or DEFAULT_CARRY_BASE
+        carryTarget = math.max(1, math.floor(carryBase + carryStrengthBonus + carryFlat + 0.5))
+    end
+
+    md["UT_carryTargetBase"] = carryTarget
+
+    return {
+        speedMod = speedMod,
+        workMod = workMod,
+        transferSpeedMult = transferMult,
+        carryTargetBase = carryTarget,
+    }
+end
+
+function UTCore.reconcileAggregatedModifiers(player)
+    if not player then return nil end
+
+    local summary = UTCore.refreshAggregatedModifierCache(player)
+    local carryTarget = summary and summary.carryTargetBase or nil
+    if carryTarget ~= nil and player.getMaxWeightBase and player.setMaxWeightBase then
+        local current = player:getMaxWeightBase()
+        if current ~= carryTarget then
+            player:setMaxWeightBase(carryTarget)
+        end
+    end
+
+    return summary
+end
+
+-- Stores speed delta in ModData for OnPlayerUpdate handler.
+-- amount is a float delta, e.g. 0.3 for +30% speed.
+function UTCore.applySpeedModifier(player, amount, sourceId)
+    setBucketValue(player, SPEED_BUCKET, sourceId, amount, LEGACY_SPEED_SOURCE)
+    UTCore.refreshAggregatedModifierCache(player)
+end
+
+-- Stores a flat carry-weight delta for UTCore reconciliation.
+function UTCore.applyCarryWeight(player, delta, sourceId)
+    setBucketValue(player, CARRY_FLAT_BUCKET, sourceId, delta)
+    UTCore.refreshAggregatedModifierCache(player)
 end
 
 -- Stores "UT_bleedMult" in moddata. UTCore_BleedHook reads it every ~1 real second
@@ -33,8 +206,15 @@ function UTCore.applyBleedRate(player, multiplier)
 end
 
 -- Stores "UT_workSpeedMod" in moddata; used by work speed event handlers.
-function UTCore.applyWorkSpeed(player, delta)
-    player:getModData()["UT_workSpeedMod"] = delta
+function UTCore.applyWorkSpeed(player, delta, sourceId)
+    setBucketValue(player, WORK_BUCKET, sourceId, delta, LEGACY_WORK_SOURCE)
+    UTCore.refreshAggregatedModifierCache(player)
+end
+
+-- Stores a transfer/reload speed multiplier for UTCore reconciliation.
+function UTCore.applyTransferSpeedMultiplier(player, multiplier, sourceId)
+    setBucketValue(player, TRANSFER_BUCKET, sourceId, multiplier, LEGACY_TRANSFER_SOURCE)
+    UTCore.refreshAggregatedModifierCache(player)
 end
 
 -- Stores "UT_xpMult_<perkName>" = multiplier in moddata.
@@ -95,9 +275,9 @@ end
 --- applyStrengthCarryWeight(player, bonus)
 -- Sets carry weight dynamically based on Strength: base = 5 + Strength + bonus.
 -- Call every OnPlayerUpdate tick for strength-scaled carry weight traits.
-function UTCore.applyStrengthCarryWeight(player, bonus)
-    local strength = player:getPerkLevel(Perks.Strength)
-    player:setMaxWeightBase(5 + strength + bonus)
+function UTCore.applyStrengthCarryWeight(player, bonus, sourceId)
+    setBucketValue(player, CARRY_STRENGTH_BUCKET, sourceId, bonus)
+    UTCore.refreshAggregatedModifierCache(player)
 end
 
 --- applyStatFloor(player, stat, floor)
@@ -260,6 +440,26 @@ function UTCore.syncVehicleTrait(player, vehicle)
     end
 
     UTCore.applyVehicleMod(player, selected.stateKey, selected.mods, targetVehicle)
+end
+
+if not UTCore._modifierAggregationEventsRegistered then
+    local function onCreatePlayer(_playerIndex, player)
+        UTCore.reconcileAggregatedModifiers(player)
+    end
+
+    local function onPlayerUpdate(player)
+        UTCore.reconcileAggregatedModifiers(player)
+    end
+
+    if Events and Events.OnCreatePlayer then
+        Events.OnCreatePlayer.Add(onCreatePlayer)
+    end
+
+    if Events and Events.OnPlayerUpdate then
+        Events.OnPlayerUpdate.Add(onPlayerUpdate)
+    end
+
+    UTCore._modifierAggregationEventsRegistered = true
 end
 
 if not UTCore._vehicleTraitEventsRegistered then

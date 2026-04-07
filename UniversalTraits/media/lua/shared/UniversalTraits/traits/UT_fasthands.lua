@@ -3,9 +3,18 @@
 
 local TRAIT_ID = "UniversalTraits:UT_fasthands"
 
-local function onNewGame(player)
+local function applyTrait(player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
-    player:getModData()["UT_transferSpeedMult"] = 0.6
+    UTCore.applyTransferSpeedMultiplier(player, 0.6, TRAIT_ID)
+end
+
+local function onNewGame(player)
+    applyTrait(player)
+end
+
+local function onCreatePlayer(_playerIndex, player)
+    applyTrait(player)
 end
 
 Events.OnNewGame.Add(onNewGame)
+Events.OnCreatePlayer.Add(onCreatePlayer)
