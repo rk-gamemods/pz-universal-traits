@@ -20,9 +20,10 @@ end
 local function onAddXP(player, perk, amount)
     if not player or not perk or not amount or amount <= 0 then return end
     local md = player:getModData()
+    local perkName = tostring(perk)
 
     -- 1. XP disable: cancel the full amount
-    if md["UT_xpDisable_" .. perk] then
+    if md["UT_xpDisable_" .. perkName] then
         player:getXp():AddXP(perk, -amount, false, false, false)
         return
     end
@@ -44,7 +45,7 @@ local function onAddXP(player, perk, amount)
     -- 3. XP multiplier: add the bonus delta
     local mult = 1.0
     local globalMult = md["UT_xpMult_All"]
-    local perkMult = md["UT_xpMult_" .. perk]
+    local perkMult = md["UT_xpMult_" .. perkName]
     if globalMult and globalMult ~= 1.0 then
         mult = mult * globalMult
     end
