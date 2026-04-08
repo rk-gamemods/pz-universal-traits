@@ -13,16 +13,18 @@ Reports:
 Usage:
     python tools/verify_pz_api.py
     python tools/verify_pz_api.py --verbose
-    python tools/verify_pz_api.py --json  # machine-readable output
+    python tools/verify_pz_api.py --json  # machine-readable summary
+    python tools/verify_pz_api.py --inventory-out reports/pz_api_inventory.json
 """
 
-import os
+import argparse
 import re
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from collections import defaultdict
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass
 from typing import Optional
 
 # ============================================================
@@ -34,6 +36,7 @@ UTMODS_ROOT = SCRIPT_DIR.parent
 PZ_CODEBASE = UTMODS_ROOT.parent / "PZCodebase"
 PZ_JAVA_ROOT = PZ_CODEBASE / "Java" / "source"
 PZ_LUA_ROOT = PZ_CODEBASE / "Lua"
+DEFAULT_BASELINE_FILE = SCRIPT_DIR / "pz_api_baseline.json"
 
 # Mod source directories to scan
 MOD_LUA_DIRS = [
@@ -51,6 +54,7 @@ MOD_LUA_DIRS = [
 
 # Java class files: relative to PZ_JAVA_ROOT
 JAVA_CLASS_FILES = {
+    "GameTime": "zombie/GameTime.java",
     "IsoGameCharacter": "zombie/characters/IsoGameCharacter.java",
     "IsoPlayer": "zombie/characters/IsoPlayer.java",
     "IsoZombie": "zombie/characters/IsoZombie.java",
@@ -102,10 +106,13 @@ RECEIVER_MAP = {
     "inv":         ["ItemContainer"],
     "inventory":   ["ItemContainer"],
     "container":   ["ItemContainer"],
+    "containerObj": ["IsoObject"],
 
     # Item hierarchy
     "item":        ["Literature", "InventoryItem", "Food", "HandWeapon", "Clothing"],
     "food":        ["Food", "InventoryItem"],
+    "fish":        ["Food", "InventoryItem"],
+    "sourceItem":  ["InventoryItem"],
     "weapon":      ["HandWeapon", "InventoryItem"],
     "primary":     ["HandWeapon", "InventoryItem"],
     "secondary":   ["HandWeapon", "InventoryItem"],
@@ -124,6 +131,7 @@ RECEIVER_MAP = {
     "parts":       ["__java_list"],
     "spottedList": ["__java_list"],
     "mutexList":   ["__java_list"],
+    "backpacks":   ["__java_list"],
 
     # Vehicle
     "vehicle":     ["BaseVehicle"],
@@ -134,6 +142,8 @@ RECEIVER_MAP = {
 
     # Climate
     "cm":          ["ClimateManager"],
+    "gt":          ["GameTime"],
+    "gti":         ["GameTime"],
 
     # Zombie
     "zombie":      ["IsoZombie", "IsoGameCharacter"],
@@ -154,10 +164,14 @@ RECEIVER_MAP = {
     "md":          ["__skip"],
     "key":         ["__skip"],   # string methods
     "wtype":       ["__skip"],   # string methods
-    "gt":          ["__skip"],   # trait object
+    "action":      ["__skip"],
+    "actionName":  ["__skip"],
+    "actionType":  ["__skip"],
+    "cats":        ["__skip"],
     "trait":       ["__skip"],   # trait definition
     "traitDefinition": ["__skip"],
     "CharacterCreationProfession": ["__skip"],
+    "ENDURANCE":   ["CharacterStat"],
 }
 
 # Methods that are Lua built-ins or PZ global utilities, not class methods
@@ -717,9 +731,297 @@ def make_relative(filepath: str) -> str:
         return filepath
 
 
+def normalize_rel_path(filepath: str) -> str:
+    """Make a path relative to UTMODS_ROOT using forward slashes."""
+    return make_relative(filepath).replace("\\", "/")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Verify UT mod API usage against the decompiled PZ codebase."
+    )
+    parser.add_argument("-v", "--verbose", action="store_true", help="Show extra output")
+    parser.add_argument("--json", dest="json_output", action="store_true", help="Emit machine-readable summary JSON")
+    parser.add_argument(
+        "--inventory-json",
+        action="store_true",
+        help="Include the full machine-readable inventory payload in JSON output",
+    )
+    parser.add_argument(
+        "--inventory-out",
+        type=Path,
+        help="Write the full machine-readable inventory payload to a JSON file",
+    )
+    parser.add_argument(
+        "--baseline-file",
+        type=Path,
+        default=DEFAULT_BASELINE_FILE,
+        help=f"Baseline snapshot path (default: {DEFAULT_BASELINE_FILE})",
+    )
+    parser.add_argument(
+        "--compare-baseline",
+        action="store_true",
+        help="Compare the current inventory against the stored baseline snapshot",
+    )
+    parser.add_argument(
+        "--write-baseline",
+        action="store_true",
+        help="Write the current green inventory as the baseline snapshot",
+    )
+    args = parser.parse_args()
+    if args.inventory_json and not args.json_output:
+        parser.error("--inventory-json requires --json")
+    return args
+
+
+def load_pzcodebase_metadata() -> dict:
+    version_file = PZ_CODEBASE / "VERSION.json"
+    if not version_file.exists():
+        return {}
+    try:
+        return json.loads(version_file.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+
+
+def classify_owner(rel_path: str) -> dict:
+    path = Path(rel_path)
+    stem = path.stem
+
+    if rel_path.startswith("UT_CORE/media/lua/shared/UTCore/"):
+        return {"kind": "ut_core_module", "id": stem, "file": rel_path}
+    if rel_path.startswith("UniversalTraits/media/lua/shared/UniversalTraits/traits/"):
+        return {"kind": "trait", "id": stem, "file": rel_path}
+    if rel_path == "UniversalTraits/media/registries.lua":
+        return {"kind": "registration", "id": "registries", "file": rel_path}
+    if rel_path == "UniversalTraits/media/scripts/UT_character_traits.txt":
+        return {"kind": "script_definition", "id": "UT_character_traits", "file": rel_path}
+    if rel_path.endswith("/UT_MET.lua"):
+        return {"kind": "runtime_support", "id": "UT_MET", "file": rel_path}
+    if rel_path.startswith("UniversalTraits/media/lua/shared/UniversalTraits/"):
+        return {"kind": "runtime_support", "id": stem, "file": rel_path}
+    return {"kind": "source_file", "id": stem, "file": rel_path}
+
+
+def infer_surface_name(result: VerifyResult) -> Optional[str]:
+    if result.matched_class:
+        return result.matched_class
+
+    candidates = RECEIVER_MAP.get(result.call.receiver, [])
+    for candidate in candidates:
+        if not candidate.startswith("__"):
+            return candidate
+    return None
+
+
+def build_inventory_entry(result: VerifyResult) -> dict:
+    rel_file = normalize_rel_path(result.call.file)
+    owner = classify_owner(rel_file)
+    verification_source = "script_xpboosts" if result.call.receiver == "XPBoosts" else "pz_api_scan"
+    verification_kind = "script_xpboosts" if result.call.receiver == "XPBoosts" else "method_call"
+
+    return {
+        "id": f"{rel_file}:{result.call.line_num}:{result.call.receiver}:{result.call.method}",
+        "relative_file": rel_file,
+        "line": result.call.line_num,
+        "receiver": result.call.receiver,
+        "method": result.call.method,
+        "arg_count": result.call.arg_count,
+        "status": result.status,
+        "matched_class": result.matched_class,
+        "surface_name": infer_surface_name(result),
+        "matched_method": result.matched_method,
+        "detail": result.detail,
+        "line_text": result.call.line_text,
+        "owner": owner,
+        "verification_source": verification_source,
+        "verification_kind": verification_kind,
+    }
+
+
+def build_inventory(results: list[VerifyResult], pz_metadata: dict) -> dict:
+    call_sites = [build_inventory_entry(result) for result in results]
+
+    unique_surfaces = {}
+    for entry in call_sites:
+        key = (
+            entry.get("surface_name") or entry["receiver"],
+            entry["method"],
+            entry["verification_kind"],
+        )
+        aggregate = unique_surfaces.setdefault(
+            key,
+            {
+                "surface_name": entry.get("surface_name"),
+                "receiver": entry["receiver"],
+                "method": entry["method"],
+                "verification_kind": entry["verification_kind"],
+                "statuses": set(),
+                "owners": set(),
+                "files": set(),
+                "occurrence_count": 0,
+            },
+        )
+        aggregate["statuses"].add(entry["status"])
+        aggregate["owners"].add(f"{entry['owner']['kind']}:{entry['owner']['id']}")
+        aggregate["files"].add(entry["relative_file"])
+        aggregate["occurrence_count"] += 1
+
+    unique_surface_list = []
+    for aggregate in unique_surfaces.values():
+        unique_surface_list.append(
+            {
+                "surface_name": aggregate["surface_name"],
+                "receiver": aggregate["receiver"],
+                "method": aggregate["method"],
+                "verification_kind": aggregate["verification_kind"],
+                "statuses": sorted(aggregate["statuses"]),
+                "owners": sorted(aggregate["owners"]),
+                "files": sorted(aggregate["files"]),
+                "occurrence_count": aggregate["occurrence_count"],
+            }
+        )
+
+    return {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "pzc_version": pz_metadata.get("game_build"),
+        "pzc_decompiled_at": pz_metadata.get("decompiled_at"),
+        "summary": {
+            "call_sites": len(call_sites),
+            "unique_surfaces": len(unique_surface_list),
+            "ok": sum(1 for entry in call_sites if entry["status"] == "OK"),
+            "warn": sum(1 for entry in call_sites if entry["status"] == "WARN"),
+            "fail": sum(1 for entry in call_sites if entry["status"] == "FAIL"),
+            "skip": sum(1 for entry in call_sites if entry["status"] == "SKIP"),
+        },
+        "call_sites": call_sites,
+        "unique_surfaces": sorted(unique_surface_list, key=lambda item: (item["surface_name"] or item["receiver"], item["method"])),
+    }
+
+
+def write_inventory(path: Path, inventory: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(inventory, indent=2), encoding="utf-8")
+
+
+def build_baseline_snapshot(inventory: dict, pz_metadata: dict) -> dict:
+    return {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "pzc_version": pz_metadata.get("game_build"),
+        "pzc_decompiled_at": pz_metadata.get("decompiled_at"),
+        "pzc_layer_hashes": pz_metadata.get("layer_hashes") or {},
+        "summary": inventory.get("summary", {}),
+        "unique_surfaces": inventory.get("unique_surfaces", []),
+    }
+
+
+def write_baseline(path: Path, baseline: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(baseline, indent=2), encoding="utf-8")
+
+
+def load_baseline(path: Path) -> Optional[dict]:
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def surface_key(surface: dict) -> tuple[str, str, str]:
+    return (
+        surface.get("surface_name") or surface["receiver"],
+        surface["method"],
+        surface["verification_kind"],
+    )
+
+
+def simplify_surface(surface: dict) -> dict:
+    return {
+        "surface_name": surface.get("surface_name"),
+        "receiver": surface["receiver"],
+        "method": surface["method"],
+        "verification_kind": surface["verification_kind"],
+        "statuses": surface.get("statuses", []),
+        "owners": surface.get("owners", []),
+        "files": surface.get("files", []),
+    }
+
+
+def compare_to_baseline(inventory: dict, pz_metadata: dict, baseline: Optional[dict]) -> dict:
+    current_hashes = pz_metadata.get("layer_hashes") or {}
+
+    if baseline is None:
+        return {
+            "status": "baseline_missing",
+            "baseline_file_present": False,
+            "pz_shape_changed": False,
+            "new_breakages": [],
+            "removed_breakages": [],
+            "new_surfaces": [],
+            "removed_surfaces": [],
+            "status_changes": [],
+        }
+
+    baseline_surfaces = {surface_key(surface): surface for surface in baseline.get("unique_surfaces", [])}
+    current_surfaces = {surface_key(surface): surface for surface in inventory.get("unique_surfaces", [])}
+
+    new_keys = sorted(current_surfaces.keys() - baseline_surfaces.keys())
+    removed_keys = sorted(baseline_surfaces.keys() - current_surfaces.keys())
+
+    status_changes = []
+    for key in sorted(current_surfaces.keys() & baseline_surfaces.keys()):
+        current = current_surfaces[key]
+        previous = baseline_surfaces[key]
+        if sorted(current.get("statuses", [])) != sorted(previous.get("statuses", [])):
+            status_changes.append({
+                "key": key,
+                "before": previous.get("statuses", []),
+                "after": current.get("statuses", []),
+                "surface": simplify_surface(current),
+            })
+
+    def breakage_keys(surface_map: dict) -> set[tuple[str, str, str]]:
+        return {
+            key
+            for key, surface in surface_map.items()
+            if "FAIL" in surface.get("statuses", []) or "WARN" in surface.get("statuses", [])
+        }
+
+    current_breakages = breakage_keys(current_surfaces)
+    baseline_breakages = breakage_keys(baseline_surfaces)
+
+    new_breakages = sorted(current_breakages - baseline_breakages)
+    removed_breakages = sorted(baseline_breakages - current_breakages)
+    pz_shape_changed = (baseline.get("pzc_layer_hashes") or {}) != current_hashes
+
+    if new_breakages:
+        status = "tracked_api_breakage"
+    elif not pz_shape_changed and not new_keys and not removed_keys and not status_changes:
+        status = "no_game_shape_change"
+    elif pz_shape_changed and not new_keys and not removed_keys and not status_changes:
+        status = "shape_change_no_mod_exposure"
+    elif not pz_shape_changed:
+        status = "mod_surface_change"
+    else:
+        status = "shape_change_with_mod_surface_change"
+
+    return {
+        "status": status,
+        "baseline_file_present": True,
+        "pz_shape_changed": pz_shape_changed,
+        "baseline_pzc_version": baseline.get("pzc_version"),
+        "current_pzc_version": pz_metadata.get("game_build"),
+        "new_breakages": [simplify_surface(current_surfaces[key]) for key in new_breakages],
+        "removed_breakages": [simplify_surface(baseline_surfaces[key]) for key in removed_breakages],
+        "new_surfaces": [simplify_surface(current_surfaces[key]) for key in new_keys],
+        "removed_surfaces": [simplify_surface(baseline_surfaces[key]) for key in removed_keys],
+        "status_changes": status_changes,
+    }
+
+
 def main():
-    verbose = "--verbose" in sys.argv or "-v" in sys.argv
-    json_output = "--json" in sys.argv
+    args = parse_args()
+    verbose = args.verbose
+    json_output = args.json_output
 
     if not json_output:
         print("=" * 70)
@@ -733,6 +1035,8 @@ def main():
     if not PZ_CODEBASE.exists():
         print(f"FATAL: PZ codebase not found at {PZ_CODEBASE}", file=sys.stderr)
         sys.exit(2)
+
+    pz_metadata = load_pzcodebase_metadata()
 
     # Phase 1: Build Java API index
     if not json_output:
@@ -784,6 +1088,20 @@ def main():
     xp_results = verify_xpboosts(script_file, valid_perks)
     results.extend(xp_results)
 
+    inventory = build_inventory(results, pz_metadata)
+
+    baseline_result = None
+    if args.compare_baseline:
+        try:
+            baseline = load_baseline(args.baseline_file)
+        except json.JSONDecodeError as exc:
+            print(f"FATAL: invalid baseline JSON: {exc}", file=sys.stderr)
+            sys.exit(2)
+        baseline_result = compare_to_baseline(inventory, pz_metadata, baseline)
+
+    if args.inventory_out:
+        write_inventory(args.inventory_out, inventory)
+
     # Deduplicate: same (receiver, method, status) only needs one report
     seen_keys = set()
     unique_results = []
@@ -800,6 +1118,12 @@ def main():
     skips = [r for r in unique_results if r.status == "SKIP"]
 
     # JSON output
+    if args.write_baseline:
+        if fails:
+            print("FATAL: refusing to write baseline with FAIL results", file=sys.stderr)
+            sys.exit(2)
+        write_baseline(args.baseline_file, build_baseline_snapshot(inventory, pz_metadata))
+
     if json_output:
         output = {
             "summary": {
@@ -814,7 +1138,7 @@ def main():
                 {
                     "receiver": r.call.receiver,
                     "method": r.call.method,
-                    "file": make_relative(r.call.file),
+                    "file": normalize_rel_path(r.call.file),
                     "line": r.call.line_num,
                     "detail": r.detail,
                 }
@@ -824,16 +1148,33 @@ def main():
                 {
                     "receiver": r.call.receiver,
                     "method": r.call.method,
-                    "file": make_relative(r.call.file),
+                    "file": normalize_rel_path(r.call.file),
                     "line": r.call.line_num,
                     "detail": r.detail,
                     "matched_class": r.matched_class,
                 }
                 for r in warns
             ],
+            "skips": [
+                {
+                    "receiver": r.call.receiver,
+                    "method": r.call.method,
+                    "file": normalize_rel_path(r.call.file),
+                    "line": r.call.line_num,
+                    "detail": r.detail,
+                }
+                for r in skips
+            ],
         }
+        if baseline_result is not None:
+            output["baseline"] = baseline_result
+        if args.inventory_json:
+            output["inventory"] = inventory
         print(json.dumps(output, indent=2))
-        sys.exit(1 if fails else 0)
+        should_fail = bool(fails)
+        if args.compare_baseline and baseline_result and baseline_result["status"] in {"baseline_missing", "tracked_api_breakage"}:
+            should_fail = True
+        sys.exit(1 if should_fail else 0)
 
     # Text output
     if fails:
@@ -864,6 +1205,25 @@ def main():
                 print(f"        Line: {r.call.line_text}")
             print()
 
+    if baseline_result is not None:
+        print()
+        print("=" * 70)
+        print("UPDATE IMPACT")
+        print("=" * 70)
+        print(f"  Classification:             {baseline_result['status']}")
+        print(f"  PZ shape changed:           {baseline_result['pz_shape_changed']}")
+        print(f"  New breakages:              {len(baseline_result['new_breakages'])}")
+        print(f"  Removed breakages:          {len(baseline_result['removed_breakages'])}")
+        print(f"  New surfaces:               {len(baseline_result['new_surfaces'])}")
+        print(f"  Removed surfaces:           {len(baseline_result['removed_surfaces'])}")
+        print(f"  Status changes:             {len(baseline_result['status_changes'])}")
+        if baseline_result["status"] == "baseline_missing":
+            print(f"  Baseline file:              {args.baseline_file} (missing)")
+        elif baseline_result["new_breakages"]:
+            print("  First new breakage:")
+            first = baseline_result["new_breakages"][0]
+            print(f"    {first['receiver']}:{first['method']} statuses={','.join(first['statuses'])}")
+
     if verbose and oks:
         print()
         print(f"OK ({len(oks)}) — Verified successfully")
@@ -882,10 +1242,18 @@ def main():
     print(f"  WARN (signature diff):     {len(warns)}")
     print(f"  FAIL (missing method):     {len(fails)}")
     print(f"  SKIP (non-PZ receiver):    {len(skips)}")
+    if args.inventory_out:
+        print(f"  Inventory file:            {args.inventory_out}")
     print()
 
     if fails:
         print(f"EXIT CODE: 1 -- {len(fails)} FAILURES require attention")
+        sys.exit(1)
+    elif args.compare_baseline and baseline_result and baseline_result["status"] == "baseline_missing":
+        print("EXIT CODE: 1 -- baseline snapshot is missing")
+        sys.exit(1)
+    elif args.compare_baseline and baseline_result and baseline_result["status"] == "tracked_api_breakage":
+        print("EXIT CODE: 1 -- new API breakages relative to baseline")
         sys.exit(1)
     elif warns:
         print(f"EXIT CODE: 0 -- {len(warns)} warnings (review recommended)")

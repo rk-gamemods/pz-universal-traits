@@ -41,6 +41,15 @@ Two-mod layout targeting Project Zomboid Build 42 (Kahlua/Lua 5.x):
 - **Engine contract tests added:** 22 tests parse the PZ Java source to verify the exact engine patterns our fix depends on. If a PZ update changes `setX()`, `setNextX()`, `preupdate()`, `moveUnmoddedInternal()`, or the frame pipeline order, these tests will fail and flag it immediately.
 - Conflict note: TchernoLib remains a structural risk because it uses the same fragile setX/setY rewriting pattern, but there is still no proof that its speed framework is active in the failing run.
 
+## Update-Safe Test Gate (2026-04-07)
+
+- `tools/verify_pz_api.py` builds a machine-readable PZ API inventory and compares the current surface against `tools/pz_api_baseline.json`. No smoke manifest — coverage is now handled by `UT_SmokePings.lua`.
+- `tools/generate_smoke_pings.py` reads `tools/pz_api_inventory.json` and auto-generates `UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua` — unguarded API pings that fire at OnGameStart. If any method is missing, PZ's error handler reports it immediately.
+- `tools/check_smoke_log.py` scans the PZ DebugLog for UT-related runtime errors (informational only, always exits 0).
+- `tools/run_update_safe_gate.py` is the one-command local gate: UT_CORE tests, UniversalTraits tests, PZ API verification + baseline comparison, smoke ping generation, and DebugLog health check. Gate pass/fail is based only on tests + verifier.
+- Current verified baseline: `tools/pz_api_baseline.json` is green against `PZCodebase` build `svn-964`, the verifier has `0 FAIL / 15 WARN` (WARNs are expected from zero-arg smoke pings).
+- The verifier still has a smaller triage set of explicit skips/unknown receivers (for example generic timed-action variables and a tree object path). Those are not yet part of the authoritative tracked surface and should be reduced over time rather than ignored.
+
 ---
 
 ## Repo Structure
@@ -64,6 +73,13 @@ UniversalTraits/                          ← repo root
     test/UTTestMocks.lua                  ← mock CharacterTrait
   planning/                               ← implementation plans
   research/                               ← source mod research
+  tools/
+    verify_pz_api.py                      ← offline PZ API surface verifier
+    generate_smoke_pings.py               ← generates UT_SmokePings.lua from inventory
+    check_smoke_log.py                    ← scans DebugLog for UT runtime errors
+    run_update_safe_gate.py               ← one-command update-safety gate
+    pz_api_inventory.json                 ← generated API surface inventory
+    pz_api_baseline.json                  ← verified baseline snapshot
   PRD.md
   AGENTS.md                               ← this file
 ```
@@ -79,7 +95,17 @@ Run from repo root (`C:\Users\Admin\Documents\GIT\GameMods\PZMods\UTMods`):
 "C:\Users\Admin\AppData\Local\Programs\Lua\bin\lua.exe" UniversalTraits/test/run_tests.lua
 ```
 
-**Current passing counts:** 189 (UT_CORE) + 240 (UniversalTraits) = 429 passing.
+**Current passing counts:** 193 (UT_CORE) + 250 (UniversalTraits) = 443 passing.
+
+Additional local update-safety commands:
+
+```bash
+python tools/verify_pz_api.py --json --inventory-out tools/pz_api_inventory.json
+python tools/verify_pz_api.py --write-baseline --baseline-file tools/pz_api_baseline.json
+python tools/generate_smoke_pings.py --dry-run
+python tools/check_smoke_log.py --json
+python tools/run_update_safe_gate.py
+```
 
 The UniversalTraits suite now includes a cross-file consistency audit that fails when registries, script definitions, translation keys, or `traits/UT_*.lua` files drift out of sync.
 
@@ -90,8 +116,8 @@ The UniversalTraits suite now includes a cross-file consistency audit that fails
 Run from repo root after ANY code change before in-game testing:
 
 ```powershell
-Copy-Item -Recurse -Force UT_CORE\media\* C:\Users\Admin\Zomboid\mods\UT_CORE\42\media\
-Copy-Item -Recurse -Force UniversalTraits\media\* C:\Users\Admin\Zomboid\mods\UniversalTraits\42\media\
+robocopy UT_CORE\release\UT_CORE C:\Users\Admin\Zomboid\mods\UT_CORE /MIR /NFL /NDL /NJH /NJS /NP
+robocopy UniversalTraits\release\UniversalTraits C:\Users\Admin\Zomboid\mods\UniversalTraits /MIR /NFL /NDL /NJH /NJS /NP
 ```
 
 **Note:** The live mod folder structure is `Zomboid\mods\ModName\42\media\`. Copying to the mod root (without `42\media\`) is **silent failure** — PZ B42 only reads from `42\media\`.

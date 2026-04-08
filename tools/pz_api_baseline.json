@@ -1,0 +1,5091 @@
+{
+  "generated_at": "2026-04-08T03:19:47.616586+00:00",
+  "pzc_version": "svn-964",
+  "pzc_decompiled_at": "2026-04-01T11:24:07",
+  "pzc_layer_hashes": {
+    "java": "1b87f6e39e851a47e015e594411863a0a812a23fcd3c7a5b71fc2d9840b2d074",
+    "lua": "740271f6e2f8145d536eca4988885f91901d487fe8be286b633e7a372e05a79e",
+    "media": "69ef299aa898cd3ff5b416256ec8dd5a16635d0a3eaf728e0eb74df3e97d0581"
+  },
+  "summary": {
+    "call_sites": 1115,
+    "unique_surfaces": 254,
+    "ok": 1026,
+    "warn": 16,
+    "fail": 0,
+    "skip": 73
+  },
+  "unique_surfaces": [
+    {
+      "surface_name": "BaseVehicle",
+      "receiver": "vehicle",
+      "method": "getBrakingForce",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_StatModifiers"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "BaseVehicle",
+      "receiver": "vehicle",
+      "method": "getEngineLoudness",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_StatModifiers"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "BaseVehicle",
+      "receiver": "vehicle",
+      "method": "getEnginePower",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_StatModifiers"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "BaseVehicle",
+      "receiver": "vehicle",
+      "method": "getEngineQuality",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_StatModifiers"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "BaseVehicle",
+      "receiver": "vehicle",
+      "method": "getInitialMass",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_StatModifiers"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "BaseVehicle",
+      "receiver": "vehicle",
+      "method": "getMass",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_StatModifiers"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "BaseVehicle",
+      "receiver": "vehicle",
+      "method": "getMaxSpeed",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_StatModifiers"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "BaseVehicle",
+      "receiver": "vehicle",
+      "method": "getModData",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_StatModifiers"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "BaseVehicle",
+      "receiver": "vehicle",
+      "method": "setBrakingForce",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_StatModifiers"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "BaseVehicle",
+      "receiver": "vehicle",
+      "method": "setEngineFeature",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_StatModifiers"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "BaseVehicle",
+      "receiver": "vehicle",
+      "method": "setInitialMass",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_StatModifiers"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "BaseVehicle",
+      "receiver": "vehicle",
+      "method": "setMass",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_StatModifiers"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "BaseVehicle",
+      "receiver": "vehicle",
+      "method": "setMaxSpeed",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_StatModifiers"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "BaseVehicle",
+      "receiver": "vehicle",
+      "method": "updateTotalMass",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_StatModifiers"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "BodyDamage",
+      "receiver": "bodyDamage",
+      "method": "getApparentInfectionLevel",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_immuneresponse",
+        "trait:UT_immunocompromised",
+        "trait:UT_superimmune"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_immuneresponse.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_immunocompromised.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_superimmune.lua"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "BodyDamage",
+      "receiver": "bd",
+      "method": "getBodyPart",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_badteeth",
+        "trait:UT_flimsy",
+        "ut_core_module:UTCore_FractureHook",
+        "ut_core_module:UTCore_SpawnEffects"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_FractureHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_badteeth.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_flimsy.lua"
+      ],
+      "occurrence_count": 9
+    },
+    {
+      "surface_name": "BodyDamage",
+      "receiver": "bd",
+      "method": "getBodyParts",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_BleedDecayHook",
+        "ut_core_module:UTCore_BleedDrainHook",
+        "ut_core_module:UTCore_BleedHook",
+        "ut_core_module:UTCore_SpawnEffects"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua"
+      ],
+      "occurrence_count": 4
+    },
+    {
+      "surface_name": "BodyDamage",
+      "receiver": "bd",
+      "method": "getHealthFromFoodTimer",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_badteeth"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_badteeth.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "BodyDamage",
+      "receiver": "bd",
+      "method": "getNumPartsBleeding",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_BleedDrainHook",
+        "ut_core_module:UTCore_BleedHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedHook.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "BodyDamage",
+      "receiver": "bodyDamage",
+      "method": "getPanicReductionValue",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_nervouswreck"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_nervouswreck.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "BodyDamage",
+      "receiver": "bodyDamage",
+      "method": "setPanicReductionValue",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_nervouswreck"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_nervouswreck.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "BodyPart",
+      "receiver": "part",
+      "method": "AddHealth",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_BleedHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedHook.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "BodyPart",
+      "receiver": "part",
+      "method": "IsBleedingStemmed",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_BleedDrainHook",
+        "ut_core_module:UTCore_BleedHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedHook.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "BodyPart",
+      "receiver": "part",
+      "method": "ReduceHealth",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_BleedHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedHook.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "BodyPart",
+      "receiver": "part",
+      "method": "bandaged",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_BleedDecayHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "BodyPart",
+      "receiver": "part",
+      "method": "bleeding",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_BleedDrainHook",
+        "ut_core_module:UTCore_BleedHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedHook.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "BodyPart",
+      "receiver": "head",
+      "method": "getAdditionalPain",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_badteeth",
+        "trait:UT_sensitivestomach"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_badteeth.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sensitivestomach.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "BodyPart",
+      "receiver": "part",
+      "method": "getBleedingTime",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_BleedDecayHook",
+        "ut_core_module:UTCore_BleedDrainHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "BodyPart",
+      "receiver": "part",
+      "method": "getFractureTime",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_FractureHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_FractureHook.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "BodyPart",
+      "receiver": "part",
+      "method": "getType",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_BleedDrainHook",
+        "ut_core_module:UTCore_BleedHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedHook.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "BodyPart",
+      "receiver": "head",
+      "method": "setAdditionalPain",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_badteeth",
+        "trait:UT_flimsy",
+        "trait:UT_sensitivestomach"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_badteeth.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_flimsy.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sensitivestomach.lua"
+      ],
+      "occurrence_count": 8
+    },
+    {
+      "surface_name": "BodyPart",
+      "receiver": "part",
+      "method": "setBleedingTime",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_BleedDecayHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "CharacterCreationProfession",
+      "method": "doTestForMutuallyExclusiveTraits",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "source_file:UTCore_CharacterCreationMETDebug"
+      ],
+      "files": [
+        "UT_CORE/media/lua/client/UTCore/UTCore_CharacterCreationMETDebug.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "CharacterStat",
+      "receiver": "ENDURANCE",
+      "method": "getMaximumValue",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_fast",
+        "trait:UT_hardy",
+        "trait:UT_indefatigable",
+        "trait:UT_secondwind"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fast.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_hardy.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_indefatigable.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_secondwind.lua"
+      ],
+      "occurrence_count": 5
+    },
+    {
+      "surface_name": "ClimateManager",
+      "receiver": "cm",
+      "method": "getCloudIntensity",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_weathersensitive"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_weathersensitive.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "ClimateManager",
+      "receiver": "cm",
+      "method": "getPrecipitationIntensity",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_weathersensitive"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_weathersensitive.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Clothing",
+      "receiver": "item",
+      "method": "getCombatSpeedModifier",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_fitted"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fitted.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Clothing",
+      "receiver": "item",
+      "method": "getRunSpeedModifier",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_fitted"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fitted.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Clothing",
+      "receiver": "item",
+      "method": "setCombatSpeedModifier",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_fitted"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fitted.lua"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "Clothing",
+      "receiver": "item",
+      "method": "setRunSpeedModifier",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_fitted"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fitted.lua"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "Food",
+      "receiver": "food",
+      "method": "getBoredomChange",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_gourmand"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gourmand.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Food",
+      "receiver": "item",
+      "method": "getCalories",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_ItemConsumptionHooks",
+        "trait:UT_gordanite"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gordanite.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "Food",
+      "receiver": "food",
+      "method": "getHungChange",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_gourmand"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gourmand.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Food",
+      "receiver": "item",
+      "method": "getHungerChange",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_ItemConsumptionHooks"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Food",
+      "receiver": "food",
+      "method": "getModData",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_gourmand",
+        "trait:UT_wildsman"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gourmand.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_wildsman.lua"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "Food",
+      "receiver": "food",
+      "method": "getUnhappyChange",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_gourmand"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gourmand.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Food",
+      "receiver": "food",
+      "method": "setBoredomChange",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_gourmand"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gourmand.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "Food",
+      "receiver": "item",
+      "method": "setCalories",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_gordanite"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gordanite.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Food",
+      "receiver": "food",
+      "method": "setHungChange",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_gourmand"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gourmand.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "Food",
+      "receiver": "food",
+      "method": "setUnhappyChange",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_gourmand"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gourmand.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "GameTime",
+      "receiver": "gt",
+      "method": "getMultiplier",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_ReadingHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "weapon",
+      "method": "getAimingTime",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_gunspecialist_III"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gunspecialist_III.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "weapon",
+      "method": "getConditionLowerChance",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_improviser"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_improviser.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "weapon",
+      "method": "getCriticalChance",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_axes",
+        "trait:UT_cleaver",
+        "trait:UT_long_blades",
+        "trait:UT_long_blunts",
+        "trait:UT_onehanded_axes",
+        "trait:UT_prospear",
+        "trait:UT_twohanded_axes",
+        "trait:UT_twohanded_blades",
+        "trait:UT_twohanded_blunts"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_axes.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_cleaver.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_long_blades.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_long_blunts.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_onehanded_axes.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_prospear.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_axes.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_blades.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_blunts.lua"
+      ],
+      "occurrence_count": 18
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "weapon",
+      "method": "getHitChance",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_sharpshooter"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sharpshooter.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "weapon",
+      "method": "getMaxRange",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_sharpshooter"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sharpshooter.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "weapon",
+      "method": "getModData",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_axes",
+        "trait:UT_cleaver",
+        "trait:UT_gunspecialist_III",
+        "trait:UT_improviser",
+        "trait:UT_long_blades",
+        "trait:UT_long_blunts",
+        "trait:UT_onehanded_axes",
+        "trait:UT_prospear",
+        "trait:UT_sharpshooter",
+        "trait:UT_twohanded_axes",
+        "trait:UT_twohanded_blades",
+        "trait:UT_twohanded_blunts"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_axes.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_cleaver.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gunspecialist_III.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_improviser.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_long_blades.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_long_blunts.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_onehanded_axes.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_prospear.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sharpshooter.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_axes.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_blades.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_blunts.lua"
+      ],
+      "occurrence_count": 12
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "weapon",
+      "method": "getReloadTime",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_gunspecialist_III"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gunspecialist_III.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "weapon",
+      "method": "getSubCategory",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_cleaver",
+        "trait:UT_long_blades",
+        "trait:UT_long_blunts",
+        "trait:UT_twohanded_blades",
+        "trait:UT_twohanded_blunts"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_cleaver.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_long_blades.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_long_blunts.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_blades.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_blunts.lua"
+      ],
+      "occurrence_count": 5
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "weapon",
+      "method": "getType",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_actionhero",
+        "trait:UT_martial",
+        "ut_core_module:UTCore_MeleeDelayHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_actionhero.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_martial.lua"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "primary",
+      "method": "isJammed",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_gunspecialist_III"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gunspecialist_III.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "weapon",
+      "method": "isOfWeaponCategory",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_API"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "weapon",
+      "method": "isRanged",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_sharpshooter",
+        "ut_core_module:UTCore_MeleeDelayHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sharpshooter.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "weapon",
+      "method": "isTwoHandWeapon",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_onehanded_axes",
+        "trait:UT_twohanded_axes",
+        "trait:UT_twohanded_blades",
+        "ut_core_module:UTCore_MeleeDelayHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_onehanded_axes.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_axes.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_blades.lua"
+      ],
+      "occurrence_count": 4
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "weapon",
+      "method": "setAimingTime",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_gunspecialist_III"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gunspecialist_III.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "weapon",
+      "method": "setConditionLowerChance",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_improviser"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_improviser.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "weapon",
+      "method": "setCriticalChance",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_axes",
+        "trait:UT_cleaver",
+        "trait:UT_long_blades",
+        "trait:UT_long_blunts",
+        "trait:UT_onehanded_axes",
+        "trait:UT_prospear",
+        "trait:UT_twohanded_axes",
+        "trait:UT_twohanded_blades",
+        "trait:UT_twohanded_blunts"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_axes.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_cleaver.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_long_blades.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_long_blunts.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_onehanded_axes.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_prospear.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_axes.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_blades.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_blunts.lua"
+      ],
+      "occurrence_count": 9
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "weapon",
+      "method": "setHitChance",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_sharpshooter"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sharpshooter.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "primary",
+      "method": "setJammed",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_gunspecialist_III"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gunspecialist_III.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "weapon",
+      "method": "setMaxRange",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_sharpshooter"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sharpshooter.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "HandWeapon",
+      "receiver": "weapon",
+      "method": "setReloadTime",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_gunspecialist_III"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gunspecialist_III.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "ISDrinkFluidAction",
+      "receiver": "ISDrinkFluidAction",
+      "method": "perform",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_ItemConsumptionHooks"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "ISEatFoodAction",
+      "receiver": "ISEatFoodAction",
+      "method": "perform",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_ItemConsumptionHooks"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "ISFitnessAction",
+      "receiver": "ISFitnessAction",
+      "method": "exeLooped",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_physicallyactive"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_physicallyactive.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "InventoryItem",
+      "receiver": "sourceItem",
+      "method": "getFullType",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_scrounger"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scrounger.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "IsoGameCharacter",
+      "receiver": "attacker",
+      "method": "getBodyDamage",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_highsweaty"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_highsweaty.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "IsoGameCharacter",
+      "receiver": "target",
+      "method": "getHealth",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_actionhero",
+        "trait:UT_martial"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_actionhero.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_martial.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoGameCharacter",
+      "receiver": "attacker",
+      "method": "getModData",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_MeleeDelayHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "IsoGameCharacter",
+      "receiver": "attacker",
+      "method": "getStats",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_highsweaty"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_highsweaty.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "IsoGameCharacter",
+      "receiver": "target",
+      "method": "setHealth",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_actionhero",
+        "trait:UT_martial"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_actionhero.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_martial.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoGridSquare",
+      "receiver": "square",
+      "method": "AddWorldInventoryItem",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_butterfingers"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_butterfingers.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "IsoGridSquare",
+      "receiver": "sq",
+      "method": "getLightLevel",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_fearofthedark"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fearofthedark.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "IsoObject",
+      "receiver": "containerObj",
+      "method": "getContainer",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_antique"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_antique.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoObject",
+      "receiver": "containerObj",
+      "method": "getModData",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_antique",
+        "trait:UT_scrounger"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_antique.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scrounger.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoObject",
+      "receiver": "containerObj",
+      "method": "transmitModData",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_antique",
+        "trait:UT_scrounger"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_antique.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scrounger.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "DistTo",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK",
+        "WARN"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_actionhero",
+        "trait:UT_bouncer_I"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_actionhero.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_bouncer_I.lua"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "Say",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK",
+        "WARN"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_fearful",
+        "trait:UT_scardycat"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fearful.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scardycat.lua"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "addWorldSoundUnlessInvisible",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK",
+        "WARN"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "ut_core_module:UTCore_NoiseHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_NoiseHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "clearWornItems",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "ut_core_module:UTCore_SpawnEffects"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "createKeyRing",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "ut_core_module:UTCore_SpawnEffects"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getBodyDamage",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_anorexy",
+        "trait:UT_ascetic",
+        "trait:UT_badteeth",
+        "trait:UT_competitiveeater",
+        "trait:UT_flimsy",
+        "trait:UT_highsweaty",
+        "trait:UT_immuneresponse",
+        "trait:UT_immunocompromised",
+        "trait:UT_nervouswreck",
+        "trait:UT_sensitivestomach",
+        "trait:UT_superimmune",
+        "ut_core_module:UTCore_BleedDecayHook",
+        "ut_core_module:UTCore_BleedDrainHook",
+        "ut_core_module:UTCore_BleedHook",
+        "ut_core_module:UTCore_FractureHook",
+        "ut_core_module:UTCore_ReadingHook",
+        "ut_core_module:UTCore_SpawnEffects"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_FractureHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_anorexy.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_ascetic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_badteeth.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_competitiveeater.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_flimsy.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_highsweaty.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_immuneresponse.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_immunocompromised.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_nervouswreck.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sensitivestomach.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_superimmune.lua"
+      ],
+      "occurrence_count": 21
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getBumpedChr",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "ut_core_module:UTCore_ZombieCollisionHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getClothingItem_Back",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_flimsy"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_flimsy.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getCurrentActionContextStateName",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_strongnimble"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_strongnimble.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getCurrentSquare",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_butterfingers",
+        "trait:UT_fearofthedark"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_butterfingers.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fearofthedark.lua"
+      ],
+      "occurrence_count": 4
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getHealth",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_evasive",
+        "ut_core_module:UTCore_BleedDrainHook",
+        "ut_core_module:UTCore_DamageMultHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_evasive.lua"
+      ],
+      "occurrence_count": 8
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getInventory",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_butterfingers",
+        "trait:UT_fitted",
+        "trait:UT_gordanite",
+        "trait:UT_gourmand",
+        "trait:UT_humanhamster",
+        "trait:UT_trackman",
+        "ut_core_module:UTCore_SpawnEffects"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_butterfingers.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fitted.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gordanite.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gourmand.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_trackman.lua"
+      ],
+      "occurrence_count": 9
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getMaxWeightBase",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_humanhamster",
+        "ut_core_module:UTCore_StatModifiers"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getMeleeDelay",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "ut_core_module:UTCore_MeleeDelayHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getModData",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_ItemConsumptionHooks",
+        "runtime_support:UT_SmokePings",
+        "trait:UT_addictedtocaffeine",
+        "trait:UT_albino",
+        "trait:UT_alcoholic_I",
+        "trait:UT_analgesia",
+        "trait:UT_anorexy",
+        "trait:UT_ascetic",
+        "trait:UT_bouncer_I",
+        "trait:UT_brittle",
+        "trait:UT_broke",
+        "trait:UT_butterfingers",
+        "trait:UT_competitiveeater",
+        "trait:UT_durability",
+        "trait:UT_fast",
+        "trait:UT_fearful",
+        "trait:UT_flailer",
+        "trait:UT_flatearther",
+        "trait:UT_glassbody",
+        "trait:UT_gunspecialist_III",
+        "trait:UT_hardy",
+        "trait:UT_humanhamster",
+        "trait:UT_immunocompromised",
+        "trait:UT_incomprehensive",
+        "trait:UT_indefatigable",
+        "trait:UT_ironliver",
+        "trait:UT_lurcher",
+        "trait:UT_natural",
+        "trait:UT_nervouswreck",
+        "trait:UT_noodlelegs",
+        "trait:UT_onetrickpony",
+        "trait:UT_pacer",
+        "trait:UT_paramedic",
+        "trait:UT_photographicmemory",
+        "trait:UT_pitcrew",
+        "trait:UT_scardycat",
+        "trait:UT_secondwind",
+        "trait:UT_sedentary",
+        "trait:UT_sensitivestomach",
+        "trait:UT_superimmune",
+        "trait:UT_trekker",
+        "trait:UT_vagabond",
+        "trait:UT_vehophobic",
+        "trait:UT_wildsman",
+        "trait:UT_woodsplitter",
+        "ut_core_module:UTCore_BleedDecayHook",
+        "ut_core_module:UTCore_BleedDrainHook",
+        "ut_core_module:UTCore_BleedHook",
+        "ut_core_module:UTCore_DamageMultHook",
+        "ut_core_module:UTCore_FractureHook",
+        "ut_core_module:UTCore_MeleeDelayHook",
+        "ut_core_module:UTCore_NoiseHook",
+        "ut_core_module:UTCore_PainHook",
+        "ut_core_module:UTCore_ReadingHook",
+        "ut_core_module:UTCore_SleepQualityHook",
+        "ut_core_module:UTCore_SpeedHook",
+        "ut_core_module:UTCore_StatModifiers",
+        "ut_core_module:UTCore_ThermalRegulationHook",
+        "ut_core_module:UTCore_TraitChecks",
+        "ut_core_module:UTCore_WorkSpeedHook",
+        "ut_core_module:UTCore_XPHook",
+        "ut_core_module:UTCore_ZombieCollisionHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_FractureHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_NoiseHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_PainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SleepQualityHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpeedHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ThermalRegulationHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_TraitChecks.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_XPHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_addictedtocaffeine.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_analgesia.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_anorexy.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_ascetic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_bouncer_I.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_brittle.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_broke.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_butterfingers.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_competitiveeater.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_durability.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fast.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fearful.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_flailer.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_flatearther.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_glassbody.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gunspecialist_III.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_hardy.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_immunocompromised.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_incomprehensive.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_indefatigable.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_ironliver.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_lurcher.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_natural.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_nervouswreck.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_noodlelegs.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_onetrickpony.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_pacer.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_paramedic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_photographicmemory.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_pitcrew.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scardycat.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_secondwind.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sedentary.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sensitivestomach.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_superimmune.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_trekker.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_vagabond.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_vehophobic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_wildsman.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_woodsplitter.lua"
+      ],
+      "occurrence_count": 85
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getNextX",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "ut_core_module:UTCore_SpeedHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpeedHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getNextY",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "ut_core_module:UTCore_SpeedHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpeedHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getNutrition",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_ItemConsumptionHooks",
+        "runtime_support:UT_SmokePings",
+        "trait:UT_idealweight",
+        "trait:UT_trekker"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_idealweight.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_trekker.lua"
+      ],
+      "occurrence_count": 5
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getPerkLevel",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK",
+        "WARN"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_bigorexia",
+        "trait:UT_lurcher",
+        "trait:UT_martial",
+        "trait:UT_physicallyactive",
+        "trait:UT_woodsplitter",
+        "ut_core_module:UTCore_MeleeDelayHook",
+        "ut_core_module:UTCore_StatModifiers",
+        "ut_core_module:UTCore_XPHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_XPHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_bigorexia.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_lurcher.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_martial.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_physicallyactive.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_woodsplitter.lua"
+      ],
+      "occurrence_count": 9
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getPlayerNum",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_butterfingers",
+        "trait:UT_fearofthedark",
+        "trait:UT_motionsickness"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_butterfingers.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fearofthedark.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_motionsickness.lua"
+      ],
+      "occurrence_count": 4
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getPrimaryHandItem",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_axes",
+        "trait:UT_butterfingers",
+        "trait:UT_cleaver",
+        "trait:UT_gunspecialist_III",
+        "trait:UT_improviser",
+        "trait:UT_long_blades",
+        "trait:UT_long_blunts",
+        "trait:UT_onehanded_axes",
+        "trait:UT_prospear",
+        "trait:UT_sharpshooter",
+        "trait:UT_twohanded_axes",
+        "trait:UT_twohanded_blades",
+        "trait:UT_twohanded_blunts",
+        "ut_core_module:UTCore_MeleeDelayHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_axes.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_butterfingers.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_cleaver.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gunspecialist_III.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_improviser.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_long_blades.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_long_blunts.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_onehanded_axes.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_prospear.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sharpshooter.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_axes.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_blades.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_blunts.lua"
+      ],
+      "occurrence_count": 15
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getSecondaryHandItem",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_axes",
+        "trait:UT_cleaver",
+        "trait:UT_gunspecialist_III",
+        "trait:UT_improviser",
+        "trait:UT_long_blades",
+        "trait:UT_long_blunts",
+        "trait:UT_onehanded_axes",
+        "trait:UT_prospear",
+        "trait:UT_sharpshooter",
+        "trait:UT_twohanded_axes",
+        "trait:UT_twohanded_blades",
+        "trait:UT_twohanded_blunts"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_axes.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_cleaver.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gunspecialist_III.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_improviser.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_long_blades.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_long_blunts.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_onehanded_axes.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_prospear.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sharpshooter.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_axes.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_blades.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_blunts.lua"
+      ],
+      "occurrence_count": 13
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getSpottedList",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_actionhero",
+        "trait:UT_bouncer_I",
+        "trait:UT_scardycat"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_actionhero.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_bouncer_I.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scardycat.lua"
+      ],
+      "occurrence_count": 4
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getStats",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_ItemConsumptionHooks",
+        "runtime_support:UT_SmokePings",
+        "trait:UT_accmetabolism",
+        "trait:UT_acrophobic",
+        "trait:UT_adaptivemetabolism",
+        "trait:UT_addictedtocaffeine",
+        "trait:UT_albino",
+        "trait:UT_alcoholic_I",
+        "trait:UT_alcoholic_II",
+        "trait:UT_alcoholic_III",
+        "trait:UT_anorexy",
+        "trait:UT_ascetic",
+        "trait:UT_batteringram",
+        "trait:UT_bigorexia",
+        "trait:UT_blissful",
+        "trait:UT_coldsensitive",
+        "trait:UT_competitiveeater",
+        "trait:UT_couchdweller",
+        "trait:UT_depressive",
+        "trait:UT_fast",
+        "trait:UT_fearful",
+        "trait:UT_fearofthedark",
+        "trait:UT_fibromyalgia",
+        "trait:UT_flailer",
+        "trait:UT_hardy",
+        "trait:UT_heatsensitive",
+        "trait:UT_highsweaty",
+        "trait:UT_humanhamster",
+        "trait:UT_immuneresponse",
+        "trait:UT_immunocompromised",
+        "trait:UT_indefatigable",
+        "trait:UT_ironliver",
+        "trait:UT_larkperson",
+        "trait:UT_lurcher",
+        "trait:UT_maniac",
+        "trait:UT_marathonrunner",
+        "trait:UT_martial",
+        "trait:UT_melancholic",
+        "trait:UT_motionsickness",
+        "trait:UT_mstoptimist",
+        "trait:UT_noodlelegs",
+        "trait:UT_olympian",
+        "trait:UT_optimist",
+        "trait:UT_owlperson",
+        "trait:UT_pacer",
+        "trait:UT_panicattacks",
+        "trait:UT_paranoia",
+        "trait:UT_pessimist",
+        "trait:UT_physicallyactive",
+        "trait:UT_ravenous",
+        "trait:UT_scardycat",
+        "trait:UT_secondwind",
+        "trait:UT_sedentary",
+        "trait:UT_selfdestructive",
+        "trait:UT_sloth",
+        "trait:UT_squirrel",
+        "trait:UT_sundayrunner",
+        "trait:UT_superimmune",
+        "trait:UT_trekker",
+        "trait:UT_unwavering",
+        "trait:UT_vehophobic",
+        "trait:UT_weathersensitive",
+        "ut_core_module:UTCore_PainHook",
+        "ut_core_module:UTCore_ReadingHook",
+        "ut_core_module:UTCore_SleepQualityHook",
+        "ut_core_module:UTCore_SpawnEffects",
+        "ut_core_module:UTCore_StatModifiers",
+        "ut_core_module:UTCore_ThermalRegulationHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_PainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SleepQualityHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ThermalRegulationHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_accmetabolism.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_acrophobic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_addictedtocaffeine.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_II.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_III.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_anorexy.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_ascetic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_batteringram.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_bigorexia.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_blissful.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_coldsensitive.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_competitiveeater.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_couchdweller.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_depressive.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fast.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fearful.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fearofthedark.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fibromyalgia.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_flailer.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_hardy.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_heatsensitive.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_highsweaty.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_immuneresponse.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_immunocompromised.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_indefatigable.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_ironliver.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_larkperson.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_lurcher.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_maniac.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_marathonrunner.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_martial.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_melancholic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_motionsickness.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_mstoptimist.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_noodlelegs.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_olympian.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_optimist.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_owlperson.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_pacer.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_panicattacks.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_paranoia.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_pessimist.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_physicallyactive.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_ravenous.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scardycat.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_secondwind.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sedentary.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_selfdestructive.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sloth.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_squirrel.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sundayrunner.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_superimmune.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_trekker.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_unwavering.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_vehophobic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_weathersensitive.lua"
+      ],
+      "occurrence_count": 82
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getVehicle",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_motionsickness",
+        "ut_core_module:UTCore_StatModifiers"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_motionsickness.lua"
+      ],
+      "occurrence_count": 4
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getWornItems",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_fitted",
+        "trait:UT_humanhamster",
+        "trait:UT_natural"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fitted.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_natural.lua"
+      ],
+      "occurrence_count": 6
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getX",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_fearful",
+        "trait:UT_scardycat",
+        "ut_core_module:UTCore_SpeedHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpeedHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fearful.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scardycat.lua"
+      ],
+      "occurrence_count": 4
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getXp",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_martial",
+        "ut_core_module:UTCore_ReadingHook",
+        "ut_core_module:UTCore_XPHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_XPHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_martial.lua"
+      ],
+      "occurrence_count": 7
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getY",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_fearful",
+        "trait:UT_scardycat",
+        "ut_core_module:UTCore_SpeedHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpeedHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fearful.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scardycat.lua"
+      ],
+      "occurrence_count": 4
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "getZ",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_acrophobic",
+        "trait:UT_fearful",
+        "trait:UT_scardycat"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_acrophobic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fearful.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scardycat.lua"
+      ],
+      "occurrence_count": 4
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "hasTrait",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK",
+        "WARN"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "ut_core_module:UTCore_API"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "isAsleep",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "ut_core_module:UTCore_NoiseHook",
+        "ut_core_module:UTCore_SleepQualityHook",
+        "ut_core_module:UTCore_ThermalRegulationHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_NoiseHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SleepQualityHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ThermalRegulationHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 4
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "isBumped",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "ut_core_module:UTCore_ZombieCollisionHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "isDriving",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_vehophobic",
+        "ut_core_module:UTCore_StatModifiers"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_vehophobic.lua"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "isFalling",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_strongnimble"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_strongnimble.lua"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "isLocalPlayer",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "ut_core_module:UTCore_MeleeDelayHook",
+        "ut_core_module:UTCore_SpeedHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpeedHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "isMoving",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_lurcher",
+        "trait:UT_trekker"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_lurcher.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_trekker.lua"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "isOutside",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_albino",
+        "trait:UT_couchdweller",
+        "trait:UT_pacer",
+        "ut_core_module:UTCore_ThermalRegulationHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ThermalRegulationHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_couchdweller.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_pacer.lua"
+      ],
+      "occurrence_count": 6
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "isRunning",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_batteringram",
+        "trait:UT_highsweaty",
+        "trait:UT_indefatigable",
+        "trait:UT_sloth",
+        "trait:UT_squirrel",
+        "trait:UT_trekker"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_batteringram.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_highsweaty.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_indefatigable.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sloth.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_squirrel.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_trekker.lua"
+      ],
+      "occurrence_count": 7
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "isSprinting",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_batteringram",
+        "trait:UT_flailer",
+        "trait:UT_highsweaty",
+        "trait:UT_indefatigable",
+        "trait:UT_secondwind",
+        "trait:UT_sloth",
+        "trait:UT_squirrel",
+        "trait:UT_sundayrunner",
+        "trait:UT_trekker"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_batteringram.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_flailer.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_highsweaty.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_indefatigable.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_secondwind.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sloth.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_squirrel.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sundayrunner.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_trekker.lua"
+      ],
+      "occurrence_count": 10
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "removeFromHands",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK",
+        "WARN"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_butterfingers"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_butterfingers.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "setBumpFall",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK",
+        "WARN"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_batteringram",
+        "trait:UT_flailer",
+        "trait:UT_lurcher"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_batteringram.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_flailer.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_lurcher.lua"
+      ],
+      "occurrence_count": 4
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "setBumpType",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK",
+        "WARN"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_batteringram"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_batteringram.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "setHealth",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK",
+        "WARN"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_evasive",
+        "ut_core_module:UTCore_BleedDrainHook",
+        "ut_core_module:UTCore_DamageMultHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_evasive.lua"
+      ],
+      "occurrence_count": 5
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "setMaxWeightBase",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK",
+        "WARN"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "ut_core_module:UTCore_StatModifiers"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "setMeleeDelay",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK",
+        "WARN"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "ut_core_module:UTCore_MeleeDelayHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "setNextX",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK",
+        "WARN"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "ut_core_module:UTCore_SpeedHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpeedHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "setNextY",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK",
+        "WARN"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "ut_core_module:UTCore_SpeedHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpeedHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "setWornItems",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK",
+        "WARN"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_fitted"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fitted.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoPlayer",
+      "receiver": "player",
+      "method": "setbFalling",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK",
+        "WARN"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings",
+        "trait:UT_strongnimble"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_strongnimble.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoZombie",
+      "receiver": "zombie",
+      "method": "Kill",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_tavernbrawler"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_tavernbrawler.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "IsoZombie",
+      "receiver": "zombie",
+      "method": "getHealth",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_tavernbrawler"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_tavernbrawler.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "IsoZombie",
+      "receiver": "chr",
+      "method": "isAlwaysKnockedDown",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_ZombieCollisionHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "IsoZombie",
+      "receiver": "zombie",
+      "method": "isKnockedDown",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_tavernbrawler"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_tavernbrawler.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "IsoZombie",
+      "receiver": "zombie",
+      "method": "knockDown",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_batteringram"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_batteringram.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "IsoZombie",
+      "receiver": "zombie",
+      "method": "setHealth",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_tavernbrawler"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_tavernbrawler.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "ItemContainer",
+      "receiver": "container",
+      "method": "AddItem",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_antique",
+        "trait:UT_scrounger",
+        "trait:UT_vagabond"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_antique.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scrounger.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_vagabond.lua"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "ItemContainer",
+      "receiver": "container",
+      "method": "addItemOnServer",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_antique",
+        "trait:UT_scrounger"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_antique.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scrounger.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "ItemContainer",
+      "receiver": "inv",
+      "method": "getCapacityWeight",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_humanhamster"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "ItemContainer",
+      "receiver": "pack",
+      "method": "getContentsWeight",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_flimsy"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_flimsy.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "ItemContainer",
+      "receiver": "inventory",
+      "method": "getItems",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_fitted",
+        "trait:UT_gordanite",
+        "trait:UT_gourmand",
+        "trait:UT_scrounger",
+        "trait:UT_trackman"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fitted.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gordanite.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gourmand.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scrounger.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_trackman.lua"
+      ],
+      "occurrence_count": 6
+    },
+    {
+      "surface_name": "ItemContainer",
+      "receiver": "inv",
+      "method": "getParent",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_antique",
+        "trait:UT_scrounger"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_antique.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scrounger.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "ItemContainer",
+      "receiver": "container",
+      "method": "getType",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_antique"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_antique.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "ItemContainer",
+      "receiver": "inv",
+      "method": "removeAllItems",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_SpawnEffects"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Literature",
+      "receiver": "item",
+      "method": "IsClothing",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_fitted"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fitted.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "Literature",
+      "receiver": "item",
+      "method": "IsInventoryContainer",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_humanhamster"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Literature",
+      "receiver": "item",
+      "method": "getActualWeight",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_fitted"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fitted.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Literature",
+      "receiver": "item",
+      "method": "getAlreadyReadPages",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_ReadingHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "Literature",
+      "receiver": "item",
+      "method": "getCategory",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_gourmand"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gourmand.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Literature",
+      "receiver": "item",
+      "method": "getCondition",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_trackman"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_trackman.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Literature",
+      "receiver": "item",
+      "method": "getConditionMax",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_trackman"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_trackman.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Literature",
+      "receiver": "item",
+      "method": "getMaxLevelTrained",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_ReadingHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Literature",
+      "receiver": "item",
+      "method": "getModData",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_ItemConsumptionHooks",
+        "trait:UT_fitted",
+        "trait:UT_gordanite"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fitted.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gordanite.lua"
+      ],
+      "occurrence_count": 6
+    },
+    {
+      "surface_name": "Literature",
+      "receiver": "item",
+      "method": "getNumberOfPages",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_ReadingHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "Literature",
+      "receiver": "item",
+      "method": "getScriptItem",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_ItemConsumptionHooks"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Literature",
+      "receiver": "item",
+      "method": "getSkillTrained",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_ReadingHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "Literature",
+      "receiver": "item",
+      "method": "getType",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_ItemConsumptionHooks",
+        "trait:UT_trackman"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_trackman.lua"
+      ],
+      "occurrence_count": 6
+    },
+    {
+      "surface_name": "Literature",
+      "receiver": "item",
+      "method": "isCooked",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_gordanite"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gordanite.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Literature",
+      "receiver": "item",
+      "method": "isFood",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_gordanite"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gordanite.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Literature",
+      "receiver": "item",
+      "method": "setActualWeight",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_fitted"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fitted.lua"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "Literature",
+      "receiver": "item",
+      "method": "setCondition",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_trackman"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_trackman.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Nutrition",
+      "receiver": "nutrition",
+      "method": "getCalories",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_ItemConsumptionHooks",
+        "trait:UT_idealweight",
+        "trait:UT_trekker"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_idealweight.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_trekker.lua"
+      ],
+      "occurrence_count": 4
+    },
+    {
+      "surface_name": "Nutrition",
+      "receiver": "nutrition",
+      "method": "setCalories",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_ItemConsumptionHooks",
+        "trait:UT_idealweight",
+        "trait:UT_trekker"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_idealweight.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_trekker.lua"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Aiming",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 9
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Axe",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 9
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Blacksmith",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Blunt",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 10
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Cooking",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 5
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Doctor",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 5
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Electricity",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 6
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Farming",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Fishing",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Fitness",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 8
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "FlintKnapping",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Lightfoot",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 4
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "LongBlade",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 11
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Maintenance",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Masonry",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Mechanics",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 5
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "MetalWelding",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Nimble",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 6
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "PlantScavenging",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 5
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Reloading",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 8
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "SmallBlade",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 10
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "SmallBlunt",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 15
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Sneak",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Spear",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 7
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Sprinting",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 8
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Strength",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 4
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Tailoring",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 4
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Trapping",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": "Perks",
+      "receiver": "XPBoosts",
+      "method": "Woodwork",
+      "verification_kind": "script_xpboosts",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "script_definition:UT_character_traits"
+      ],
+      "files": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt"
+      ],
+      "occurrence_count": 5
+    },
+    {
+      "surface_name": "Stats",
+      "receiver": "stats",
+      "method": "add",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_anorexy",
+        "trait:UT_ascetic",
+        "trait:UT_competitiveeater",
+        "trait:UT_highsweaty",
+        "trait:UT_sundayrunner"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_anorexy.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_ascetic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_competitiveeater.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_highsweaty.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sundayrunner.lua"
+      ],
+      "occurrence_count": 9
+    },
+    {
+      "surface_name": "Stats",
+      "receiver": "stats",
+      "method": "get",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_ItemConsumptionHooks",
+        "trait:UT_accmetabolism",
+        "trait:UT_acrophobic",
+        "trait:UT_adaptivemetabolism",
+        "trait:UT_addictedtocaffeine",
+        "trait:UT_albino",
+        "trait:UT_alcoholic_I",
+        "trait:UT_alcoholic_II",
+        "trait:UT_alcoholic_III",
+        "trait:UT_ascetic",
+        "trait:UT_batteringram",
+        "trait:UT_bigorexia",
+        "trait:UT_blissful",
+        "trait:UT_coldsensitive",
+        "trait:UT_depressive",
+        "trait:UT_fast",
+        "trait:UT_fearful",
+        "trait:UT_fearofthedark",
+        "trait:UT_fibromyalgia",
+        "trait:UT_hardy",
+        "trait:UT_heatsensitive",
+        "trait:UT_highsweaty",
+        "trait:UT_humanhamster",
+        "trait:UT_immuneresponse",
+        "trait:UT_indefatigable",
+        "trait:UT_ironliver",
+        "trait:UT_larkperson",
+        "trait:UT_marathonrunner",
+        "trait:UT_martial",
+        "trait:UT_melancholic",
+        "trait:UT_motionsickness",
+        "trait:UT_mstoptimist",
+        "trait:UT_noodlelegs",
+        "trait:UT_olympian",
+        "trait:UT_optimist",
+        "trait:UT_owlperson",
+        "trait:UT_pacer",
+        "trait:UT_panicattacks",
+        "trait:UT_paranoia",
+        "trait:UT_pessimist",
+        "trait:UT_physicallyactive",
+        "trait:UT_ravenous",
+        "trait:UT_scardycat",
+        "trait:UT_secondwind",
+        "trait:UT_sedentary",
+        "trait:UT_selfdestructive",
+        "trait:UT_trekker",
+        "trait:UT_unwavering",
+        "trait:UT_vehophobic",
+        "trait:UT_weathersensitive",
+        "ut_core_module:UTCore_PainHook",
+        "ut_core_module:UTCore_ReadingHook",
+        "ut_core_module:UTCore_SleepQualityHook",
+        "ut_core_module:UTCore_StatModifiers",
+        "ut_core_module:UTCore_ThermalRegulationHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_PainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SleepQualityHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ThermalRegulationHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_accmetabolism.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_acrophobic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_addictedtocaffeine.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_II.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_III.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_ascetic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_batteringram.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_bigorexia.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_blissful.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_coldsensitive.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_depressive.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fast.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fearful.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fearofthedark.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fibromyalgia.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_hardy.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_heatsensitive.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_highsweaty.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_immuneresponse.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_indefatigable.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_ironliver.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_larkperson.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_marathonrunner.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_martial.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_melancholic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_motionsickness.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_mstoptimist.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_noodlelegs.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_olympian.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_optimist.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_owlperson.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_pacer.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_panicattacks.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_paranoia.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_pessimist.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_physicallyactive.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_ravenous.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scardycat.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_secondwind.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sedentary.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_selfdestructive.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_trekker.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_unwavering.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_vehophobic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_weathersensitive.lua"
+      ],
+      "occurrence_count": 95
+    },
+    {
+      "surface_name": "Stats",
+      "receiver": "stats",
+      "method": "remove",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_couchdweller",
+        "trait:UT_sloth",
+        "trait:UT_squirrel"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_couchdweller.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sloth.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_squirrel.lua"
+      ],
+      "occurrence_count": 4
+    },
+    {
+      "surface_name": "Stats",
+      "receiver": "stats",
+      "method": "set",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "runtime_support:UT_ItemConsumptionHooks",
+        "trait:UT_accmetabolism",
+        "trait:UT_acrophobic",
+        "trait:UT_adaptivemetabolism",
+        "trait:UT_addictedtocaffeine",
+        "trait:UT_albino",
+        "trait:UT_alcoholic_I",
+        "trait:UT_alcoholic_II",
+        "trait:UT_alcoholic_III",
+        "trait:UT_ascetic",
+        "trait:UT_batteringram",
+        "trait:UT_bigorexia",
+        "trait:UT_blissful",
+        "trait:UT_coldsensitive",
+        "trait:UT_depressive",
+        "trait:UT_fast",
+        "trait:UT_fearofthedark",
+        "trait:UT_fibromyalgia",
+        "trait:UT_hardy",
+        "trait:UT_heatsensitive",
+        "trait:UT_highsweaty",
+        "trait:UT_humanhamster",
+        "trait:UT_immuneresponse",
+        "trait:UT_indefatigable",
+        "trait:UT_ironliver",
+        "trait:UT_larkperson",
+        "trait:UT_marathonrunner",
+        "trait:UT_martial",
+        "trait:UT_melancholic",
+        "trait:UT_motionsickness",
+        "trait:UT_mstoptimist",
+        "trait:UT_noodlelegs",
+        "trait:UT_olympian",
+        "trait:UT_optimist",
+        "trait:UT_owlperson",
+        "trait:UT_pacer",
+        "trait:UT_panicattacks",
+        "trait:UT_paranoia",
+        "trait:UT_pessimist",
+        "trait:UT_physicallyactive",
+        "trait:UT_ravenous",
+        "trait:UT_scardycat",
+        "trait:UT_secondwind",
+        "trait:UT_sedentary",
+        "trait:UT_selfdestructive",
+        "trait:UT_trekker",
+        "trait:UT_unwavering",
+        "trait:UT_vehophobic",
+        "trait:UT_weathersensitive",
+        "ut_core_module:UTCore_PainHook",
+        "ut_core_module:UTCore_ReadingHook",
+        "ut_core_module:UTCore_SleepQualityHook",
+        "ut_core_module:UTCore_SpawnEffects",
+        "ut_core_module:UTCore_StatModifiers",
+        "ut_core_module:UTCore_ThermalRegulationHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_PainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SleepQualityHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ThermalRegulationHook.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_accmetabolism.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_acrophobic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_addictedtocaffeine.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_II.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_III.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_ascetic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_batteringram.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_bigorexia.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_blissful.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_coldsensitive.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_depressive.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fast.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fearofthedark.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fibromyalgia.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_hardy.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_heatsensitive.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_highsweaty.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_immuneresponse.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_indefatigable.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_ironliver.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_larkperson.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_marathonrunner.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_martial.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_melancholic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_motionsickness.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_mstoptimist.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_noodlelegs.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_olympian.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_optimist.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_owlperson.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_pacer.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_panicattacks.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_paranoia.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_pessimist.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_physicallyactive.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_ravenous.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scardycat.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_secondwind.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sedentary.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_selfdestructive.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_trekker.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_unwavering.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_vehophobic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_weathersensitive.lua"
+      ],
+      "occurrence_count": 94
+    },
+    {
+      "surface_name": "WornItem",
+      "receiver": "wornItem",
+      "method": "getItem",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_humanhamster"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "WornItems",
+      "receiver": "wornItems",
+      "method": "contains",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_fitted"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fitted.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "WornItems",
+      "receiver": "wornItems",
+      "method": "getItem",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_humanhamster"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "WornItems",
+      "receiver": "wornItems",
+      "method": "getItemByIndex",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_fitted"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fitted.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "WornItems",
+      "receiver": "wornItems",
+      "method": "size",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "trait:UT_fitted",
+        "trait:UT_humanhamster"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_fitted.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": null,
+      "receiver": "_bd",
+      "method": "getApparentInfectionLevel",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_bd",
+      "method": "getBodyPart",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_bd",
+      "method": "getBodyParts",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": null,
+      "receiver": "_bd",
+      "method": "getHealthFromFoodTimer",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_bd",
+      "method": "getNumPartsBleeding",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_bd",
+      "method": "getNutrition",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_bd",
+      "method": "getPanicReductionValue",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_bd",
+      "method": "setPanicReductionValue",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_cm",
+      "method": "getCloudIntensity",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_cm",
+      "method": "getPrecipitationIntensity",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_gt",
+      "method": "getMultiplier",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_inv",
+      "method": "AddItem",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_inv",
+      "method": "addItemOnServer",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_inv",
+      "method": "getCapacityWeight",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_inv",
+      "method": "getContentsWeight",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_inv",
+      "method": "getItems",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_inv",
+      "method": "getParent",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_inv",
+      "method": "getType",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_inv",
+      "method": "removeAllItems",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_nutrition",
+      "method": "getCalories",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_nutrition",
+      "method": "setCalories",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_parts",
+      "method": "get",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_parts",
+      "method": "size",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_square",
+      "method": "AddWorldInventoryItem",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_square",
+      "method": "getLightLevel",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_stats",
+      "method": "add",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_stats",
+      "method": "get",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_stats",
+      "method": "getMaximumValue",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_stats",
+      "method": "remove",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_stats",
+      "method": "set",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_wornItems",
+      "method": "contains",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_wornItems",
+      "method": "getItem",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_wornItems",
+      "method": "getItemByIndex",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "_wornItems",
+      "method": "size",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_SmokePings"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "action",
+      "method": "getMaxTime",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "trait:UT_paramedic",
+        "trait:UT_pitcrew"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_paramedic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_pitcrew.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": null,
+      "receiver": "action",
+      "method": "setMaxTime",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "trait:UT_paramedic",
+        "trait:UT_pitcrew"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_paramedic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_pitcrew.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": null,
+      "receiver": "actionName",
+      "method": "find",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "trait:UT_strongnimble"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_strongnimble.lua"
+      ],
+      "occurrence_count": 3
+    },
+    {
+      "surface_name": null,
+      "receiver": "actionType",
+      "method": "find",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "trait:UT_paramedic",
+        "trait:UT_pitcrew"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_paramedic.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_pitcrew.lua"
+      ],
+      "occurrence_count": 2
+    },
+    {
+      "surface_name": null,
+      "receiver": "cats",
+      "method": "isEmpty",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "runtime_support:UT_ItemConsumptionHooks"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": "java.util.ArrayList",
+      "receiver": "spottedList",
+      "method": "get",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "source_file:UTCore_CharacterCreationMETDebug",
+        "trait:UT_actionhero",
+        "trait:UT_antique",
+        "trait:UT_bouncer_I",
+        "trait:UT_gordanite",
+        "trait:UT_gourmand",
+        "trait:UT_scrounger",
+        "trait:UT_trackman",
+        "ut_core_module:UTCore_API",
+        "ut_core_module:UTCore_BleedDecayHook",
+        "ut_core_module:UTCore_BleedDrainHook",
+        "ut_core_module:UTCore_BleedHook",
+        "ut_core_module:UTCore_SpawnEffects"
+      ],
+      "files": [
+        "UT_CORE/media/lua/client/UTCore/UTCore_CharacterCreationMETDebug.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_actionhero.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_antique.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_bouncer_I.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gordanite.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gourmand.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scrounger.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_trackman.lua"
+      ],
+      "occurrence_count": 15
+    },
+    {
+      "surface_name": "java.util.ArrayList",
+      "receiver": "spottedList",
+      "method": "size",
+      "verification_kind": "method_call",
+      "statuses": [
+        "OK"
+      ],
+      "owners": [
+        "source_file:UTCore_CharacterCreationMETDebug",
+        "trait:UT_actionhero",
+        "trait:UT_antique",
+        "trait:UT_bouncer_I",
+        "trait:UT_gordanite",
+        "trait:UT_gourmand",
+        "trait:UT_scrounger",
+        "trait:UT_trackman",
+        "ut_core_module:UTCore_API",
+        "ut_core_module:UTCore_BleedDecayHook",
+        "ut_core_module:UTCore_BleedDrainHook",
+        "ut_core_module:UTCore_BleedHook",
+        "ut_core_module:UTCore_SpawnEffects"
+      ],
+      "files": [
+        "UT_CORE/media/lua/client/UTCore/UTCore_CharacterCreationMETDebug.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_actionhero.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_antique.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_bouncer_I.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gordanite.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gourmand.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scrounger.lua",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_trackman.lua"
+      ],
+      "occurrence_count": 17
+    },
+    {
+      "surface_name": null,
+      "receiver": "key",
+      "method": "sub",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_Events"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_Events.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "obj",
+      "method": "getUniqueId",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "trait:UT_vagabond"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_vagabond.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "trait",
+      "method": "getMutuallyExclusiveTraits",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "source_file:UTCore_CharacterCreationMETDebug"
+      ],
+      "files": [
+        "UT_CORE/media/lua/client/UTCore/UTCore_CharacterCreationMETDebug.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "traitDefinition",
+      "method": "getMutuallyExclusiveTraits",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "source_file:UTCore_CharacterCreationMETDebug"
+      ],
+      "files": [
+        "UT_CORE/media/lua/client/UTCore/UTCore_CharacterCreationMETDebug.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "tree",
+      "method": "getHp",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "trait:UT_woodsplitter"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_woodsplitter.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "tree",
+      "method": "setHp",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "trait:UT_woodsplitter"
+      ],
+      "files": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_woodsplitter.lua"
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "surface_name": null,
+      "receiver": "wtype",
+      "method": "find",
+      "verification_kind": "method_call",
+      "statuses": [
+        "SKIP"
+      ],
+      "owners": [
+        "ut_core_module:UTCore_MeleeDelayHook"
+      ],
+      "files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua"
+      ],
+      "occurrence_count": 21
+    }
+  ]
+}

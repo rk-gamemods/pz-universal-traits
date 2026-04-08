@@ -69,6 +69,12 @@ test("hasTrait returns false for nil player", function()
     assert_eq(UTCore.hasTrait(nil, "UniversalTraits:UT_swift"), false)
 end)
 
+test("weaponHasCategory uses isOfWeaponCategory when available", function()
+    local axe = MockWeapon("HandAxe", 10, false, true, { categories = { WeaponCategory.AXE } })
+    assert_eq(UTCore.weaponHasCategory(axe, WeaponCategory.AXE), true)
+    assert_eq(UTCore.weaponHasCategory(axe, WeaponCategory.SPEAR), false)
+end)
+
 test("getCharacterTraitId uses getName when available", function()
     local trait = {
         getName = function(self) return "UniversalTraits:UT_specmove" end
