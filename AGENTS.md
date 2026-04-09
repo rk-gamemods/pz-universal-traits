@@ -45,9 +45,10 @@ Two-mod layout targeting Project Zomboid Build 42 (Kahlua/Lua 5.x):
 
 - `tools/verify_pz_api.py` builds a machine-readable PZ API inventory and compares the current surface against `tools/pz_api_baseline.json`. No smoke manifest — coverage is now handled by `UT_SmokePings.lua`.
 - `tools/generate_smoke_pings.py` reads `tools/pz_api_inventory.json` and auto-generates `UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua` — unguarded API pings that fire at OnGameStart. If any method is missing, PZ's error handler reports it immediately.
+- Smoke ping generation rules (2026-04-08): derive `nutrition` from `player:getNutrition()` (NOT `BodyDamage`), only emit methods that have a real non-SmokePings call site with `arg_count == 0`, and only emit read-only method names (`get*`, `is*`, `has*`, `num*`, `size*`). This avoids startup crashes from wrong receiver chains, setters that require arguments, and destructive zero-arg calls like `removeAllItems()`.
 - `tools/check_smoke_log.py` scans the PZ DebugLog for UT-related runtime errors (informational only, always exits 0).
 - `tools/run_update_safe_gate.py` is the one-command local gate: UT_CORE tests, UniversalTraits tests, PZ API verification + baseline comparison, smoke ping generation, and DebugLog health check. Gate pass/fail is based only on tests + verifier.
-- Current verified baseline: `tools/pz_api_baseline.json` is green against `PZCodebase` build `svn-964`, the verifier has `0 FAIL / 16 WARN` (WARNs are expected from zero-arg smoke pings).
+- Current verified baseline: `tools/pz_api_baseline.json` is green against `PZCodebase` build `svn-964`, and the verifier is now `0 FAIL / 0 WARN` after the smoke ping generator was restricted to real zero-arg read-only calls.
 - The verifier still has a smaller triage set of explicit skips/unknown receivers (for example generic timed-action variables and a tree object path). Those are not yet part of the authoritative tracked surface and should be reduced over time rather than ignored.
 
 ---
@@ -127,6 +128,8 @@ robocopy UniversalTraits\release\UniversalTraits C:\Users\Admin\Zomboid\mods\Uni
 ## Release Folder Policy
 
 `UniversalTraits/release/` and `UT_CORE/release/` must be kept in sync with source after every code change.
+
+Generated files are not auto-propagated into `release/`. `UT_SmokePings.lua` is generated into source first, then must be copied into `UniversalTraits/release/UniversalTraits/42/media/lua/shared/UniversalTraits/` before live deployment.
 
 Required workflow after implementation work:
 
