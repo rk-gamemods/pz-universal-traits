@@ -1312,6 +1312,43 @@ test("batteringram drains endurance on each collision", function()
         "expected endurance < 1.0 after collision")
 end)
 
+test("batteringram drains less endurance while sprinting than running", function()
+    local sprintPlayer = MockPlayer({ "UniversalTraits:UT_batteringram" })
+    Events.OnCreatePlayer:fire(0, sprintPlayer)
+    sprintPlayer._sprinting = true
+    fireRamCollision(sprintPlayer, MockZombie())
+    local sprintEnd = sprintPlayer:getStats():get(CharacterStat.ENDURANCE)
+
+    local runPlayer = MockPlayer({ "UniversalTraits:UT_batteringram" })
+    Events.OnCreatePlayer:fire(0, runPlayer)
+    runPlayer._running = true
+    fireRamCollision(runPlayer, MockZombie())
+    local runEnd = runPlayer:getStats():get(CharacterStat.ENDURANCE)
+
+    assert_true(sprintEnd > runEnd,
+        "expected sprint drain (" .. sprintEnd .. ") < run drain (" .. runEnd .. ")")
+end)
+
+test("batteringram deals direct damage to zombie when sprinting", function()
+    local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
+    Events.OnCreatePlayer:fire(0, player)
+    player._sprinting = true
+    local zombie = MockZombie({ health = 1.0 })
+    fireRamCollision(player, zombie)
+    assert_true(zombie:getHealth() < 1.0,
+        "expected zombie health reduced on sprint charge, got " .. tostring(zombie:getHealth()))
+end)
+
+test("batteringram does NOT deal direct damage to zombie when running (not sprinting)", function()
+    local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
+    Events.OnCreatePlayer:fire(0, player)
+    player._running = true
+    local zombie = MockZombie({ health = 1.0 })
+    fireRamCollision(player, zombie)
+    assert_eq(zombie:getHealth(), 1.0,
+        "expected zombie health unchanged on run charge (no sprint bonus)")
+end)
+
 test("batteringram does NOT fire when player is not sprinting or running", function()
     local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
     Events.OnCreatePlayer:fire(0, player)

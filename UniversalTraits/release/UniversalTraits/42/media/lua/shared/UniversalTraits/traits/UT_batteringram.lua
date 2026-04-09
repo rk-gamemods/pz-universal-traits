@@ -21,12 +21,15 @@
 
 local TRAIT_ID        = "UniversalTraits:UT_batteringram"
 local MARTIAL_TRAIT   = "UniversalTraits:UT_martial"
-local ENDURANCE_DRAIN = 0.05  -- per collision (~20 before fully exhausted)
+local ENDURANCE_DRAIN_RUN    = 0.05   -- per collision while running (~20 before exhausted)
+local ENDURANCE_DRAIN_SPRINT = 0.03   -- per collision while sprinting (~33 before exhausted)
+local SPRINT_DAMAGE          = 0.15   -- direct health damage to zombie on sprint charge
 
 -- Only registered when the trait is active — no hasTrait guard needed inside.
 local function onZombieCollision(player, zombie)
+    local sprinting = player:isSprinting()
     -- Only trigger while actively sprinting or running (walking into a zombie does nothing)
-    if not player:isSprinting() and not player:isRunning() then return false end
+    if not sprinting and not player:isRunning() then return false end
 
     -- Cancel the native stagger/trip flags so BumpedState.execute() unblocks movement.
     -- CRITICAL: Do NOT clear bumpedChr — the engine uses it as a re-bump guard
@@ -40,11 +43,17 @@ local function onZombieCollision(player, zombie)
     -- "slammed forward" animation — visually matches a charging impact.
     zombie:knockDown(true)
 
-    -- Drain endurance per collision
+    -- Sprint bonus: direct impact damage from the charge
+    if sprinting then
+        pcall(function() zombie:setHealth(zombie:getHealth() - SPRINT_DAMAGE) end)
+    end
+
+    -- Drain endurance per collision — sprinting is more efficient (momentum)
     local stats = player:getStats()
     if not stats then return true end
+    local drain = sprinting and ENDURANCE_DRAIN_SPRINT or ENDURANCE_DRAIN_RUN
     local endurance = stats:get(CharacterStat.ENDURANCE)
-    endurance = math.max(0, endurance - ENDURANCE_DRAIN)
+    endurance = math.max(0, endurance - drain)
     stats:set(CharacterStat.ENDURANCE, endurance)
 
     -- Martial arts synergy: delegate entirely to UT_martial so the formula stays in one place
