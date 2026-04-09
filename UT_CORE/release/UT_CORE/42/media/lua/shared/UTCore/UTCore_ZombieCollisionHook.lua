@@ -57,9 +57,30 @@ local function isZombie(chr)
     return ok
 end
 
+-- After a collision callback handles a bump, suppress the engine's re-bump
+-- for several ticks. Without this, the engine re-detects the overlap every
+-- tick, re-enters BumpedState, and re-blocks movement before the player can
+-- escape — causing a permanent freeze.
+local BUMP_SUPPRESSION_TICKS = 8
+
 local function onPlayerUpdate(player)
     if not player then return end
     local md = player:getModData()
+
+    -- Bump suppression: keep clearing the engine's re-bump each tick so
+    -- the player can move through the zombie after a charge collision.
+    local suppress = md.UT_bumpSuppress or 0
+    if suppress > 0 then
+        md.UT_bumpSuppress = suppress - 1
+        if player:isBumped() then
+            player:setBumpType("")
+            player:setBumpFall(false)
+            player:setBumpedChr(nil)
+        end
+        pcall(function() player:setBlockMovement(false) end)
+        md.UT_prevBumped = false
+        return
+    end
 
     local wasBumped = md.UT_prevBumped or false
     local nowBumped = player:isBumped()
@@ -76,8 +97,15 @@ local function onPlayerUpdate(player)
         UTSmoke.record("combat.zombie-collision", "bump")
     end
 
+    local anyHandled = false
     for _, fn in pairs(UTCore._zombieCollisionCallbacks) do
-        fn(player, bumpedChr)
+        local handled = fn(player, bumpedChr)
+        if handled then anyHandled = true end
+    end
+
+    -- Activate bump suppression if any callback handled the collision
+    if anyHandled then
+        md.UT_bumpSuppress = BUMP_SUPPRESSION_TICKS
     end
 end
 

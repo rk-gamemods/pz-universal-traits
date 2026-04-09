@@ -1255,6 +1255,9 @@ test("batteringram knocks zombie down when player is sprinting", function()
     local zombie = MockZombie()
     fireRamCollision(player, zombie)
     assert_eq(#zombie:getKnockDownCalls(), 1, "expected knockDown called once")
+    -- Should use hitFromBehind=true for dramatic forward-slam animation
+    assert_eq(zombie:getKnockDownCalls()[1], true,
+        "expected knockDown(true) for charging impact animation")
 end)
 
 test("batteringram cancels bump state when player is sprinting", function()
@@ -1262,9 +1265,36 @@ test("batteringram cancels bump state when player is sprinting", function()
     Events.OnCreatePlayer:fire(0, player)
     player._sprinting = true
     player._bumpType = "stagger"
+    player._bumpedChr = MockZombie()  -- engine sets this on collision
+    player._blockMovement = true       -- BumpedState.enter() blocks movement
     local zombie = MockZombie()
     fireRamCollision(player, zombie)
     assert_eq(player._bumpType, "", "expected bumpType cleared")
+    assert_eq(player._bumpedChr, nil, "expected bumpedChr cleared")
+    assert_eq(player._blockMovement, false,
+        "expected movement explicitly unblocked after charge")
+end)
+
+test("batteringram returns true to activate bump suppression", function()
+    local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
+    Events.OnCreatePlayer:fire(0, player)
+    player._sprinting = true
+    local zombie = MockZombie()
+    local fn = UTCore._zombieCollisionCallbacks["UniversalTraits:UT_batteringram"]
+    local result = fn(player, zombie)
+    assert_eq(result, true,
+        "expected callback to return true for bump suppression")
+end)
+
+test("batteringram returns false when player is not sprinting or running", function()
+    local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
+    Events.OnCreatePlayer:fire(0, player)
+    -- _sprinting and _running are both false (default)
+    local zombie = MockZombie()
+    local fn = UTCore._zombieCollisionCallbacks["UniversalTraits:UT_batteringram"]
+    local result = fn(player, zombie)
+    assert_eq(result, false,
+        "expected callback to return false when not sprinting")
 end)
 
 test("batteringram drains endurance on each collision", function()
