@@ -1265,12 +1265,17 @@ test("batteringram cancels bump state when player is sprinting", function()
     Events.OnCreatePlayer:fire(0, player)
     player._sprinting = true
     player._bumpType = "stagger"
-    player._bumpedChr = MockZombie()  -- engine sets this on collision
-    player._blockMovement = true       -- BumpedState.enter() blocks movement
+    local originalZombie = MockZombie()
+    player._bumpedChr = originalZombie  -- engine sets this on collision
+    player._blockMovement = true         -- BumpedState.enter() blocks movement
     local zombie = MockZombie()
     fireRamCollision(player, zombie)
     assert_eq(player._bumpType, "", "expected bumpType cleared")
-    assert_eq(player._bumpedChr, nil, "expected bumpedChr cleared")
+    -- bumpedChr is deliberately PRESERVED — the engine uses it as a re-bump
+    -- guard in separate() (getBumpedChr() != obj). Clearing it would let
+    -- separate() re-bump us with the same zombie every tick.
+    assert_eq(player._bumpedChr, originalZombie,
+        "expected bumpedChr PRESERVED (engine re-bump guard)")
     assert_eq(player._blockMovement, false,
         "expected movement explicitly unblocked after charge")
 end)
@@ -1327,132 +1332,113 @@ test("batteringram with UT_martial damages zombie on collision", function()
         "expected zombie health reduced by martial synergy, got " .. tostring(zombie:getHealth()))
 end)
 
--- ===== INTEGRATION: simulate actual PZ tick loop to verify freeze fix =====
+-- ===== INTEGRATION: verify the engine's re-bump guard is preserved =====
 -- The PZ tick order (from decompiled IsoPlayer.updateInternal2) is:
 --   1. doDeferredMovement()         — movement applied
 --   2. OnPlayerUpdate                — our hook fires here
 --   3. separate() collision detection — re-detects overlap, re-sets bumpType
 --   4. stateMachine.update()         — BumpedState enters if bumpType set
--- If the player is still overlapping the zombie after step 2, separate() will
--- re-bump them and BumpedState will re-enter, freezing the player.
--- The fix: the callback physically pushes the player past the zombie (setX/setY)
--- so that separate() finds no overlap at step 3.
+--
+-- The fix relies on the engine's OWN re-bump guard in separate() (line 1222):
+--   if getBumpedChr() != obj then bump = true
+-- By preserving bumpedChr (NOT clearing it), separate() skips re-bumping for
+-- the same zombie. No teleportation, no setX/setY. The player moves naturally.
 
-local function simulateSeparate(player, zombie, overlapThreshold)
-    -- Simulates PZ's separate() collision detection.
-    -- If player is within overlapThreshold of the zombie, re-sets bump state.
-    overlapThreshold = overlapThreshold or 0.3
-    local dx = player:getX() - zombie:getX()
-    local dy = player:getY() - zombie:getY()
-    local dist = math.sqrt(dx * dx + dy * dy)
-    if dist < overlapThreshold then
-        player:setBumpType("stagger")
-        player:setBumpedChr(zombie)
-        return true  -- collision detected
-    end
-    return false  -- no collision
+--- Simulates PZ's separate() re-bump guard.
+--- Returns true if the same zombie WOULD re-trigger a bump (i.e., bumpedChr
+--- does NOT match, so the engine would think this is a new collision).
+local function wouldSeparateRebump(player, zombie)
+    -- IsoMovingObject.java line 1222: getBumpedChr() != obj
+    return player:getBumpedChr() ~= zombie
 end
 
-test("INTEGRATION: batteringram nudges player past zombie so separate() finds no overlap", function()
-    -- Place player at (10,10), zombie at (10,10) — exact overlap
-    local player = MockPlayer(
-        { "UniversalTraits:UT_batteringram" },
-        { x = 10, y = 10 }
-    )
+test("INTEGRATION: batteringram preserves bumpedChr so engine guard blocks re-bump", function()
+    local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
     Events.OnCreatePlayer:fire(0, player)
     player._sprinting = true
-    local zombie = MockZombie({ x = 10, y = 10 })
+    local zombie = MockZombie()
 
-    -- Simulate tick 0, step 3: engine detects collision
+    -- Simulate engine collision: separate() sets these on tick N
     player:setBumpType("stagger")
     player:setBumpedChr(zombie)
     player._blockMovement = true
 
-    -- Simulate tick 1, step 2: OnPlayerUpdate fires, our callback runs
+    -- Tick N+1 step 2: OnPlayerUpdate → our callback fires
     fireRamCollision(player, zombie)
 
-    -- Player should have been pushed away from zombie
-    local dx = player:getX() - zombie:getX()
-    local dy = player:getY() - zombie:getY()
-    local dist = math.sqrt(dx * dx + dy * dy)
-    assert_true(dist > 0.3,
-        "expected player pushed past overlap threshold, got distance=" .. string.format("%.3f", dist))
-
-    -- Simulate tick 1, step 3: separate() runs — should NOT re-detect collision
-    local rebumped = simulateSeparate(player, zombie, 0.3)
-    assert_eq(rebumped, false,
-        "expected separate() to find no overlap after nudge")
+    -- bumpType cleared → BumpedState.execute() will unblock movement
     assert_eq(player._bumpType, "",
-        "expected bumpType to stay clear after nudge (no re-bump)")
-
-    -- Movement should be unblocked
+        "expected bumpType cleared so BumpedState.execute() unblocks")
     assert_eq(player._blockMovement, false,
         "expected movement unblocked after charge")
+
+    -- CRITICAL: bumpedChr is PRESERVED (not nil)
+    assert_eq(player:getBumpedChr(), zombie,
+        "expected bumpedChr PRESERVED — this is the engine's re-bump guard")
+
+    -- Tick N+1 step 3: separate() runs — engine guard prevents re-bump
+    assert_eq(wouldSeparateRebump(player, zombie), false,
+        "expected engine guard to block re-bump for same zombie (getBumpedChr == obj)")
+
+    -- Player position should NOT have changed (no teleport)
+    assert_eq(player:getX(), 0, "expected no X teleport")
+    assert_eq(player:getY(), 0, "expected no Y teleport")
 end)
 
-test("INTEGRATION: batteringram nudge works with offset positions", function()
-    -- Player at (10.1, 10.2), zombie at (10.0, 10.0) — slight offset
-    local player = MockPlayer(
-        { "UniversalTraits:UT_batteringram" },
-        { x = 10.1, y = 10.2 }
-    )
+test("INTEGRATION: engine guard allows bump from DIFFERENT zombie (cluster case)", function()
+    local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
     Events.OnCreatePlayer:fire(0, player)
     player._sprinting = true
-    local zombie = MockZombie({ x = 10.0, y = 10.0 })
+    local zombieA = MockZombie()
+    local zombieB = MockZombie()
 
+    -- Initial collision with zombie A
     player:setBumpType("stagger")
-    player:setBumpedChr(zombie)
-    player._blockMovement = true
+    player:setBumpedChr(zombieA)
+    fireRamCollision(player, zombieA)
 
-    fireRamCollision(player, zombie)
+    -- bumpedChr = zombieA → engine guard blocks re-bump from A
+    assert_eq(wouldSeparateRebump(player, zombieA), false,
+        "expected engine guard to block re-bump from same zombie A")
 
-    -- Player should preserve their charge direction (away from zombie)
-    local dx = player:getX() - zombie:getX()
-    local dy = player:getY() - zombie:getY()
-    assert_true(dx > 0, "expected player pushed in +X direction (charge direction)")
-    assert_true(dy > 0, "expected player pushed in +Y direction (charge direction)")
-
-    -- Should be past overlap threshold
-    local dist = math.sqrt(dx * dx + dy * dy)
-    assert_true(dist > 0.5, "expected player clearly past zombie, got " .. string.format("%.3f", dist))
-
-    local rebumped = simulateSeparate(player, zombie, 0.3)
-    assert_eq(rebumped, false, "expected no re-collision after nudge")
+    -- But a DIFFERENT zombie can trigger a new bump
+    assert_eq(wouldSeparateRebump(player, zombieB), true,
+        "expected engine guard to ALLOW bump from different zombie B")
 end)
 
-test("INTEGRATION: suppression clears re-bumps as safety net", function()
-    -- Even with the nudge, test that the suppression system still works
-    local player = MockPlayer(
-        { "UniversalTraits:UT_batteringram" },
-        { x = 10, y = 10 }
-    )
+test("INTEGRATION: suppression clears re-bumps from different zombies in cluster", function()
+    local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
     Events.OnCreatePlayer:fire(0, player)
     player._sprinting = true
-    local zombie = MockZombie({ x = 10, y = 10 })
+    local zombieA = MockZombie()
+    local zombieB = MockZombie()
 
-    -- Initial bump
+    -- Initial bump from zombie A → callback fires via event
     player:setBumpType("stagger")
-    player:setBumpedChr(zombie)
-
-    -- Fire OnPlayerUpdate through the event (not direct callback) to test hook
+    player:setBumpedChr(zombieA)
     local md = player:getModData()
-    md.UT_prevBumped = false  -- set up for rising edge detection
+    md.UT_prevBumped = false  -- rising edge setup
     Events.OnPlayerUpdate:fire(player)
 
     -- Suppression should be active
     assert_true((md.UT_bumpSuppress or 0) > 0,
-        "expected bump suppression counter to be set after handled collision")
+        "expected suppression active after handled collision")
 
-    -- Simulate a re-bump by engine
+    -- Simulate separate() bumping with a DIFFERENT zombie (cluster scenario)
     player:setBumpType("stagger")
+    player:setBumpedChr(zombieB)
     player._blockMovement = true
 
-    -- Fire OnPlayerUpdate again — suppression should clear the re-bump
+    -- Next OnPlayerUpdate: suppression clears the re-bump
     Events.OnPlayerUpdate:fire(player)
     assert_eq(player._bumpType, "",
-        "expected suppression to clear re-bump")
+        "expected suppression to clear re-bump from different zombie")
     assert_eq(player._blockMovement, false,
-        "expected suppression to unblock movement")
+        "expected movement unblocked by suppression")
+
+    -- bumpedChr should still be zombieB (suppression doesn't clear it)
+    assert_eq(player:getBumpedChr(), zombieB,
+        "expected bumpedChr preserved even during suppression")
 end)
 
 -- ===== QA checklist follow-up coverage =====

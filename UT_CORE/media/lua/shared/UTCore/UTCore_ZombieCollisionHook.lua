@@ -69,14 +69,16 @@ local function onPlayerUpdate(player)
 
     -- Bump suppression: keep clearing the engine's re-bump each tick so
     -- the player can move through the zombie after a charge collision.
+    -- CRITICAL: Do NOT clear bumpedChr — the engine uses it as a re-bump
+    -- guard in separate() (line 1222: getBumpedChr() != obj). Preserving it
+    -- prevents the same zombie from re-triggering a bump. For different
+    -- zombies in a cluster, suppression clears the flags each tick until
+    -- the player sprints through.
     local suppress = md.UT_bumpSuppress or 0
     if suppress > 0 then
         md.UT_bumpSuppress = suppress - 1
-        if player:isBumped() then
-            player:setBumpType("")
-            player:setBumpFall(false)
-            player:setBumpedChr(nil)
-        end
+        player:setBumpType("")
+        player:setBumpFall(false)
         pcall(function() player:setBlockMovement(false) end)
         md.UT_prevBumped = false
         return
