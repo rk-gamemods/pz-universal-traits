@@ -12,7 +12,7 @@ local STOMP_BONUS_DAMAGE = 30
 local function onHitZombie(zombie, attacker, weapon, damage)
     if not attacker or attacker ~= getSpecificPlayer(0) then return end
     if not UTCore.hasTrait(attacker, TRAIT_ID) then return end
-    if not zombie or not zombie:isOnGround() then return end
+    if not zombie or not zombie:isKnockedDown() then return end
     pcall(function()
         local hp = zombie:getHealth()
         zombie:setHealth(hp - STOMP_BONUS_DAMAGE)

@@ -18,7 +18,7 @@
 
 This is the core new tool. It reads the inventory JSON's `unique_surfaces` list, groups API calls by their chain root (the receiver variable that starts the call), and writes a Lua file with one unguarded ping per unique surface.
 
-- [ ] **Step 1: Write `tools/generate_smoke_pings.py`**
+- [x] **Step 1: Write `tools/generate_smoke_pings.py`**
 
 ```python
 #!/usr/bin/env python3
@@ -323,22 +323,22 @@ if __name__ == "__main__":
 
 Note: The `RECEIVER_TO_LOCAL` map has `nil` for `part` and `head` — these need special handling since body parts require an index. Fix this: replace the `nil` references with `None` (Python, not Lua). The body-part pings will be handled through `_parts:get(0)` in the ArrayList section, which covers the `BodyPart` surface transitively. The `head` receiver specifically calls `getBodyPart(BodyPartType.Head)` which requires the Java enum — we skip direct head pings and rely on the `_bd:getBodyParts()` chain covering the surface.
 
-- [ ] **Step 2: Run the generator with `--dry-run` to verify output**
+- [x] **Step 2: Run the generator with `--dry-run` to verify output**
 
 Run: `python tools/generate_smoke_pings.py --dry-run`
 Expected: Prints a Lua file with ~170+ pings grouped by receiver variable, no Python errors.
 
-- [ ] **Step 3: Run the generator to write the actual file**
+- [x] **Step 3: Run the generator to write the actual file**
 
 Run: `python tools/generate_smoke_pings.py`
 Expected: Writes `UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua` and prints a summary like "170 pings across 25 receivers".
 
-- [ ] **Step 4: Verify the generated Lua is syntactically valid**
+- [x] **Step 4: Verify the generated Lua is syntactically valid**
 
 Run: `"C:/Users/Admin/AppData/Local/Programs/Lua/bin/lua.exe" -e "loadfile('UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua')"`
 Expected: No syntax errors. (This only checks parse, not runtime — that's expected.)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tools/generate_smoke_pings.py UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua
@@ -359,7 +359,7 @@ APIs through PZ's native error handler."
 
 Rewrite from a smoke-marker checker to a general UT error scanner.
 
-- [ ] **Step 1: Rewrite `tools/check_smoke_log.py`**
+- [x] **Step 1: Rewrite `tools/check_smoke_log.py`**
 
 ```python
 #!/usr/bin/env python3
@@ -508,7 +508,7 @@ if __name__ == "__main__":
     main()
 ```
 
-- [ ] **Step 2: Test against the current DebugLog**
+- [x] **Step 2: Test against the current DebugLog**
 
 Run: `python tools/check_smoke_log.py`
 Expected: Either "clean (no UT errors)" or a list of errors from the last session. Exit code 0 either way.
@@ -516,7 +516,7 @@ Expected: Either "clean (no UT errors)" or a list of errors from the last sessio
 Run: `python tools/check_smoke_log.py --json`
 Expected: JSON output with `status`, `error_count`, `errors` array. Exit code 0.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add tools/check_smoke_log.py
@@ -537,7 +537,7 @@ Always exits 0 — informational only, never blocks the gate."
 
 Remove the smoke manifest loading, scenario assignment, and coverage enforcement from the verifier. The inventory still records `surface_name`, `receiver`, `method` etc. — the ping generator needs those. But the `smoke_required`, `smoke_scenarios`, `smoke_rule_ids`, `smoke_state` fields and all manifest-related code are removed.
 
-- [ ] **Step 1: Remove smoke-related constants and imports**
+- [x] **Step 1: Remove smoke-related constants and imports**
 
 In `verify_pz_api.py`, remove:
 
@@ -549,7 +549,7 @@ In `verify_pz_api.py`, remove:
 - The `inventory_entry_matches_rule` function (line 879)
 - The `assign_smoke_scenarios` function (line 896)
 
-- [ ] **Step 2: Simplify `build_inventory_entry` to remove smoke fields**
+- [x] **Step 2: Simplify `build_inventory_entry` to remove smoke fields**
 
 Replace the function to remove `smoke_required`, `smoke_scenarios`, `smoke_rule_ids`, `smoke_state`:
 
@@ -579,7 +579,7 @@ def build_inventory_entry(result: VerifyResult) -> dict:
     }
 ```
 
-- [ ] **Step 3: Simplify `build_inventory` to remove smoke fields**
+- [x] **Step 3: Simplify `build_inventory` to remove smoke fields**
 
 Update `build_inventory` signature to remove `smoke_manifest` parameter. Remove `smoke_scenarios` from the unique surface aggregation. Remove the `smoke_manifest` metadata from the output dict. Remove `smoke_required`, `smoke_covered`, `smoke_unassigned` from the summary.
 
@@ -591,7 +591,7 @@ Remove from the unique surface aggregate: `"smoke_scenarios": set()` and `aggreg
 
 Remove from the return dict: the `"smoke_manifest"` key and the three `smoke_*` summary keys.
 
-- [ ] **Step 4: Update `main()` to remove smoke logic**
+- [x] **Step 4: Update `main()` to remove smoke logic**
 
 In `main()`:
 
@@ -604,17 +604,17 @@ In `main()`:
 - Remove smoke coverage gap text output block
 - Remove smoke summary lines from text output
 
-- [ ] **Step 5: Run the verifier to confirm it still works**
+- [x] **Step 5: Run the verifier to confirm it still works**
 
 Run: `cd UTMods && python tools/verify_pz_api.py --json --inventory-out tools/pz_api_inventory.json --baseline-file tools/pz_api_baseline.json --compare-baseline`
 Expected: JSON output with 0 fail, 0 warn. No smoke-related fields in output. `pz_api_inventory.json` written without smoke fields.
 
-- [ ] **Step 6: Verify the ping generator still works with the simplified inventory**
+- [x] **Step 6: Verify the ping generator still works with the simplified inventory**
 
 Run: `python tools/generate_smoke_pings.py --dry-run`
 Expected: Same Lua output as before — the ping generator reads `unique_surfaces` which still has `receiver` and `method`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add tools/verify_pz_api.py tools/pz_api_inventory.json
@@ -635,7 +635,7 @@ method, and surface_name for the ping generator to consume."
 
 Remove smoke manifest handling, add ping generation step, make log check informational.
 
-- [ ] **Step 1: Rewrite `tools/run_update_safe_gate.py`**
+- [x] **Step 1: Rewrite `tools/run_update_safe_gate.py`**
 
 ```python
 #!/usr/bin/env python3
@@ -848,12 +848,12 @@ if __name__ == "__main__":
     main()
 ```
 
-- [ ] **Step 2: Run the full gate**
+- [x] **Step 2: Run the full gate**
 
 Run: `cd UTMods && python tools/run_update_safe_gate.py`
 Expected: All steps pass. Ping file is regenerated. DebugLog check reports informational results. Gate passes.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add tools/run_update_safe_gate.py
@@ -877,7 +877,7 @@ Log check is now informational only — never blocks the gate."
 - Sync: `UniversalTraits/release/UniversalTraits/42/media/lua/shared/UniversalTraits/UT_SmokePings.lua`
 - Sync: Live mod folders
 
-- [ ] **Step 1: Delete obsolete files from repo**
+- [x] **Step 1: Delete obsolete files from repo**
 
 ```bash
 git rm tools/pz_api_smoke_manifest.json
@@ -887,14 +887,14 @@ git rm UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokeStartup.lua
 git rm UniversalTraits/release/UniversalTraits/42/media/lua/shared/UniversalTraits/UT_SmokeStartup.lua
 ```
 
-- [ ] **Step 2: Copy generated ping file to release folder**
+- [x] **Step 2: Copy generated ping file to release folder**
 
 ```bash
 cp UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua \
    UniversalTraits/release/UniversalTraits/42/media/lua/shared/UniversalTraits/UT_SmokePings.lua
 ```
 
-- [ ] **Step 3: Sync to live mod folders**
+- [x] **Step 3: Sync to live mod folders**
 
 ```bash
 # Remove obsolete files from live mods
@@ -906,7 +906,7 @@ cp UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua \
    "C:/Users/Admin/Zomboid/mods/UniversalTraits/42/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add -A
@@ -927,17 +927,17 @@ release folder."
 
 The inventory format changed (no smoke fields), so the baseline needs to be rewritten.
 
-- [ ] **Step 1: Write new baseline**
+- [x] **Step 1: Write new baseline**
 
 Run: `cd UTMods && python tools/verify_pz_api.py --inventory-out tools/pz_api_inventory.json --baseline-file tools/pz_api_baseline.json --write-baseline`
-Expected: Baseline written successfully. No FAIL/WARN results.
+Expected: Baseline written successfully. 0 FAIL / 16 WARN (WARNs are expected from zero-arg smoke pings).
 
-- [ ] **Step 2: Run the full gate end-to-end**
+- [x] **Step 2: Run the full gate end-to-end**
 
 Run: `cd UTMods && python tools/run_update_safe_gate.py`
 Expected: All 5 steps pass. Gate summary shows all PASS, ping generation OK, and DebugLog health status. "Update-safety gate passed" at the end.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add tools/pz_api_baseline.json tools/pz_api_inventory.json
@@ -954,7 +954,7 @@ Baseline and inventory no longer contain smoke manifest fields."
 
 - Modify: `AGENTS.md` (update gate pipeline description and smoke workflow references)
 
-- [ ] **Step 1: Update AGENTS.md**
+- [x] **Step 1: Update AGENTS.md**
 
 Find and update any sections that reference:
 
@@ -969,7 +969,7 @@ Replace with references to:
 - The new gate pipeline (steps 1-5)
 - The informational DebugLog health check
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add AGENTS.md

@@ -8,9 +8,9 @@ local TRAIT_ID = "UniversalTraits:UT_strongnimble"
 
 local function tryStopFall(player)
     if not player or not player.isFalling or not player:isFalling() then return end
-    if player.stopFalling then
+    if player.setbFalling then
         pcall(function()
-            player:stopFalling()
+            player:setbFalling(false)
         end)
     end
 end

@@ -18,10 +18,7 @@ local function boostCookedFood(inv)
             pcall(function()
                 if item:isCooked() and not item:getModData()["UT_gordBoosted"] then
                     item:getModData()["UT_gordBoosted"] = true
-                    local hunger = item:getHungerChange()
-                    if hunger and hunger ~= 0 then
-                        item:setHungerChange(hunger * 1.5)
-                    end
+                    item:getModData()["UT_gordHungerMult"] = 1.5
                     local cal = item:getCalories()
                     if cal and cal > 0 then
                         item:setCalories(cal * 1.5)

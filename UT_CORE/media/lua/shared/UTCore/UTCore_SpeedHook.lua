@@ -89,6 +89,10 @@ local function onPlayerMove()
     local scaledDx = dx * factor
     local scaledDy = dy * factor
 
+    if UTSmoke and UTSmoke.record then
+        UTSmoke.record("movement.frame-pipeline", string.format("mod=%.3f", mod))
+    end
+
     -- Per-frame delta cap: clamp the scaled delta so no single frame moves
     -- the player more than MAX_DELTA_PER_FRAME tiles in any direction.
     local len = math.sqrt(scaledDx * scaledDx + scaledDy * scaledDy)

@@ -50,6 +50,11 @@ local function onEveryOneMinute()
     if not player then return end
     if player:isAsleep() then return end
 
+    if UTSmoke and UTSmoke.record then
+        UTSmoke.record("environment.time-and-climate", "thermal-minute")
+        UTSmoke.record("player.stats", "thermal-minute")
+    end
+
     local md = player:getModData()
     local stats = player:getStats()
 

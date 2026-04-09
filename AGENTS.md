@@ -47,7 +47,7 @@ Two-mod layout targeting Project Zomboid Build 42 (Kahlua/Lua 5.x):
 - `tools/generate_smoke_pings.py` reads `tools/pz_api_inventory.json` and auto-generates `UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua` — unguarded API pings that fire at OnGameStart. If any method is missing, PZ's error handler reports it immediately.
 - `tools/check_smoke_log.py` scans the PZ DebugLog for UT-related runtime errors (informational only, always exits 0).
 - `tools/run_update_safe_gate.py` is the one-command local gate: UT_CORE tests, UniversalTraits tests, PZ API verification + baseline comparison, smoke ping generation, and DebugLog health check. Gate pass/fail is based only on tests + verifier.
-- Current verified baseline: `tools/pz_api_baseline.json` is green against `PZCodebase` build `svn-964`, the verifier has `0 FAIL / 15 WARN` (WARNs are expected from zero-arg smoke pings).
+- Current verified baseline: `tools/pz_api_baseline.json` is green against `PZCodebase` build `svn-964`, the verifier has `0 FAIL / 16 WARN` (WARNs are expected from zero-arg smoke pings).
 - The verifier still has a smaller triage set of explicit skips/unknown receivers (for example generic timed-action variables and a tree object path). Those are not yet part of the authoritative tracked surface and should be reduced over time rather than ignored.
 
 ---

@@ -14,11 +14,8 @@ end
 local function onFishCaught(player, fish)
     if not player then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
-    if fish then
-        local hunger = fish:getHungerChange()
-        if hunger then
-            fish:setHungerChange(hunger * 1.5)
-        end
+    if fish and fish.getModData then
+        fish:getModData()["UT_wildsmanFishHungerMult"] = 1.5
     end
 end
 

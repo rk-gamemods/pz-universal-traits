@@ -346,13 +346,19 @@ function MockTimedAction(player, actionType, baseDuration)
 end
 
 -- MockWeapon: simulates a PZ HandWeapon for MeleeDelayHook tests
-function MockWeapon(weaponType, meleeDelay, isTwoHand, isMelee)
+function MockWeapon(weaponType, meleeDelay, isTwoHand, isMelee, opts)
+    opts = opts or {}
     local _type       = weaponType or "HandAxe"
     local _delay      = meleeDelay or 0
     local _twoHand    = (isTwoHand == nil) and false or isTwoHand
     local _melee      = (isMelee == nil) and true or isMelee
+    local _moddata    = opts.moddata or {}
+    local _criticalChance = opts.criticalChance or 0
+    local _conditionLowerChance = opts.conditionLowerChance or 1
     local setDelayCalls = {}
+    local categories = opts.categories or {}
     return {
+        _mockType        = "HandWeapon",
         getType          = function(self) return _type end,
         getMeleeDelay    = function(self) return _delay end,
         setMeleeDelay    = function(self, v)
@@ -361,6 +367,17 @@ function MockWeapon(weaponType, meleeDelay, isTwoHand, isMelee)
         end,
         isTwoHandWeapon  = function(self) return _twoHand end,
         isMeleeWeapon    = function(self) return _melee end,
+        isOfWeaponCategory = function(self, category)
+            for _, value in ipairs(categories) do
+                if value == category then return true end
+            end
+            return false
+        end,
+        getModData       = function(self) return _moddata end,
+        getCriticalChance = function(self) return _criticalChance end,
+        setCriticalChance = function(self, value) _criticalChance = value end,
+        getConditionLowerChance = function(self) return _conditionLowerChance end,
+        setConditionLowerChance = function(self, value) _conditionLowerChance = value end,
         getSetDelayCalls = function(self) return setDelayCalls end,
     }
 end

@@ -703,6 +703,10 @@ end)
 -- ===== UT_actionhero runtime damage tests =====
 -- Load the trait file so its Events.OnWeaponHitCharacter.Add() fires.
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_actionhero.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_axes.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_improviser.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_gordanite.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_wildsman.lua")
 
 -- Helper: build a minimal weapon mock
 local function MockWeapon(typeName)
@@ -716,7 +720,7 @@ local function MockTarget(startHealth, opts)
     return {
         getHealth = function(self) return hp end,
         setHealth = function(self, v) hp = v end,
-        isZombie  = function(self) return opts.isZombie ~= false end,  -- defaults to true
+        _mockType = (opts.isZombie ~= false) and "IsoZombie" or "IsoGameCharacter",
     }
 end
 
@@ -1112,7 +1116,68 @@ test("strongnimble update tolerates missing stopFalling API", function()
         Events.OnPlayerUpdate:fire(player)
     end)
 
-    assert_eq(player:isFalling(), true, "expected smoke test to complete even when stopFalling is unavailable")
+    assert_eq(player:isFalling(), false, "expected falling state to clear via setbFalling(false)")
+end)
+
+test("axes boosts crit chance through WeaponCategory API", function()
+    local weapon = _G.MockWeapon("HandAxe", 0, false, true, {
+        categories = { WeaponCategory.AXE },
+        criticalChance = 15,
+    })
+    local player = MockPlayer({ "UniversalTraits:UT_axes" }, { primaryHandItem = weapon })
+
+    withActivePlayer(player, function()
+        for _ = 1, 30 do
+            Events.OnPlayerUpdate:fire(player)
+        end
+    end)
+
+    assert_eq(weapon:getCriticalChance(), 25, "expected UT_axes to add 10 crit chance once")
+end)
+
+test("improviser doubles condition lower chance via B42 API", function()
+    local weapon = _G.MockWeapon("HandAxe", 0, false, true, {
+        conditionLowerChance = 3,
+    })
+    local player = MockPlayer({ "UniversalTraits:UT_improviser" }, { primaryHandItem = weapon })
+
+    withActivePlayer(player, function()
+        for _ = 1, 30 do
+            Events.OnPlayerUpdate:fire(player)
+        end
+    end)
+
+    assert_eq(weapon:getConditionLowerChance(), 6, "expected UT_improviser to double condition lower chance")
+end)
+
+test("gordanite marks cooked food for hunger bonus and boosts calories once", function()
+    local item = MockItem("Stew", { isCooked = true, hungerChange = -20, calories = 200 })
+    local inventory = MockInventory(0, 8)
+    inventory:AddItem(item)
+    local player = MockPlayer({ "UniversalTraits:UT_gordanite" }, { inventory = inventory })
+
+    withActivePlayer(player, function()
+        for _ = 1, 60 do
+            Events.OnPlayerUpdate:fire(player)
+        end
+        for _ = 1, 60 do
+            Events.OnPlayerUpdate:fire(player)
+        end
+    end)
+
+    assert_eq(item:getModData()["UT_gordBoosted"], true, "expected cooked food to be marked as boosted")
+    assert_eq(item:getModData()["UT_gordHungerMult"], 1.5, "expected hunger multiplier marker")
+    assert_eq(item:getCalories(), 300, "expected calories to be multiplied once")
+end)
+
+test("wildsman marks caught fish for larger hunger restore", function()
+    local player = MockPlayer({ "UniversalTraits:UT_wildsman" })
+    local fish = MockItem("FishFillet", { hungerChange = -16, calories = 120 })
+
+    Events.OnFishCaught:fire(player, fish)
+
+    assert_eq(fish:getModData()["UT_wildsmanFishHungerMult"], 1.5,
+        "expected fish to carry a wildsman hunger multiplier")
 end)
 
 test("trekker restores walking endurance and normalizes walking calorie burn", function()
@@ -1616,6 +1681,23 @@ test("consumption hook sets UT_hadCaffeine when coffee consumed", function()
     ISEatFoodAction.perform(action)
     assert_true(player:getModData()["UT_hadCaffeine"] == true,
         "UT_hadCaffeine should be true after coffee consumed")
+end)
+
+test("consumption hook applies stored hunger bonus multipliers", function()
+    local player = MockPlayer({}, { hunger = 0.8, calories = 2000 })
+    local item = MockItem("Stew", {
+        hungerChange = -20,
+        calories = 200,
+        moddata = { UT_gordHungerMult = 1.5 },
+    })
+    local action = { character = player, item = item, percentage = 1.0 }
+
+    ISEatFoodAction.perform(action)
+
+    assert_eq(player:getStats():get(CharacterStat.HUNGER), 0,
+        "expected stored hunger bonus to reduce hunger and clamp at zero")
+    assert_eq(player:getNutrition():getCalories(), 2100,
+        "expected stored calorie bonus to add 50% extra calories")
 end)
 
 -- ─── UT_humanhamster ──────────────────────────────────────────────────────────

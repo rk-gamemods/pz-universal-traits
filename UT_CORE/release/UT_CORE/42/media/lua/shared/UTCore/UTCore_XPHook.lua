@@ -19,6 +19,9 @@ end
 
 local function onAddXP(player, perk, amount)
     if not player or not perk or not amount or amount <= 0 then return end
+    if UTSmoke and UTSmoke.record then
+        UTSmoke.record("skill-progression.xp", tostring(perk))
+    end
     local md = player:getModData()
     local perkName = tostring(perk)
 

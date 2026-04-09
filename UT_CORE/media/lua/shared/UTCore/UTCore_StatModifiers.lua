@@ -367,6 +367,10 @@ function UTCore.applyVehicleMod(player, stateKey, mods, vehicleOverride)
     local vehicle = vehicleOverride or (player.getVehicle and player:getVehicle())
     if not vehicle then return end
 
+    if UTSmoke and UTSmoke.record then
+        UTSmoke.record("vehicle.runtime", stateKey)
+    end
+
     local vmd = cacheVehicleBaseline(vehicle)
     if vmd.UT_vehicleTraitState == stateKey then return end
 

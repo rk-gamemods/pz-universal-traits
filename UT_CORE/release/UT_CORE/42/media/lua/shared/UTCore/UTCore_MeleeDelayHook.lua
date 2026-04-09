@@ -84,6 +84,10 @@ local function onPlayerUpdate(player)
     local category = getWeaponCategory(weapon)
     local newDelay = nil
 
+    if category ~= "other" and UTSmoke and UTSmoke.record then
+        UTSmoke.record("combat.weapon-runtime", category)
+    end
+
     -- Check standard 50% reduction traits
     for _, entry in ipairs(MELEE_TRAITS) do
         local traitId, reqCategory = entry[1], entry[2]

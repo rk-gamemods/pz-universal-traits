@@ -75,7 +75,14 @@ local function onPlayerUpdate(player)
     if not bd then return end
     if bd:getNumPartsBleeding() == 0 then return end
 
+    if UTSmoke and UTSmoke.record then
+        UTSmoke.record("player.body-damage", "bleed")
+    end
+
     local parts = bd:getBodyParts()
+    if UTSmoke and UTSmoke.record then
+        UTSmoke.record("runtime.java-interop", "body-parts")
+    end
     for i = 0, parts:size() - 1 do
         local part = parts:get(i)
         if part:bleeding() and not part:IsBleedingStemmed() then

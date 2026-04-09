@@ -72,6 +72,10 @@ local function onPlayerUpdate(player)
     local bumpedChr = player:getBumpedChr()
     if not isZombie(bumpedChr) then return end
 
+    if UTSmoke and UTSmoke.record then
+        UTSmoke.record("combat.zombie-collision", "bump")
+    end
+
     for _, fn in pairs(UTCore._zombieCollisionCallbacks) do
         fn(player, bumpedChr)
     end

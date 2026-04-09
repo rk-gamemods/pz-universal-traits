@@ -111,6 +111,7 @@ general DebugLog scanner. It finds the latest DebugLog and scans for UT-related
 errors or warnings.
 
 **What it looks for:**
+
 - Java RuntimeExceptions with UT file names in the stack trace (e.g.
   `UT_actionhero.lua:13`)
 - Lua errors referencing files under `UniversalTraits/` or `UTCore/`
@@ -126,11 +127,15 @@ shows:
 ```
 Live session health:         3 errors found (informational)
 ```
+
 or:
+
 ```
 Live session health:         clean (no UT errors in last session)
 ```
+
 or:
+
 ```
 Live session health:         no recent log found
 ```
@@ -138,12 +143,14 @@ Live session health:         no recent log found
 ## File Changes
 
 ### New files
+
 - `tools/generate_smoke_pings.py` — reads inventory JSON, writes the Lua ping
   file
 - `UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua` —
   generated, committed, deployed with mod
 
 ### Modified files
+
 - `tools/check_smoke_log.py` — rewritten to scan for UT errors instead of
   `[UT_SMOKE]` markers
 - `tools/run_update_safe_gate.py` — adds generate step, removes smoke
@@ -152,12 +159,14 @@ Live session health:         no recent log found
   scenario assignment logic
 
 ### Removed files
+
 - `tools/pz_api_smoke_manifest.json` — no longer needed
 - `UT_CORE/media/lua/shared/UTCore/UTCore_SmokeRecorder.lua` — no longer needed
 - `UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokeStartup.lua` —
   replaced by generated ping file
 
 ### Deployment sync
+
 After generation, the ping file is copied to `release/` and the live mod folder
 at `C:\Users\Admin\Zomboid\mods\UniversalTraits\`, same as any other Lua file.
 The removed files are also deleted from release and live mod folders.

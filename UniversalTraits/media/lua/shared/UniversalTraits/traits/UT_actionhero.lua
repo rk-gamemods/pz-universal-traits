@@ -10,7 +10,7 @@ local function onWeaponHitCharacter(player, weapon, target)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
 
     -- Guard: only applies to zombies, not NPCs or other players
-    if not target:isZombie() then return end
+    if not instanceof(target, "IsoZombie") then return end
 
     -- Guard: bare-hands only works via UT_martial
     if weapon:getType() == "BareHands" then

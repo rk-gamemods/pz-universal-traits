@@ -7,6 +7,12 @@ UTCore = UTCore or {}
 -- Cache CharacterTrait objects by string ID to avoid repeated registry lookups.
 local _traitCache = {}
 
+local function recordSmoke(scenarioId, detail)
+    if UTSmoke and UTSmoke.record then
+        UTSmoke.record(scenarioId, detail)
+    end
+end
+
 --- Nil-safe hasTrait check (B42.16+ registry API).
 -- @param player IsoPlayer
 -- @param traitId string  full namespaced ID e.g. "UniversalTraits:UT_swift"
@@ -14,6 +20,7 @@ local _traitCache = {}
 function UTCore.hasTrait(player, traitId)
     if not player then return false end
     if not instanceof(player, "IsoGameCharacter") then return false end
+    recordSmoke("player.core-runtime", traitId)
     local ct = _traitCache[traitId]
     if ct == nil then
         ct = CharacterTrait.get(ResourceLocation.of(traitId))
@@ -21,6 +28,17 @@ function UTCore.hasTrait(player, traitId)
     end
     if not ct then return false end
     return player:hasTrait(ct)
+end
+
+function UTCore.weaponHasCategory(weapon, category)
+    if not weapon or not category then return false end
+    if type(weapon.isOfWeaponCategory) ~= "function" then return false end
+
+    local ok, result = pcall(function()
+        return weapon:isOfWeaponCategory(category)
+    end)
+
+    return ok and result == true
 end
 
 local function safeCall(target, methodName)

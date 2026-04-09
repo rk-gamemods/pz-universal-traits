@@ -148,6 +148,20 @@ local function makeNutrition(opts)
     }
 end
 
+local function makeIndexedList(entries)
+    return {
+        size = function(self) return #entries end,
+        get = function(self, index) return entries[index + 1] end,
+        contains = function(self, value)
+            for _, entry in ipairs(entries) do
+                if entry == value then return true end
+            end
+            return false
+        end,
+        isEmpty = function(self) return #entries == 0 end,
+    }
+end
+
 function MockVehicle(opts)
     opts = opts or {}
     local moddata = opts.moddata or {}
@@ -318,6 +332,7 @@ function MockPlayer(traitList, opts)
         _falling             = opts.falling or false,
         isFalling            = function(self) return self._falling end,
         setFalling           = function(self, v) self._falling = v end,
+        setbFalling          = function(self, v) self._falling = v end,
         _currentActionState  = opts.currentActionState or "idle",
         getCurrentActionContextStateName = function(self) return self._currentActionState end,
     }
@@ -395,6 +410,10 @@ end
 UTCore.hasTrait = function(player, traitId)
     if not player then return false end
     return player:getTraits():contains(traitId)
+end
+UTCore.weaponHasCategory = function(weapon, category)
+    if not weapon or not category or type(weapon.isOfWeaponCategory) ~= "function" then return false end
+    return weapon:isOfWeaponCategory(category)
 end
 UTCore.applySpeedModifier   = function(player, v, sourceId)
     local _, buckets = ensureModifierBuckets(player)
@@ -875,13 +894,29 @@ function MockTimedAction(player, actionType, baseDuration)
     }
 end
 
-function MockWeapon(weaponType, meleeDelay, isTwoHand, isMelee)
+function MockWeapon(weaponType, meleeDelay, isTwoHand, isMelee, opts)
+    opts = opts or {}
     local _type = weaponType or "HandAxe"
     local _delay = meleeDelay or 0
     local _twoHand = (isTwoHand == nil) and false or isTwoHand
     local _melee = (isMelee == nil) and true or isMelee
+    local _moddata = opts.moddata or {}
+    local _criticalChance = opts.criticalChance or 0
+    local _conditionLowerChance = opts.conditionLowerChance or 1
     local setDelayCalls = {}
+    local categories = opts.categories
+    if not categories then
+        categories = {}
+        local lowerType = string.lower(_type)
+        if string.find(lowerType, "axe", 1, true) then
+            categories[#categories + 1] = WeaponCategory.AXE
+        end
+        if string.find(lowerType, "spear", 1, true) or string.find(lowerType, "pitchfork", 1, true) then
+            categories[#categories + 1] = WeaponCategory.SPEAR
+        end
+    end
     return {
+        _mockType = "HandWeapon",
         getType = function(self) return _type end,
         getMeleeDelay = function(self) return _delay end,
         setMeleeDelay = function(self, v)
@@ -890,6 +925,25 @@ function MockWeapon(weaponType, meleeDelay, isTwoHand, isMelee)
         end,
         isTwoHandWeapon = function(self) return _twoHand end,
         isMeleeWeapon = function(self) return _melee end,
+        isOfWeaponCategory = function(self, category)
+            for _, value in ipairs(categories) do
+                if value == category then return true end
+            end
+            return false
+        end,
+        getCategories = function(self)
+            local legacyNames = {}
+            for _, category in ipairs(categories) do
+                if category == WeaponCategory.AXE then legacyNames[#legacyNames + 1] = "Axe" end
+                if category == WeaponCategory.SPEAR then legacyNames[#legacyNames + 1] = "Spear" end
+            end
+            return makeIndexedList(legacyNames)
+        end,
+        getModData = function(self) return _moddata end,
+        getCriticalChance = function(self) return _criticalChance end,
+        setCriticalChance = function(self, value) _criticalChance = value end,
+        getConditionLowerChance = function(self) return _conditionLowerChance end,
+        setConditionLowerChance = function(self, value) _conditionLowerChance = value end,
         getSetDelayCalls = function(self) return setDelayCalls end,
     }
 end
@@ -937,6 +991,11 @@ else
     _G.Perks.Nimble = _G.Perks.Nimble or "Nimble"
     _G.Perks.Strength = _G.Perks.Strength or "Strength"
 end
+
+WeaponCategory = WeaponCategory or {
+    AXE = "AXE",
+    SPEAR = "SPEAR",
+}
 
 -- MockJavaPerk: simulates a PZ Java Perks enum object passed from the engine.
 -- In Kahlua, perk args arrive as Java objects: tostring() works, but '..' concat
@@ -1023,6 +1082,17 @@ end
 function MockItem(typeName, opts)
     opts = opts or {}
     local forageCategory = opts.forageCategory
+    local isFood = opts.isFood
+    if isFood == nil then
+        isFood = true
+    end
+    local isCooked = opts.isCooked or false
+    local hungerChange = opts.hungerChange
+    if hungerChange == nil then
+        hungerChange = -10
+    end
+    local calories = opts.calories or 100
+    local moddata = opts.moddata or {}
     -- Build the scriptItem with a forage category set compatible with B42 API
     local scriptItem = {
         getForageFocusCategories = function(self)
@@ -1035,10 +1105,19 @@ function MockItem(typeName, opts)
         end,
     }
     return {
+        _mockType = "InventoryItem",
         _type = typeName,
         getType           = function(self) return self._type end,
         getFullType       = function(self) return self._type end,
         getScriptItem     = function(self) return scriptItem end,
+        isFood            = function(self) return isFood end,
+        isCooked          = function(self) return isCooked end,
+        setCooked         = function(self, value) isCooked = value end,
+        getHungerChange   = function(self) return hungerChange end,
+        setHungerChange   = function(self, value) hungerChange = value end,
+        getCalories       = function(self) return calories end,
+        setCalories       = function(self, value) calories = value end,
+        getModData        = function(self) return moddata end,
     }
 end
 
@@ -1092,6 +1171,7 @@ function MockInventory(currentWeight, maxWeight)
         getWeight        = function(self) return currentWeight or 0 end,
         getCapacityWeight = function(self) return currentWeight or 0 end,
         getMaxWeight     = function(self) return maxWeight or 8 end,
+        getItems         = function(self) return makeIndexedList(_items) end,
         Remove       = function(self, item)
             for i, v in ipairs(_items) do
                 if v == item then table.remove(_items, i); return end
@@ -1126,6 +1206,45 @@ if not _G.Events.OnGameStart then
         end,
         _reset = function()
             _handlers = {}
+        end,
+    }
+end
+
+if not _G.Events.OnFishCaught then
+    local _handlers = {}
+    _G.Events.OnFishCaught = {
+        Add = function(self_or_fn, fn)
+            local f = fn or self_or_fn
+            table.insert(_handlers, f)
+        end,
+        fire = function(...)
+            fireHandlers(_G.Events.OnFishCaught, _handlers, ...)
+        end,
+    }
+end
+
+if not _G.Events.OnFenceClimb then
+    local _handlers = {}
+    _G.Events.OnFenceClimb = {
+        Add = function(self_or_fn, fn)
+            local f = fn or self_or_fn
+            table.insert(_handlers, f)
+        end,
+        fire = function(...)
+            fireHandlers(_G.Events.OnFenceClimb, _handlers, ...)
+        end,
+    }
+end
+
+if not _G.Events.OnClimbFence then
+    local _handlers = {}
+    _G.Events.OnClimbFence = {
+        Add = function(self_or_fn, fn)
+            local f = fn or self_or_fn
+            table.insert(_handlers, f)
+        end,
+        fire = function(...)
+            fireHandlers(_G.Events.OnClimbFence, _handlers, ...)
         end,
     }
 end

@@ -56,11 +56,60 @@ local function isWildPlantItem(item)
     return ok and cats ~= nil and not cats:isEmpty()
 end
 
+local function getFoodBonusMultiplier(item)
+    if not item or type(item.getModData) ~= "function" then return 1.0 end
+
+    local md = item:getModData()
+    local multiplier = 1.0
+
+    if type(md["UT_gordHungerMult"]) == "number" and md["UT_gordHungerMult"] > multiplier then
+        multiplier = md["UT_gordHungerMult"]
+    end
+
+    if type(md["UT_wildsmanFishHungerMult"]) == "number" and md["UT_wildsmanFishHungerMult"] > multiplier then
+        multiplier = md["UT_wildsmanFishHungerMult"]
+    end
+
+    return multiplier
+end
+
+local function applyFoodBonusEffects(character, item, percentage)
+    local multiplier = getFoodBonusMultiplier(item)
+    if multiplier <= 1.0 then return end
+
+    local consumedFraction = percentage or 1.0
+    if consumedFraction <= 0 then return end
+
+    pcall(function()
+        local stats = character:getStats()
+        local hungerChange = item:getHungerChange()
+        if hungerChange and hungerChange < 0 then
+            local bonus = hungerChange * consumedFraction * (multiplier - 1.0)
+            stats:set(CharacterStat.HUNGER, math.max(0, stats:get(CharacterStat.HUNGER) + bonus))
+        end
+
+        local calories = item.getCalories and item:getCalories() or nil
+        if calories and calories > 0 then
+            local nutrition = character.getNutrition and character:getNutrition() or nil
+            if nutrition and nutrition.setCalories and nutrition.getCalories then
+                nutrition:setCalories(nutrition:getCalories() + (calories * consumedFraction * (multiplier - 1.0)))
+            end
+        end
+    end)
+end
+
 -- ─── ISEatFoodAction override ──────────────────────────────────────────────────
 -- Fires when the player finishes eating any consumable item.
 
-local function applyEatEffects(character, item)
+local function applyEatEffects(character, item, percentage)
     if not character or not item then return end
+
+    if UTSmoke and UTSmoke.record then
+        UTSmoke.record("inventory.item-runtime", tostring(item.getType and item:getType() or "<unknown>"))
+        UTSmoke.record("timed-action.runtime", "ISEatFoodAction")
+    end
+
+    applyFoodBonusEffects(character, item, percentage)
 
     -- UT_addictedtocaffeine: mark caffeine consumed
     if isCaffeineItem(item) and UTCore.hasTrait(character, "UniversalTraits:UT_addictedtocaffeine") then
@@ -112,8 +161,9 @@ local function hookISEatFoodAction()
     if not _G["ISEatFoodAction"] then return end
     local original = ISEatFoodAction.perform
     function ISEatFoodAction:perform()
+        local percentage = self.percentage or 1.0
         original(self)
-        pcall(applyEatEffects, self.character, self.item)
+        pcall(applyEatEffects, self.character, self.item, percentage)
     end
 end
 
@@ -122,6 +172,11 @@ end
 
 local function applyDrinkEffects(character, item)
     if not character or not item then return end
+
+    if UTSmoke and UTSmoke.record then
+        UTSmoke.record("inventory.item-runtime", tostring(item.getType and item:getType() or "<unknown>"))
+        UTSmoke.record("timed-action.runtime", "ISDrinkFluidAction")
+    end
 
     -- UT_addictedtocaffeine: mark caffeine consumed from drinks (coffee is a liquid in B42)
     if isCaffeineItem(item) and UTCore.hasTrait(character, "UniversalTraits:UT_addictedtocaffeine") then

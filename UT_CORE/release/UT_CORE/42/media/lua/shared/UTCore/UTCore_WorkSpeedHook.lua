@@ -42,6 +42,10 @@ function UTCore.applyWorkDuration(timedAction, base)
     local totalMod = workMod + readMod + transferMod
     if totalMod == 0 then return base end
 
+    if UTSmoke and UTSmoke.record then
+        UTSmoke.record("timed-action.runtime", timedAction.Type or "<unknown>")
+    end
+
     return math.max(1, math.floor(base * (1.0 + totalMod)))
 end
 

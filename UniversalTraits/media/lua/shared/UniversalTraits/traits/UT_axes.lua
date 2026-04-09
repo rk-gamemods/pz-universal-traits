@@ -14,7 +14,7 @@ local tickCounter = 0
 local function applyCritBonus(weapon)
     if not weapon or not instanceof(weapon, "HandWeapon") then return end
     pcall(function()
-        local isAxe = weapon:getCategories():contains("Axe")
+        local isAxe = UTCore.weaponHasCategory(weapon, WeaponCategory.AXE)
         if not isAxe then return end
 
         local wmd = weapon:getModData()

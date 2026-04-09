@@ -30,11 +30,18 @@ Use this for any change to a trait's behavior, cost, description, or exclusivity
 - [ ] Update or add `UT_CORE/test/run_tests.lua` if shared hooks/helpers changed
 - [ ] Update mocks if new PZ API methods or events were introduced
 - [ ] Ensure the UniversalTraits consistency audit still passes: registries, `UT_character_traits.txt`, `UI.json`, and `traits/UT_*.lua` must all agree
+- [ ] Run the smoke-aware PZ API verifier so the tracked game-facing surface and smoke mappings stay current
+- [ ] Refresh `tools/pz_api_baseline.json` only after the verifier is green and the new inventory is the accepted truth
+- [ ] Validate a live or synthetic smoke log with `tools/check_smoke_log.py` before calling the update-safe gate complete
 - [ ] Run both suites from repo root:
 
 ```bash
 "C:\Users\Admin\AppData\Local\Programs\Lua\bin\lua.exe" UT_CORE/test/run_tests.lua
 "C:\Users\Admin\AppData\Local\Programs\Lua\bin\lua.exe" UniversalTraits/test/run_tests.lua
+python tools/verify_pz_api.py --require-smoke-coverage
+python tools/verify_pz_api.py --require-smoke-coverage --write-baseline --baseline-file tools/pz_api_baseline.json
+python tools/check_smoke_log.py --inventory-file tools/pz_api_inventory.json --smoke-log C:/path/to/DebugLog.txt
+python tools/run_update_safe_gate.py --smoke-log C:/path/to/DebugLog.txt
 ```
 
 ## 5. Release And Deploy
@@ -43,7 +50,7 @@ Use this for any change to a trait's behavior, cost, description, or exclusivity
 - [ ] Sync `UniversalTraits/release/UniversalTraits/42/media/` from `UniversalTraits/media/`
 - [ ] If translations changed, verify `UI.json` was synced into source, release, and live copies and that no legacy text translation file reappeared
 - [ ] Copy root `mod.info` into each release package root
-- [ ] Deploy live to `C:\Users\Admin\Zomboid\mods\<ModName>\42\media\`
+- [ ] Deploy live by mirroring the release package root into `C:\Users\Admin\Zomboid\mods\<ModName>\`
 - [ ] Verify source, release, and live hashes match for any runtime file changed
 
 ## 6. Documentation And Commit

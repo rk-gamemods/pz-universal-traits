@@ -14,11 +14,11 @@ local function applyDegradeReduction(weapon)
     pcall(function()
         local wmd = weapon:getModData()
         if wmd["UT_improviserBaseCondChance"] == nil then
-            wmd["UT_improviserBaseCondChance"] = weapon:getConditionLowerChanceOneIn()
+            wmd["UT_improviserBaseCondChance"] = weapon:getConditionLowerChance()
         end
         local target = wmd["UT_improviserBaseCondChance"] * 2
-        if weapon:getConditionLowerChanceOneIn() ~= target then
-            weapon:setConditionLowerChanceOneIn(target)
+        if weapon:getConditionLowerChance() ~= target then
+            weapon:setConditionLowerChance(target)
         end
     end)
 end
