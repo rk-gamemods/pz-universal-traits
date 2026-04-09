@@ -58,30 +58,42 @@ local function isZombie(chr)
 end
 
 -- After a collision callback handles a bump, suppress the engine's re-bump
--- for several ticks. Without this, the engine re-detects the overlap every
--- tick, re-enters BumpedState, and re-blocks movement before the player can
--- escape — causing a permanent freeze.
-local BUMP_SUPPRESSION_TICKS = 8
+-- for enough ticks that all bump animations complete AND the player can move
+-- through. BumpedState animations last 20-30 frames (~330-500ms); 30 ticks
+-- covers the longest animation plus margin for the player to clear overlap.
+-- During suppression we also re-assert bumpedChr each tick because
+-- BumpedState.exit() calls setBumpedChr(null) — destroying the engine's
+-- own re-bump guard. Without re-assertion, separate() would re-trigger
+-- the bump as soon as the animation ends.
+local BUMP_SUPPRESSION_TICKS = 30
 
 local function onPlayerUpdate(player)
     if not player then return end
     local md = player:getModData()
 
-    -- Bump suppression: keep clearing the engine's re-bump each tick so
-    -- the player can move through the zombie after a charge collision.
-    -- CRITICAL: Do NOT clear bumpedChr — the engine uses it as a re-bump
-    -- guard in separate() (line 1222: getBumpedChr() != obj). Preserving it
-    -- prevents the same zombie from re-triggering a bump. For different
-    -- zombies in a cluster, suppression clears the flags each tick until
-    -- the player sprints through.
+    -- Bump suppression: clear bump flags each tick and re-assert the
+    -- bumpedChr guard so the player can move through after a charge.
+    --
+    -- Why re-assert bumpedChr: BumpedState.exit() calls setBumpedChr(null),
+    -- destroying the engine's own re-bump guard (separate() line 1222:
+    -- getBumpedChr() != obj). If we don't restore it, separate() will
+    -- re-trigger the bump the moment the animation completes.
     local suppress = md.UT_bumpSuppress or 0
     if suppress > 0 then
         md.UT_bumpSuppress = suppress - 1
+        -- Re-assert the bumpedChr guard if BumpedState.exit() cleared it
+        local guardZombie = md.UT_bumpGuardZombie
+        if guardZombie and not player:getBumpedChr() then
+            pcall(function() player:setBumpedChr(guardZombie) end)
+        end
         player:setBumpType("")
         player:setBumpFall(false)
         pcall(function() player:setBlockMovement(false) end)
         md.UT_prevBumped = false
         return
+    else
+        -- Suppression just expired: clean up stored zombie reference
+        md.UT_bumpGuardZombie = nil
     end
 
     local wasBumped = md.UT_prevBumped or false
@@ -108,6 +120,7 @@ local function onPlayerUpdate(player)
     -- Activate bump suppression if any callback handled the collision
     if anyHandled then
         md.UT_bumpSuppress = BUMP_SUPPRESSION_TICKS
+        md.UT_bumpGuardZombie = bumpedChr  -- store for re-assertion
     end
 end
 

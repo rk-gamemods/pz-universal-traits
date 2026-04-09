@@ -1478,6 +1478,69 @@ test("INTEGRATION: suppression clears re-bumps from different zombies in cluster
         "expected bumpedChr preserved even during suppression")
 end)
 
+test("INTEGRATION: suppression re-asserts bumpedChr after BumpedState.exit() clears it", function()
+    -- This test reproduces the actual freeze scenario:
+    -- BumpedState.exit() calls setBumpedChr(null) when the stagger animation
+    -- completes (~20-30 frames). If suppression doesn't restore bumpedChr,
+    -- separate() sees getBumpedChr() != obj → re-bumps → new BumpedState → freeze.
+    local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
+    Events.OnCreatePlayer:fire(0, player)
+    player._sprinting = true
+    local zombie = MockZombie()
+
+    -- Initial bump → rising edge → callback
+    player:setBumpType("stagger")
+    player:setBumpedChr(zombie)
+    local md = player:getModData()
+    md.UT_prevBumped = false
+    Events.OnPlayerUpdate:fire(player)
+
+    -- Suppression active, bumpGuardZombie stored
+    assert_true((md.UT_bumpSuppress or 0) > 0, "expected suppression active")
+    assert_eq(md.UT_bumpGuardZombie, zombie, "expected guard zombie stored")
+
+    -- Simulate BumpedState.exit() clearing bumpedChr (animation completed)
+    player:setBumpedChr(nil)
+    assert_eq(player:getBumpedChr(), nil, "precondition: bumpedChr was cleared by exit()")
+
+    -- Without re-assertion, separate() would re-bump here:
+    assert_eq(wouldSeparateRebump(player, zombie), true,
+        "precondition: guard is BROKEN after BumpedState.exit()")
+
+    -- Next OnPlayerUpdate tick: suppression should RE-ASSERT bumpedChr
+    Events.OnPlayerUpdate:fire(player)
+
+    -- Guard should be restored
+    assert_eq(player:getBumpedChr(), zombie,
+        "expected bumpedChr RE-ASSERTED by suppression after BumpedState.exit()")
+    assert_eq(wouldSeparateRebump(player, zombie), false,
+        "expected engine guard restored — separate() should NOT re-bump")
+    assert_eq(player._blockMovement, false,
+        "expected movement still unblocked")
+end)
+
+test("INTEGRATION: suppression cleans up guard zombie when it expires", function()
+    local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
+    Events.OnCreatePlayer:fire(0, player)
+    player._sprinting = true
+    local zombie = MockZombie()
+
+    -- Initial bump → rising edge → callback
+    player:setBumpType("stagger")
+    player:setBumpedChr(zombie)
+    local md = player:getModData()
+    md.UT_prevBumped = false
+    Events.OnPlayerUpdate:fire(player)
+
+    -- Drain suppression to 0
+    md.UT_bumpSuppress = 0
+
+    -- Next OnPlayerUpdate: suppression expired → cleanup
+    Events.OnPlayerUpdate:fire(player)
+    assert_eq(md.UT_bumpGuardZombie, nil,
+        "expected guard zombie cleared after suppression expires")
+end)
+
 -- ===== QA checklist follow-up coverage =====
 
 test("noxpshooter blocks Aiming and Reloading XP through the XP hook", function()
