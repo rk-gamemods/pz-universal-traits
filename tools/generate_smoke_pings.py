@@ -145,7 +145,7 @@ RECEIVER_TO_LOCAL = {
     "ISEatFoodAction":    None,  # handled in Lua globals section
     "ISDrinkFluidAction": None,  # handled in Lua globals section
     "ISFitnessAction":    None,  # handled in Lua globals section
-    "ENDURANCE":  "_stats",
+    "ENDURANCE":  None,  # CharacterStat enum constant, not the Stats object
     "spottedList": None,  # handled in ArrayList section,
     "part":       None,  # handled specially via _parts
     "head":       None,  # handled specially via _bd

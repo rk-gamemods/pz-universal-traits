@@ -8,33 +8,51 @@
 --
 -- Uses UTCore_ZombieCollisionHook, which detects the real collision event from
 -- the engine (player:isBumped() rising edge + player:getBumpedChr() == zombie).
--- Returning true tells the hook to suppress re-bump for several ticks,
--- preventing the freeze caused by the engine re-entering BumpedState every tick
--- while the player still physically overlaps the zombie.
+--
+-- CRITICAL ENGINE CONSTRAINT (verified from decompiled source):
+--   OnPlayerUpdate fires BEFORE separate() collision detection in the same tick.
+--   Clearing bumpType here is futile — separate() re-detects the overlap and
+--   re-enters BumpedState on the same tick. The player must be physically moved
+--   past the zombie so separate() finds no overlap. We push the player ~0.6
+--   tiles along their sprint direction using setX/setY.
 
 local TRAIT_ID        = "UniversalTraits:UT_batteringram"
 local MARTIAL_TRAIT   = "UniversalTraits:UT_martial"
 local ENDURANCE_DRAIN = 0.05  -- per collision (~20 before fully exhausted)
+local NUDGE_DISTANCE  = 0.6   -- tiles to push player past zombie (~overlap threshold)
 
 -- Only registered when the trait is active — no hasTrait guard needed inside.
 local function onZombieCollision(player, zombie)
     -- Only trigger while actively sprinting or running (walking into a zombie does nothing)
     if not player:isSprinting() and not player:isRunning() then return false end
 
-    -- Cancel the native stagger/trip: clear ALL bump state so BumpedState
-    -- releases the movement lock. The hook's suppression system will keep
-    -- clearing re-bumps for several ticks while the player moves through.
+    -- Cancel the native stagger/trip state
     player:setBumpType("")
     player:setBumpFall(false)
     player:setBumpedChr(nil)
-    -- Explicitly unblock movement — BumpedState.enter() already called
-    -- setBlockMovement(true) before our callback fired. pcall-guarded
-    -- because setBlockMovement may not be Lua-exposed in all PZ builds.
     pcall(function() player:setBlockMovement(false) end)
 
+    -- Push the player past the zombie so separate() finds no overlap on this tick.
+    -- Use vector from zombie→player (the direction the player is charging through).
+    local px, py = player:getX(), player:getY()
+    local zx, zy = zombie:getX(), zombie:getY()
+    local dx = px - zx
+    local dy = py - zy
+    local dist = math.sqrt(dx * dx + dy * dy)
+    if dist > 0.001 then
+        -- Normalize and push along charge direction
+        dx = dx / dist
+        dy = dy / dist
+    else
+        -- Player and zombie at exact same position: push along X axis as fallback
+        dx = 1
+        dy = 0
+    end
+    player:setX(px + dx * NUDGE_DISTANCE)
+    player:setY(py + dy * NUDGE_DISTANCE)
+
     -- Knock the zombie down. hitFromBehind=true selects the faster
-    -- "slammed forward" animation — visually matches a charging impact
-    -- regardless of the zombie's facing direction.
+    -- "slammed forward" animation — visually matches a charging impact.
     zombie:knockDown(true)
 
     -- Drain endurance per collision
@@ -49,7 +67,7 @@ local function onZombieCollision(player, zombie)
         UT_martial.applyBonusDamage(player, zombie, endurance)
     end
 
-    return true  -- signal: handled, activate bump suppression
+    return true  -- signal: handled, activate bump suppression as safety net
 end
 
 -- Declare collision handler — UTCore handles OnCreatePlayer registration,

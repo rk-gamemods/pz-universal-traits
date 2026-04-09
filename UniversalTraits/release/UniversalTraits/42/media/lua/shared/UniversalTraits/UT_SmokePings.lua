@@ -44,9 +44,6 @@ local function runPings()
     -- _nutrition (receivers: nutrition)
     _ = _nutrition:getCalories()
 
-    -- _stats (receivers: ENDURANCE)
-    _ = _stats:getMaximumValue()
-
     -- _wornItems (receivers: wornItems)
     _ = _wornItems:size()
 

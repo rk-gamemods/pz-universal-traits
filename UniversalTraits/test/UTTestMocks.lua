@@ -618,6 +618,8 @@ function MockZombie(opts)
     local _health        = opts.health or 100
     local _knocked       = false
     local knockDownCalls = {}
+    local _x = opts.x or 0
+    local _y = opts.y or 0
     return {
         isAlwaysKnockedDown = function(self) return false end,
         knockDown           = function(self, fromBehind)
@@ -628,6 +630,8 @@ function MockZombie(opts)
         getHealth           = function(self) return _health end,
         setHealth           = function(self, v) _health = v end,
         getKnockDownCalls   = function(self) return knockDownCalls end,
+        getX                = function(self) return _x end,
+        getY                = function(self) return _y end,
     }
 end
 
