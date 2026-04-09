@@ -114,7 +114,7 @@ CHAIN_SETUP = [
     # From player
     ("_stats",      "player",      "getStats()"),
     ("_bd",         "player",      "getBodyDamage()"),
-    ("_nutrition",  "_bd",         "getNutrition()"),
+    ("_nutrition",  "player",      "getNutrition()"),
     ("_inv",        "player",      "getInventory()"),
     ("_wornItems",  "player",      "getWornItems()"),
     ("_square",     "player",      "getCurrentSquare()"),
@@ -180,8 +180,33 @@ def load_inventory(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+# Method prefixes that are safe to call at startup (read-only / no side effects).
+# Anything not matching these prefixes is skipped to avoid mutating game state.
+SAFE_METHOD_PREFIXES = (
+    "get", "is", "has", "num", "size",
+)
+
+
+def _zero_arg_surfaces(inventory: dict) -> set[tuple[str, str]]:
+    """Return (receiver, method) pairs that have at least one real zero-arg call site."""
+    zero_arg: set[tuple[str, str]] = set()
+    for cs in inventory.get("call_sites", []):
+        # Exclude SmokePings' own entries (they always emit 0 args)
+        if "UT_SmokePings" in cs.get("relative_file", ""):
+            continue
+        if cs.get("arg_count", 1) == 0:
+            zero_arg.add((cs["receiver"], cs["method"]))
+    return zero_arg
+
+
 def build_ping_groups(inventory: dict) -> dict[str, list[str]]:
-    """Group unique surfaces by receiver, returning {receiver: [method, ...]}."""
+    """Group unique surfaces by receiver, returning {receiver: [method, ...]}.
+
+    Only includes methods that have at least one real (non-SmokePings) call
+    site with zero arguments, avoiding runtime crashes from calling setters
+    or methods that require parameters.
+    """
+    zero_arg = _zero_arg_surfaces(inventory)
     groups: dict[str, list[str]] = defaultdict(list)
     for surface in inventory.get("unique_surfaces", []):
         if surface["verification_kind"] == "script_xpboosts":
@@ -190,6 +215,11 @@ def build_ping_groups(inventory: dict) -> dict[str, list[str]]:
         if receiver in SKIP_RECEIVERS:
             continue
         method = surface["method"]
+        if (receiver, method) not in zero_arg:
+            continue
+        # Only ping read-only methods to avoid mutating game state at startup
+        if not method.startswith(SAFE_METHOD_PREFIXES):
+            continue
         groups[receiver].append(method)
     # Sort methods within each group for stable output
     return {r: sorted(set(methods)) for r, methods in groups.items()}
