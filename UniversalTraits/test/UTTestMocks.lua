@@ -352,6 +352,9 @@ function MockPlayer(traitList, opts)
         setbFalling          = function(self, v) self._falling = v end,
         _currentActionState  = opts.currentActionState or "idle",
         getCurrentActionContextStateName = function(self) return self._currentActionState end,
+        -- Public field: runningTime (IsoPlayer line 347)
+        -- Used by separate() for bump threshold check (runningTime > 0.5)
+        runningTime = opts.runningTime or 1.0,
     }
     return player
 end

@@ -1,25 +1,18 @@
 -- UT_batteringram.lua
--- Intercepts actual zombie collisions (player physically bumps a zombie) while
--- sprinting or running, replacing the native stagger/trip with a knockdown.
--- Player is immune to the stagger and trip effects during these collisions.
--- Each collision drains a small amount of endurance (~20 before exhausted).
+-- Intercepts zombie collisions while sprinting or running, knocking the zombie
+-- down and draining endurance. Sprint charges deal direct impact damage.
+--
+-- Bump immunity is handled by UTCore_ZombieCollisionHook's preemptive
+-- runningTime prevention — this callback does NOT touch any player bump state.
+-- The hook zeros player.runningTime each tick when zombies are in collision
+-- range, which prevents separate() from ever triggering a bump.
+--
+-- The callback fires when a zombie enters collision range (proximity-based),
+-- NOT on bump rising edge. This means the trait effect (knockdown, damage)
+-- applies proactively, before the engine even attempts a bump check.
+--
 -- Synergy: if the player also has UT_martial, delegates to UT_martial.applyBonusDamage
 -- so the damage formula stays in one place.
---
--- Uses UTCore_ZombieCollisionHook, which detects the real collision event from
--- the engine (player:isBumped() rising edge + player:getBumpedChr() == zombie).
---
--- HOW THE FIX WORKS (verified from decompiled IsoMovingObject.separate()):
---   The engine's separate() collision detection has a built-in re-bump guard:
---     if player:getBumpedChr() != obj then bump = true
---   As long as bumpedChr still points at the zombie, the SAME zombie cannot
---   re-trigger a bump. By clearing bumpType/bumpFall/blockMovement but
---   PRESERVING bumpedChr, the player can move freely while the engine's own
---   guard prevents re-bump from that specific zombie.
---   For zombie clusters (different zombies), the 30-tick suppression in
---   UTCore_ZombieCollisionHook proactively knocks down ALL nearby standing
---   zombies, fires callbacks for new bumps from different zombies, and
---   sets setBumpDone(true) to accelerate BumpedState exit.
 
 local TRAIT_ID        = "UniversalTraits:UT_batteringram"
 local MARTIAL_TRAIT   = "UniversalTraits:UT_martial"
@@ -27,19 +20,12 @@ local ENDURANCE_DRAIN_RUN    = 0.05   -- per collision while running (~20 before
 local ENDURANCE_DRAIN_SPRINT = 0.03   -- per collision while sprinting (~33 before exhausted)
 local SPRINT_DAMAGE          = 0.15   -- direct health damage to zombie on sprint charge
 
--- Only registered when the trait is active — no hasTrait guard needed inside.
+-- Called when a zombie enters collision range while player is running/sprinting.
+-- The hook already filters for movement state; double-check as safety.
 local function onZombieCollision(player, zombie)
     local sprinting = player:isSprinting()
     -- Only trigger while actively sprinting or running (walking into a zombie does nothing)
     if not sprinting and not player:isRunning() then return false end
-
-    -- Cancel the native stagger/trip flags so BumpedState.execute() unblocks movement.
-    -- CRITICAL: Do NOT clear bumpedChr — the engine uses it as a re-bump guard
-    -- (IsoMovingObject.separate() line 1222: getBumpedChr() != obj).
-    -- Clearing it would let separate() re-bump us with the same zombie every tick.
-    player:setBumpType("")
-    player:setBumpFall(false)
-    pcall(function() player:setBlockMovement(false) end)
 
     -- Knock the zombie down. hitFromBehind=true selects the faster
     -- "slammed forward" animation — visually matches a charging impact.
@@ -63,7 +49,7 @@ local function onZombieCollision(player, zombie)
         UT_martial.applyBonusDamage(player, zombie, endurance)
     end
 
-    return true  -- signal: handled, activate bump suppression as safety net
+    return true  -- signal: collision was handled
 end
 
 -- Declare collision handler — UTCore handles OnCreatePlayer registration,

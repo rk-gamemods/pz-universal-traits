@@ -1,32 +1,42 @@
 -- UTCore_ZombieCollisionHook.lua
--- Detects the rising edge of player:isBumped() with a zombie as the bump source.
--- Fires registered callbacks with (player, zombie), letting traits intercept the
--- collision before the native stagger/fall animation locks in.
+-- Preemptive bump prevention for zombie collision traits.
 --
--- What "zombie collision" means (verified against IsoMovingObject.java, B42):
---   When the player physically overlaps a zombie by more than the threshold, the engine
---   calls setBumpedChr(zombie), setBumpType(...), then reportEvent("wasBumped").
---   This transitions the player into BumpedState, which plays the stagger or trip
---   animation and optionally blocks movement.
---   player:isBumped() == true while bumpType is non-empty.
---   player:getBumpedChr() holds the zombie that caused the bump.
+-- STRATEGY (v3 — "work WITH the engine"):
+--   Instead of reacting to bumps and fighting BumpedState, we PREVENT the
+--   bump from ever triggering by zeroing player.runningTime each tick when
+--   the player is sprinting/running near zombies with active collision handlers.
 --
--- Cancelling a collision from inside a callback:
---   player:setBumpType("")   → clears isBumped(); disables stagger movement-block
---   player:setBumpFall(false) → prevents the trip/fall animation
+-- HOW IT WORKS (verified from decompiled B42 source):
+--   The engine's bump condition in IsoMovingObject.separate() (line ~1224):
+--     bump = true when:
+--       WalkSpeed > 0.2 AND runningTime > 0.5 AND getBumpedChr() != obj
 --
--- Multi-zombie suppression (the battering-ram freeze fix):
---   The PRIMARY freeze cause is BumpedState never exiting. BumpedState.enter()
---   sets BumpDone=false. The animation state machine holds the player in the
---   stagger animation until BumpDone becomes true. While in BumpedState,
---   doDeferredMovement() drives position from animation root motion (which
---   yields zero forward movement), so the player is physically frozen even if
---   blockMovement is cleared per tick.
---   Fix: force BumpDone=true and animation completion variables (BumpAnimFinished,
---   BumpFallAnimFinished) on BOTH the initial callback tick and every suppression
---   tick. This triggers BumpedState.exit() during stateMachine.update().
---   Secondary: proactively knock down nearby standing zombies during suppression
---   to prevent separate() from re-bumping with different zombies.
+--   Tick execution order in IsoPlayer.updateInternal2():
+--     Line 2064: runningTime incremented     — BEFORE OnPlayerUpdate
+--     Line 2222: OnPlayerUpdate fires         — OUR HOOK (sets runningTime=0)
+--     Line 2634: separate() runs              — reads runningTime for bump check
+--     Line 3867: calculateWalkSpeed()         — AFTER separate() (irrelevant)
+--
+--   By setting player.runningTime = 0 in OnPlayerUpdate, separate() reads
+--   0 > 0.5 → false → no bump → no BumpedState → no stagger/trip/freeze.
+--   The engine never enters BumpedState. No state machine overrides needed.
+--
+--   runningTime is a public float field (IsoPlayer line 347) used ONLY for
+--   the bump check in separate(). No other code reads it between OnPlayerUpdate
+--   and separate(). Self-heals: the engine recalculates it at line 2064 every tick.
+--
+-- WHY PREVIOUS APPROACHES FAILED:
+--   v1: Cleared bumpType/bumpFall/blockMovement but BumpDone stayed false →
+--       BumpedState never exited → animation drove zero-movement → freeze.
+--   v2: Forced BumpDone=true + animation variables every tick → still froze
+--       because the full BumpedState lifecycle (complexity 65 in separate())
+--       has too many interdependent paths to manage from Lua.
+--   v3 (this): Prevents BumpedState from ever being entered. No fighting.
+--
+-- CALLBACK TRIGGER:
+--   Callbacks fire when a NEW zombie enters collision range while the player
+--   is running/sprinting, not on bump rising edge. Per-zombie dedup prevents
+--   callbacks from re-firing while the same zombie stays in range.
 --
 -- Trait API (preferred):
 --   UTCore.declareZombieCollisionHandler(traitId, fn)
@@ -45,11 +55,36 @@ UTCore._zombieCollisionCallbacks = UTCore._zombieCollisionCallbacks or {}
 -- declare function, but nothing can accidentally wipe it by clearing a UTCore field.
 local _declarations = {}
 
+-- Collision range: player width (0.3) + zombie width (0.3) = 0.6 tiles.
+-- Slightly generous to catch zombies that separate() would check next.
+local COLLISION_RANGE = 0.7
+
+---------------------------------------------------------------------------
+-- Debug logging
+---------------------------------------------------------------------------
+-- Toggle at runtime:
+--   UTCore.setCollisionDebug(true)     — global toggle
+--   player:getModData().UT_DEBUG_COLLISIONS = true  — per-save toggle
+
+function UTCore.setCollisionDebug(enabled)
+    UTCore._debugCollisions = enabled ~= false
+    print("[UTCore:ZCollision] Debug " .. (UTCore._debugCollisions and "ON" or "OFF"))
+end
+
+local function dbg(msg)
+    if not UTCore._debugCollisions then return end
+    print("[UTCore:ZCollision] " .. tostring(msg))
+end
+
+---------------------------------------------------------------------------
+-- Public API
+---------------------------------------------------------------------------
+
 --- Declare a zombie collision handler for a trait. Call once at file-load time.
 --- The handler is automatically registered on OnCreatePlayer (new game + save load)
 --- and re-registered by the integrity check if the callbacks table is ever cleared.
 ---   traitId:   full trait ID, e.g. "UniversalTraits:UT_batteringram"
----   handlerFn: function(player, zombie) — called once per collision rising edge
+---   handlerFn: function(player, zombie) — called when zombie enters collision range
 function UTCore.declareZombieCollisionHandler(traitId, handlerFn)
     _declarations[traitId] = handlerFn
 end
@@ -62,56 +97,62 @@ function UTCore.unregisterZombieCollisionHandler(traitId)
     UTCore._zombieCollisionCallbacks[traitId] = nil
 end
 
+---------------------------------------------------------------------------
+-- Zombie detection
+---------------------------------------------------------------------------
+
 -- isAlwaysKnockedDown() is declared on IsoZombie, not on IsoGameCharacter or IsoPlayer.
--- A successful pcall confirms the bumped entity is a zombie.
+-- A successful pcall confirms the entity is a zombie.
 local function isZombie(chr)
     if not chr then return false end
     local ok = pcall(function() chr:isAlwaysKnockedDown() end)
     return ok
 end
 
--- After a collision callback handles a bump, suppress the engine's re-bump
--- for enough ticks that the player clears the zombie's collision radius.
---
--- ROOT CAUSE OF THE FREEZE (verified from decompiled B42 Java source):
---   BumpedState.enter() sets BumpDone=false.  The animation state machine
---   keeps the player IN BumpedState until BumpDone becomes true (set by an
---   animation event that fires when the stagger/trip animation finishes).
---   While in BumpedState, doDeferredMovement() (line 2076 in IsoPlayer.java)
---   drives position from the ANIMATION, not from input. The bump animation
---   yields zero forward motion, so the player is physically frozen even if
---   blockMovement is cleared.
---
---   Our callbacks clear bumpType/bumpFall/blockMovement, but BumpDone is
---   never set to true because the animation never reaches its normal end.
---   Result: BumpedState never exits → permanent freeze.
---
--- Fix: On the initial callback tick AND every suppression tick, we force
---   BumpDone=true plus the animation completion variables. This tells the
---   animation state machine the bump is done, triggering the exit transition.
---   BumpedState.exit() clears bumpedChr, so we re-assert the guard each
---   tick during suppression to prevent separate() from re-bumping.
---
--- Secondary defense (multi-zombie): separate() iterates ALL nearby objects
---   and bumps with each zombie where getBumpedChr() != obj. We proactively
---   knock down all standing zombies in collision range to prevent this.
-local BUMP_SUPPRESSION_TICKS = 30
+---------------------------------------------------------------------------
+-- Per-tick update
+---------------------------------------------------------------------------
 
--- Collision range: player width (0.3) + zombie width (0.3) = 0.6 tiles.
--- Slightly generous to catch zombies that separate() would trigger next tick.
-local COLLISION_RANGE = 0.7
+local function onPlayerUpdate(player)
+    if not player then return end
 
---- Knock down every standing zombie within collision range of the player.
---- Called during suppression to prevent separate() from triggering new bumps.
---- Returns the number of zombies knocked down.
-local function knockNearbyStandingZombies(player)
+    -- No handlers registered → nothing to do
+    local hasHandlers = false
+    for _ in pairs(UTCore._zombieCollisionCallbacks) do
+        hasHandlers = true
+        break
+    end
+    if not hasHandlers then return end
+
+    -- Only active while running or sprinting (walking doesn't trigger bumps)
+    local sprinting = player:isSprinting()
+    local running = player:isRunning()
+    if not sprinting and not running then
+        -- Clear handled set when player stops (fresh start on next run)
+        local md = player:getModData()
+        if md.UT_handledZombies then md.UT_handledZombies = nil end
+        -- One-time cleanup of old moddata from previous suppression approach
+        if md.UT_bumpSuppress then
+            md.UT_bumpSuppress = nil
+            md.UT_bumpGuardZombie = nil
+            md.UT_prevBumped = nil
+            dbg("Cleaned up old suppression moddata")
+        end
+        return
+    end
+
     local sq = player:getCurrentSquare()
-    if not sq then return 0 end
-    local px, py, pz = player:getX(), player:getY(), player:getZ()
+    if not sq then return end
     local cell = getCell()
-    if not cell then return 0 end
+    if not cell then return end
+
+    local px, py, pz = player:getX(), player:getY(), player:getZ()
     local sqX, sqY, sqZ = sq:getX(), sq:getY(), sq:getZ()
-    local count = 0
+    local md = player:getModData()
+    local prevHandled = md.UT_handledZombies or {}
+    local newHandled = {}
+    local foundNearby = false
+
     for dx = -1, 1 do
         for dy = -1, 1 do
             local checkSq = cell:getGridSquare(sqX + dx, sqY + dy, sqZ)
@@ -126,8 +167,22 @@ local function knockNearbyStandingZombies(player)
                             local ddy = py - oy
                             local dist = math.sqrt(ddx * ddx + ddy * ddy)
                             if dist < COLLISION_RANGE then
-                                pcall(function() obj:knockDown(true) end)
-                                count = count + 1
+                                foundNearby = true
+                                local zKey = tostring(obj)
+                                newHandled[zKey] = true
+
+                                -- Fire callbacks for NEW zombies entering range
+                                if not prevHandled[zKey] then
+                                    dbg("Zombie in range: " .. zKey
+                                        .. " dist=" .. string.format("%.2f", dist)
+                                        .. (sprinting and " [SPRINT]" or " [RUN]"))
+                                    for traitId, fn in pairs(UTCore._zombieCollisionCallbacks) do
+                                        local ok, err = pcall(fn, player, obj)
+                                        if not ok then
+                                            dbg("Callback ERROR [" .. traitId .. "]: " .. tostring(err))
+                                        end
+                                    end
+                                end
                             end
                         end
                     end
@@ -135,100 +190,26 @@ local function knockNearbyStandingZombies(player)
             end
         end
     end
-    return count
-end
 
-local function onPlayerUpdate(player)
-    if not player then return end
-    local md = player:getModData()
+    md.UT_handledZombies = newHandled
 
-    -- Bump suppression: clear bump flags each tick, proactively knock down
-    -- nearby zombies to prevent separate() from re-triggering bumps, and
-    -- fire callbacks for any new zombie bump that slipped through.
-    local suppress = md.UT_bumpSuppress or 0
-    if suppress > 0 then
-        md.UT_bumpSuppress = suppress - 1
-
-        -- If separate() bumped us with a NEW zombie since last tick,
-        -- fire callbacks so traits can handle it (knockdown, endurance, etc.)
-        if player:isBumped() then
-            local newZombie = player:getBumpedChr()
-            if newZombie and isZombie(newZombie) and newZombie ~= md.UT_bumpGuardZombie then
-                for _, fn in pairs(UTCore._zombieCollisionCallbacks) do
-                    pcall(fn, player, newZombie)
-                end
-                md.UT_bumpGuardZombie = newZombie
-                md.UT_bumpSuppress = BUMP_SUPPRESSION_TICKS  -- reset timer
-            end
+    -- ===== PREEMPTIVE BUMP PREVENTION =====
+    -- Set runningTime=0 so separate() sees 0 > 0.5 → false → no bump.
+    -- runningTime is a public float field on IsoPlayer (line 347).
+    -- It self-heals: the engine recalculates it at line 2064 every tick.
+    if foundNearby then
+        local ok, err = pcall(function()
+            local prev = player.runningTime
+            player.runningTime = 0
+            dbg("runningTime: " .. string.format("%.1f", prev or -1) .. " -> 0")
+        end)
+        if not ok then
+            dbg("FAILED to set runningTime: " .. tostring(err))
         end
-
-        -- Proactive: knock down any standing zombie in collision range
-        -- so separate() finds nothing to bump with when it runs later
-        knockNearbyStandingZombies(player)
-
-        -- Clear all bump fields and force BumpedState to exit.
-        -- BumpDone + animation variables tell the animation state machine
-        -- the bump is complete → triggers exit transition on next
-        -- stateMachine.update() (runs AFTER OnPlayerUpdate + separate()).
-        player:setBumpType("")
-        player:setBumpFall(false)
-        pcall(function() player:setBlockMovement(false) end)
-        pcall(function() player:setBumpDone(true) end)
-        pcall(function() player:setVariable("BumpAnimFinished", true) end)
-        pcall(function() player:setVariable("BumpFallAnimFinished", true) end)
-
-        -- Always re-assert guard zombie (not just when nil — separate()
-        -- overwrites bumpedChr to the new zombie but we need our guard)
-        local guardZombie = md.UT_bumpGuardZombie
-        if guardZombie then
-            pcall(function() player:setBumpedChr(guardZombie) end)
-        end
-
-        md.UT_prevBumped = false
-        return
-    else
-        -- Suppression just expired: clean up stored zombie reference
-        md.UT_bumpGuardZombie = nil
     end
 
-    local wasBumped = md.UT_prevBumped or false
-    local nowBumped = player:isBumped()
-
-    md.UT_prevBumped = nowBumped
-
-    -- Only fire on the rising edge (false → true transition)
-    if not (nowBumped and not wasBumped) then return end
-
-    local bumpedChr = player:getBumpedChr()
-    if not isZombie(bumpedChr) then return end
-
-    if UTSmoke and UTSmoke.record then
-        UTSmoke.record("combat.zombie-collision", "bump")
-    end
-
-    local anyHandled = false
-    for _, fn in pairs(UTCore._zombieCollisionCallbacks) do
-        local handled = fn(player, bumpedChr)
-        if handled then anyHandled = true end
-    end
-
-    -- Activate bump suppression if any callback handled the collision
-    if anyHandled then
-        md.UT_bumpSuppress = BUMP_SUPPRESSION_TICKS
-        md.UT_bumpGuardZombie = bumpedChr
-
-        -- CRITICAL: Force BumpedState to exit. Without this, the animation
-        -- state machine keeps the player stuck in BumpedState forever because
-        -- BumpDone is still false (enter() set it, animation never finished).
-        -- doDeferredMovement() drives position from animation — the bump
-        -- animation yields zero motion — so the player is physically frozen.
-        pcall(function() player:setBumpDone(true) end)
-        pcall(function() player:setVariable("BumpAnimFinished", true) end)
-        pcall(function() player:setVariable("BumpFallAnimFinished", true) end)
-
-        -- Immediately knock down nearby zombies so separate() (which runs
-        -- AFTER OnPlayerUpdate in the same tick) finds no standing targets
-        knockNearbyStandingZombies(player)
+    if foundNearby and UTSmoke and UTSmoke.record then
+        UTSmoke.record("combat.zombie-collision", "preempt")
     end
 end
 
