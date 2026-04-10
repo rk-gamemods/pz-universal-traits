@@ -15,9 +15,11 @@
 --   As long as bumpedChr still points at the zombie, the SAME zombie cannot
 --   re-trigger a bump. By clearing bumpType/bumpFall/blockMovement but
 --   PRESERVING bumpedChr, the player can move freely while the engine's own
---   guard prevents the infinite re-bump loop. No teleportation needed.
---   For zombie clusters (different zombies), the 8-tick suppression in
---   UTCore_ZombieCollisionHook handles clearing re-bumps from other zombies.
+--   guard prevents re-bump from that specific zombie.
+--   For zombie clusters (different zombies), the 30-tick suppression in
+--   UTCore_ZombieCollisionHook proactively knocks down ALL nearby standing
+--   zombies, fires callbacks for new bumps from different zombies, and
+--   sets setBumpDone(true) to accelerate BumpedState exit.
 
 local TRAIT_ID        = "UniversalTraits:UT_batteringram"
 local MARTIAL_TRAIT   = "UniversalTraits:UT_martial"

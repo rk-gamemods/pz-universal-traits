@@ -219,6 +219,7 @@ function MockPlayer(traitList, opts)
     local wornItems          = opts.wornItems or nil  -- MockWornItems object or nil
     local inventory          = opts.inventory or nil  -- MockInventory object or nil
     local square             = opts.square or nil    -- mock square object or nil
+    local variables          = {}                     -- generic animation variables store
     local xp = {
         _log = {},
         AddXP = function(self, perk, amount) table.insert(self._log, { perk=perk, amount=amount }) end,
@@ -318,6 +319,19 @@ function MockPlayer(traitList, opts)
         _blockMovement       = false,
         setBlockMovement     = function(self, v) self._blockMovement = v end,
         getBlockMovement     = function(self) return self._blockMovement end,
+        _bumpDone            = false,
+        setBumpDone          = function(self, v) self._bumpDone = v end,
+        isBumpDone           = function(self) return self._bumpDone end,
+        -- Generic animation variable store (setVariable/getVariable/clearVariable)
+        setVariable          = function(self, key, val)
+            variables[key] = tostring(val)
+        end,
+        getVariable          = function(self, key) return variables[key] end,
+        getVariableBoolean   = function(self, key)
+            return variables[key] == "true"
+        end,
+        clearVariable        = function(self, key) variables[key] = nil end,
+        _variables           = variables,  -- expose for test assertions
         _z                   = opts.z or 0,
         getZ                 = function(self) return self._z end,
         setZ                 = function(self, v) self._z = v end,
@@ -620,6 +634,7 @@ function MockZombie(opts)
     local knockDownCalls = {}
     local _x = opts.x or 0
     local _y = opts.y or 0
+    local _z = opts.z or 0
     return {
         isAlwaysKnockedDown = function(self) return false end,
         knockDown           = function(self, fromBehind)
@@ -627,11 +642,13 @@ function MockZombie(opts)
             table.insert(knockDownCalls, fromBehind)
         end,
         isKnockedDown       = function(self) return _knocked end,
+        isOnFloor           = function(self) return _knocked end,
         getHealth           = function(self) return _health end,
         setHealth           = function(self, v) _health = v end,
         getKnockDownCalls   = function(self) return knockDownCalls end,
         getX                = function(self) return _x end,
         getY                = function(self) return _y end,
+        getZ                = function(self) return _z end,
     }
 end
 
@@ -1198,6 +1215,42 @@ function MockSquare()
             table.insert(self._dropped, item)
         end,
     }
+end
+
+-- MockCollisionSquare — square with positioned moving objects for separate() tests
+-- sqX, sqY, sqZ: tile coordinates (integers)
+-- movingObjects: array of mock zombie/player objects
+function MockCollisionSquare(sqX, sqY, sqZ, movingObjects)
+    movingObjects = movingObjects or {}
+    local list = {
+        size = function(self) return #movingObjects end,
+        get  = function(self, i) return movingObjects[i + 1] end,  -- 0-indexed
+    }
+    return {
+        getX = function(self) return sqX end,
+        getY = function(self) return sqY end,
+        getZ = function(self) return sqZ end,
+        getMovingObjects = function(self) return list end,
+        AddWorldInventoryItem = function(self, item, _x, _y, _z) end,
+    }
+end
+
+-- MockCell — minimal cell mock for getCell():getGridSquare(x, y, z)
+-- squares: table keyed by "x,y,z" → MockCollisionSquare
+function MockCell(squares)
+    return {
+        getGridSquare = function(self, x, y, z)
+            local key = tostring(x) .. "," .. tostring(y) .. "," .. tostring(z)
+            return squares[key]
+        end,
+    }
+end
+
+-- getCell() global mock — set _G._mockCell before tests that need it
+if not _G.getCell then
+    _G.getCell = function()
+        return _G._mockCell
+    end
 end
 
 -- OnGameStart event mock (needed for UT_physicallyactive and UT_ItemConsumptionHooks)

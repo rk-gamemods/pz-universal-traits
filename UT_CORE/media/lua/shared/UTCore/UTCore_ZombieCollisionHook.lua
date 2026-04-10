@@ -15,6 +15,19 @@
 --   player:setBumpType("")   → clears isBumped(); disables stagger movement-block
 --   player:setBumpFall(false) → prevents the trip/fall animation
 --
+-- Multi-zombie suppression (the battering-ram freeze fix):
+--   The PRIMARY freeze cause is BumpedState never exiting. BumpedState.enter()
+--   sets BumpDone=false. The animation state machine holds the player in the
+--   stagger animation until BumpDone becomes true. While in BumpedState,
+--   doDeferredMovement() drives position from animation root motion (which
+--   yields zero forward movement), so the player is physically frozen even if
+--   blockMovement is cleared per tick.
+--   Fix: force BumpDone=true and animation completion variables (BumpAnimFinished,
+--   BumpFallAnimFinished) on BOTH the initial callback tick and every suppression
+--   tick. This triggers BumpedState.exit() during stateMachine.update().
+--   Secondary: proactively knock down nearby standing zombies during suppression
+--   to prevent separate() from re-bumping with different zombies.
+--
 -- Trait API (preferred):
 --   UTCore.declareZombieCollisionHandler(traitId, fn)
 --     Called at file-load time. Declares intent — the handler is automatically
@@ -58,37 +71,119 @@ local function isZombie(chr)
 end
 
 -- After a collision callback handles a bump, suppress the engine's re-bump
--- for enough ticks that all bump animations complete AND the player can move
--- through. BumpedState animations last 20-30 frames (~330-500ms); 30 ticks
--- covers the longest animation plus margin for the player to clear overlap.
--- During suppression we also re-assert bumpedChr each tick because
--- BumpedState.exit() calls setBumpedChr(null) — destroying the engine's
--- own re-bump guard. Without re-assertion, separate() would re-trigger
--- the bump as soon as the animation ends.
+-- for enough ticks that the player clears the zombie's collision radius.
+--
+-- ROOT CAUSE OF THE FREEZE (verified from decompiled B42 Java source):
+--   BumpedState.enter() sets BumpDone=false.  The animation state machine
+--   keeps the player IN BumpedState until BumpDone becomes true (set by an
+--   animation event that fires when the stagger/trip animation finishes).
+--   While in BumpedState, doDeferredMovement() (line 2076 in IsoPlayer.java)
+--   drives position from the ANIMATION, not from input. The bump animation
+--   yields zero forward motion, so the player is physically frozen even if
+--   blockMovement is cleared.
+--
+--   Our callbacks clear bumpType/bumpFall/blockMovement, but BumpDone is
+--   never set to true because the animation never reaches its normal end.
+--   Result: BumpedState never exits → permanent freeze.
+--
+-- Fix: On the initial callback tick AND every suppression tick, we force
+--   BumpDone=true plus the animation completion variables. This tells the
+--   animation state machine the bump is done, triggering the exit transition.
+--   BumpedState.exit() clears bumpedChr, so we re-assert the guard each
+--   tick during suppression to prevent separate() from re-bumping.
+--
+-- Secondary defense (multi-zombie): separate() iterates ALL nearby objects
+--   and bumps with each zombie where getBumpedChr() != obj. We proactively
+--   knock down all standing zombies in collision range to prevent this.
 local BUMP_SUPPRESSION_TICKS = 30
+
+-- Collision range: player width (0.3) + zombie width (0.3) = 0.6 tiles.
+-- Slightly generous to catch zombies that separate() would trigger next tick.
+local COLLISION_RANGE = 0.7
+
+--- Knock down every standing zombie within collision range of the player.
+--- Called during suppression to prevent separate() from triggering new bumps.
+--- Returns the number of zombies knocked down.
+local function knockNearbyStandingZombies(player)
+    local sq = player:getCurrentSquare()
+    if not sq then return 0 end
+    local px, py, pz = player:getX(), player:getY(), player:getZ()
+    local cell = getCell()
+    if not cell then return 0 end
+    local sqX, sqY, sqZ = sq:getX(), sq:getY(), sq:getZ()
+    local count = 0
+    for dx = -1, 1 do
+        for dy = -1, 1 do
+            local checkSq = cell:getGridSquare(sqX + dx, sqY + dy, sqZ)
+            if checkSq then
+                local objects = checkSq:getMovingObjects()
+                for j = 0, objects:size() - 1 do
+                    local obj = objects:get(j)
+                    if obj ~= player and isZombie(obj) then
+                        local ox, oy, oz = obj:getX(), obj:getY(), obj:getZ()
+                        if math.abs(pz - oz) <= 0.3 then
+                            local ddx = px - ox
+                            local ddy = py - oy
+                            local dist = math.sqrt(ddx * ddx + ddy * ddy)
+                            if dist < COLLISION_RANGE then
+                                pcall(function() obj:knockDown(true) end)
+                                count = count + 1
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return count
+end
 
 local function onPlayerUpdate(player)
     if not player then return end
     local md = player:getModData()
 
-    -- Bump suppression: clear bump flags each tick and re-assert the
-    -- bumpedChr guard so the player can move through after a charge.
-    --
-    -- Why re-assert bumpedChr: BumpedState.exit() calls setBumpedChr(null),
-    -- destroying the engine's own re-bump guard (separate() line 1222:
-    -- getBumpedChr() != obj). If we don't restore it, separate() will
-    -- re-trigger the bump the moment the animation completes.
+    -- Bump suppression: clear bump flags each tick, proactively knock down
+    -- nearby zombies to prevent separate() from re-triggering bumps, and
+    -- fire callbacks for any new zombie bump that slipped through.
     local suppress = md.UT_bumpSuppress or 0
     if suppress > 0 then
         md.UT_bumpSuppress = suppress - 1
-        -- Re-assert the bumpedChr guard if BumpedState.exit() cleared it
-        local guardZombie = md.UT_bumpGuardZombie
-        if guardZombie and not player:getBumpedChr() then
-            pcall(function() player:setBumpedChr(guardZombie) end)
+
+        -- If separate() bumped us with a NEW zombie since last tick,
+        -- fire callbacks so traits can handle it (knockdown, endurance, etc.)
+        if player:isBumped() then
+            local newZombie = player:getBumpedChr()
+            if newZombie and isZombie(newZombie) and newZombie ~= md.UT_bumpGuardZombie then
+                for _, fn in pairs(UTCore._zombieCollisionCallbacks) do
+                    pcall(fn, player, newZombie)
+                end
+                md.UT_bumpGuardZombie = newZombie
+                md.UT_bumpSuppress = BUMP_SUPPRESSION_TICKS  -- reset timer
+            end
         end
+
+        -- Proactive: knock down any standing zombie in collision range
+        -- so separate() finds nothing to bump with when it runs later
+        knockNearbyStandingZombies(player)
+
+        -- Clear all bump fields and force BumpedState to exit.
+        -- BumpDone + animation variables tell the animation state machine
+        -- the bump is complete → triggers exit transition on next
+        -- stateMachine.update() (runs AFTER OnPlayerUpdate + separate()).
         player:setBumpType("")
         player:setBumpFall(false)
         pcall(function() player:setBlockMovement(false) end)
+        pcall(function() player:setBumpDone(true) end)
+        pcall(function() player:setVariable("BumpAnimFinished", true) end)
+        pcall(function() player:setVariable("BumpFallAnimFinished", true) end)
+
+        -- Always re-assert guard zombie (not just when nil — separate()
+        -- overwrites bumpedChr to the new zombie but we need our guard)
+        local guardZombie = md.UT_bumpGuardZombie
+        if guardZombie then
+            pcall(function() player:setBumpedChr(guardZombie) end)
+        end
+
         md.UT_prevBumped = false
         return
     else
@@ -120,7 +215,20 @@ local function onPlayerUpdate(player)
     -- Activate bump suppression if any callback handled the collision
     if anyHandled then
         md.UT_bumpSuppress = BUMP_SUPPRESSION_TICKS
-        md.UT_bumpGuardZombie = bumpedChr  -- store for re-assertion
+        md.UT_bumpGuardZombie = bumpedChr
+
+        -- CRITICAL: Force BumpedState to exit. Without this, the animation
+        -- state machine keeps the player stuck in BumpedState forever because
+        -- BumpDone is still false (enter() set it, animation never finished).
+        -- doDeferredMovement() drives position from animation — the bump
+        -- animation yields zero motion — so the player is physically frozen.
+        pcall(function() player:setBumpDone(true) end)
+        pcall(function() player:setVariable("BumpAnimFinished", true) end)
+        pcall(function() player:setVariable("BumpFallAnimFinished", true) end)
+
+        -- Immediately knock down nearby zombies so separate() (which runs
+        -- AFTER OnPlayerUpdate in the same tick) finds no standing targets
+        knockNearbyStandingZombies(player)
     end
 end
 

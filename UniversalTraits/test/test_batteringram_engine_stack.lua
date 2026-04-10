@@ -113,8 +113,12 @@ end)
 
 -- =====================================================================
 -- ENGINE CONTRACTS: BumpedState lifecycle
--- BumpedState.exit() clearing bumpedChr is the ROOT CAUSE of the freeze
--- bug. These contracts detect if PZ changes that behavior.
+-- BumpedState never exiting is the ROOT CAUSE of the freeze bug.
+-- enter() sets BumpDone=false; the animation state machine holds the
+-- player until BumpDone becomes true; doDeferredMovement() drives
+-- position from animation (zero for bump), so the player is physically
+-- frozen. Our fix forces BumpDone=true to trigger the exit transition.
+-- These contracts detect if PZ changes any of this behavior.
 -- =====================================================================
 
 local bumpedStateSrc = readFile(PZ_JAVA .. "ai/states/BumpedState.java")
@@ -154,6 +158,45 @@ test("ENGINE CONTRACT [RAM]: BumpedState.execute() toggles blockMovement per tic
     assert(executeBody, "BumpedState.execute() not found")
     assertContains(executeBody, "isBumpFall()",
         "BumpedState.execute() must check isBumpFall for blockMovement toggle")
+end)
+
+test("ENGINE CONTRACT [RAM]: BumpedState.enter() sets BumpDone false", function()
+    local enterBody = extractMethodBlock(bumpedStateSrc, "public void enter(")
+    assert(enterBody, "BumpedState.enter() not found")
+    assertContains(enterBody, "setBumpDone(false)",
+        "CRITICAL: BumpedState.enter() sets BumpDone=false — this is the ROOT CAUSE of the " ..
+        "freeze. Without forcing BumpDone=true, the animation state machine never exits " ..
+        "BumpedState and doDeferredMovement() freezes the player in the bump animation.")
+end)
+
+test("ENGINE CONTRACT [RAM]: BumpedState.enter() sets BumpFallAnimFinished false", function()
+    local enterBody = extractMethodBlock(bumpedStateSrc, "public void enter(")
+    assert(enterBody, "BumpedState.enter() not found")
+    assertContains(enterBody, '"BumpFallAnimFinished"',
+        "BumpedState.enter() must reference BumpFallAnimFinished — it resets the " ..
+        "animation completion flag that keeps the player in the stagger animation")
+end)
+
+test("ENGINE CONTRACT [RAM]: BumpedState.exit() clears BumpAnimFinished", function()
+    local exitBody = extractMethodBlock(bumpedStateSrc, "public void exit(")
+    assert(exitBody, "BumpedState.exit() not found")
+    assertContains(exitBody, '"BumpAnimFinished"',
+        "BumpedState.exit() must reference BumpAnimFinished — confirms this variable " ..
+        "is part of the BumpedState lifecycle and safe for our fix to set to true")
+end)
+
+test("ENGINE CONTRACT [RAM]: doDeferredMovement runs before OnPlayerUpdate", function()
+    -- doDeferredMovement() must appear at a LOWER line number than OnPlayerUpdate
+    -- in IsoPlayer.java. This confirms that animation-driven movement applies
+    -- BEFORE our hook fires, meaning the bump animation controls position.
+    local deferPos = isoPlayerSrc:find("this.doDeferredMovement()", 1, true)
+    local hookPos  = isoPlayerSrc:find('triggerEvent("OnPlayerUpdate"', 1, true)
+    assert(deferPos, "doDeferredMovement() not found in IsoPlayer.java")
+    assert(hookPos, "OnPlayerUpdate trigger not found in IsoPlayer.java")
+    assert(deferPos < hookPos,
+        "CRITICAL: doDeferredMovement() must run BEFORE OnPlayerUpdate.\n" ..
+        "While in BumpedState, the bump animation drives position via deferred movement.\n" ..
+        "doDeferredMovement at byte " .. deferPos .. ", OnPlayerUpdate at byte " .. hookPos)
 end)
 
 -- =====================================================================
@@ -484,5 +527,118 @@ test("REGRESSION: guard cleanup after suppression expires", function()
 
         assert_eq(md.UT_bumpGuardZombie, nil,
             "guard zombie must be cleaned up after suppression expires")
+    end)
+end)
+
+-- =====================================================================
+-- ROOT CAUSE FIX: BumpDone forced to true
+-- THE PRIMARY FIX. Without setBumpDone(true), BumpedState never exits
+-- and doDeferredMovement() keeps the player frozen in the bump animation.
+-- =====================================================================
+
+test("ROOT CAUSE FIX: BumpDone set to true on initial callback tick", function()
+    -- This is THE critical test. The freeze was caused by BumpedState never
+    -- exiting because BumpDone stayed false. Our fix must set it to true
+    -- on the SAME tick the rising edge is detected and callbacks fire.
+    withFreshHook(function()
+        local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
+        Events.OnCreatePlayer:fire(0, player)
+        player._sprinting = true
+        local zombie = MockZombie()
+        local md = player:getModData()
+
+        -- Simulate engine bump
+        player:setBumpType("stagger")
+        player:setBumpedChr(zombie)
+        player._bumpDone = false  -- BumpedState.enter() sets this
+        md.UT_prevBumped = false
+
+        Events.OnPlayerUpdate:fire(player)
+
+        assert_eq(player._bumpDone, true,
+            "CRITICAL: BumpDone must be true after callback handles collision. " ..
+            "Without this, BumpedState never exits and the player is permanently " ..
+            "frozen because doDeferredMovement() drives zero-movement from the " ..
+            "bump animation.")
+    end)
+end)
+
+test("ROOT CAUSE FIX: BumpDone re-set to true every suppression tick", function()
+    -- Even if something re-enters BumpedState (e.g. multi-zombie bump),
+    -- BumpDone must be forced true every suppression tick.
+    withFreshHook(function()
+        local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
+        Events.OnCreatePlayer:fire(0, player)
+        player._sprinting = true
+        local zombie = MockZombie()
+        local md = player:getModData()
+
+        -- Trigger initial bump
+        player:setBumpType("stagger")
+        player:setBumpedChr(zombie)
+        md.UT_prevBumped = false
+        Events.OnPlayerUpdate:fire(player)
+
+        -- Simulate BumpedState.enter() re-setting BumpDone=false
+        -- (e.g. from a multi-zombie re-bump via separate())
+        player._bumpDone = false
+
+        -- Next suppression tick should force it back to true
+        Events.OnPlayerUpdate:fire(player)
+        assert_eq(player._bumpDone, true,
+            "BumpDone must be re-forced to true on every suppression tick")
+    end)
+end)
+
+test("ROOT CAUSE FIX: single zombie — full freeze scenario prevented", function()
+    -- Simulates the exact scenario reported by the user:
+    -- Sprint into ONE zombie → character locks up.
+    -- The fix must prevent the freeze by forcing BumpedState to exit.
+    withFreshHook(function()
+        local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
+        Events.OnCreatePlayer:fire(0, player)
+        player._sprinting = true
+        local zombie = MockZombie()
+        local md = player:getModData()
+
+        -- TICK 0: Engine triggers bump (separate() runs AFTER OnPlayerUpdate)
+        -- Our hook sees no bump yet on this tick.
+        Events.OnPlayerUpdate:fire(player)  -- hook fires, no bump detected
+
+        -- After hook: separate() bumps player (simulated)
+        player:setBumpType("stagger")
+        player:setBumpedChr(zombie)
+        player._blockMovement = true
+        player._bumpDone = false  -- BumpedState.enter()
+
+        -- TICK 1: Hook fires, detects rising edge
+        Events.OnPlayerUpdate:fire(player)
+
+        -- Verify fix applied
+        assert_eq(player._bumpDone, true,
+            "BumpDone must be true — this forces BumpedState to exit")
+        assert_eq(player._bumpType, "",
+            "bumpType must be cleared — clears isBumped and bumpStaggered")
+        assert_eq(player._bumpFall, false,
+            "bumpFall must be cleared")
+        assert_eq(player._blockMovement, false,
+            "blockMovement must be cleared")
+        assert_eq(#zombie:getKnockDownCalls(), 1,
+            "zombie must be knocked down by the charge")
+        assert_true(md.UT_bumpSuppress > 0,
+            "suppression must be active to prevent re-bump")
+
+        -- TICKS 2-31: Verify player stays unfrozen during entire suppression
+        for tick = 2, 31 do
+            -- Simulate separate() re-asserting a bump (won't happen with guard,
+            -- but test the suppression path anyway)
+            player._bumpDone = false
+            player._blockMovement = true
+            Events.OnPlayerUpdate:fire(player)
+            assert_eq(player._bumpDone, true,
+                "tick " .. tick .. ": BumpDone must stay true during suppression")
+            assert_eq(player._blockMovement, false,
+                "tick " .. tick .. ": blockMovement must stay false during suppression")
+        end
     end)
 end)
