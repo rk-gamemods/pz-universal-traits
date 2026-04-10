@@ -50,6 +50,7 @@ Two-mod layout targeting Project Zomboid Build 42 (Kahlua/Lua 5.x):
 - `tools/run_update_safe_gate.py` is the one-command local gate: UT_CORE tests, UniversalTraits tests, PZ API verification + baseline comparison, smoke ping generation, and DebugLog health check. Gate pass/fail is based only on tests + verifier.
 - Current verified baseline: `tools/pz_api_baseline.json` is green against `PZCodebase` build `svn-964`, and the verifier is now `0 FAIL / 0 WARN` after the smoke ping generator was restricted to real zero-arg read-only calls.
 - The verifier still has a smaller triage set of explicit skips/unknown receivers (for example generic timed-action variables and a tree object path). Those are not yet part of the authoritative tracked surface and should be reduced over time rather than ignored.
+- Battering ram collision safety now has a dedicated engine-stack suite in `UniversalTraits/test/test_batteringram_engine_stack.lua`. It adds 21 tests that parse decompiled Java contracts for `IsoMovingObject.separate()`, `BumpedState`, and bump API methods, plus behavioral/regression coverage for suppression timing, cluster bumps, and the freeze-loop scenario.
 
 ---
 
@@ -96,7 +97,7 @@ Run from repo root (`C:\Users\Admin\Documents\GIT\GameMods\PZMods\UTMods`):
 "C:\Users\Admin\AppData\Local\Programs\Lua\bin\lua.exe" UniversalTraits/test/run_tests.lua
 ```
 
-**Current passing counts:** 193 (UT_CORE) + 250 (UniversalTraits) = 443 passing.
+**Current passing counts:** 193 (UT_CORE) + 285 (UniversalTraits) = 478 passing.
 
 Additional local update-safety commands:
 
