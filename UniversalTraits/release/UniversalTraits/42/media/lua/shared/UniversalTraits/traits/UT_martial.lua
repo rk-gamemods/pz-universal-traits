@@ -6,7 +6,8 @@
 -- Public API (callable by other traits):
 --   UT_martial.applyBonusDamage(player, target, endurance)
 --     Rolls for crit, scales by endurance, applies health deduction and XP grant.
---     Returns the damage dealt (0 if mundane suppressed it).
+--     Returns damage dealt (0 if mundane) and isCrit boolean.
+--     Plays hit feedback (blood splatter on crits, punch sound on all hits).
 --     Includes mundane check — passes silently if UT_mundane is active.
 
 UT_martial = UT_martial or {}
@@ -15,6 +16,12 @@ local TRAIT_ID = "UniversalTraits:UT_martial"
 
 -- Shared damage calculation used by this trait and any synergy callers.
 -- Does NOT drain endurance — callers manage that themselves.
+--
+-- Damage tuning (zombie HP is typically 1.6–3.0):
+--   Normal hit: 0.5 + (level * 0.05)  → 0.5 at L0, 1.0 at L10  (2–6 hits to kill)
+--   Crit hit:   3.0 + (level * 0.3)   → 3.0 at L0, 6.0 at L10  (1-hit KO)
+--   Crit chance: 5% + (level * 8%)    → 5% at L0, 85% at L10
+--   Endurance scaling: damage * (endurance + 0.35) — 0.35x at empty, 1.35x at full
 function UT_martial.applyBonusDamage(player, target, endurance)
     -- Mundane suppresses crits and bonus damage
     if UTCore.hasTrait(player, "UniversalTraits:UT_mundane") then return 0 end
@@ -30,13 +37,15 @@ function UT_martial.applyBonusDamage(player, target, endurance)
         smallBluntLevel = level
     end
 
-    local critchance = (5 + (smallBluntLevel * 5)) * 0.01
+    local critChance = (5 + (smallBluntLevel * 8)) * 0.01
 
     local damage
-    if ZombRand(100) < (critchance * 100) then
-        damage = 6 * 0.1  -- crit
+    local isCrit = false
+    if ZombRand(100) < (critChance * 100) then
+        damage = 3.0 + (smallBluntLevel * 0.3)  -- crit: 1-hit KO range
+        isCrit = true
     else
-        damage = 2 * 0.1  -- normal
+        damage = 0.5 + (smallBluntLevel * 0.05)  -- normal: 2-6 hits to kill
     end
 
     -- Scales from 0.35x at 0 endurance to 1.35x at full
@@ -49,7 +58,17 @@ function UT_martial.applyBonusDamage(player, target, endurance)
         end
     end)
 
-    return damage
+    -- Visual/audio feedback so the player knows damage is being dealt
+    pcall(function()
+        if isCrit then
+            -- Blood splatter on crit: the circle splash effect
+            target:splatBlood(1, 0.3)
+        end
+        -- Play a short blunt impact sound on every hit
+        player:playSound("PunchImpact")
+    end)
+
+    return damage, isCrit
 end
 
 local function onWeaponHitCharacter(player, weapon, target)

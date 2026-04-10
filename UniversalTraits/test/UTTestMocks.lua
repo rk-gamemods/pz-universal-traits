@@ -639,6 +639,7 @@ function MockZombie(opts)
     local _y = opts.y or 0
     local _z = opts.z or 0
     return {
+        _mockType           = "IsoZombie",
         isAlwaysKnockedDown = function(self) return false end,
         knockDown           = function(self, fromBehind)
             _knocked = true

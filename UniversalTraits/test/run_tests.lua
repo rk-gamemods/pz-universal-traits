@@ -720,6 +720,7 @@ local function MockTarget(startHealth, opts)
     return {
         getHealth = function(self) return hp end,
         setHealth = function(self, v) hp = v end,
+        splatBlood = function(self, count, size) end,
         _mockType = (opts.isZombie ~= false) and "IsoZombie" or "IsoGameCharacter",
     }
 end
@@ -947,8 +948,9 @@ end)
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_martial.lua")
 
 test("martial deals bonus damage with bare hands (guaranteed crit)", function()
-    -- SmallBlunt level=5 → critchance = (5+5)*0.01 = 0.10 → 10%
-    -- ZombRand always returns 0 → 0 < 10 → crit fires
+    -- SmallBlunt level=5 → critChance = (5+40)*0.01 = 0.45 → 45%
+    -- ZombRand always returns 0 → 0 < 45 → crit fires
+    -- Crit damage: 3.0 + (5 * 0.3) = 4.5, endurance 1.0 → 4.5 * 1.35 = 6.075
     local player = MockPlayer({ "UniversalTraits:UT_martial" })
     player:setPerkLevel(Perks.SmallBlunt, 5)
     -- endurance starts at 1.0 in MockPlayer (no penalty)
@@ -1358,7 +1360,8 @@ test("batteringram does NOT fire when player is not sprinting or running", funct
 end)
 
 test("batteringram with UT_martial damages zombie on collision", function()
-    -- ZombRand stub returns 0 → crit fires (0 < critchance*100)
+    -- ZombRand stub returns 0 → guaranteed crit (L0: 5% chance, 0 < 5)
+    -- Sprint damage 0.15 + martial crit 3.0*1.35 = 4.2 → health 95.65
     local player = MockPlayer({ "UniversalTraits:UT_batteringram", "UniversalTraits:UT_martial" })
     Events.OnCreatePlayer:fire(0, player)
     player._sprinting = true

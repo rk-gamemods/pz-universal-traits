@@ -99,12 +99,12 @@ end
 -- Zombie detection
 ---------------------------------------------------------------------------
 
--- isAlwaysKnockedDown() is declared on IsoZombie, not on IsoGameCharacter or IsoPlayer.
--- A successful pcall confirms the entity is a zombie.
+-- Use PZ's instanceof() for a clean Java class check — no exceptions thrown.
+-- The pcall(chr:isAlwaysKnockedDown) approach logged Java RuntimeExceptions
+-- for every non-zombie MovingObject even though pcall caught them in Lua.
 local function isZombie(chr)
     if not chr then return false end
-    local ok = pcall(function() chr:isAlwaysKnockedDown() end)
-    return ok
+    return instanceof(chr, "IsoZombie")
 end
 
 ---------------------------------------------------------------------------
