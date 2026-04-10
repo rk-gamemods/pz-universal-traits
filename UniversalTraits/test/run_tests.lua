@@ -1543,6 +1543,16 @@ end)
 
 -- ===== QA checklist follow-up coverage =====
 
+-- ===== Battering Ram Engine Stack Tests =====
+-- Engine contract verification + behavioral/regression tests for the
+-- collision stack: separate(), BumpedState, suppression timeline.
+-- Promote locals to globals so the dofile'd script can see them.
+_G.test = test
+_G.assert_eq = assert_eq
+_G.assert_true = assert_true
+_G.base = base
+dofile(base .. "test_batteringram_engine_stack.lua")
+
 test("noxpshooter blocks Aiming and Reloading XP through the XP hook", function()
     local player = fireNewGame("UniversalTraits:UT_noxpshooter")
     Events.AddXP:fire(player, "Aiming", 10)
