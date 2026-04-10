@@ -1270,7 +1270,7 @@ test("batteringram does NOT manipulate bump state (v3 preemptive)", function()
     player._blockMovement = true
     local zombie = MockZombie()
     fireRamCollision(player, zombie)
-    -- v3: callback no longer touches bump state — prevention happens via runningTime
+    -- v3b: callback no longer touches bump state — prevention via knockDown + setBumpedChr
     assert_eq(player._bumpType, "stagger",
         "v3 callback should NOT clear bumpType")
     assert_eq(player._bumpedChr, originalZombie,
@@ -1421,7 +1421,7 @@ test("INTEGRATION: engine guard allows bump from DIFFERENT zombie (cluster case)
         "expected engine guard to ALLOW bump from different zombie B")
 end)
 
-test("INTEGRATION: v3 runningTime prevents bump even with zombie cluster", function()
+test("INTEGRATION: v3b setBumpedChr guards nearest zombie in cluster", function()
     local zombieA = MockZombie({ x = 5.3, y = 5, z = 0 })
     local zombieB = MockZombie({ x = 5.5, y = 5, z = 0 })
     local sq = MockCollisionSquare(5, 5, 0, { zombieA, zombieB })
@@ -1430,13 +1430,16 @@ test("INTEGRATION: v3 runningTime prevents bump even with zombie cluster", funct
         { x = 5, y = 5, square = sq })
     Events.OnCreatePlayer:fire(0, player)
     player._sprinting = true
-    player.runningTime = 2.0
     Events.OnPlayerUpdate:fire(player)
-    assert_eq(player.runningTime, 0,
-        "runningTime zeroed prevents bump from ANY zombie in cluster")
+    -- setBumpedChr should point to the nearest zombie (zombieA at dist 0.3)
+    assert_eq(player:getBumpedChr(), zombieA,
+        "setBumpedChr should guard nearest zombie in cluster")
+    -- Engine re-bump guard: separate() checks getBumpedChr() != obj
+    assert_eq(wouldSeparateRebump(player, zombieA), false,
+        "guarded zombie should not trigger re-bump")
 end)
 
-test("INTEGRATION: v3 runningTime self-heals — engine recalculates each tick", function()
+test("INTEGRATION: v3b setBumpedChr refreshes each tick", function()
     local zombie = MockZombie({ x = 5.3, y = 5, z = 0 })
     local sq = MockCollisionSquare(5, 5, 0, { zombie })
     _G._mockCell = MockCell({ ["5,5,0"] = sq })
@@ -1444,12 +1447,12 @@ test("INTEGRATION: v3 runningTime self-heals — engine recalculates each tick",
         { x = 5, y = 5, square = sq })
     Events.OnCreatePlayer:fire(0, player)
     player._sprinting = true
-    player.runningTime = 2.0
     Events.OnPlayerUpdate:fire(player)
-    assert_eq(player.runningTime, 0, "zeroed on tick 1")
-    player.runningTime = 0.8
+    assert_eq(player:getBumpedChr(), zombie, "guarded on tick 1")
+    -- Simulate engine clearing bumpedChr (BumpedState.exit)
+    player:setBumpedChr(nil)
     Events.OnPlayerUpdate:fire(player)
-    assert_eq(player.runningTime, 0, "zeroed again on tick 2 — self-healing")
+    assert_eq(player:getBumpedChr(), zombie, "re-guarded on tick 2")
 end)
 
 test("INTEGRATION: v3 old suppression moddata cleaned up when player stops running", function()

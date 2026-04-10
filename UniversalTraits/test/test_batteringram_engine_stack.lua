@@ -27,7 +27,7 @@ local isoPlayerSrc       = readFile(PZ_JAVA .. "characters/IsoPlayer.java")
 
 test("ENGINE CONTRACT [RAM]: separate() checks runningTime for bump", function()
     assertContains(isoMovingObjectSrc, "runningTime",
-        "separate() must check runningTime — our fix zeros it to prevent bumps")
+        "separate() checks runningTime for bump condition")
 end)
 
 test("ENGINE CONTRACT [RAM]: separate() checks WalkSpeed for bump", function()
@@ -44,7 +44,12 @@ end)
 
 test("ENGINE CONTRACT [RAM]: runningTime is a public field on IsoPlayer", function()
     assertContains(isoPlayerSrc, "public float runningTime",
-        "runningTime must be public — our Lua hook writes to it directly")
+        "runningTime is public (Kahlua can read but NOT write Java fields)")
+end)
+
+test("ENGINE CONTRACT [RAM]: separate() checks getBumpedChr for re-bump guard", function()
+    assertContains(isoMovingObjectSrc, "getBumpedChr",
+        "separate() uses getBumpedChr() != obj — our hook sets this via setBumpedChr")
 end)
 
 -- =====================================================================
@@ -115,43 +120,40 @@ local function setupCollision(playerOpts)
     return player, zombie
 end
 
-test("PREEMPT: runningTime zeroed when sprinting near zombie", function()
+test("PREEMPT: setBumpedChr set to nearest zombie when sprinting", function()
     withFreshHook(function()
         local player, zombie = setupCollision()
         Events.OnCreatePlayer:fire(0, player)
         player._sprinting = true
-        player.runningTime = 2.0
         Events.OnPlayerUpdate:fire(player)
-        assert_eq(player.runningTime, 0,
-            "runningTime must be 0 after hook — prevents separate() bump")
+        assert_eq(player:getBumpedChr(), zombie,
+            "setBumpedChr must point to nearby zombie — engine re-bump guard")
     end)
 end)
 
-test("PREEMPT: runningTime zeroed when running near zombie", function()
+test("PREEMPT: setBumpedChr set when running near zombie", function()
     withFreshHook(function()
         local player, zombie = setupCollision()
         Events.OnCreatePlayer:fire(0, player)
         player._running = true
-        player.runningTime = 1.5
         Events.OnPlayerUpdate:fire(player)
-        assert_eq(player.runningTime, 0,
-            "runningTime must be 0 when running near zombie")
+        assert_eq(player:getBumpedChr(), zombie,
+            "setBumpedChr must be set when running near zombie")
     end)
 end)
 
-test("PREEMPT: runningTime NOT zeroed when walking (not running/sprinting)", function()
+test("PREEMPT: setBumpedChr NOT set when walking (not running/sprinting)", function()
     withFreshHook(function()
         local player, zombie = setupCollision()
         Events.OnCreatePlayer:fire(0, player)
         -- _sprinting and _running both false
-        player.runningTime = 2.0
         Events.OnPlayerUpdate:fire(player)
-        assert_eq(player.runningTime, 2.0,
-            "runningTime should be untouched when walking")
+        assert_eq(player:getBumpedChr(), nil,
+            "setBumpedChr should be nil when walking")
     end)
 end)
 
-test("PREEMPT: runningTime NOT zeroed when no zombies in range", function()
+test("PREEMPT: setBumpedChr NOT set when no zombies in range", function()
     withFreshHook(function()
         -- Zombie at (10,10) — far from player at (5,5)
         local zombie = MockZombie({ x = 10, y = 10, z = 0 })
@@ -161,10 +163,9 @@ test("PREEMPT: runningTime NOT zeroed when no zombies in range", function()
             { x = 5, y = 5, square = sq })
         Events.OnCreatePlayer:fire(0, player)
         player._sprinting = true
-        player.runningTime = 2.0
         Events.OnPlayerUpdate:fire(player)
-        assert_eq(player.runningTime, 2.0,
-            "runningTime should be untouched when no zombies nearby")
+        assert_eq(player:getBumpedChr(), nil,
+            "setBumpedChr should be nil when no zombies nearby")
     end)
 end)
 

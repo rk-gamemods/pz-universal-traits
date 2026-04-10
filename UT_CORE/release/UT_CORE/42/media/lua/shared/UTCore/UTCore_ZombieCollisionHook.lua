@@ -2,28 +2,25 @@
 -- Preemptive bump prevention for zombie collision traits.
 --
 -- STRATEGY (v3 — "work WITH the engine"):
---   Instead of reacting to bumps and fighting BumpedState, we PREVENT the
---   bump from ever triggering by zeroing player.runningTime each tick when
---   the player is sprinting/running near zombies with active collision handlers.
+--   TWO-LAYER prevention stops BumpedState from ever being entered:
+--   1. Knockdown: callbacks knockDown() zombies on first contact → knocked-down
+--      zombies don't trigger the bump condition in separate().
+--   2. setBumpedChr guard: we call player:setBumpedChr(nearestZombie) each tick
+--      when zombies are nearby. separate() checks getBumpedChr() != obj and
+--      SKIPS the bump when they match → prevents re-bump from the guarded zombie.
 --
 -- HOW IT WORKS (verified from decompiled B42 source):
 --   The engine's bump condition in IsoMovingObject.separate() (line ~1224):
 --     bump = true when:
 --       WalkSpeed > 0.2 AND runningTime > 0.5 AND getBumpedChr() != obj
 --
---   Tick execution order in IsoPlayer.updateInternal2():
---     Line 2064: runningTime incremented     — BEFORE OnPlayerUpdate
---     Line 2222: OnPlayerUpdate fires         — OUR HOOK (sets runningTime=0)
---     Line 2634: separate() runs              — reads runningTime for bump check
---     Line 3867: calculateWalkSpeed()         — AFTER separate() (irrelevant)
+--   We satisfy the third clause: setBumpedChr(zombie) makes getBumpedChr() == obj
+--   → bump stays false. Combined with knockdown, the engine never enters BumpedState.
 --
---   By setting player.runningTime = 0 in OnPlayerUpdate, separate() reads
---   0 > 0.5 → false → no bump → no BumpedState → no stagger/trip/freeze.
---   The engine never enters BumpedState. No state machine overrides needed.
---
---   runningTime is a public float field (IsoPlayer line 347) used ONLY for
---   the bump check in separate(). No other code reads it between OnPlayerUpdate
---   and separate(). Self-heals: the engine recalculates it at line 2064 every tick.
+-- KAHLUA CONSTRAINT:
+--   Kahlua VM cannot WRITE Java public fields from Lua (tableSet on a Java proxy
+--   throws "attempted index of non-table"). This rules out setting runningTime
+--   or walkSpeed directly. Java METHOD calls (setBumpedChr, knockDown) work fine.
 --
 -- WHY PREVIOUS APPROACHES FAILED:
 --   v1: Cleared bumpType/bumpFall/blockMovement but BumpDone stayed false →
@@ -31,7 +28,8 @@
 --   v2: Forced BumpDone=true + animation variables every tick → still froze
 --       because the full BumpedState lifecycle (complexity 65 in separate())
 --       has too many interdependent paths to manage from Lua.
---   v3 (this): Prevents BumpedState from ever being entered. No fighting.
+--   v3a: Tried to zero runningTime directly — Kahlua can't write Java fields.
+--   v3b (this): Uses method calls only. knockDown + setBumpedChr.
 --
 -- CALLBACK TRIGGER:
 --   Callbacks fire when a NEW zombie enters collision range while the player
@@ -152,6 +150,8 @@ local function onPlayerUpdate(player)
     local prevHandled = md.UT_handledZombies or {}
     local newHandled = {}
     local foundNearby = false
+    local nearestZombie = nil
+    local nearestDist = COLLISION_RANGE
 
     for dx = -1, 1 do
         for dy = -1, 1 do
@@ -168,6 +168,10 @@ local function onPlayerUpdate(player)
                             local dist = math.sqrt(ddx * ddx + ddy * ddy)
                             if dist < COLLISION_RANGE then
                                 foundNearby = true
+                                if dist < nearestDist then
+                                    nearestDist = dist
+                                    nearestZombie = obj
+                                end
                                 local zKey = tostring(obj)
                                 newHandled[zKey] = true
 
@@ -194,17 +198,21 @@ local function onPlayerUpdate(player)
     md.UT_handledZombies = newHandled
 
     -- ===== PREEMPTIVE BUMP PREVENTION =====
-    -- Set runningTime=0 so separate() sees 0 > 0.5 → false → no bump.
-    -- runningTime is a public float field on IsoPlayer (line 347).
-    -- It self-heals: the engine recalculates it at line 2064 every tick.
-    if foundNearby then
+    -- Kahlua VM cannot write Java public fields (runningTime, walkSpeed) from
+    -- Lua — tableSet on a Java proxy throws "attempted index of non-table".
+    -- Instead we use the engine's own re-bump guard: setBumpedChr(zombie).
+    -- separate() checks getBumpedChr() != obj → skips bump for matching zombie.
+    -- Combined with knockdown (callback knocks zombies down on contact),
+    -- this prevents BumpedState entry → no stagger/trip/freeze.
+    -- setBumpedChr self-heals: BumpedState.exit() clears it when appropriate.
+    if foundNearby and nearestZombie then
         local ok, err = pcall(function()
-            local prev = player.runningTime
-            player.runningTime = 0
-            dbg("runningTime: " .. string.format("%.1f", prev or -1) .. " -> 0")
+            player:setBumpedChr(nearestZombie)
+            dbg("setBumpedChr → " .. tostring(nearestZombie)
+                .. " dist=" .. string.format("%.2f", nearestDist))
         end)
         if not ok then
-            dbg("FAILED to set runningTime: " .. tostring(err))
+            dbg("FAILED setBumpedChr: " .. tostring(err))
         end
     end
 
