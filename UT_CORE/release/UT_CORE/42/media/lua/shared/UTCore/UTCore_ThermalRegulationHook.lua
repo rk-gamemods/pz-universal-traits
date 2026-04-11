@@ -5,7 +5,7 @@
 UTCore = UTCore or {}
 
 local function getWetnessReduction(player, md)
-    if player:isOutside() and isRaining() then
+    if player:isOutside() and RainManager.isRaining() then
         return md["UT_wetnessReductionRain"]
     end
 

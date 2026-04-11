@@ -10,6 +10,7 @@ local tickCounter = 0
 
 local function clothingUpdate(player)
     if not player then return end
+    if UTCore.shouldSkipTick(player) then return end
 
     tickCounter = tickCounter + 1
     if tickCounter % THROTTLE ~= 0 then return end

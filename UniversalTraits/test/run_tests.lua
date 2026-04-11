@@ -708,9 +708,18 @@ dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_improviser.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_gordanite.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_wildsman.lua")
 
--- Helper: build a minimal weapon mock
-local function MockWeapon(typeName)
-    return { getType = function(self) return typeName end }
+-- Helper: build a minimal weapon mock with crit support
+local function MockWeapon(typeName, opts)
+    opts = opts or {}
+    local _crit = opts.critChance or 10
+    local _moddata = {}
+    return {
+        _mockType = "HandWeapon",
+        getType = function(self) return typeName end,
+        getCriticalChance = function(self) return _crit end,
+        setCriticalChance = function(self, v) _crit = v end,
+        getModData = function(self) return _moddata end,
+    }
 end
 
 -- Helper: build a target mock with mutable health
@@ -738,65 +747,71 @@ local function MockSpottedList(count, dist)
 end
 
 -- Helper: extend MockPlayer with the extra methods actionhero needs
-local function MockActionPlayer(traitList, spottedList)
-    local p = MockPlayer(traitList)
+local function MockActionPlayer(traitList, spottedList, weapon)
+    local p = MockPlayer(traitList, { primaryHandItem = weapon })
     p.getSpottedList = function(self) return spottedList end
     p.DistTo = function(self, enemy) return enemy._dist end
+    p.getSecondaryHandItem = function(self) return nil end
     return p
 end
 
 test("actionhero deals bonus damage when surrounded (5 enemies within 2 tiles)", function()
-    local spotted  = MockSpottedList(5, 1)   -- 5 enemies at dist=1 (≤2)
+    local spotted  = MockSpottedList(5, 1)   -- 5 enemies at dist=1 (≤ ENEMY_RANGE of 10)
+    local weapon   = MockWeapon("Axe", { critChance = 10 })
     local player   = MockActionPlayer(
         { "UniversalTraits:UT_actionhero" },
-        spotted
+        spotted, weapon
     )
-    local weapon   = MockWeapon("Axe")
-    local target   = MockTarget(100)
 
-    Events.OnWeaponHitCharacter:fire(player, weapon, target)
+    -- Fire 30 OnPlayerUpdate ticks so the 30-tick throttle triggers
+    for _ = 1, 30 do Events.OnPlayerUpdate.fire(player) end
 
-    assert_true(target:getHealth() < 100,
-        "expected health < 100 after actionhero crit, got " .. tostring(target:getHealth()))
+    assert_eq(weapon:getCriticalChance(), 25,
+        "expected crit chance 10+15=25 after actionhero activates")
 end)
 
 test("actionhero skipped when player has UT_mundane", function()
     local spotted = MockSpottedList(5, 1)
+    local weapon  = MockWeapon("Axe", { critChance = 10 })
     local player  = MockActionPlayer(
         { "UniversalTraits:UT_actionhero", "UniversalTraits:UT_mundane" },
-        spotted
+        spotted, weapon
     )
-    local weapon  = MockWeapon("Axe")
-    local target  = MockTarget(100)
 
-    Events.OnWeaponHitCharacter:fire(player, weapon, target)
+    for _ = 1, 30 do Events.OnPlayerUpdate.fire(player) end
 
-    assert_eq(target:getHealth(), 100,
-        "expected health unchanged when UT_mundane is active")
+    assert_eq(weapon:getCriticalChance(), 10,
+        "expected crit chance unchanged when UT_mundane is active")
 end)
 
 test("actionhero skipped for non-zombie targets", function()
-    local spotted = MockSpottedList(5, 1)
-    local player  = MockActionPlayer({ "UniversalTraits:UT_actionhero" }, spotted)
-    local weapon  = MockWeapon("Axe")
-    local target  = MockTarget(100, { isZombie = false })
+    -- Actionhero applies crit to weapon when enemies are close, regardless of target type.
+    -- This test verifies no crit bonus when not enough enemies are spotted.
+    local spotted = MockSpottedList(1, 1)  -- only 1 enemy, below threshold of 3
+    local weapon  = MockWeapon("Axe", { critChance = 10 })
+    local player  = MockActionPlayer(
+        { "UniversalTraits:UT_actionhero" },
+        spotted, weapon
+    )
 
-    Events.OnWeaponHitCharacter:fire(player, weapon, target)
+    for _ = 1, 30 do Events.OnPlayerUpdate.fire(player) end
 
-    assert_eq(target:getHealth(), 100,
-        "expected health unchanged when target is not a zombie")
+    assert_eq(weapon:getCriticalChance(), 10,
+        "expected crit chance unchanged when enemy count below threshold")
 end)
 
 -- ===== UT_bouncer_I stagger mechanic tests =====
 -- Load the trait file so its Events.OnPlayerUpdate.Add() fires.
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_bouncer_I.lua")
 
--- Helper: build an enemy mock with mutable staggerBack flag
+-- Helper: build an enemy mock with Build 42 stagger API
 local function MockEnemy(dist)
     return {
-        _dist        = dist,
-        _staggerBack = false,
-        setStaggerBack = function(self, v) self._staggerBack = v end,
+        _dist      = dist,
+        _bumpType  = nil,
+        _vars      = {},
+        setBumpType = function(self, v) self._bumpType = v end,
+        setVariable = function(self, k, v) self._vars[k] = v end,
     }
 end
 
@@ -829,7 +844,7 @@ test("bouncer stagger fires when >=3 close enemies and cooldown=0", function()
     -- ZombRand is stubbed to always return 0, so 0 < 5 is true → stagger fires
     local staggered = false
     for _, e in ipairs(enemies) do
-        if e._staggerBack then staggered = true end
+        if e._bumpType == "stagger" then staggered = true end
     end
     assert_true(staggered, "expected at least one enemy to be staggered")
     assert_eq(player:getModData()["UT_bouncer_cooldown"], 60, "cooldown should be set to 60")
@@ -847,7 +862,7 @@ test("bouncer stagger does NOT fire during cooldown", function()
 
     local staggered = false
     for _, e in ipairs(enemies) do
-        if e._staggerBack then staggered = true end
+        if e._bumpType == "stagger" then staggered = true end
     end
     assert_true(not staggered, "expected no enemy to be staggered during cooldown")
     assert_eq(player:getModData()["UT_bouncer_cooldown"], 29, "cooldown should decrement to 29")

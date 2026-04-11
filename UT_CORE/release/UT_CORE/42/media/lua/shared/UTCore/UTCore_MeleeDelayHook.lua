@@ -3,7 +3,7 @@
 -- Standard weapon-category traits apply a 50% delay reduction.
 -- UT_heavyswing applies a strength-scaled reduction: delay * (strength * 0.1).
 -- Uses moddata flag UT_meleeDelaySet to prevent re-application within a swing.
--- Flag is cleared on Events.OnWeaponHitCharacter.
+-- Flag is cleared when meleeDelay returns to 0 (swing complete).
 
 UTCore = UTCore or {}
 
@@ -68,20 +68,42 @@ local MELEE_TRAITS = {
 -- ---------------------------------------------------------------------------
 
 -- Exposed as UTCore._meleeDelayOnPlayerUpdate so tests can call it directly.
+local _lastWeapon = nil
+local _lastCategory = nil
+
 local function onPlayerUpdate(player)
     if not player or not player.isLocalPlayer or not player:isLocalPlayer() then return end
+    if player:getVehicle() ~= nil then return end
 
     local weapon = player.getPrimaryHandItem and player:getPrimaryHandItem()
-    if not weapon then return end
+    if not weapon then
+        _lastWeapon = nil
+        _lastCategory = nil
+        return
+    end
 
+    local md = player:getModData()
     local meleeDelay = player:getMeleeDelay()
-    if not meleeDelay or meleeDelay <= 0 then return end
+
+    -- Reset flag when the swing is fully complete (delay returned to 0).
+    -- This is the only place the flag is cleared — never mid-swing.
+    if not meleeDelay or meleeDelay <= 0 then
+        md["UT_meleeDelaySet"] = false
+        return
+    end
 
     -- Prevent re-application within the same swing
-    local md = player:getModData()
     if md["UT_meleeDelaySet"] then return end
 
-    local category = getWeaponCategory(weapon)
+    -- Cache weapon category: string.find is expensive per-tick for the same weapon.
+    local category
+    if weapon == _lastWeapon and _lastCategory then
+        category = _lastCategory
+    else
+        category = getWeaponCategory(weapon)
+        _lastWeapon = weapon
+        _lastCategory = category
+    end
     local newDelay = nil
 
     if category ~= "other" and UTSmoke and UTSmoke.record then
@@ -126,12 +148,15 @@ end
 UTCore._meleeDelayOnPlayerUpdate = onPlayerUpdate
 
 -- ---------------------------------------------------------------------------
--- Reset flag when a hit lands (clears for next swing)
+-- Save-load recovery: clear stuck meleeDelay and flag on player creation.
+-- Fixes saves that were written while the player was frozen mid-swing.
 -- ---------------------------------------------------------------------------
 
-local function onWeaponHitCharacter(attacker, weapon, target)
-    if not attacker or not attacker.getModData then return end
-    attacker:getModData()["UT_meleeDelaySet"] = false
+local function onCreatePlayer(_playerIndex, player)
+    if not player then return end
+    local md = player:getModData()
+    md["UT_meleeDelaySet"] = false
+    pcall(function() player:setMeleeDelay(0) end)
 end
 
 -- ---------------------------------------------------------------------------
@@ -142,6 +167,6 @@ if Events and Events.OnPlayerUpdate then
     Events.OnPlayerUpdate.Add(onPlayerUpdate)
 end
 
-if Events and Events.OnWeaponHitCharacter then
-    Events.OnWeaponHitCharacter.Add(onWeaponHitCharacter)
+if Events and Events.OnCreatePlayer then
+    Events.OnCreatePlayer.Add(onCreatePlayer)
 end

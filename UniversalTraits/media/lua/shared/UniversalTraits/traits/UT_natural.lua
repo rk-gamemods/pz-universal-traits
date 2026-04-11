@@ -25,6 +25,7 @@ local SOURCE_ID = "UT_natural"
 local tickCounter = 0
 
 local function onPlayerUpdate(player)
+    if UTCore.shouldSkipTick(player) then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
 
     tickCounter = tickCounter + 1

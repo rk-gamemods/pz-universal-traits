@@ -117,40 +117,36 @@ The UniversalTraits suite now includes a cross-file consistency audit that fails
 
 Run from repo root after ANY code change before in-game testing:
 
-```powershell
-robocopy UT_CORE\release\UT_CORE C:\Users\Admin\Zomboid\mods\UT_CORE /MIR /NFL /NDL /NJH /NJS /NP
-robocopy UniversalTraits\release\UniversalTraits C:\Users\Admin\Zomboid\mods\UniversalTraits /MIR /NFL /NDL /NJH /NJS /NP
+```bash
+python deploy.py
 ```
 
-**Note:** The live mod folder structure is `Zomboid\mods\ModName\42\media\`. Copying to the mod root (without `42\media\`) is **silent failure** — PZ B42 only reads from `42\media\`.
+This syncs source `media/` and `mod.info` into each mod's `release/` folder, then deploys to `C:\Users\Admin\Zomboid\mods\`. Add `--verify` to hash-compare source vs live after deploy:
+
+```bash
+python deploy.py --verify
+```
+
+Deploy a single mod:
+
+```bash
+python deploy.py UniversalTraits
+python deploy.py UT_CORE
+```
+
+**Note:** Always do a full **Exit to Desktop** (not just main menu) after deploying to clear Kahlua's module cache.
 
 ---
 
 ## Release Folder Policy
 
-`UniversalTraits/release/` and `UT_CORE/release/` must be kept in sync with source after every code change.
-
-Generated files are not auto-propagated into `release/`. `UT_SmokePings.lua` is generated into source first, then must be copied into `UniversalTraits/release/UniversalTraits/42/media/lua/shared/UniversalTraits/` before live deployment.
+`UniversalTraits/release/` and `UT_CORE/release/` must be kept in sync with source after every code change. `deploy.py` handles this automatically — it mirrors source `media/` into `release/<ModName>/42/media/` and copies `mod.info` before deploying to live.
 
 Required workflow after implementation work:
 
 1. Run tests.
-2. Sync `release/<ModName>/42/media/` from source `media/`.
-3. Copy root `mod.info` into `release/<ModName>/`.
-4. Deploy to live `C:\Users\Admin\Zomboid\mods\<ModName>\42\media\`.
-5. Commit the changes.
-
-Use these commands from repo root:
-
-```bash
-mkdir -p UniversalTraits/release/UniversalTraits/42/media
-cp UniversalTraits/mod.info UniversalTraits/release/UniversalTraits/
-cp -r UniversalTraits/media/. UniversalTraits/release/UniversalTraits/42/media/
-
-mkdir -p UT_CORE/release/UT_CORE/42/media
-cp UT_CORE/mod.info UT_CORE/release/UT_CORE/
-cp -r UT_CORE/media/. UT_CORE/release/UT_CORE/42/media/
-```
+2. Run `python deploy.py --verify`.
+3. Commit the changes.
 
 The `release/` folders hold only the minimal deployable mod package — no docs, no tests, no planning files.
 

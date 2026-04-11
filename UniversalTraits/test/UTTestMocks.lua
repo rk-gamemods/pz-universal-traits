@@ -13,6 +13,8 @@ function instanceof(obj, className)
     if obj._mockType == className then return true end
     -- IsoPlayer is-a IsoGameCharacter
     if className == "IsoGameCharacter" and obj._mockType == "IsoPlayer" then return true end
+    -- IsoZombie is-a IsoGameCharacter
+    if className == "IsoGameCharacter" and obj._mockType == "IsoZombie" then return true end
     return false
 end
 
@@ -355,12 +357,23 @@ function MockPlayer(traitList, opts)
         -- Public field: runningTime (IsoPlayer line 347)
         -- Used by separate() for bump threshold check (runningTime > 0.5)
         runningTime = opts.runningTime or 1.0,
+        _dead = opts.dead or false,
+        isDead = function(self) return self._dead end,
     }
     return player
 end
 
 -- UTCore stub for trait tests
 UTCore = UTCore or {}
+
+-- Central context guard: skip tick for nil, dead, or in-vehicle players.
+-- Mirrors UTCore_API.lua; simplified for test harness.
+UTCore.shouldSkipTick = function(player)
+    if not player then return true end
+    if player.isDead and player:isDead() then return true end
+    if player.getVehicle and player:getVehicle() ~= nil then return true end
+    return false
+end
 
 local function ensureModifierBuckets(player)
     local md = player:getModData()
@@ -1157,6 +1170,7 @@ function MockFirearm(opts)
     local _jammed  = opts.jammed      or false
     local _moddata = {}
     return {
+        _mockType     = "HandWeapon",
         getModData    = function(self) return _moddata end,
         getReloadTime = function(self) return _reload end,
         setReloadTime = function(self, v) _reload = v end,
@@ -1164,6 +1178,7 @@ function MockFirearm(opts)
         setAimingTime = function(self, v) _aim = v end,
         isJammed      = function(self) return _jammed end,
         setJammed     = function(self, v) _jammed = v end,
+        isRanged      = function(self) return true end,
     }
 end
 

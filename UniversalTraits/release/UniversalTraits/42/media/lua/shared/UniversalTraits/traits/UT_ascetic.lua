@@ -18,6 +18,7 @@ local HUNGER_REDUCTION_PER_MIN = 0.0015
 local MEAL_GAP_HOURS = 1.0
 
 local function onPlayerUpdate(player)
+    if UTCore.shouldSkipTick(player) then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
 
     local md = player:getModData()

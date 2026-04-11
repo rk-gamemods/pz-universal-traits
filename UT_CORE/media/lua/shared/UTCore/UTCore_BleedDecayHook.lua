@@ -23,8 +23,16 @@ UTCore = UTCore or {}
 local NATIVE_BANDAGED   = 0.0002
 local NATIVE_UNBANDAGED = 0.00002
 
+local _bleedDecayTick = 0
+
 local function onPlayerUpdate(player)
     if not player then return end
+    if player:isDead() then return end
+
+    -- Throttle: body part iteration is expensive. Check every 10 ticks (~3x/sec).
+    _bleedDecayTick = _bleedDecayTick + 1
+    if _bleedDecayTick < 10 then return end
+    _bleedDecayTick = 0
 
     local md = player:getModData()
     local mult        = md["UT_bleedDecayMult"]

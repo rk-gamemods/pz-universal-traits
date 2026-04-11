@@ -7,6 +7,7 @@ local TRAIT_I  = "UniversalTraits:UT_bouncer_I"
 local TRAIT_II = "UniversalTraits:UT_bouncer_II"
 
 local function onPlayerUpdate(player)
+    if UTCore.shouldSkipTick(player) then return end
     if not player then return end
     if not (UTCore.hasTrait(player, TRAIT_I) or UTCore.hasTrait(player, TRAIT_II)) then return end
 
@@ -38,7 +39,10 @@ local function onPlayerUpdate(player)
 
     -- 5% chance to stagger one close enemy
     if ZombRand(100) < 5 then
-        closeEnemies[1]:setStaggerBack(true)
+        local target = closeEnemies[1]
+        target:setBumpType("stagger")
+        target:setVariable("BumpDone", false)
+        target:setVariable("BumpFall", true)
         md["UT_bouncer_cooldown"] = 60
     end
 end

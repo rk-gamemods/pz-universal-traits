@@ -1,6 +1,6 @@
 -- UT_batteringram.lua
 -- Intercepts zombie collisions while sprinting or running, knocking the zombie
--- down and draining endurance. Sprint charges deal direct impact damage.
+-- down and draining endurance.
 --
 -- Bump immunity is handled by UTCore_ZombieCollisionHook's preemptive
 -- runningTime prevention — this callback does NOT touch any player bump state.

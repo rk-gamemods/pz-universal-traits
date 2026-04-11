@@ -759,43 +759,63 @@ end)
 
 test("ZombieCollisionHook fires callback on rising edge with zombie", function()
     UTCore._zombieCollisionCallbacks = {}
-    local p = MockPlayer()
-    local z = MockZombie()
+    local z = MockZombie({ x = 0.3, y = 0, z = 0 })
+    local sq = MockCollisionSquare(0, 0, 0, {z})
+    local squares = { ["0,0,0"] = sq }
+    for dx = -1, 1 do for dy = -1, 1 do
+        if dx ~= 0 or dy ~= 0 then squares[dx..","..dy..",0"] = MockCollisionSquare(dx, dy, 0, {}) end
+    end end
+    _G._mockCell = MockCell(squares)
+    local p = MockPlayer({}, { square = sq })
+    p:setRunning(true)
     local firedPlayer, firedZombie
     UTCore.registerZombieCollisionHandler("test_trait", function(player, zombie)
         firedPlayer = player
         firedZombie = zombie
     end)
-    p:setBumpType("stagger")
-    p:setBumpedChr(z)
     Events.OnPlayerUpdate.fire(p)
+    _G._mockCell = nil
     assert_eq(firedPlayer, p, "callback should receive the player")
     assert_eq(firedZombie, z, "callback should receive the zombie")
 end)
 
 test("ZombieCollisionHook does NOT re-fire on sustained bump", function()
     UTCore._zombieCollisionCallbacks = {}
-    local p = MockPlayer()
-    local z = MockZombie()
+    local z = MockZombie({ x = 0.3, y = 0, z = 0 })
+    local sq = MockCollisionSquare(0, 0, 0, {z})
+    local squares = { ["0,0,0"] = sq }
+    for dx = -1, 1 do for dy = -1, 1 do
+        if dx ~= 0 or dy ~= 0 then squares[dx..","..dy..",0"] = MockCollisionSquare(dx, dy, 0, {}) end
+    end end
+    _G._mockCell = MockCell(squares)
+    local p = MockPlayer({}, { square = sq })
+    p:setRunning(true)
     local callCount = 0
     UTCore.registerZombieCollisionHandler("test_trait", function() callCount = callCount + 1 end)
-    p:setBumpType("stagger")
-    p:setBumpedChr(z)
     Events.OnPlayerUpdate.fire(p)   -- rising edge
-    Events.OnPlayerUpdate.fire(p)   -- still bumped
-    assert_eq(callCount, 1, "expected exactly 1 fire for a sustained bump")
+    Events.OnPlayerUpdate.fire(p)   -- still in range
+    _G._mockCell = nil
+    assert_eq(callCount, 1, "expected exactly 1 fire for a sustained presence")
 end)
 
 test("ZombieCollisionHook does NOT fire for non-zombie bumpedChr", function()
     UTCore._zombieCollisionCallbacks = {}
-    local p = MockPlayer()
+    -- Place non-zombie moving object on the square
+    local notZombie = { getName = function() return "survivor" end, _mockType = "IsoPlayer",
+        getX = function(self) return 0.3 end, getY = function(self) return 0 end, getZ = function(self) return 0 end }
+    local sq = MockCollisionSquare(0, 0, 0, {notZombie})
+    local squares = { ["0,0,0"] = sq }
+    for dx = -1, 1 do for dy = -1, 1 do
+        if dx ~= 0 or dy ~= 0 then squares[dx..","..dy..",0"] = MockCollisionSquare(dx, dy, 0, {}) end
+    end end
+    _G._mockCell = MockCell(squares)
+    local p = MockPlayer({}, { square = sq })
+    p:setRunning(true)
     local fired = false
     UTCore.registerZombieCollisionHandler("test_trait", function() fired = true end)
-    local notZombie = { getName = function() return "survivor" end }  -- no isAlwaysKnockedDown
-    p:setBumpType("stagger")
-    p:setBumpedChr(notZombie)
     Events.OnPlayerUpdate.fire(p)
-    assert_eq(fired, false, "expected no callback for non-zombie bumpedChr")
+    _G._mockCell = nil
+    assert_eq(fired, false, "expected no callback for non-zombie moving object")
 end)
 
 test("ZombieCollisionHook does NOT fire when bumpedChr is nil", function()

@@ -99,6 +99,7 @@ function MockPlayer(traits, opts)
     local _outside    = (opts.outside == nil) and true or opts.outside
     local _moving     = opts.moving or false
     local _z          = opts.z or 0
+    local _square     = opts.square or nil
     local _nutrition  = opts.nutrition or {
         getWeight    = function(self) return 80 end,
         getCalories  = function(self) return 2000 end,
@@ -210,10 +211,13 @@ function MockPlayer(traits, opts)
         getVehicle           = function(self) return _vehicle end,
         setDriving           = function(self, v) _driving = v end,
         setVehicle           = function(self, v) _vehicle = v end,
+        isDead               = function(self) return false end,
         getInventory         = function(self) return _inventory end,
         isOutside            = function(self) return _outside end,
         isMoving             = function(self) return _moving end,
         getZ                 = function(self) return _z end,
+        getCurrentSquare     = function(self) return _square end,
+        setCurrentSquare     = function(self, sq) _square = sq end,
         getNutrition         = function(self) return _nutrition end,
     }
 end
@@ -226,7 +230,9 @@ function MockZombie(opts)
     local knockDownCalls = {}
     local _x = opts.x or 0
     local _y = opts.y or 0
+    local _z = opts.z or 0
     return {
+        _mockType           = "IsoZombie",
         isAlwaysKnockedDown = function(self) return false end,
         knockDown           = function(self, fromBehind)
             _knocked = true
@@ -238,6 +244,7 @@ function MockZombie(opts)
         getKnockDownCalls   = function(self) return knockDownCalls end,
         getX                = function(self) return _x end,
         getY                = function(self) return _y end,
+        getZ                = function(self) return _z end,
     }
 end
 

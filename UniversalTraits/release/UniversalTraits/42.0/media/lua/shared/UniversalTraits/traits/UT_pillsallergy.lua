@@ -1,0 +1,4 @@
+-- UT_pillsallergy.lua
+-- Pills allergy: food sickness reaction when consuming any medication.
+-- Mechanic implemented in UT_ItemConsumptionHooks.lua (ISEatFoodAction override).
+-- Taking any medication raises food sickness by +15.

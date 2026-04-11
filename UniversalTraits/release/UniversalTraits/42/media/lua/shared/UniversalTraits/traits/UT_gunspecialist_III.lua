@@ -14,31 +14,34 @@ local SPEED_MULT = 0.9  -- 10% faster = 90% of base time
 
 local tickCounter = 0
 
+local function isFirearm(item)
+    return item and instanceof(item, "HandWeapon") and item:isRanged()
+end
+
 local function applySpeedBonus(weapon)
-    if not weapon then return end
-    pcall(function()
-        local wmd = weapon:getModData()
+    if not isFirearm(weapon) then return end
 
-        -- Cache base reload time on first application
-        if wmd["UT_gs3BaseReload"] == nil then
-            wmd["UT_gs3BaseReload"] = weapon:getReloadTime()
-        end
-        -- Cache base aiming time on first application
-        if wmd["UT_gs3BaseAim"] == nil then
-            wmd["UT_gs3BaseAim"] = weapon:getAimingTime()
-        end
+    local wmd = weapon:getModData()
 
-        local targetReload = math.floor(wmd["UT_gs3BaseReload"] * SPEED_MULT)
-        local targetAim    = math.floor(wmd["UT_gs3BaseAim"]    * SPEED_MULT)
+    -- Cache base reload time on first application
+    if wmd["UT_gs3BaseReload"] == nil then
+        wmd["UT_gs3BaseReload"] = weapon:getReloadTime()
+    end
+    -- Cache base aiming time on first application
+    if wmd["UT_gs3BaseAim"] == nil then
+        wmd["UT_gs3BaseAim"] = weapon:getAimingTime()
+    end
 
-        -- Only write if the value drifted (avoids unnecessary Java calls every tick)
-        if weapon:getReloadTime() ~= targetReload then
-            weapon:setReloadTime(targetReload)
-        end
-        if weapon:getAimingTime() ~= targetAim then
-            weapon:setAimingTime(targetAim)
-        end
-    end)
+    local targetReload = math.floor(wmd["UT_gs3BaseReload"] * SPEED_MULT)
+    local targetAim    = math.floor(wmd["UT_gs3BaseAim"]    * SPEED_MULT)
+
+    -- Only write if the value drifted (avoids unnecessary Java calls every tick)
+    if weapon:getReloadTime() ~= targetReload then
+        weapon:setReloadTime(targetReload)
+    end
+    if weapon:getAimingTime() ~= targetAim then
+        weapon:setAimingTime(targetAim)
+    end
 end
 
 local function onNewGame(player)
@@ -48,6 +51,7 @@ local function onNewGame(player)
 end
 
 local function onPlayerUpdate(player)
+    if UTCore.shouldSkipTick(player) then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
     tickCounter = tickCounter + 1
     if tickCounter % 30 ~= 0 then return end
@@ -66,8 +70,8 @@ local function onPlayerUpdate(player)
     applySpeedBonus(secondary)
 
     -- Jam immunity: unjam any currently equipped firearm
-    if primary   then pcall(function() if primary:isJammed()   then primary:setJammed(false)   end end) end
-    if secondary then pcall(function() if secondary:isJammed() then secondary:setJammed(false) end end) end
+    if isFirearm(primary)   and primary:isJammed()   then primary:setJammed(false)   end
+    if isFirearm(secondary) and secondary:isJammed() then secondary:setJammed(false) end
 end
 
 Events.OnNewGame.Add(onNewGame)
