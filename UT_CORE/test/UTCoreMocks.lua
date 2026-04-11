@@ -219,6 +219,25 @@ function MockPlayer(traits, opts)
         getCurrentSquare     = function(self) return _square end,
         setCurrentSquare     = function(self, sq) _square = sq end,
         getNutrition         = function(self) return _nutrition end,
+        -- Animation variable store (BumpDone, BumpFallAnimFinished, etc.)
+        _variables           = {},
+        setVariable          = function(self, key, val)
+            if type(val) == "boolean" then val = tostring(val) end
+            self._variables[key] = tostring(val)
+        end,
+        getVariable          = function(self, key) return self._variables[key] end,
+        getVariableBoolean   = function(self, key) return self._variables[key] == "true" end,
+        clearVariable        = function(self, key) self._variables[key] = nil end,
+        -- BumpDone state
+        _bumpDone            = true,
+        setBumpDone          = function(self, v) self._bumpDone = v end,
+        isBumpDone           = function(self) return self._bumpDone end,
+        -- isBlockMovement alias (PZ Java getter style)
+        isBlockMovement      = function(self) return self._blockMovement end,
+        -- Hit reaction state
+        _hitReaction         = "",
+        setHitReaction       = function(self, v) self._hitReaction = v end,
+        getHitReaction       = function(self) return self._hitReaction end,
     }
 end
 
