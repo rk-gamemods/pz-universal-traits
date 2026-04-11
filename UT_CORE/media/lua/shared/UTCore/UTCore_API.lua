@@ -7,27 +7,58 @@ UTCore = UTCore or {}
 -- Cache CharacterTrait objects by string ID to avoid repeated registry lookups.
 local _traitCache = {}
 
+-- Session-level result cache: traits are fixed at character creation in PZ,
+-- so the result of player:hasTrait() is stable for the entire session.
+-- This eliminates ~1,300+ Java interop calls/sec from the negative-path
+-- (handlers for traits the player doesn't have).
+local _cachedPlayer = nil
+local _playerTraitResults = {}
+
 local function recordSmoke(scenarioId, detail)
     if UTSmoke and UTSmoke.record then
         UTSmoke.record(scenarioId, detail)
     end
 end
 
+--- Invalidate the per-session hasTrait result cache.
+-- Call if traits are dynamically added/removed (not normal in vanilla PZ).
+function UTCore.invalidateTraitCache()
+    _cachedPlayer = nil
+    _playerTraitResults = {}
+end
+
 --- Nil-safe hasTrait check (B42.16+ registry API).
+-- Results are cached for the session since traits don't change during gameplay.
 -- @param player IsoPlayer
 -- @param traitId string  full namespaced ID e.g. "UniversalTraits:UT_swift"
 -- @return boolean
 function UTCore.hasTrait(player, traitId)
     if not player then return false end
     if not instanceof(player, "IsoGameCharacter") then return false end
+
+    -- Invalidate cache if player identity changed (new game / load / tests)
+    if player ~= _cachedPlayer then
+        _playerTraitResults = {}
+        _cachedPlayer = player
+    end
+
+    -- Fast path: return cached result (Lua table lookup, no Java interop)
+    local cached = _playerTraitResults[traitId]
+    if cached ~= nil then return cached end
+
     recordSmoke("player.core-runtime", traitId)
     local ct = _traitCache[traitId]
     if ct == nil then
         ct = CharacterTrait.get(ResourceLocation.of(traitId))
         if ct then _traitCache[traitId] = ct end
     end
-    if not ct then return false end
-    return player:hasTrait(ct)
+    if not ct then
+        _playerTraitResults[traitId] = false
+        return false
+    end
+    local result = player:hasTrait(ct)
+    _playerTraitResults[traitId] = result
+    return result
 end
 
 function UTCore.weaponHasCategory(weapon, category)
