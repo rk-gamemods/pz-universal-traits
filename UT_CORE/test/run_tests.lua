@@ -8,6 +8,7 @@ package.path = base .. "../media/lua/shared/?.lua;" .. package.path
 dofile(base .. "UTCoreMocks.lua")
 
 -- Load UTCore modules
+dofile(base .. "../media/lua/shared/UTCore/UTCore_FreezeLogger.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_API.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_TraitChecks.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_Events.lua")
@@ -1084,6 +1085,74 @@ test("WorkSpeedHook does not apply transferSpeedMult to ISCraftItem", function()
     assert_eq(result, 100, "expected no transfer mod on a craft action")
 end)
 
+-- ===== FreezeLogger Tests =====
+
+test("FreezeLogger: no freeze detected during normal movement", function()
+    UTCore._resetFreezeLogger()
+    local p = MockPlayer({})
+    -- Simulate moving player (position changes each tick)
+    for i = 1, 10 do
+        p:moveTo(i * 0.1, 0)
+        UTCore._freezeLoggerOnPlayerUpdate(p)
+    end
+    assert_eq(UTCore._getFreezeLoggerStuckCount(), 0, "should not count stuck ticks during movement")
+end)
+
+test("FreezeLogger: detects freeze after movement stops", function()
+    UTCore._resetFreezeLogger()
+    local p = MockPlayer({})
+    -- Move first
+    p:moveTo(1.0, 0)
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    p:moveTo(2.0, 0)
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    -- Now stop moving (position stays same)
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    assert_eq(UTCore._getFreezeLoggerStuckCount(), 1, "should count 1 stuck tick")
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    assert_eq(UTCore._getFreezeLoggerStuckCount(), 2, "should count 2 stuck ticks")
+end)
+
+test("FreezeLogger: resets on resumed movement", function()
+    UTCore._resetFreezeLogger()
+    local p = MockPlayer({})
+    p:moveTo(1.0, 0)
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    p:moveTo(2.0, 0)
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    -- Stop
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    assert_eq(UTCore._getFreezeLoggerStuckCount(), 2, "stuck after 2 ticks")
+    -- Move again
+    p:moveTo(3.0, 0)
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    assert_eq(UTCore._getFreezeLoggerStuckCount(), 0, "should reset on movement")
+end)
+
+test("FreezeLogger: skips dead player", function()
+    UTCore._resetFreezeLogger()
+    local p = MockPlayer({})
+    p.isDead = function() return true end
+    p:moveTo(1.0, 0)
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    assert_eq(UTCore._getFreezeLoggerStuckCount(), 0, "dead player should not trigger")
+end)
+
+test("FreezeLogger: skips nil player", function()
+    UTCore._resetFreezeLogger()
+    UTCore._freezeLoggerOnPlayerUpdate(nil)
+    assert_eq(UTCore._getFreezeLoggerStuckCount(), 0, "nil player should not trigger")
+end)
+
+test("FreezeLogger: OnPlayerMove tracker sets flag", function()
+    UTCore._resetFreezeLogger()
+    _G.getPlayer = function() return MockPlayer({}) end
+    UTCore._freezeLoggerOnPlayerMove()
+    _G.getPlayer = function() return nil end
+    -- The flag is internal, we just verify it doesn't crash
+end)
+
 -- ===== StuckMovementWatchdog Tests =====
 
 test("Watchdog: no recovery when movement is not blocked", function()
@@ -1120,10 +1189,10 @@ test("Watchdog: counter resets when block clears before threshold", function()
     UTCore._resetWatchdogStuckTicks()
     local p = MockPlayer({})
     p:setBlockMovement(true)
-    for i = 1, 50 do
+    for i = 1, 10 do
         UTCore._watchdogOnPlayerUpdate(p)
     end
-    assert_eq(UTCore._getWatchdogStuckTicks(), 50, "counter should be 50")
+    assert_eq(UTCore._getWatchdogStuckTicks(), 10, "counter should be 10")
     -- Block clears
     p:setBlockMovement(false)
     UTCore._watchdogOnPlayerUpdate(p)

@@ -23,16 +23,14 @@
 --                                 → setIgnoreMovement(false))
 --
 -- THRESHOLD RATIONALE:
---   Legitimate blocking states last at most:
---     BumpedState stagger: ~30-60 frames (~1-2 sec)
---     PlayerKnockedDown: up to ~60 frames (~2 sec)
---     PlayerGetUpState: ~30-60 frames (~1-2 sec)
---     Worst legitimate chain (knocked down → getup): ~4 sec
---   STUCK_THRESHOLD = 180 ticks (~6 sec) provides margin for all cases.
+--   Aggressive threshold: 30 ticks (~1 sec). May interrupt tail end of
+--   legitimate bump stagger (~30-60 frames), but user reports freeze is
+--   fatal within seconds so fast recovery is critical. Better to clip a
+--   stagger animation than let the player die frozen.
 
 UTCore = UTCore or {}
 
-local STUCK_THRESHOLD = 180
+local STUCK_THRESHOLD = 30
 
 local _stuckTicks = 0
 
