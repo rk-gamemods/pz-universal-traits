@@ -52,7 +52,9 @@ local function onPlayerUpdate(player)
             local isBandaged = part:bandaged()
             if not bandagedOnly or isBandaged then
                 local nativeDecay = isBandaged and NATIVE_BANDAGED or NATIVE_UNBANDAGED
-                local extraDecay  = nativeDecay * gameMultiplier * (mult - 1.0)
+                -- Multiply by 10 to compensate for 10-tick throttle: total decay
+                -- rate is identical to running every tick at 1x.
+                local extraDecay  = nativeDecay * gameMultiplier * (mult - 1.0) * 10
                 local newTime     = bleedingTime - extraDecay
                 part:setBleedingTime(math.max(newTime, 0))
             end

@@ -114,7 +114,6 @@ end
 local function onPlayerUpdate(player)
     if not player then return end
     if player:isDead() then return end
-    if player:getVehicle() ~= nil then return end
 
     -- No handlers registered → nothing to do
     local hasHandlers = false

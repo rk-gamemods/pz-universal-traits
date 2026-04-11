@@ -50,7 +50,6 @@ local function onPlayerMove()
     local player = getPlayer()
     if not player then return end
     if not player:isLocalPlayer() then return end
-    if player:getVehicle() ~= nil then return end
 
     -- Ensure the aggregated modifier cache is current before reading UT_speedMod.
     if UTCore.refreshAggregatedModifierCache then

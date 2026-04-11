@@ -73,7 +73,6 @@ local _lastCategory = nil
 
 local function onPlayerUpdate(player)
     if not player or not player.isLocalPlayer or not player:isLocalPlayer() then return end
-    if player:getVehicle() ~= nil then return end
 
     local weapon = player.getPrimaryHandItem and player:getPrimaryHandItem()
     if not weapon then
