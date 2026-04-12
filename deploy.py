@@ -16,7 +16,7 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 MODS_DIR = Path(r"C:\Users\Admin\Zomboid\mods")
-MODS = ["UniversalTraits", "UT_CORE"]
+MODS = ["ZZ_ModProfiler", "UniversalTraits", "UT_CORE"]
 VERSION_DIR = "42.0"  # Must match versionMin in mod.info
 
 

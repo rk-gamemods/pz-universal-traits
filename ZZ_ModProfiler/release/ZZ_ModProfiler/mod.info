@@ -1,0 +1,6 @@
+name=ZZ_ModProfiler
+poster=poster.png
+id=ZZ_ModProfiler
+description=Universal mod callback profiler. Wraps all mod event registrations with timing. Place FIRST in mod load order. Disable when not profiling.
+modversion=1.0
+versionMin=42.0
