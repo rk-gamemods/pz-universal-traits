@@ -738,10 +738,18 @@ end
 local function MockSpottedList(count, dist)
     local enemies = {}
     for i = 1, count do
-        enemies[i] = { _dist = dist }
+        enemies[i] = { _dist = dist, isDead = function(self) return false end }
     end
     return {
         size = function(self) return count end,
+        get  = function(self, i) return enemies[i + 1] end,
+    }
+end
+
+-- Helper: build a spotted-list mock from an explicit enemy array
+local function MockSpottedListFromEnemies(enemies)
+    return {
+        size = function(self) return #enemies end,
         get  = function(self, i) return enemies[i + 1] end,
     }
 end
@@ -800,26 +808,41 @@ test("actionhero skipped for non-zombie targets", function()
         "expected crit chance unchanged when enemy count below threshold")
 end)
 
+test("actionhero ignores dead zombies in enemy count", function()
+    -- 2 alive + 2 dead within range = only 2 living → below threshold of 3
+    local enemies = {
+        { _dist = 1, isDead = function() return false end },
+        { _dist = 1, isDead = function() return false end },
+        { _dist = 1, isDead = function() return true end },
+        { _dist = 1, isDead = function() return true end },
+    }
+    local spotted = MockSpottedListFromEnemies(enemies)
+    local weapon  = MockWeapon("Axe", { critChance = 10 })
+    local player  = MockActionPlayer(
+        { "UniversalTraits:UT_actionhero" },
+        spotted, weapon
+    )
+
+    for _ = 1, 30 do Events.OnPlayerUpdate.fire(player) end
+
+    assert_eq(weapon:getCriticalChance(), 10,
+        "crit chance unchanged — dead zombies should not inflate enemy count")
+end)
+
 -- ===== UT_bouncer_I stagger mechanic tests =====
 -- Load the trait file so its Events.OnPlayerUpdate.Add() fires.
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_bouncer_I.lua")
 
 -- Helper: build an enemy mock with Build 42 stagger API
-local function MockEnemy(dist)
+local function MockEnemy(dist, dead)
     return {
         _dist      = dist,
+        _dead      = dead or false,
         _bumpType  = nil,
         _vars      = {},
+        isDead      = function(self) return self._dead end,
         setBumpType = function(self, v) self._bumpType = v end,
         setVariable = function(self, k, v) self._vars[k] = v end,
-    }
-end
-
--- Helper: build a spotted-list mock from an explicit enemy array
-local function MockSpottedListFromEnemies(enemies)
-    return {
-        size = function(self) return #enemies end,
-        get  = function(self, i) return enemies[i + 1] end,
     }
 end
 
@@ -828,6 +851,7 @@ local function MockBouncerPlayer(traitList, spottedList)
     local p = MockPlayer(traitList)
     p.getSpottedList = function(self) return spottedList end
     p.DistTo = function(self, enemy) return enemy._dist end
+    p.getBlockMovement = p.getBlockMovement or function(self) return self._blockMovement end
     return p
 end
 
@@ -904,6 +928,51 @@ test("bouncer stagger fires after hostile animation ends", function()
     end
     assert_true(staggered, "bouncer should fire normally when player is not in hostile animation")
     assert_eq(player:getModData()["UT_bouncer_cooldown"], 60, "cooldown should be set to 60")
+end)
+
+test("bouncer ignores dead zombies in threshold and target selection", function()
+    -- 2 alive + 2 dead = only 2 count toward the 3-enemy threshold → should NOT fire
+    local enemies = {
+        MockEnemy(1.5, false), MockEnemy(1.5, false),
+        MockEnemy(1.5, true),  MockEnemy(1.5, true),
+    }
+    local spotted = MockSpottedListFromEnemies(enemies)
+    local player  = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, spotted)
+
+    Events.OnPlayerUpdate:fire(player)
+
+    local staggered = false
+    for _, e in ipairs(enemies) do
+        if e._bumpType == "stagger" then staggered = true end
+    end
+    assert_true(not staggered,
+        "bouncer should NOT fire when only 2 living enemies are close (dead don't count)")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 0,
+        "cooldown should stay 0 (bouncer didn't fire)")
+end)
+
+test("bouncer fires when 3+ living enemies even if dead zombies present", function()
+    -- 3 alive + 1 dead = 3 living → should fire, target must be alive
+    local enemies = {
+        MockEnemy(1.5, false), MockEnemy(1.5, false), MockEnemy(1.5, false),
+        MockEnemy(1.5, true),
+    }
+    local spotted = MockSpottedListFromEnemies(enemies)
+    local player  = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, spotted)
+
+    Events.OnPlayerUpdate:fire(player)
+
+    -- Verify stagger target is alive
+    local staggeredAlive = false
+    local staggeredDead = false
+    for _, e in ipairs(enemies) do
+        if e._bumpType == "stagger" then
+            if e._dead then staggeredDead = true else staggeredAlive = true end
+        end
+    end
+    assert_true(staggeredAlive, "bouncer should stagger a living enemy")
+    assert_true(not staggeredDead, "bouncer must NOT stagger a dead zombie")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 60, "cooldown should be set")
 end)
 
 -- ===== UT_vagabond loot mechanic tests =====
@@ -1046,8 +1115,18 @@ local function MockUpdatePlayer(traitList, opts)
     p._moving    = opts.moving    or false
     p._indoors   = opts.indoors   or false
     if opts.spottedSize then
+        -- Build a full spottedList with per-element isDead() (needed by traits
+        -- that iterate + filter dead zombies, e.g. scardycat, bouncer)
+        local deadCount = opts.spottedDeadCount or 0
+        local entries = {}
+        for i = 1, opts.spottedSize do
+            entries[i] = { isDead = function() return i > (opts.spottedSize - deadCount) end }
+        end
         p.getSpottedList = function(self)
-            return { size = function() return opts.spottedSize end }
+            return {
+                size = function() return #entries end,
+                get  = function(_, idx) return entries[idx + 1] end,
+            }
         end
     end
     if opts.endurance ~= nil then
@@ -1104,6 +1183,28 @@ test("scardycat screams when 10 zombies spotted", function()
     assert_true(player._shouted == true or player._said ~= nil,
         "expected player to scream (_shouted=true or _said set), got _shouted="
         .. tostring(player._shouted) .. " _said=" .. tostring(player._said))
+end)
+
+test("scardycat ignores dead zombies in count (7 alive + 3 dead = no scream)", function()
+    -- Total 10 in list but only 7 alive → below >8 threshold
+    local player = MockUpdatePlayer(
+        { "UniversalTraits:UT_scardycat" },
+        { spottedSize = 10, spottedDeadCount = 3 }
+    )
+    Events.OnPlayerUpdate:fire(player)
+    assert_true(player._said == nil,
+        "scardycat should NOT scream when < 9 living zombies spotted")
+end)
+
+test("scardycat screams when 9+ living zombies (dead excluded)", function()
+    -- 10 total, 1 dead = 9 alive → above threshold of >8
+    local player = MockUpdatePlayer(
+        { "UniversalTraits:UT_scardycat" },
+        { spottedSize = 10, spottedDeadCount = 1 }
+    )
+    Events.OnPlayerUpdate:fire(player)
+    assert_true(player._said ~= nil,
+        "scardycat SHOULD scream with 9 living zombies spotted")
 end)
 
 test("pacer applies unhappiness after 600 indoor ticks", function()

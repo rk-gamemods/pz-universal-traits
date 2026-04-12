@@ -30,17 +30,20 @@ local function onPlayerUpdate(player)
     -- GUARD: never stagger zombies while the player is mid-attack/shove/stomp/grapple.
     -- Mutating a zombie's bump state during SwipeStatePlayer corrupts the animation
     -- sequence and can permanently lock blockMovement=true (freeze bug).
-    if player:isPerformingHostileAnimation() then return end
+    if player:isPerformingHostileAnimation() then
+        UTCore.diagLog("bouncer", "SUPPRESSED", "hostile_anim=true")
+        return
+    end
 
     -- Cooldown is zero — check trigger conditions
     local spottedList = player:getSpottedList()
     if spottedList:size() < 3 then return end
 
-    -- Collect enemies within 1.75 tiles
+    -- Collect LIVING enemies within 1.75 tiles (dead zombies stay in spottedList)
     local closeEnemies = {}
     for i = 0, spottedList:size() - 1 do
         local enemy = spottedList:get(i)
-        if player:DistTo(enemy) < 1.75 then
+        if not enemy:isDead() and player:DistTo(enemy) < 1.75 then
             closeEnemies[#closeEnemies + 1] = enemy
         end
     end
@@ -54,6 +57,8 @@ local function onPlayerUpdate(player)
         target:setVariable("BumpDone", false)
         target:setVariable("BumpFall", true)
         md["UT_bouncer_cooldown"] = 60
+        UTCore.diagLog("bouncer", "STAGGER", "close=" .. #closeEnemies
+            .. " blockMov=" .. tostring(player:getBlockMovement()))
     end
 end
 

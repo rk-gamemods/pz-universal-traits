@@ -40,9 +40,15 @@ local function onPlayerUpdate(player)
         return
     end
 
+    -- Count LIVING zombies only (dead zombies stay in spottedList)
     local zombieCount = 0
     pcall(function()
-        zombieCount = player:getSpottedList():size()
+        local list = player:getSpottedList()
+        for i = 0, list:size() - 1 do
+            if not list:get(i):isDead() then
+                zombieCount = zombieCount + 1
+            end
+        end
     end)
     if zombieCount <= 8 then return end
 

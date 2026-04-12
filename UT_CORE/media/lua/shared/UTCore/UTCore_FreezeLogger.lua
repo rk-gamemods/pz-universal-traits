@@ -96,6 +96,8 @@ local function captureState(player)
 
     -- Extra movement diagnostics
     state.isPathing = safeStr(safeCall(player, "isPathing"))
+    state.isHostileAnim = safeStr(safeCall(player, "isPerformingHostileAnimation"))
+    state.isAttackAnim  = safeStr(safeCall(player, "isPerformingAttackAnimation"))
 
     -- Spotted list (zombie count)
     local sl = safeCall(player, "getSpottedList")
@@ -160,7 +162,9 @@ local function dumpState(prefix, state)
         .. " var:MovementState=" .. state.varMovementState)
     print(prefix .. " currentState=" .. state.currentState
         .. " prevState=" .. state.prevState
-        .. " isPathing=" .. state.isPathing)
+        .. " isPathing=" .. state.isPathing
+        .. " hostileAnim=" .. state.isHostileAnim
+        .. " attackAnim=" .. state.isAttackAnim)
     print(prefix .. " weapon=" .. state.weapon
         .. " spottedCount=" .. safeStr(state.spottedCount))
 

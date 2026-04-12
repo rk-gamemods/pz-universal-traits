@@ -37,12 +37,12 @@ local function onPlayerUpdate(player)
     -- Mundane disables crits
     if UTCore.hasTrait(player, "UniversalTraits:UT_mundane") then return end
 
-    -- Count nearby enemies
+    -- Count nearby LIVING enemies (dead zombies stay in spottedList)
     local spottedList = player:getSpottedList()
     local nearbyCount = 0
     for i = 0, spottedList:size() - 1 do
         local enemy = spottedList:get(i)
-        if player:DistTo(enemy) <= ENEMY_RANGE then
+        if not enemy:isDead() and player:DistTo(enemy) <= ENEMY_RANGE then
             nearbyCount = nearbyCount + 1
         end
     end

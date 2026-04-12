@@ -536,6 +536,7 @@ UTCore.applyStatFloor       = UTCore.applyStatFloor or function(player, key, flo
     local name = (type(key) == "table" and key._name) or tostring(key)
     player:getModData()["UT_statFloor_" .. name] = floor
 end
+UTCore.diagLog              = UTCore.diagLog or function(source, event, data) end  -- no-op in tests
 UTCore._periodicHandlers = UTCore._periodicHandlers or {}
 UTCore._vehicleTraitDefs = UTCore._vehicleTraitDefs or {}
 local function periodicHandlerKey(traitId, interval)
