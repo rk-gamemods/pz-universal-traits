@@ -1327,7 +1327,7 @@ end)
 
 test("FreezeLogger: no freeze detected during normal movement", function()
     UTCore._resetFreezeLogger()
-    local p = MockPlayer({})
+    local p = MockPlayer({}, { moving = true })
     -- Simulate moving player (position changes each tick)
     for i = 1, 10 do
         p:moveTo(i * 0.1, 0)
@@ -1336,15 +1336,31 @@ test("FreezeLogger: no freeze detected during normal movement", function()
     assert_eq(UTCore._getFreezeLoggerStuckCount(), 0, "should not count stuck ticks during movement")
 end)
 
-test("FreezeLogger: detects freeze after movement stops", function()
+test("FreezeLogger: no freeze when player stops voluntarily", function()
     UTCore._resetFreezeLogger()
-    local p = MockPlayer({})
-    -- Move first
+    local p = MockPlayer({}, { moving = true })
+    -- Walk a bit
     p:moveTo(1.0, 0)
     UTCore._freezeLoggerOnPlayerUpdate(p)
     p:moveTo(2.0, 0)
     UTCore._freezeLoggerOnPlayerUpdate(p)
-    -- Now stop moving (position stays same)
+    -- Player releases movement keys (isMoving=false) and position stays same
+    p._overrides = p._overrides or {}
+    p.isMoving = function() return false end
+    for _ = 1, 10 do
+        UTCore._freezeLoggerOnPlayerUpdate(p)
+    end
+    assert_eq(UTCore._getFreezeLoggerStuckCount(), 0,
+        "voluntary stop (isMoving=false) must NOT count as freeze")
+end)
+
+test("FreezeLogger: detects freeze when isMoving=true but position stuck", function()
+    UTCore._resetFreezeLogger()
+    local p = MockPlayer({}, { moving = true })
+    -- Move first so prevX/prevY are set
+    p:moveTo(1.0, 0)
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    -- Now player is holding movement key (isMoving=true) but position doesn't change
     UTCore._freezeLoggerOnPlayerUpdate(p)
     assert_eq(UTCore._getFreezeLoggerStuckCount(), 1, "should count 1 stuck tick")
     UTCore._freezeLoggerOnPlayerUpdate(p)
@@ -1353,12 +1369,10 @@ end)
 
 test("FreezeLogger: resets on resumed movement", function()
     UTCore._resetFreezeLogger()
-    local p = MockPlayer({})
+    local p = MockPlayer({}, { moving = true })
     p:moveTo(1.0, 0)
     UTCore._freezeLoggerOnPlayerUpdate(p)
-    p:moveTo(2.0, 0)
-    UTCore._freezeLoggerOnPlayerUpdate(p)
-    -- Stop
+    -- Stuck with isMoving=true
     UTCore._freezeLoggerOnPlayerUpdate(p)
     UTCore._freezeLoggerOnPlayerUpdate(p)
     assert_eq(UTCore._getFreezeLoggerStuckCount(), 2, "stuck after 2 ticks")
@@ -1366,6 +1380,21 @@ test("FreezeLogger: resets on resumed movement", function()
     p:moveTo(3.0, 0)
     UTCore._freezeLoggerOnPlayerUpdate(p)
     assert_eq(UTCore._getFreezeLoggerStuckCount(), 0, "should reset on movement")
+end)
+
+test("FreezeLogger: resets stuck count when player releases keys", function()
+    UTCore._resetFreezeLogger()
+    local p = MockPlayer({}, { moving = true })
+    p:moveTo(1.0, 0)
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    -- 2 stuck ticks with isMoving=true
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    assert_eq(UTCore._getFreezeLoggerStuckCount(), 2, "stuck while pressing keys")
+    -- Player releases keys
+    p.isMoving = function() return false end
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    assert_eq(UTCore._getFreezeLoggerStuckCount(), 0, "should reset when keys released")
 end)
 
 test("FreezeLogger: skips dead player", function()

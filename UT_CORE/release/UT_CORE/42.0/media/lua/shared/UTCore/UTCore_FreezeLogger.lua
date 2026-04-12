@@ -1,26 +1,28 @@
 -- UTCore_FreezeLogger.lua
--- Targeted diagnostic logger: detects movement freeze and dumps full state.
+-- Targeted diagnostic logger: detects TRUE movement freeze and dumps full state.
 --
--- DETECTION: tracks player position each tick. When position is unchanged
--- for FREEZE_DETECT_TICKS while the player was previously moving, triggers
--- a detailed state dump to the PZ console (console.txt).
+-- DETECTION: a freeze is when the player is ACTIVELY PRESSING movement keys
+-- (isMoving() == true) but position does not change. This distinguishes a
+-- real engine freeze from normal stops (looting, aiming, opening inventory,
+-- standing still). The old detection based on historical "_wasMoving" flag
+-- produced massive false positives because it fired on every intentional stop.
 --
 -- The dump captures everything needed to diagnose what blocked movement:
--- position, pending movement, all movement flags, all UT_ modData,
--- zombie count, weapon info, and whether OnPlayerMove fired.
+-- position, pending movement delta, animation state machine, all movement
+-- flags, all UT_ modData, zombie count, weapon info, and whether the
+-- engine's OnPlayerMove event fired.
 --
 -- USAGE: always-on (minimal overhead during normal play). When the user
 -- experiences a freeze, check Zomboid/console.txt for "[FREEZE]" lines.
 
 UTCore = UTCore or {}
 
-local FREEZE_DETECT_TICKS = 3        -- ticks without position change = freeze
+local FREEZE_DETECT_TICKS = 5        -- ticks with isMoving+no position change = freeze
 local FREEZE_LOG_INTERVAL = 30       -- while frozen, log state every N ticks
 local MAX_FREEZE_LOGS     = 20       -- stop logging after this many dumps per freeze
 
 -- State tracking
 local _prevX, _prevY = nil, nil
-local _wasMoving = false
 local _stuckCount = 0
 local _freezeLogCount = 0
 local _onPlayerMoveFired = false      -- set by OnPlayerMove hook, read by OnPlayerUpdate
@@ -200,12 +202,10 @@ local function onPlayerUpdate(player)
     if not player then return end
     if safeCall(player, "isDead") then
         _stuckCount = 0
-        _wasMoving = false
         return
     end
     if safeCall(player, "getVehicle") ~= nil then
         _stuckCount = 0
-        _wasMoving = false
         return
     end
 
@@ -219,18 +219,17 @@ local function onPlayerUpdate(player)
     end
 
     local moved = (x ~= _prevX or y ~= _prevY)
+    local wantsToMove = safeCall(player, "isMoving") or false
 
     if moved then
-        -- Player moved this tick — reset freeze tracking
+        -- Player actually moved — reset everything
         _stuckCount = 0
         _freezeLogCount = 0
-        _wasMoving = true
-    else
-        -- Position unchanged
+    elseif wantsToMove then
+        -- Player is PRESSING movement keys but position didn't change — real stuck
         _stuckCount = _stuckCount + 1
 
-        -- Freeze transition: was moving, now stuck
-        if _wasMoving and _stuckCount == FREEZE_DETECT_TICKS then
+        if _stuckCount == FREEZE_DETECT_TICKS then
             print("[FREEZE] ===== FREEZE DETECTED at tick " .. _stuckCount .. " =====")
             local state = captureState(player)
             dumpState("[FREEZE]", state)
@@ -262,6 +261,10 @@ local function onPlayerUpdate(player)
         if _freezeLogCount >= MAX_FREEZE_LOGS and _stuckCount % (FREEZE_LOG_INTERVAL * 10) == 0 then
             print("[FREEZE] (logging paused, " .. _stuckCount .. " ticks frozen)")
         end
+    else
+        -- Player is NOT pressing movement keys and not moving — normal idle, reset
+        _stuckCount = 0
+        _freezeLogCount = 0
     end
 
     _prevX, _prevY = x, y
@@ -283,7 +286,6 @@ UTCore._freezeLoggerOnPlayerMove = onPlayerMove
 UTCore._getFreezeLoggerStuckCount = function() return _stuckCount end
 UTCore._resetFreezeLogger = function()
     _prevX, _prevY = nil, nil
-    _wasMoving = false
     _stuckCount = 0
     _freezeLogCount = 0
     _onPlayerMoveFired = false
