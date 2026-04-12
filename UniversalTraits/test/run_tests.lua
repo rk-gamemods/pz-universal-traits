@@ -851,7 +851,7 @@ local function MockBouncerPlayer(traitList, spottedList)
     local p = MockPlayer(traitList)
     p.getSpottedList = function(self) return spottedList end
     p.DistTo = function(self, enemy) return enemy._dist end
-    p.getBlockMovement = p.getBlockMovement or function(self) return self._blockMovement end
+    p.isBlockMovement = p.isBlockMovement or function(self) return self._blockMovement end
     return p
 end
 
@@ -928,6 +928,26 @@ test("bouncer stagger fires after hostile animation ends", function()
     end
     assert_true(staggered, "bouncer should fire normally when player is not in hostile animation")
     assert_eq(player:getModData()["UT_bouncer_cooldown"], 60, "cooldown should be set to 60")
+end)
+
+test("bouncer stagger does NOT fire when player movement is blocked (freeze prevention)", function()
+    local enemies = {
+        MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5),
+    }
+    local spotted = MockSpottedListFromEnemies(enemies)
+    local player  = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, spotted)
+    player._blockMovement = true  -- player is being bumped/knocked down/getting up
+
+    Events.OnPlayerUpdate:fire(player)
+
+    local staggered = false
+    for _, e in ipairs(enemies) do
+        if e._bumpType == "stagger" then staggered = true end
+    end
+    assert_true(not staggered,
+        "bouncer must NOT stagger zombies when player movement is blocked (causes chain-collision freeze)")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 0,
+        "cooldown should remain 0 (bouncer was suppressed)")
 end)
 
 test("bouncer ignores dead zombies in threshold and target selection", function()

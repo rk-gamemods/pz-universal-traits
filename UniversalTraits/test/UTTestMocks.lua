@@ -336,7 +336,7 @@ function MockPlayer(traitList, opts)
         setBumpFall          = function(self, v) self._bumpFall = v end,
         _blockMovement       = false,
         setBlockMovement     = function(self, v) self._blockMovement = v end,
-        getBlockMovement     = function(self) return self._blockMovement end,
+        isBlockMovement      = function(self) return self._blockMovement end,
         _bumpDone            = false,
         setBumpDone          = function(self, v) self._bumpDone = v end,
         isBumpDone           = function(self) return self._bumpDone end,

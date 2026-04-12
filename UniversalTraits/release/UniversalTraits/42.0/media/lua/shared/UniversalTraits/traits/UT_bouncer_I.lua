@@ -45,6 +45,14 @@ local function onTick(player, tick)
 
     if #closeEnemies < 3 then return end
 
+    -- GUARD: never stagger while player movement is already blocked.
+    -- If player is being bumped, knocked down, or getting up, a stagger
+    -- can chain-collide into the player and permanently lock blockMovement.
+    if player:isBlockMovement() then
+        UTCore.diagLog("bouncer", "SUPPRESSED", "blockMovement=true")
+        return
+    end
+
     -- 5% chance to stagger one close enemy
     if ZombRand(100) < 5 then
         local target = closeEnemies[1]
@@ -53,7 +61,7 @@ local function onTick(player, tick)
         target:setVariable("BumpFall", true)
         md["UT_bouncer_cooldown"] = 60
         UTCore.diagLog("bouncer", "STAGGER", "close=" .. #closeEnemies
-            .. " blockMov=" .. tostring(player:getBlockMovement()))
+            .. " blockMov=" .. tostring(player:isBlockMovement()))
     end
 end
 
