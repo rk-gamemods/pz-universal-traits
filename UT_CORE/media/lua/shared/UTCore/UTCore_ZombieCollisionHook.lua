@@ -131,10 +131,23 @@ local function onPlayerUpdate(player)
         local md = player:getModData()
         if md.UT_handledZombies then
             md.UT_handledZombies = nil
-            -- Clear the bump guard we set — stale bumpedChr on a dead/distant
-            -- zombie can cause BumpedState to enter and never resolve
-            pcall(function() player:setBumpedChr(nil) end)
-            dbg("Cleared bumpedChr (player stopped running)")
+            -- Clear the bump guard we set — but ONLY if no active bump state.
+            -- If blockMovement is true (+bumpDone false), a bump is in progress
+            -- and clearing bumpedChr would break BumpedState.exit() flow.
+            local inActiveBump = false
+            pcall(function()
+                inActiveBump = player:isBlockMovement() and not player:isBumpDone()
+            end)
+            if not inActiveBump then
+                pcall(function() player:setBumpedChr(nil) end)
+                dbg("Cleared bumpedChr (player stopped running)")
+            else
+                dbg("Skipped bumpedChr clear (active bump in progress)")
+            end
+            if UTCore.diagLog then
+                UTCore.diagLog("ZCollision", "stop_running",
+                    "inActiveBump=" .. tostring(inActiveBump))
+            end
         end
         -- One-time cleanup of old moddata from previous suppression approach
         if md.UT_bumpSuppress then
@@ -222,10 +235,17 @@ local function onPlayerUpdate(player)
             dbg("FAILED setBumpedChr: " .. tostring(err))
         end
     else
-        -- No zombies in collision range — clear the bump guard to prevent
-        -- stale bumpedChr references to dead/distant zombies from jamming
-        -- BumpedState (bumpDone never fires → permanent freeze)
-        pcall(function() player:setBumpedChr(nil) end)
+        -- No zombies in collision range — clear the bump guard, but ONLY if
+        -- no active bump is in progress. If we cleared bumpedChr during an
+        -- active BumpedState, BumpDone would never fire and blockMovement
+        -- would stay true forever (the exact freeze bug).
+        local inActiveBump = false
+        pcall(function()
+            inActiveBump = player:isBlockMovement() and not player:isBumpDone()
+        end)
+        if not inActiveBump then
+            pcall(function() player:setBumpedChr(nil) end)
+        end
     end
 
     if foundNearby and UTSmoke and UTSmoke.record then
@@ -233,7 +253,11 @@ local function onPlayerUpdate(player)
     end
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+if UTCore.profiledHandler then
+    Events.OnPlayerUpdate.Add(UTCore.profiledHandler("ZombieCollisionHook", onPlayerUpdate))
+else
+    Events.OnPlayerUpdate.Add(onPlayerUpdate)
+end
 
 ---------------------------------------------------------------------------
 -- Auto-registration from declarations

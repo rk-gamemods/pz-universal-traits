@@ -8,6 +8,7 @@ package.path = base .. "../media/lua/shared/?.lua;" .. package.path
 dofile(base .. "UTCoreMocks.lua")
 
 -- Load UTCore modules
+dofile(base .. "../media/lua/shared/UTCore/UTCore_Diagnostics.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_FreezeLogger.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_API.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_TraitChecks.lua")
@@ -1111,6 +1112,261 @@ test("SleepQualityHook reduces fatigue while sleeping", function()
     assert(fatigue < 0.5, "expected fatigue to decrease while sleeping")
     assert(math.abs(fatigue - 0.4995) < 0.0001,
         "expected fatigue ~0.4995, got " .. tostring(fatigue))
+end)
+
+-- ===== Diagnostics Ring Buffer tests =====
+
+test("diagLog adds entries to ring buffer", function()
+    UTCore.diagResetRing()
+    setMockTimestampMs(1000)
+    UTCore.diagLog("TestSrc", "test_evt", "detail1")
+    assert_eq(UTCore.diagRingCount(), 1)
+    local entry = UTCore.diagRingGet(0)
+    assert_eq(entry.src, "TestSrc")
+    assert_eq(entry.evt, "test_evt")
+    assert_eq(entry.dat, "detail1")
+    assert_eq(entry.t, 1000)
+end)
+
+test("ring buffer wraps at RING_SIZE", function()
+    UTCore.diagResetRing()
+    -- Fill beyond 200 entries
+    for i = 1, 210 do
+        setMockTimestampMs(i * 10)
+        UTCore.diagLog("wrap", "fill", "entry_" .. i)
+    end
+    -- Should cap at 200
+    assert_eq(UTCore.diagRingCount(), 200)
+    -- Newest entry should be #210
+    local newest = UTCore.diagRingGet(0)
+    assert_eq(newest.dat, "entry_210")
+    -- Oldest should be #11 (first 10 overwritten)
+    local oldest = UTCore.diagRingGet(199)
+    assert_eq(oldest.dat, "entry_11")
+end)
+
+test("diagRingGet returns nil for out-of-range index", function()
+    UTCore.diagResetRing()
+    UTCore.diagLog("test", "one", "")
+    assert_true(UTCore.diagRingGet(0) ~= nil, "age 0 should exist")
+    assert_eq(UTCore.diagRingGet(1), nil)
+    assert_eq(UTCore.diagRingGet(-1), nil)
+end)
+
+-- ===== Diagnostics Performance Profiler tests =====
+
+test("perfEnter/perfExit tracks timing", function()
+    UTCore.resetPerfStats()
+    setMockTimestampMs(100)
+    UTCore.perfEnter("TestHook")
+    setMockTimestampMs(105)
+    UTCore.perfExit("TestHook")
+    local stats = UTCore.getPerfStats()
+    assert_true(stats["TestHook"] ~= nil, "should have stats for TestHook")
+    assert_eq(stats["TestHook"].count, 1)
+    assert_eq(stats["TestHook"].totalMs, 5)
+    assert_eq(stats["TestHook"].peakMs, 5)
+end)
+
+test("perfEnter/perfExit accumulates over multiple calls", function()
+    UTCore.resetPerfStats()
+    -- Call 1: 3ms
+    setMockTimestampMs(200)
+    UTCore.perfEnter("MultiHook")
+    setMockTimestampMs(203)
+    UTCore.perfExit("MultiHook")
+    -- Call 2: 7ms
+    setMockTimestampMs(210)
+    UTCore.perfEnter("MultiHook")
+    setMockTimestampMs(217)
+    UTCore.perfExit("MultiHook")
+    local stats = UTCore.getPerfStats()
+    assert_eq(stats["MultiHook"].count, 2)
+    assert_eq(stats["MultiHook"].totalMs, 10)
+    assert_eq(stats["MultiHook"].peakMs, 7)
+end)
+
+test("perfExit without perfEnter is a no-op", function()
+    UTCore.resetPerfStats()
+    UTCore.perfExit("NeverStarted")
+    local stats = UTCore.getPerfStats()
+    assert_eq(stats["NeverStarted"], nil)
+end)
+
+test("profiledHandler wraps function with profiling", function()
+    UTCore.resetPerfStats()
+    local callCount = 0
+    local wrapped = UTCore.profiledHandler("WrappedHook", function(player)
+        callCount = callCount + 1
+    end)
+    setMockTimestampMs(300)
+    wrapped("fake_player")
+    assert_eq(callCount, 1)
+    local stats = UTCore.getPerfStats()
+    assert_true(stats["WrappedHook"] ~= nil, "should track wrapped hook")
+    assert_eq(stats["WrappedHook"].count, 1)
+end)
+
+test("profiledHandler catches and logs errors", function()
+    UTCore.resetPerfStats()
+    UTCore.diagResetRing()
+    local wrapped = UTCore.profiledHandler("ErrorHook", function()
+        error("test explosion")
+    end)
+    setMockTimestampMs(400)
+    -- Should NOT throw — error is caught
+    wrapped("fake_player")
+    local stats = UTCore.getPerfStats()
+    assert_eq(stats["ErrorHook"].count, 1)
+    -- Error should be logged to ring buffer
+    local entry = UTCore.diagRingGet(0)
+    assert_eq(entry.src, "PERF")
+    assert_eq(entry.evt, "hook_error")
+    assert_true(entry.dat:find("ErrorHook") ~= nil, "error should name the hook")
+end)
+
+-- ===== Stuck Bump Recovery tests =====
+
+test("FreezeLogger recovery clears blockMovement after 120 stuck ticks", function()
+    UTCore._resetFreezeLogger()
+    local p = MockPlayer({})
+    p:moveTo(5, 5)
+    p._blockMovement = false
+    p._bumpDone = true
+
+    -- Tick 1: establish position (prev = nil, sets prev)
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    -- Move player to create "was moving" state
+    p:moveTo(6, 6)
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+
+    -- Now freeze the player (stop moving, set up stuck bump state)
+    p._blockMovement = true
+    p._bumpDone = false
+
+    -- Run 120+ ticks without moving
+    for i = 1, 125 do
+        UTCore._freezeLoggerOnPlayerUpdate(p)
+    end
+
+    -- Recovery should have fired: blockMovement cleared
+    assert_eq(p._blockMovement, false, "blockMovement should be cleared by recovery")
+    assert_eq(p._bumpDone, true, "bumpDone should be set to true by recovery")
+end)
+
+test("FreezeLogger recovery only fires once per freeze", function()
+    UTCore._resetFreezeLogger()
+    local p = MockPlayer({})
+    p:moveTo(5, 5)
+
+    -- Establish movement
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    p:moveTo(6, 6)
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+
+    -- Freeze with blockMovement
+    p._blockMovement = true
+    p._bumpDone = false
+
+    -- Run 130 ticks
+    for i = 1, 130 do
+        UTCore._freezeLoggerOnPlayerUpdate(p)
+    end
+
+    assert_eq(p._blockMovement, false, "recovery should have fired")
+
+    -- Set blockMovement back to true to simulate re-stuck (shouldn't recover again)
+    p._blockMovement = true
+    for i = 1, 50 do
+        UTCore._freezeLoggerOnPlayerUpdate(p)
+    end
+    -- Recovery should NOT fire again (already fired this freeze)
+    assert_eq(p._blockMovement, true, "recovery should not fire twice in same freeze")
+end)
+
+test("FreezeLogger recovery resets when player moves again", function()
+    UTCore._resetFreezeLogger()
+    local p = MockPlayer({})
+    p:moveTo(5, 5)
+
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    p:moveTo(6, 6)
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+
+    -- First freeze + recovery
+    p._blockMovement = true
+    p._bumpDone = false
+    for i = 1, 125 do
+        UTCore._freezeLoggerOnPlayerUpdate(p)
+    end
+    assert_eq(p._blockMovement, false, "first recovery should fire")
+
+    -- Player moves again (recovered)
+    p:moveTo(7, 7)
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+
+    -- Second freeze
+    p._blockMovement = true
+    p._bumpDone = false
+    for i = 1, 125 do
+        UTCore._freezeLoggerOnPlayerUpdate(p)
+    end
+    -- Recovery should fire again for new freeze
+    assert_eq(p._blockMovement, false, "second recovery should fire after movement reset")
+end)
+
+test("FreezeLogger does not recover when blockMovement is false", function()
+    UTCore._resetFreezeLogger()
+    local p = MockPlayer({})
+    p:moveTo(5, 5)
+
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+    p:moveTo(6, 6)
+    UTCore._freezeLoggerOnPlayerUpdate(p)
+
+    -- Freeze WITHOUT blockMovement (player just stopped, normal freeze detection)
+    p._blockMovement = false
+    for i = 1, 130 do
+        UTCore._freezeLoggerOnPlayerUpdate(p)
+    end
+    -- blockMovement was false, recovery should NOT have changed it
+    assert_eq(p._blockMovement, false, "recovery should not fire when blockMovement is false")
+end)
+
+-- ===== ZombieCollisionHook does not clear bumpedChr during active bump =====
+
+test("ZombieCollisionHook skips bumpedChr clear when bump is active", function()
+    UTCore._zombieCollisionCallbacks = {}
+    local z = MockZombie({ x = 0.3, y = 0, z = 0 })
+    local sq = MockCollisionSquare(0, 0, 0, {z})
+    local squares = { ["0,0,0"] = sq }
+    for dx = -1, 1 do for dy = -1, 1 do
+        if dx ~= 0 or dy ~= 0 then squares[dx..","..dy..",0"] = MockCollisionSquare(dx, dy, 0, {}) end
+    end end
+    _G._mockCell = MockCell(squares)
+    local p = MockPlayer({}, { square = sq })
+    p:setRunning(true)
+    UTCore.registerZombieCollisionHandler("test:dummy", function() end)
+
+    -- Run once while running to set bumpedChr
+    Events.OnPlayerUpdate.fire(p)
+    assert_true(p:getBumpedChr() ~= nil, "bumpedChr should be set to nearest zombie")
+
+    -- Simulate active bump state: blockMovement=true, bumpDone=false
+    p._blockMovement = true
+    p._bumpDone = false
+
+    -- Stop running — cleanup path fires
+    p:setRunning(false)
+    Events.OnPlayerUpdate.fire(p)
+
+    -- Should NOT have cleared bumpedChr because bump is active
+    assert_true(p:getBumpedChr() ~= nil,
+        "bumpedChr should NOT be cleared during active bump")
+
+    -- Clean up
+    UTCore.unregisterZombieCollisionHandler("test:dummy")
+    _G._mockCell = nil
 end)
 
 test("SleepQualityHook skips when not sleeping", function()

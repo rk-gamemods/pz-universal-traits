@@ -163,7 +163,11 @@ end
 -- ---------------------------------------------------------------------------
 
 if Events and Events.OnPlayerUpdate then
-    Events.OnPlayerUpdate.Add(onPlayerUpdate)
+    if UTCore.profiledHandler then
+        Events.OnPlayerUpdate.Add(UTCore.profiledHandler("MeleeDelayHook", onPlayerUpdate))
+    else
+        Events.OnPlayerUpdate.Add(onPlayerUpdate)
+    end
 end
 
 if Events and Events.OnCreatePlayer then

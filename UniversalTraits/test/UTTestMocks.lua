@@ -2,6 +2,22 @@
 -- Mock PZ globals for UniversalTraits unit tests.
 
 -- ============================================================
+-- Timing mock
+-- ============================================================
+
+-- Mock getTimestampMs: returns milliseconds (controllable from tests)
+_mockTimestampMs = 0
+function getTimestampMs()
+    return _mockTimestampMs
+end
+function setMockTimestampMs(ms)
+    _mockTimestampMs = ms
+end
+function advanceMockTimestampMs(delta)
+    _mockTimestampMs = _mockTimestampMs + (delta or 1)
+end
+
+-- ============================================================
 -- B42.16 Registry API mocks
 -- ============================================================
 

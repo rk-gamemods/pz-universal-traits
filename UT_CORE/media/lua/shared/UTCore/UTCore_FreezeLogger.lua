@@ -17,6 +17,7 @@ UTCore = UTCore or {}
 local FREEZE_DETECT_TICKS = 3        -- ticks without position change = freeze
 local FREEZE_LOG_INTERVAL = 30       -- while frozen, log state every N ticks
 local MAX_FREEZE_LOGS     = 20       -- stop logging after this many dumps per freeze
+local STUCK_RECOVERY_TICKS = 120     -- ~2 seconds at 60fps: force-recover stuck bump state
 
 -- State tracking
 local _prevX, _prevY = nil, nil
@@ -25,6 +26,7 @@ local _stuckCount = 0
 local _freezeLogCount = 0
 local _onPlayerMoveFired = false      -- set by OnPlayerMove hook, read by OnPlayerUpdate
 local _prevMoveX, _prevMoveY = nil, nil -- position last OnPlayerMove saw
+local _recoveryFired = false          -- prevents recovery from firing repeatedly
 
 ---------------------------------------------------------------------------
 -- Safe method caller — returns nil instead of crashing on missing methods
@@ -206,6 +208,7 @@ local function onPlayerUpdate(player)
         _stuckCount = 0
         _freezeLogCount = 0
         _wasMoving = true
+        _recoveryFired = false
     else
         -- Position unchanged
         _stuckCount = _stuckCount + 1
@@ -216,6 +219,16 @@ local function onPlayerUpdate(player)
             local state = captureState(player)
             dumpState("[FREEZE]", state)
             _freezeLogCount = 1
+            -- Dump ring buffer for pre-freeze event history
+            if UTCore.dumpDiagnostics then
+                UTCore.dumpDiagnostics()
+            end
+            if UTCore.diagLog then
+                UTCore.diagLog("FreezeLog", "freeze_detected",
+                    "blockMov=" .. state.blockMovement
+                    .. " bumpedChr=" .. state.bumpedChr
+                    .. " bumpDone=" .. state.bumpDone)
+            end
         end
 
         -- Periodic logging while frozen
@@ -227,6 +240,42 @@ local function onPlayerUpdate(player)
             local state = captureState(player)
             dumpState("[FREEZE]", state)
             _freezeLogCount = _freezeLogCount + 1
+        end
+
+        -- STUCK BUMP RECOVERY: if frozen for STUCK_RECOVERY_TICKS with
+        -- blockMovement=true, the bump state is genuinely stuck.
+        -- Force-clear to restore movement. This handles:
+        --   - Engine-initiated bumps where BumpDone never fires
+        --   - Our setBumpedChr guard interfering with active BumpedState
+        --   - Any other state where blockMovement gets stuck
+        if not _recoveryFired
+            and _stuckCount >= STUCK_RECOVERY_TICKS
+            and safeCall(player, "isBlockMovement") then
+
+            _recoveryFired = true
+            print("[FREEZE] ===== STUCK BUMP RECOVERY at tick " .. _stuckCount .. " =====")
+
+            -- Mirror what BumpedState.exit() does:
+            --   setBlockMovement(false)
+            --   setBumpedChr(null)
+            --   setBumpDone(true)
+            --   clear BumpFall, BumpFallAnimFinished variables
+            pcall(function() player:setBlockMovement(false) end)
+            pcall(function() player:setBumpedChr(nil) end)
+            pcall(function() player:setBumpDone(true) end)
+            pcall(function() player:setVariable("BumpDone", "true") end)
+            pcall(function() player:setVariable("BumpFall", "false") end)
+            pcall(function() player:setVariable("BumpFallAnimFinished", "true") end)
+
+            local state = captureState(player)
+            dumpState("[FREEZE] POST-RECOVERY", state)
+
+            if UTCore.diagLog then
+                UTCore.diagLog("FreezeLog", "stuck_recovery",
+                    "tick=" .. _stuckCount
+                    .. " blockMov=" .. state.blockMovement
+                    .. " bumpedChr=" .. state.bumpedChr)
+            end
         end
 
         -- After prolonged freeze, stop periodic logging
@@ -258,4 +307,5 @@ UTCore._resetFreezeLogger = function()
     _stuckCount = 0
     _freezeLogCount = 0
     _onPlayerMoveFired = false
+    _recoveryFired = false
 end
