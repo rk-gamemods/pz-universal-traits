@@ -4,18 +4,15 @@
 
 local TRAIT_ID = "UniversalTraits:UT_fearful"
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
-
-    local md = player:getModData()
+local function onTick(player, tick)
+    local md = tick.modData
     if md["UT_fearful_cooldown"] == nil then md["UT_fearful_cooldown"] = 0 end
     if md["UT_fearful_cooldown"] > 0 then
         md["UT_fearful_cooldown"] = md["UT_fearful_cooldown"] - 1
         return
     end
 
-    local stats = player:getStats()
+    local stats = tick.stats
     local panic = stats:get(CharacterStat.PANIC)
 
     if panic > 5 then
@@ -38,4 +35,4 @@ local function onPlayerUpdate(player)
     end
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

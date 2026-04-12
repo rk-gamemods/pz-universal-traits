@@ -50,29 +50,23 @@ local function onNewGame(player)
     player:getModData()["UT_gunspec3"] = true
 end
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
+local function onTick(player, tick)
     tickCounter = tickCounter + 1
     if tickCounter % 30 ~= 0 then return end
 
     -- Ensure moddata key present (e.g. loaded save)
-    local moddata = player:getModData()
-    if not moddata["UT_gunspec3"] then
-        moddata["UT_gunspec3"] = true
+    if not tick.modData["UT_gunspec3"] then
+        tick.modData["UT_gunspec3"] = true
     end
 
-    local primary   = player:getPrimaryHandItem()
-    local secondary = player:getSecondaryHandItem()
-
     -- Apply reload/aim speed bonuses
-    applySpeedBonus(primary)
-    applySpeedBonus(secondary)
+    applySpeedBonus(tick.primaryWeapon)
+    applySpeedBonus(tick.secondaryWeapon)
 
     -- Jam immunity: unjam any currently equipped firearm
-    if isFirearm(primary)   and primary:isJammed()   then primary:setJammed(false)   end
-    if isFirearm(secondary) and secondary:isJammed() then secondary:setJammed(false) end
+    if isFirearm(tick.primaryWeapon)   and tick.primaryWeapon:isJammed()   then tick.primaryWeapon:setJammed(false)   end
+    if isFirearm(tick.secondaryWeapon) and tick.secondaryWeapon:isJammed() then tick.secondaryWeapon:setJammed(false) end
 end
 
 Events.OnNewGame.Add(onNewGame)
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

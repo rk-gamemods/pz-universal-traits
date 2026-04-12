@@ -11,11 +11,8 @@ end
 
 Events.OnNewGame.Add(onNewGame)
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
-
-    local md = player:getModData()
+local function onTick(player, tick)
+    local md = tick.modData
     if md["UT_flailer_cooldown"] == nil then
         md["UT_flailer_cooldown"] = 0
     end
@@ -26,13 +23,12 @@ local function onPlayerUpdate(player)
     end
 
     -- Must be sprinting
-    local ok, sprinting = pcall(function() return player:isSprinting() end)
-    if not (ok and sprinting) then return end
+    if not tick.isSprinting then return end
 
     -- Must have panic moodle active
     local panicLevel = 0
     pcall(function()
-        panicLevel = player:getStats():get(CharacterStat.PANIC)
+        panicLevel = tick.stats:get(CharacterStat.PANIC)
     end)
     if panicLevel <= 0 then return end
 
@@ -43,4 +39,4 @@ local function onPlayerUpdate(player)
     end
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

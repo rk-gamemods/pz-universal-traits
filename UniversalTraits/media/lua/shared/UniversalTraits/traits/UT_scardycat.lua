@@ -28,11 +28,8 @@ local function onEveryMinute()
     prevPanic[playerId] = current
 end
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
-
-    local md = player:getModData()
+local function onTick(player, tick)
+    local md = tick.modData
     md["UT_scardycat_cooldown"] = md["UT_scardycat_cooldown"] or 0
 
     if md["UT_scardycat_cooldown"] > 0 then
@@ -40,17 +37,8 @@ local function onPlayerUpdate(player)
         return
     end
 
-    -- Count LIVING zombies only (dead zombies stay in spottedList)
-    local zombieCount = 0
-    pcall(function()
-        local list = player:getSpottedList()
-        for i = 0, list:size() - 1 do
-            if not list:get(i):isDead() then
-                zombieCount = zombieCount + 1
-            end
-        end
-    end)
-    if zombieCount <= 8 then return end
+    -- Use pre-computed living enemy count from tick cache
+    if tick.livingEnemyCount <= 8 then return end
 
     if ZombRand(100) < 3 then
         -- addSound creates world-audible noise (B42 API): guarded separately so Say() always fires
@@ -63,4 +51,4 @@ local function onPlayerUpdate(player)
 end
 
 Events.EveryOneMinute.Add(onEveryMinute)
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

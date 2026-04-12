@@ -21,31 +21,20 @@
 local TRAIT_ID  = "UniversalTraits:UT_nervouswreck"
 local REDUCTION = 0.30  -- keep 30% of current value (70% slower recovery)
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    local bd = player:getModData()
-    local bodyDamage = player:getBodyDamage()
+local function onTick(player, tick)
+    local bd = tick.modData
+    local bodyDamage = tick.bodyDamage
     if not bodyDamage then return end
 
-    local hasTrait = UTCore.hasTrait(player, TRAIT_ID)
     local isApplied = bd["UT_nervouswreck_applied"] == true
 
-    if hasTrait and not isApplied then
+    if not isApplied then
         -- Snapshot current value and apply reduction
         local current = bodyDamage:getPanicReductionValue()
         bd["UT_nervouswreck_base"] = current
         bodyDamage:setPanicReductionValue(current * REDUCTION)
         bd["UT_nervouswreck_applied"] = true
-
-    elseif not hasTrait and isApplied then
-        -- Restore to snapshotted value
-        local base = bd["UT_nervouswreck_base"]
-        if base then
-            bodyDamage:setPanicReductionValue(base)
-        end
-        bd["UT_nervouswreck_applied"] = false
-        bd["UT_nervouswreck_base"] = nil
     end
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

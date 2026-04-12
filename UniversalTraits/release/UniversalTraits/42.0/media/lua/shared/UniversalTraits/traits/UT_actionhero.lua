@@ -27,33 +27,25 @@ local function applyCritBonus(weapon, active)
     end
 end
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
-
+local function onTick(player, tick)
     tickCounter = tickCounter + 1
     if tickCounter % 30 ~= 0 then return end
 
     -- Mundane disables crits
     if UTCore.hasTrait(player, "UniversalTraits:UT_mundane") then return end
 
-    -- Count nearby LIVING enemies (dead zombies stay in spottedList)
-    local spottedList = player:getSpottedList()
+    -- Count living enemies within range (pre-computed in tick cache)
     local nearbyCount = 0
-    for i = 0, spottedList:size() - 1 do
-        local enemy = spottedList:get(i)
-        if not enemy:isDead() and player:DistTo(enemy) <= ENEMY_RANGE then
+    for i = 1, tick.livingEnemyCount do
+        if tick.livingEnemies[i].dist <= ENEMY_RANGE then
             nearbyCount = nearbyCount + 1
         end
     end
 
     local active = nearbyCount >= ENEMY_THRESHOLD
 
-    local primary   = player:getPrimaryHandItem()
-    local secondary = player:getSecondaryHandItem()
-
-    applyCritBonus(primary, active)
-    applyCritBonus(secondary, active)
+    applyCritBonus(tick.primaryWeapon, active)
+    applyCritBonus(tick.secondaryWeapon, active)
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

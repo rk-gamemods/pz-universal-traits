@@ -5,9 +5,7 @@ local TRAIT_ID = "UniversalTraits:UT_motionsickness"
 
 local lastCheckTick = {}
 
-local function onPlayerUpdate(player)
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
-
+local function onTick(player, tick)
     local playerId = player:getPlayerNum()
     local currentTick = getGameTime():getTicks()
 
@@ -16,10 +14,10 @@ local function onPlayerUpdate(player)
     if currentTick - lastCheckTick[playerId] < 60 then return end
     lastCheckTick[playerId] = currentTick
 
-    if player:getVehicle() ~= nil then
-        local stats = player:getStats()
+    if tick.vehicle ~= nil then
+        local stats = tick.stats
         stats:set(CharacterStat.STRESS, math.min(1, stats:get(CharacterStat.STRESS) + 0.01))
     end
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick, { vehicleAware = true })

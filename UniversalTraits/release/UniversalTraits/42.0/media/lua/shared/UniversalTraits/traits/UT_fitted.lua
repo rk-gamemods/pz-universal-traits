@@ -8,14 +8,12 @@ local TRAIT_ID   = "UniversalTraits:UT_fitted"
 local THROTTLE   = 30
 local tickCounter = 0
 
-local function clothingUpdate(player)
-    if not player then return end
-    if UTCore.shouldSkipTick(player) then return end
-
+local function onTick(player, tick)
     tickCounter = tickCounter + 1
     if tickCounter % THROTTLE ~= 0 then return end
 
-    local state      = UTCore.hasTrait(player, TRAIT_ID) and "Fitted" or "Normal"
+    -- Dispatch guarantees hasTrait is true; state is always "Fitted"
+    local state      = "Fitted"
     local wornItems  = player:getWornItems()
     local inventory  = player:getInventory()
 
@@ -85,4 +83,4 @@ local function clothingUpdate(player)
     end
 end
 
-Events.OnPlayerUpdate.Add(clothingUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

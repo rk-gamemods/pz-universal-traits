@@ -20,11 +20,8 @@ end
 Events.OnNewGame.Add(onNewGame)
 Events.OnCreatePlayer.Add(onCreatePlayer)
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
-
-    local md = player:getModData()
+local function onTick(player, tick)
+    local md = tick.modData
     if md["UT_pacer_indoor_ticks"] == nil then
         md["UT_pacer_indoor_ticks"] = 0
     end
@@ -45,11 +42,11 @@ local function onPlayerUpdate(player)
     -- After 600 ticks indoors, apply unhappiness penalty
     if md["UT_pacer_indoor_ticks"] >= 600 then
         pcall(function()
-            local stats = player:getStats()
+            local stats = tick.stats
             stats:set(CharacterStat.UNHAPPINESS, math.min(100, stats:get(CharacterStat.UNHAPPINESS) + 2))
         end)
         md["UT_pacer_indoor_ticks"] = 0
     end
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

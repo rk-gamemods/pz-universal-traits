@@ -10,14 +10,11 @@ local tickCounter   = 0
 local lastEndurance = nil
 local lastFatigue   = nil
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore or not UTCore.hasTrait(player, TRAIT_ID) then return end
-
+local function onTick(player, tick)
     tickCounter = tickCounter + 1
     if tickCounter % 5 ~= 0 then return end
 
-    local stats = player:getStats()
+    local stats = tick.stats
     if not stats then return end
 
     -- Endurance refund
@@ -41,4 +38,4 @@ local function onPlayerUpdate(player)
     lastFatigue = currentFatigue
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

@@ -41,25 +41,19 @@ local function revertGourmandFood(food)
     end
 end
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
+local function onTick(player, tick)
     tickCounter = tickCounter + 1
     if tickCounter % 30 ~= 0 then return end
 
-    local hasGourmand = UTCore.hasTrait(player, TRAIT_ID)
     local inv = player:getInventory()
     local items = inv:getItems()
 
     for i = 0, items:size() - 1 do
         local item = items:get(i)
         if item and item:getCategory() == "Food" then
-            if hasGourmand then
-                pcall(applyGourmandToFood, item)
-            else
-                pcall(revertGourmandFood, item)
-            end
+            pcall(applyGourmandToFood, item)
         end
     end
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

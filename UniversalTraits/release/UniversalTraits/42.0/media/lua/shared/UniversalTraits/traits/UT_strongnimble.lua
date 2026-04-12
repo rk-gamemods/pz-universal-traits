@@ -15,10 +15,7 @@ local function tryStopFall(player)
     end
 end
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore or not UTCore.hasTrait(player, TRAIT_ID) then return end
-
+local function onTick(player, tick)
     -- Inspect current action state for climb/fall transitions when the API exists.
     local actionState = nil
     if player.getCurrentActionContextStateName then
@@ -44,6 +41,6 @@ local function onFenceClimb(player)
     tryStopFall(player)
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)
 if Events.OnFenceClimb then Events.OnFenceClimb.Add(onFenceClimb) end
 if Events.OnClimbFence then Events.OnClimbFence.Add(onFenceClimb) end

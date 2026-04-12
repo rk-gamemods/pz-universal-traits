@@ -8,14 +8,11 @@
 local TRAIT_ID = "UniversalTraits:UT_blissful"
 local tickCounter = 0
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not player then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
+local function onTick(player, tick)
     tickCounter = tickCounter + 1
     if tickCounter % 100 ~= 0 then return end
 
-    local stats = player:getStats()
+    local stats = tick.stats
     if not stats then return end
 
     local unhappy = stats:get(CharacterStat.UNHAPPINESS)
@@ -24,4 +21,4 @@ local function onPlayerUpdate(player)
     end
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

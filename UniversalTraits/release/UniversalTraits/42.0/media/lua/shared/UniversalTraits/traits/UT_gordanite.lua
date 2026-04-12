@@ -29,12 +29,10 @@ local function boostCookedFood(inv)
     end
 end
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
+local function onTick(player, tick)
     tickCounter = tickCounter + 1
     if tickCounter % 60 ~= 0 then return end
     boostCookedFood(player:getInventory())
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

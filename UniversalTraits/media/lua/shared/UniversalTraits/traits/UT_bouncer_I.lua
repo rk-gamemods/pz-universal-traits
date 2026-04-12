@@ -11,12 +11,8 @@
 local TRAIT_I  = "UniversalTraits:UT_bouncer_I"
 local TRAIT_II = "UniversalTraits:UT_bouncer_II"
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not player then return end
-    if not (UTCore.hasTrait(player, TRAIT_I) or UTCore.hasTrait(player, TRAIT_II)) then return end
-
-    local md = player:getModData()
+local function onTick(player, tick)
+    local md = tick.modData
     if md["UT_bouncer_cooldown"] == nil then
         md["UT_bouncer_cooldown"] = 0
     end
@@ -30,21 +26,20 @@ local function onPlayerUpdate(player)
     -- GUARD: never stagger zombies while the player is mid-attack/shove/stomp/grapple.
     -- Mutating a zombie's bump state during SwipeStatePlayer corrupts the animation
     -- sequence and can permanently lock blockMovement=true (freeze bug).
-    if player:isPerformingHostileAnimation() then
+    if tick.isHostileAnim then
         UTCore.diagLog("bouncer", "SUPPRESSED", "hostile_anim=true")
         return
     end
 
-    -- Cooldown is zero — check trigger conditions
-    local spottedList = player:getSpottedList()
-    if spottedList:size() < 3 then return end
+    -- Need at least 3 living enemies to trigger
+    if tick.livingEnemyCount < 3 then return end
 
-    -- Collect LIVING enemies within 1.75 tiles (dead zombies stay in spottedList)
+    -- Filter to within 1.75 tiles (distances pre-computed in tick cache)
     local closeEnemies = {}
-    for i = 0, spottedList:size() - 1 do
-        local enemy = spottedList:get(i)
-        if not enemy:isDead() and player:DistTo(enemy) < 1.75 then
-            closeEnemies[#closeEnemies + 1] = enemy
+    for i = 1, tick.livingEnemyCount do
+        local e = tick.livingEnemies[i]
+        if e.dist < 1.75 then
+            closeEnemies[#closeEnemies + 1] = e.zombie
         end
     end
 
@@ -62,4 +57,6 @@ local function onPlayerUpdate(player)
     end
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_I, onTick, {
+    anyTrait = { TRAIT_I, TRAIT_II }
+})

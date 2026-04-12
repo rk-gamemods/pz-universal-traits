@@ -1128,6 +1128,9 @@ local function MockUpdatePlayer(traitList, opts)
                 get  = function(_, idx) return entries[idx + 1] end,
             }
         end
+        p.DistTo = p.DistTo or function(self, enemy)
+            return enemy._dist or 1.0
+        end
     end
     if opts.endurance ~= nil then
         p:getStats():set(CharacterStat.ENDURANCE, opts.endurance)

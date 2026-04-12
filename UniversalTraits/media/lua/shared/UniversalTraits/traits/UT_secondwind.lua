@@ -6,18 +6,16 @@ local COOLDOWN_HOURS = 10 / 60.0
 
 local tickCounter = 0
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
+local function onTick(player, tick)
     tickCounter = tickCounter + 1
     if tickCounter % 15 ~= 0 then return end
 
-    local stats = player:getStats()
-    local moddata = player:getModData()
+    local stats = tick.stats
+    local moddata = tick.modData
 
     if moddata["UT_secondwindTriggered"] then return end
 
-    if player:isSprinting() and stats:get(CharacterStat.ENDURANCE) <= 0.1 then
+    if tick.isSprinting and stats:get(CharacterStat.ENDURANCE) <= 0.1 then
         stats:set(CharacterStat.ENDURANCE, math.min(CharacterStat.ENDURANCE:getMaximumValue(), stats:get(CharacterStat.ENDURANCE) + 0.3))
         moddata["UT_secondwindCooldown"] = getGameTime():getWorldAgeHours()
         moddata["UT_secondwindTriggered"] = true
@@ -44,5 +42,5 @@ local function onEveryMinute()
     end
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)
 Events.EveryOneMinute.Add(onEveryMinute)

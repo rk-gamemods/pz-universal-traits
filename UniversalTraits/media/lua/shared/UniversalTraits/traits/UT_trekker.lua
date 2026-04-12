@@ -6,19 +6,15 @@ local WALK_CALORIE_RATE = 0.13 * 0.6
 local IDLE_CALORIE_RATE = 0.016
 local WALK_CALORIE_REFUND_RATIO = (WALK_CALORIE_RATE - IDLE_CALORIE_RATE) / WALK_CALORIE_RATE
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
-
-    local md = player:getModData()
-    local stats = player:getStats()
+local function onTick(player, tick)
+    local md = tick.modData
+    local stats = tick.stats
     if not stats then return end
     local nutrition = player:getNutrition()
 
     local currentEndurance = stats:get(CharacterStat.ENDURANCE)
     local currentCalories = nutrition and nutrition:getCalories() or nil
-    local okMoving, moving = pcall(function() return player:isMoving() end)
-    local isWalking = okMoving and moving and not player:isSprinting() and not player:isRunning()
+    local isWalking = tick.isMoving and not tick.isSprinting and not tick.isRunning
 
     if isWalking then
         local lastEndurance = md["UT_trekker_lastEndurance"]
@@ -43,4 +39,4 @@ local function onPlayerUpdate(player)
     end
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

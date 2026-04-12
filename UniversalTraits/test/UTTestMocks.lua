@@ -537,6 +537,81 @@ UTCore.applyStatFloor       = UTCore.applyStatFloor or function(player, key, flo
     player:getModData()["UT_statFloor_" .. name] = floor
 end
 UTCore.diagLog              = UTCore.diagLog or function(source, event, data) end  -- no-op in tests
+
+-- ============================================================
+-- Tick Dispatch mock  (mirrors UTCore_TickDispatch.lua)
+-- ============================================================
+-- Stores registered handlers so trait dofile() calls succeed and tests
+-- can fire individual handlers with a mock tick context.
+UTCore._tickHandlers = UTCore._tickHandlers or {}
+
+UTCore.registerTickHandler = function(traitId, fn, opts)
+    opts = opts or {}
+    UTCore._tickHandlers[traitId] = { id = traitId, fn = fn, opts = opts }
+end
+
+-- Build a mock tick context from a MockPlayer (mirrors buildTickContext in dispatch).
+-- Tests call: local tick = UTCore.buildMockTickContext(player)
+-- Then invoke: handler.fn(player, tick)
+UTCore.buildMockTickContext = function(player)
+    local stats     = player:getStats()
+    local bodyDmg   = player:getBodyDamage()
+    local md        = player:getModData()
+    local vehicle   = player.getVehicle and player:getVehicle() or nil
+    local primary   = player.getPrimaryHandItem and player:getPrimaryHandItem() or nil
+    local secondary = player.getSecondaryHandItem and player:getSecondaryHandItem() or nil
+    local isSprinting = player.isSprinting and player:isSprinting() or false
+    local isRunning   = player.isRunning   and player:isRunning()   or false
+    local isMoving    = player.isMoving    and player:isMoving()    or false
+    local isHostile   = player.isPerformingHostileAnimation and player:isPerformingHostileAnimation() or false
+
+    -- Spotted list: mirror the real dispatch's buildTickContext behavior
+    local livingEnemies    = {}
+    local livingEnemyCount = 0
+    local totalSpotted     = 0
+    pcall(function()
+        local list = player:getSpottedList()
+        local size = list:size()
+        totalSpotted = size
+        for i = 0, size - 1 do
+            local enemy = list:get(i)
+            if not enemy:isDead() then
+                livingEnemyCount = livingEnemyCount + 1
+                livingEnemies[livingEnemyCount] = {
+                    zombie = enemy,
+                    dist   = player:DistTo(enemy),
+                }
+            end
+        end
+    end)
+
+    return {
+        stats          = stats,
+        bodyDamage     = bodyDmg,
+        modData        = md,
+        vehicle        = vehicle,
+        primaryWeapon  = primary,
+        secondaryWeapon = secondary,
+        isSprinting    = isSprinting,
+        isRunning      = isRunning,
+        isMoving       = isMoving,
+        isHostileAnim  = isHostile,
+        livingEnemies     = livingEnemies,
+        livingEnemyCount  = livingEnemyCount,
+        totalSpotted      = totalSpotted,
+    }
+end
+
+-- Convenience: fire a single registered tick handler for a player.
+-- Returns the tick context used, for assertion purposes.
+UTCore.fireTickHandler = function(traitId, player)
+    local h = UTCore._tickHandlers[traitId]
+    if not h then error("No tick handler registered for " .. tostring(traitId)) end
+    local tick = UTCore.buildMockTickContext(player)
+    h.fn(player, tick)
+    return tick
+end
+
 UTCore._periodicHandlers = UTCore._periodicHandlers or {}
 UTCore._vehicleTraitDefs = UTCore._vehicleTraitDefs or {}
 local function periodicHandlerKey(traitId, interval)
@@ -743,6 +818,7 @@ end
 
 -- Events.OnPlayerUpdate stub
 -- Stores registered handlers so tests can fire them directly via :fire(player).
+-- ALSO dispatches any UTCore._tickHandlers registered by migrated traits.
 if not _G.Events.OnPlayerUpdate then
     local _updateHandlers = {}
     _G.Events.OnPlayerUpdate = {
@@ -752,7 +828,39 @@ if not _G.Events.OnPlayerUpdate then
                 if handler == fn then table.remove(_updateHandlers, i) return end
             end
         end,
-        fire = function(...) fireHandlers(_G.Events.OnPlayerUpdate, _updateHandlers, ...) end,
+        fire = function(...)
+            local args = { ... }
+            -- Strip self if called with colon syntax
+            if args[1] == _G.Events.OnPlayerUpdate then table.remove(args, 1) end
+            local player = args[1]
+            -- Fire legacy handlers
+            for _, fn in ipairs(_updateHandlers) do
+                fn(player)
+            end
+            -- Fire tick-dispatch handlers (mirrors centralDispatch)
+            if player and UTCore and UTCore._tickHandlers and UTCore.buildMockTickContext then
+                local tick = UTCore.buildMockTickContext(player)
+                for _, h in pairs(UTCore._tickHandlers) do
+                    -- Trait gate: check anyTrait array or single id
+                    local hasTrait = false
+                    if h.opts and h.opts.anyTrait then
+                        for _, tid in ipairs(h.opts.anyTrait) do
+                            if UTCore.hasTrait(player, tid) then hasTrait = true; break end
+                        end
+                    else
+                        hasTrait = UTCore.hasTrait(player, h.id)
+                    end
+                    -- Vehicle gate
+                    local vehicleAware = h.opts and h.opts.vehicleAware
+                    if not vehicleAware and tick.vehicle then hasTrait = false end
+                    -- Dead gate
+                    if player.isDead and player:isDead() then hasTrait = false end
+                    if hasTrait then
+                        pcall(h.fn, player, tick)
+                    end
+                end
+            end
+        end,
     }
 end
 

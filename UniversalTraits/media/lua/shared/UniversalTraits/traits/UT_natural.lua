@@ -24,17 +24,14 @@ local SOURCE_ID = "UT_natural"
 
 local tickCounter = 0
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
-
+local function onTick(player, tick)
     tickCounter = tickCounter + 1
     if tickCounter % 30 ~= 0 then return end
 
     local clothingCount = (player:getWornItems() and player:getWornItems():size()) or 0
     local bonus = math.max(0.0, 0.10 - (clothingCount * 0.02))
 
-    local md = player:getModData()
+    local md = tick.modData
 
     -- Only update if the bonus changed (avoids unnecessary bucket recalculation)
     if md["UT_naturalLastBonus"] ~= bonus then
@@ -43,4 +40,4 @@ local function onPlayerUpdate(player)
     end
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

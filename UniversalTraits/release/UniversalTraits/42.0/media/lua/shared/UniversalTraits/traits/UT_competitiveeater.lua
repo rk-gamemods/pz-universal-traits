@@ -4,18 +4,15 @@
 
 local TRAIT_ID = "UniversalTraits:UT_competitiveeater"
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
-
-    local md = player:getModData()
-    local healTimer = player:getBodyDamage():getHealthFromFoodTimer()
+local function onTick(player, tick)
+    local md = tick.modData
+    local healTimer = tick.bodyDamage:getHealthFromFoodTimer()
     local prev = md["UT_competitiveeater_prevTimer"]
 
     -- Detect moment food was eaten: timer jumps up from a low/nil value
     if prev ~= nil and healTimer > prev + 50 then
         pcall(function()
-            local stats = player:getStats()
+            local stats = tick.stats
             stats:add(CharacterStat.BOREDOM, -10)
             stats:add(CharacterStat.HUNGER, -5)
         end)
@@ -24,4 +21,4 @@ local function onPlayerUpdate(player)
     md["UT_competitiveeater_prevTimer"] = healTimer
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

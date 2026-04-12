@@ -4,12 +4,9 @@
 
 local TRAIT_ID = "UniversalTraits:UT_sensitivestomach"
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
-
-    local md = player:getModData()
-    local healTimer = player:getBodyDamage():getHealthFromFoodTimer()
+local function onTick(player, tick)
+    local md = tick.modData
+    local healTimer = tick.bodyDamage:getHealthFromFoodTimer()
 
     if healTimer > 1000 then
         if md["UT_prevFoodTimer"] == nil then
@@ -18,7 +15,7 @@ local function onPlayerUpdate(player)
         if healTimer > md["UT_prevFoodTimer"] then
             -- Food is actively digesting — apply stomach pain
             pcall(function()
-                local torsoLower = player:getBodyDamage():getBodyPart(BodyPartType.FromString("Torso_Lower"))
+                local torsoLower = tick.bodyDamage:getBodyPart(BodyPartType.FromString("Torso_Lower"))
                 if torsoLower then
                     local pain = (healTimer - md["UT_prevFoodTimer"]) * (0.003 * (ZombRand(2) + 3))
                     torsoLower:setAdditionalPain(math.min(100, torsoLower:getAdditionalPain() + pain))
@@ -29,4 +26,4 @@ local function onPlayerUpdate(player)
     end
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

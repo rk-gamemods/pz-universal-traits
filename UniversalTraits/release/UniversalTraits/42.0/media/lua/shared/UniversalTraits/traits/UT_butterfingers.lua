@@ -7,21 +7,18 @@ local TRAIT_ID = "UniversalTraits:UT_butterfingers"
 
 local lastCheckTick = {}
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
-
+local function onTick(player, tick)
     local playerId = player:getPlayerNum()
     local currentTick = getGameTime():getTicks()
 
     lastCheckTick[playerId] = lastCheckTick[playerId] or 0
 
     -- Drop consumer: runs first so the flag set this tick fires next tick
-    local md = player:getModData()
+    local md = tick.modData
     if md["UT_dropNext"] then
         md["UT_dropNext"] = nil
         pcall(function()
-            local item = player:getPrimaryHandItem()
+            local item = tick.primaryWeapon
             if item then
                 -- Remove from hands and inventory, then place on the ground tile
                 player:removeFromHands(item)
@@ -38,9 +35,9 @@ local function onPlayerUpdate(player)
     if currentTick - lastCheckTick[playerId] >= 300 then
         lastCheckTick[playerId] = currentTick
         if ZombRand(100) < 3 then
-            player:getModData()["UT_dropNext"] = true
+            tick.modData["UT_dropNext"] = true
         end
     end
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

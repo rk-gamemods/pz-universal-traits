@@ -21,11 +21,8 @@ end
 Events.OnNewGame.Add(onNewGame)
 Events.OnCreatePlayer.Add(onCreatePlayer)
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
-
-    local md = player:getModData()
+local function onTick(player, tick)
+    local md = tick.modData
     if md["UT_lurcher_cooldown"] == nil then
         md["UT_lurcher_cooldown"] = 0
     end
@@ -36,13 +33,12 @@ local function onPlayerUpdate(player)
     end
 
     -- Must be moving
-    local ok, moving = pcall(function() return player:isMoving() end)
-    if not (ok and moving) then return end
+    if not tick.isMoving then return end
 
     -- Must have low endurance (< 0.3)
     local endurance = 1.0
     pcall(function()
-        endurance = player:getStats():get(CharacterStat.ENDURANCE)
+        endurance = tick.stats:get(CharacterStat.ENDURANCE)
     end)
     if endurance >= 0.3 then return end
 
@@ -60,4 +56,4 @@ local function onPlayerUpdate(player)
     end
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

@@ -8,10 +8,7 @@ local TRAIT_ID = "UniversalTraits:UT_evasive"
 
 local lastHealth = nil
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
-
+local function onTick(player, tick)
     local currentHealth = player:getHealth()
 
     if lastHealth ~= nil and currentHealth < lastHealth then
@@ -26,4 +23,4 @@ local function onPlayerUpdate(player)
     lastHealth = player:getHealth()
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

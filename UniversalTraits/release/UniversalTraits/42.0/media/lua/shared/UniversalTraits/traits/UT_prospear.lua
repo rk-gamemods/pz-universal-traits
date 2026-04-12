@@ -31,17 +31,12 @@ local function applyCritBonus(weapon)
     end)
 end
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
+local function onTick(player, tick)
     tickCounter = tickCounter + 1
     if tickCounter % 30 ~= 0 then return end
 
-    local primary   = player:getPrimaryHandItem()
-    local secondary = player:getSecondaryHandItem()
-
-    applyCritBonus(primary)
-    applyCritBonus(secondary)
+    applyCritBonus(tick.primaryWeapon)
+    applyCritBonus(tick.secondaryWeapon)
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)

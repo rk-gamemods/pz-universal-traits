@@ -4,11 +4,10 @@
 
 local TRAIT_ID = "UniversalTraits:UT_vehophobic"
 
-local function onPlayerUpdate(player)
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
+local function onTick(player, tick)
     if not player:isDriving() then return end
 
-    local md = player:getModData()
+    local md = tick.modData
     if md["UT_vehophobic_cooldown"] == nil then
         md["UT_vehophobic_cooldown"] = 0
     end
@@ -17,7 +16,7 @@ local function onPlayerUpdate(player)
         return
     end
 
-    local stats = player:getStats()
+    local stats = tick.stats
     pcall(function()
         stats:set(CharacterStat.PANIC, math.min(100, stats:get(CharacterStat.PANIC) + 1))
         stats:set(CharacterStat.STRESS, math.min(1, stats:get(CharacterStat.STRESS) + 0.005))
@@ -25,4 +24,4 @@ local function onPlayerUpdate(player)
     md["UT_vehophobic_cooldown"] = 30
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick, { vehicleAware = true })

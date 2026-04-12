@@ -17,12 +17,9 @@ local HUNGER_REDUCTION_PER_MIN = 0.0015
 -- hourly gap — ensures the trait performs its role as an infrequent-meal lifestyle.
 local MEAL_GAP_HOURS = 1.0
 
-local function onPlayerUpdate(player)
-    if UTCore.shouldSkipTick(player) then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
-
-    local md = player:getModData()
-    local healTimer = player:getBodyDamage():getHealthFromFoodTimer()
+local function onTick(player, tick)
+    local md = tick.modData
+    local healTimer = tick.bodyDamage:getHealthFromFoodTimer()
     local prev = md["UT_ascetic_prevTimer"]
 
     -- Detect moment food was eaten: timer jumps up from a low/nil value
@@ -33,7 +30,7 @@ local function onPlayerUpdate(player)
         if lastAteHours and (currentHours - lastAteHours) < MEAL_GAP_HOURS then
             -- Ate within 1 in-game hour of last meal — penalize unhappiness and stress
             pcall(function()
-                local stats = player:getStats()
+                local stats = tick.stats
                 stats:add(CharacterStat.UNHAPPINESS, 10)
                 stats:add(CharacterStat.STRESS, 5)
             end)
@@ -45,7 +42,7 @@ local function onPlayerUpdate(player)
     md["UT_ascetic_prevTimer"] = healTimer
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+UTCore.registerTickHandler(TRAIT_ID, onTick)
 
 -- Passive benefit: reduce hunger accumulation rate
 local function onEveryMinute()
