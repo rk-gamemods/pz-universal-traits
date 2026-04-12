@@ -868,6 +868,44 @@ test("bouncer stagger does NOT fire during cooldown", function()
     assert_eq(player:getModData()["UT_bouncer_cooldown"], 29, "cooldown should decrement to 29")
 end)
 
+test("bouncer stagger does NOT fire during hostile animation (freeze prevention)", function()
+    local enemies = {
+        MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5),
+    }
+    local spotted = MockSpottedListFromEnemies(enemies)
+    local player  = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, spotted)
+    player._performingHostileAnimation = true  -- simulate mid-swing
+
+    Events.OnPlayerUpdate:fire(player)
+
+    local staggered = false
+    for _, e in ipairs(enemies) do
+        if e._bumpType == "stagger" then staggered = true end
+    end
+    assert_true(not staggered,
+        "bouncer must NOT stagger zombies during attack animations (causes blockMovement freeze)")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 0,
+        "cooldown should remain 0 (bouncer was suppressed, not triggered)")
+end)
+
+test("bouncer stagger fires after hostile animation ends", function()
+    local enemies = {
+        MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5),
+    }
+    local spotted = MockSpottedListFromEnemies(enemies)
+    local player  = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, spotted)
+    player._performingHostileAnimation = false  -- attack finished
+
+    Events.OnPlayerUpdate:fire(player)
+
+    local staggered = false
+    for _, e in ipairs(enemies) do
+        if e._bumpType == "stagger" then staggered = true end
+    end
+    assert_true(staggered, "bouncer should fire normally when player is not in hostile animation")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 60, "cooldown should be set to 60")
+end)
+
 -- ===== UT_vagabond loot mechanic tests =====
 -- Load the trait file so handleContainerInspect is exposed as a global.
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_vagabond.lua")

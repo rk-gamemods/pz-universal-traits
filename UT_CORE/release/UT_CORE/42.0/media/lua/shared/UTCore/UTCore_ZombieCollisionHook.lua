@@ -17,9 +17,9 @@
 --     - Fires trait callbacks (e.g. knockDown) when a zombie enters range
 --     - Tracks per-zombie dedup so callbacks fire once per encounter
 --   Trait callbacks operate on ZOMBIES only (knockDown, setStaggerBack).
---   If knockDown doesn't prevent the bump in time, the engine's normal
---   BumpedState lifecycle handles it — animation plays, BumpDone fires,
---   player recovers. That's designed game mechanics, not a freeze.
+--   Phantom/crawler bumps are handled by UTCore_BlockMovementGuard.lua,
+--   which clears stuck BumpedState within 1 tick when the bumped character
+--   is nil, dead, or crawling.
 --
 -- CALLBACK TRIGGER:
 --   Callbacks fire when a NEW zombie enters collision range while the player

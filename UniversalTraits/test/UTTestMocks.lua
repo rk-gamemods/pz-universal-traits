@@ -375,6 +375,8 @@ function MockPlayer(traitList, opts)
         runningTime = opts.runningTime or 1.0,
         _dead = opts.dead or false,
         isDead = function(self) return self._dead end,
+        _performingHostileAnimation = opts.performingHostileAnimation or false,
+        isPerformingHostileAnimation = function(self) return self._performingHostileAnimation end,
     }
     return player
 end

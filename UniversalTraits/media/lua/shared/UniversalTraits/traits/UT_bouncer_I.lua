@@ -2,6 +2,11 @@
 -- Bouncer (I & II): when surrounded by 3+ enemies within 1.75 tiles,
 -- 5% chance per update tick to stagger one close enemy back.
 -- Cooldown: 60 ticks between triggers (stored in moddata as UT_bouncer_cooldown).
+--
+-- SAFETY: bouncer must NOT fire during player attack/shove/stomp/grapple animations.
+-- Staggering a zombie mid-swing corrupts the animation sequence, causing the
+-- SwipeStatePlayer to never exit → blockMovement stuck forever (permanent freeze).
+-- See: freeze at frame 101723, UT_bouncer_cooldown=57 (fired 3 ticks before freeze).
 
 local TRAIT_I  = "UniversalTraits:UT_bouncer_I"
 local TRAIT_II = "UniversalTraits:UT_bouncer_II"
@@ -21,6 +26,11 @@ local function onPlayerUpdate(player)
         md["UT_bouncer_cooldown"] = md["UT_bouncer_cooldown"] - 1
         return
     end
+
+    -- GUARD: never stagger zombies while the player is mid-attack/shove/stomp/grapple.
+    -- Mutating a zombie's bump state during SwipeStatePlayer corrupts the animation
+    -- sequence and can permanently lock blockMovement=true (freeze bug).
+    if player:isPerformingHostileAnimation() then return end
 
     -- Cooldown is zero — check trigger conditions
     local spottedList = player:getSpottedList()

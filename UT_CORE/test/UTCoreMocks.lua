@@ -246,6 +246,7 @@ function MockZombie(opts)
     opts = opts or {}
     local _health        = opts.health or 100
     local _knocked       = false
+    local _crawling      = opts.crawling or false
     local knockDownCalls = {}
     local _x = opts.x or 0
     local _y = opts.y or 0
@@ -259,6 +260,8 @@ function MockZombie(opts)
             table.insert(knockDownCalls, fromBehind)
         end,
         isKnockedDown       = function(self) return _knocked end,
+        isCrawling          = function(self) return _crawling end,
+        setCrawling         = function(self, v) _crawling = v end,
         isDead              = function(self) return _dead or _health <= 0 end,
         setDead             = function(self, v) _dead = v end,
         getHealth           = function(self) return _health end,
