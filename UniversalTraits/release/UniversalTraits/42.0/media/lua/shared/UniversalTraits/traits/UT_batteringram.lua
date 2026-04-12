@@ -2,10 +2,11 @@
 -- Intercepts zombie collisions while sprinting or running, knocking the zombie
 -- down and draining endurance.
 --
--- Bump immunity is handled by UTCore_ZombieCollisionHook's preemptive
--- runningTime prevention — this callback does NOT touch any player bump state.
--- The hook zeros player.runningTime each tick when zombies are in collision
--- range, which prevents separate() from ever triggering a bump.
+-- v4 ZombieCollisionHook does NOT manipulate any player bump/animation state.
+-- It only detects nearby zombies and fires this callback, which operates
+-- exclusively on ZOMBIES (knockDown, setHealth) and PLAYER STATS (endurance).
+-- If the engine's normal bump fires anyway, the BumpedState lifecycle handles
+-- recovery — that's designed game mechanics, not something we prevent.
 --
 -- The callback fires when a zombie enters collision range (proximity-based),
 -- NOT on bump rising edge. This means the trait effect (knockdown, damage)

@@ -75,11 +75,25 @@ local function captureState(player)
         onPlayerMoveFired = safeStr(_onPlayerMoveFired),
     }
 
-    -- BumpType, BumpFall via animation variables
-    state.varBumpDone = safeStr(safeCall(player, "getVariable", "BumpDone"))
-    state.varBumpFall = safeStr(safeCall(player, "getVariable", "BumpFall"))
-    state.varBumpFallAnimFinished = safeStr(safeCall(player, "getVariable", "BumpFallAnimFinished"))
-    state.varIsAiming = safeStr(safeCall(player, "getVariable", "IsAiming"))
+    -- Animation variables: use getVariableBoolean for booleans (getVariable
+    -- returns the AnimationVariableSlot Java object, not the boolean value)
+    state.varBumpDone = safeStr(safeCall(player, "getVariableBoolean", "BumpDone"))
+    state.varBumpFall = safeStr(safeCall(player, "getVariableBoolean", "BumpFall"))
+    state.varBumpFallAnimFinished = safeStr(safeCall(player, "getVariableBoolean", "BumpFallAnimFinished"))
+    state.varIsAiming = safeStr(safeCall(player, "getVariableBoolean", "IsAiming"))
+    -- String animation variables for movement/combat state diagnosis
+    state.varBumpType = safeStr(safeCall(player, "getVariable", "BumpType"))
+    state.varMovementState = safeStr(safeCall(player, "getVariable", "MovementState"))
+
+    -- Player state machine: getCurrentState returns a Java State object
+    -- whose tostring gives us the class name (e.g. IdleState, PlayerHitReactionState)
+    local curState = safeCall(player, "getCurrentState")
+    state.currentState = curState and tostring(curState) or "nil"
+    local prevState = safeCall(player, "getPreviousStateName")
+    state.prevState = safeStr(prevState)
+
+    -- Extra movement diagnostics
+    state.isPathing = safeStr(safeCall(player, "isPathing"))
 
     -- Spotted list (zombie count)
     local sl = safeCall(player, "getSpottedList")
@@ -140,6 +154,11 @@ local function dumpState(prefix, state)
         .. " var:BumpFall=" .. state.varBumpFall
         .. " var:BumpFallAnimFinished=" .. state.varBumpFallAnimFinished
         .. " var:IsAiming=" .. state.varIsAiming)
+    print(prefix .. " var:BumpType=" .. state.varBumpType
+        .. " var:MovementState=" .. state.varMovementState)
+    print(prefix .. " currentState=" .. state.currentState
+        .. " prevState=" .. state.prevState
+        .. " isPathing=" .. state.isPathing)
     print(prefix .. " weapon=" .. state.weapon
         .. " spottedCount=" .. safeStr(state.spottedCount))
 
