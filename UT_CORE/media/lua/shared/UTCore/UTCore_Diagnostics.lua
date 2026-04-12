@@ -108,6 +108,22 @@ local _perfTick = 0
 local PERF_REPORT_INTERVAL = 300  -- ticks between reports (~5 sec at 60fps)
 local PERF_WARN_AVG_MS     = 0.5  -- warn if per-call average > 0.5ms
 local PERF_WARN_PEAK_MS    = 3.0  -- warn if any single call > 3ms
+local FRAME_BUDGET_MS      = 16.67 -- 60fps frame budget
+local FRAME_WARN_PCT       = 50    -- warn if UT overhead exceeds this % of frame
+
+-- Per-tick aggregate tracking
+local _frameMs = {}        -- array of per-tick total UT ms values this window
+local _heavyFrames = 0     -- frames where UT exceeded FRAME_WARN_PCT of budget
+local _peakFrameMs = 0     -- single-frame peak UT overhead this window
+local _currentTickMs = 0   -- accumulator for current tick
+local FRAME_BUDGET_MS      = 16.67 -- 60fps frame budget
+local FRAME_WARN_PCT       = 50    -- warn if UT overhead exceeds this % of frame
+
+-- Per-tick aggregate tracking
+local _frameMs = {}        -- array of per-tick total UT ms values this window
+local _heavyFrames = 0     -- frames where UT exceeded FRAME_WARN_PCT of budget
+local _peakFrameMs = 0     -- single-frame peak UT overhead this window
+local _currentTickMs = 0   -- accumulator for current tick
 
 --- Call before a hook executes.
 function UTCore.perfEnter(name)
@@ -131,6 +147,9 @@ function UTCore.perfExit(name)
     stats.totalMs = stats.totalMs + dt
     stats.count = stats.count + 1
     if dt > stats.peakMs then stats.peakMs = dt end
+
+    -- Accumulate into current tick total
+    _currentTickMs = _currentTickMs + dt
 end
 
 --- Get raw perf stats table (for testing).
@@ -143,6 +162,10 @@ function UTCore.resetPerfStats()
     _perfStats = {}
     _perfTick = 0
     _perfActive = {}
+    _frameMs = {}
+    _heavyFrames = 0
+    _peakFrameMs = 0
+    _currentTickMs = 0
 end
 
 --- Force an immediate performance report to console.
@@ -150,7 +173,8 @@ end
 function UTCore.dumpPerfReport(force)
     local totalAllMs = 0
     local hookCount = 0
-    local warnings = {}
+    local hookLines = {}
+    local warnCount = 0
 
     for name, stats in pairs(_perfStats) do
         if stats.count > 0 then
@@ -158,29 +182,51 @@ function UTCore.dumpPerfReport(force)
             local avgMs = stats.totalMs / stats.count
             totalAllMs = totalAllMs + stats.totalMs
 
-            if avgMs >= PERF_WARN_AVG_MS or stats.peakMs >= PERF_WARN_PEAK_MS or force then
-                warnings[#warnings + 1] = string.format(
-                    "  %s: avg=%.2fms peak=%.1fms calls=%d total=%.1fms",
-                    name, avgMs, stats.peakMs, stats.count, stats.totalMs
-                )
-            end
+            local isWarn = (avgMs >= PERF_WARN_AVG_MS or stats.peakMs >= PERF_WARN_PEAK_MS)
+            if isWarn then warnCount = warnCount + 1 end
+
+            hookLines[#hookLines + 1] = string.format(
+                "  %s%s: avg=%.2fms peak=%.1fms calls=%d total=%.1fms",
+                isWarn and "! " or "  ",
+                name, avgMs, stats.peakMs, stats.count, stats.totalMs
+            )
         end
     end
 
-    if #warnings > 0 or force then
-        print("[PERF] ===== HOOK TIMING (" .. hookCount .. " hooks, "
+    -- Frame budget analysis
+    local avgMsPerTick = totalAllMs / math.max(1, PERF_REPORT_INTERVAL)
+    local framePct = (avgMsPerTick / FRAME_BUDGET_MS) * 100
+    local peakPct = (_peakFrameMs / FRAME_BUDGET_MS) * 100
+    local shouldReport = force or warnCount > 0
+        or framePct >= FRAME_WARN_PCT or _heavyFrames > 0
+
+    if shouldReport then
+        print("[PERF] ===== UT OVERHEAD (" .. hookCount .. " hooks, "
             .. PERF_REPORT_INTERVAL .. " ticks) =====")
-        table.sort(warnings)
-        for _, w in ipairs(warnings) do
-            print("[PERF]" .. w)
+        table.sort(hookLines)
+        for _, line in ipairs(hookLines) do
+            print("[PERF]" .. line)
         end
-        print("[PERF] total UT overhead: " .. string.format("%.1f", totalAllMs)
+        print("[PERF] total: " .. string.format("%.1f", totalAllMs)
             .. "ms over " .. PERF_REPORT_INTERVAL .. " ticks"
-            .. " (avg " .. string.format("%.2f", totalAllMs / math.max(1, PERF_REPORT_INTERVAL))
-            .. "ms/tick)")
+            .. " (avg " .. string.format("%.2f", avgMsPerTick)
+            .. "ms/tick = " .. string.format("%.1f%%", framePct)
+            .. " of " .. string.format("%.1f", FRAME_BUDGET_MS) .. "ms frame)")
+        if _peakFrameMs > 0 then
+            print("[PERF] peak frame: " .. string.format("%.2f", _peakFrameMs)
+                .. "ms (" .. string.format("%.1f%%", peakPct) .. " of frame)")
+        end
+        if _heavyFrames > 0 then
+            print("[PERF] WARNING: " .. _heavyFrames .. " heavy frames (>"
+                .. FRAME_WARN_PCT .. "% of " .. string.format("%.1f", FRAME_BUDGET_MS)
+                .. "ms budget) in last " .. PERF_REPORT_INTERVAL .. " ticks")
+        end
 
         UTCore.diagLog("PERF", "report",
-            hookCount .. " hooks, totalMs=" .. string.format("%.1f", totalAllMs))
+            hookCount .. " hooks, totalMs=" .. string.format("%.1f", totalAllMs)
+            .. " avgPct=" .. string.format("%.1f", framePct)
+            .. " peakFrame=" .. string.format("%.2f", _peakFrameMs)
+            .. " heavy=" .. _heavyFrames)
     end
 
     -- Reset for next window
@@ -190,13 +236,32 @@ function UTCore.dumpPerfReport(force)
         stats.peakMs = 0
     end
     _perfTick = 0
+    _frameMs = {}
+    _heavyFrames = 0
+    _peakFrameMs = 0
 end
 
 ---------------------------------------------------------------------------
 -- Periodic perf reporting (OnPlayerUpdate handler)
+-- Registered LAST among UT hooks so it runs after all profiled handlers,
+-- captures the per-tick total, and triggers the periodic report.
 ---------------------------------------------------------------------------
 local function onPlayerUpdate(player)
     if not player then return end
+
+    -- Close out current tick: record aggregate and check for heavy frames
+    if _currentTickMs > 0 then
+        _frameMs[#_frameMs + 1] = _currentTickMs
+        if _currentTickMs > _peakFrameMs then
+            _peakFrameMs = _currentTickMs
+        end
+        local pct = (_currentTickMs / FRAME_BUDGET_MS) * 100
+        if pct >= FRAME_WARN_PCT then
+            _heavyFrames = _heavyFrames + 1
+        end
+    end
+    _currentTickMs = 0
+
     _perfTick = _perfTick + 1
     if _perfTick >= PERF_REPORT_INTERVAL then
         UTCore.dumpPerfReport(false)
@@ -222,4 +287,31 @@ function UTCore.profiledHandler(name, fn)
             UTCore.diagLog("PERF", "hook_error", name .. ": " .. tostring(err))
         end
     end
+end
+
+--- Wrap a handler that takes variable arguments (hit events, XP events, etc.).
+--- Same as profiledHandler but passes all args through.
+--- Usage: Events.OnWeaponHitCharacter.Add(UTCore.profiledHandlerV("FractureHook", fn))
+--- @param name string  unique hook name for perf stats
+--- @param fn   function(...)  the original handler
+--- @return function  wrapped handler with profiling
+function UTCore.profiledHandlerV(name, fn)
+    return function(...)
+        UTCore.perfEnter(name)
+        local ok, err = pcall(fn, ...)
+        UTCore.perfExit(name)
+        if not ok then
+            UTCore.diagLog("PERF", "hook_error", name .. ": " .. tostring(err))
+        end
+    end
+end
+
+--- Get frame budget tracking state (for testing).
+function UTCore.getFrameBudgetState()
+    return {
+        heavyFrames = _heavyFrames,
+        peakFrameMs = _peakFrameMs,
+        currentTickMs = _currentTickMs,
+        frameCount = #_frameMs,
+    }
 end

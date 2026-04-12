@@ -41,5 +41,9 @@ local function onEveryMinute()
 end
 
 if Events and Events.EveryOneMinute then
-    Events.EveryOneMinute.Add(onEveryMinute)
+    if UTCore.profiledHandler then
+        Events.EveryOneMinute.Add(UTCore.profiledHandler("NoiseHook", onEveryMinute))
+    else
+        Events.EveryOneMinute.Add(onEveryMinute)
+    end
 end

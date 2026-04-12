@@ -14,7 +14,11 @@ end
 
 -- Reset tracking every in-game minute
 if Events and Events.EveryOneMinute then
-    Events.EveryOneMinute.Add(resetXPTracking)
+    if UTCore.profiledHandlerV then
+        Events.EveryOneMinute.Add(UTCore.profiledHandlerV("XPHook:reset", resetXPTracking))
+    else
+        Events.EveryOneMinute.Add(resetXPTracking)
+    end
 end
 
 local function onAddXP(player, perk, amount)
@@ -77,5 +81,9 @@ local function onAddXP(player, perk, amount)
 end
 
 if Events and Events.AddXP then
-    Events.AddXP.Add(onAddXP)
+    if UTCore.profiledHandlerV then
+        Events.AddXP.Add(UTCore.profiledHandlerV("XPHook:addXP", onAddXP))
+    else
+        Events.AddXP.Add(onAddXP)
+    end
 end

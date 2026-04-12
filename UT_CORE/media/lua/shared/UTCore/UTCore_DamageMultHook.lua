@@ -57,5 +57,9 @@ if Events and Events.OnPlayerUpdate then
 end
 
 if Events and Events.OnWeaponHitCharacter then
-    Events.OnWeaponHitCharacter.Add(onWeaponHitCharacter)
+    if UTCore.profiledHandlerV then
+        Events.OnWeaponHitCharacter.Add(UTCore.profiledHandlerV("DamageMultHook:hit", onWeaponHitCharacter))
+    else
+        Events.OnWeaponHitCharacter.Add(onWeaponHitCharacter)
+    end
 end
