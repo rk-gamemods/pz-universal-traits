@@ -7,6 +7,7 @@ local IDLE_CALORIE_RATE = 0.016
 local WALK_CALORIE_REFUND_RATIO = (WALK_CALORIE_RATE - IDLE_CALORIE_RATE) / WALK_CALORIE_RATE
 
 local function onPlayerUpdate(player)
+    if UTCore.shouldSkipTick(player) then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
 
     local md = player:getModData()

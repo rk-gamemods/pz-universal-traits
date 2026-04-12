@@ -19,7 +19,10 @@ UTCore = UTCore or {}
 
 local function onPlayerUpdate(player)
     if not player then return end
+    if player:isDead() then return end
     local md = player:getModData()
+    -- Skip health tracking when damage mult is not active (no glassbody trait)
+    if not md["UT_damageMult"] then return end
     -- Track health each tick for the hit-detection diff in onWeaponHitCharacter
     md["UT_dmgPrevHealth"] = player:getHealth()
 end

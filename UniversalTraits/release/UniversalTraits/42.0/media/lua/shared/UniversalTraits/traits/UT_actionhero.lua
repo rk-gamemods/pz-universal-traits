@@ -28,6 +28,7 @@ local function applyCritBonus(weapon, active)
 end
 
 local function onPlayerUpdate(player)
+    if UTCore.shouldSkipTick(player) then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
 
     tickCounter = tickCounter + 1

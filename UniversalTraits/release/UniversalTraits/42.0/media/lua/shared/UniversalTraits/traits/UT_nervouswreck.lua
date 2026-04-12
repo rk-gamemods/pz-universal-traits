@@ -22,6 +22,7 @@ local TRAIT_ID  = "UniversalTraits:UT_nervouswreck"
 local REDUCTION = 0.30  -- keep 30% of current value (70% slower recovery)
 
 local function onPlayerUpdate(player)
+    if UTCore.shouldSkipTick(player) then return end
     local bd = player:getModData()
     local bodyDamage = player:getBodyDamage()
     if not bodyDamage then return end

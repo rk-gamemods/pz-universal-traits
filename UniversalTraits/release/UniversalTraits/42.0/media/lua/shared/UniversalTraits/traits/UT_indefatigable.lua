@@ -7,6 +7,7 @@ local COOLDOWN_MINUTES = 3
 local tickCounter = 0
 
 local function onPlayerUpdate(player)
+    if UTCore.shouldSkipTick(player) then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
     tickCounter = tickCounter + 1
     if tickCounter % 30 ~= 0 then return end

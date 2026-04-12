@@ -42,6 +42,7 @@ local function revertGourmandFood(food)
 end
 
 local function onPlayerUpdate(player)
+    if UTCore.shouldSkipTick(player) then return end
     tickCounter = tickCounter + 1
     if tickCounter % 30 ~= 0 then return end
 

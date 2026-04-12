@@ -27,6 +27,23 @@ function UTCore.invalidateTraitCache()
     _playerTraitResults = {}
 end
 
+--- Context guard for OnPlayerUpdate handlers.
+-- Returns true if the player is in a state where tick handlers should be skipped:
+--   1. Player is nil
+--   2. Player is dead
+--   3. Player is in a vehicle (driving or passenger)
+-- Most traits and combat hooks are irrelevant while driving/dead.
+-- Vehicle-specific traits (vehophobic, motionsickness) should NOT call this.
+-- Cost: 2 Java field reads, cached per player within a tick batch.
+-- @param player IsoPlayer
+-- @return boolean true = skip this tick, false = process normally
+function UTCore.shouldSkipTick(player)
+    if not player then return true end
+    if player:isDead() then return true end
+    if player:getVehicle() ~= nil then return true end
+    return false
+end
+
 --- Nil-safe hasTrait check (B42.16+ registry API).
 -- Results are cached for the session since traits don't change during gameplay.
 -- @param player IsoPlayer

@@ -23,8 +23,16 @@ UTCore = UTCore or {}
 local NATIVE_BANDAGED   = 0.0002
 local NATIVE_UNBANDAGED = 0.00002
 
+local _bleedDecayTick = 0
+
 local function onPlayerUpdate(player)
     if not player then return end
+    if player:isDead() then return end
+
+    -- Throttle: body part iteration is expensive. Check every 10 ticks (~3x/sec).
+    _bleedDecayTick = _bleedDecayTick + 1
+    if _bleedDecayTick < 10 then return end
+    _bleedDecayTick = 0
 
     local md = player:getModData()
     local mult        = md["UT_bleedDecayMult"]
@@ -44,7 +52,9 @@ local function onPlayerUpdate(player)
             local isBandaged = part:bandaged()
             if not bandagedOnly or isBandaged then
                 local nativeDecay = isBandaged and NATIVE_BANDAGED or NATIVE_UNBANDAGED
-                local extraDecay  = nativeDecay * gameMultiplier * (mult - 1.0)
+                -- Multiply by 10 to compensate for 10-tick throttle: total decay
+                -- rate is identical to running every tick at 1x.
+                local extraDecay  = nativeDecay * gameMultiplier * (mult - 1.0) * 10
                 local newTime     = bleedingTime - extraDecay
                 part:setBleedingTime(math.max(newTime, 0))
             end

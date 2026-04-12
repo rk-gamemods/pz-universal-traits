@@ -9,6 +9,7 @@ Usage:
 
 import hashlib
 import os
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -16,6 +17,7 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent
 MODS_DIR = Path(r"C:\Users\Admin\Zomboid\mods")
 MODS = ["UniversalTraits", "UT_CORE"]
+VERSION_DIR = "42.0"  # Must match versionMin in mod.info
 
 
 def mirror(src: Path, dst: Path) -> None:
@@ -30,7 +32,7 @@ def deploy(mod_name: str) -> None:
     src_media = mod_root / "media"
     mod_info = mod_root / "mod.info"
     release_root = mod_root / "release" / mod_name
-    release_media = release_root / "42" / "media"
+    release_media = release_root / VERSION_DIR / "media"
     live_dir = MODS_DIR / mod_name
 
     # Validate source exists
@@ -39,19 +41,41 @@ def deploy(mod_name: str) -> None:
     if not mod_info.is_file():
         sys.exit(f"ERROR: mod.info not found: {mod_info}")
 
+    # Validate VERSION_DIR matches versionMin in mod.info
+    mod_info_text = mod_info.read_text(encoding="utf-8")
+    m = re.search(r"versionMin\s*=\s*(\S+)", mod_info_text)
+    if not m:
+        sys.exit(f"ERROR: no versionMin found in {mod_info}")
+    version_min = m.group(1)
+    if version_min != VERSION_DIR:
+        sys.exit(
+            f"ERROR: VERSION_DIR mismatch! deploy.py uses '{VERSION_DIR}' "
+            f"but mod.info says versionMin={version_min}. "
+            f"PZ loads from '{version_min}/' — update VERSION_DIR."
+        )
+
     print(f"--- {mod_name} ---")
 
-    # 1. Sync source media -> release/ModName/42/media
+    # 1. Sync source media -> release/ModName/VERSION_DIR/media
     print(f"  sync media -> release")
     mirror(src_media, release_media)
 
-    # 2. Copy mod.info into release root and 42/
+    # 2. Copy mod.info into release root and VERSION_DIR/
     shutil.copy2(mod_info, release_root / "mod.info")
-    shutil.copy2(mod_info, release_root / "42" / "mod.info")
+    shutil.copy2(mod_info, release_root / VERSION_DIR / "mod.info")
 
-    # 3. Deploy release → live
+    # 3. Deploy release → live (mirror deletes stale content)
     print(f"  deploy -> {live_dir}")
     mirror(release_root, live_dir)
+
+    # 4. Safety: check for stale version dirs that PZ might load instead
+    if live_dir.is_dir():
+        for d in live_dir.iterdir():
+            if d.is_dir() and re.match(r"^\d+(\.\d+)?$", d.name) and d.name != VERSION_DIR:
+                sys.exit(
+                    f"ERROR: stale version dir '{d.name}' found in {live_dir}! "
+                    f"PZ might load it instead of '{VERSION_DIR}'. Delete it manually."
+                )
 
     print(f"  done")
 
@@ -65,7 +89,7 @@ def file_hash(path: Path) -> str:
 def verify(mod_name: str) -> list[str]:
     """Compare source files against live deployed files. Returns list of mismatches."""
     src_media = SCRIPT_DIR / mod_name / "media"
-    live_media = MODS_DIR / mod_name / "42" / "media"
+    live_media = MODS_DIR / mod_name / VERSION_DIR / "media"
     mismatches = []
 
     for src_file in src_media.rglob("*"):
