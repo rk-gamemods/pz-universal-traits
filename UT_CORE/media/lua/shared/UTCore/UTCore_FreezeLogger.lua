@@ -89,14 +89,6 @@ local function captureState(player)
         state.spottedCount = "no_method"
     end
 
-    -- Panic level
-    local stats = safeCall(player, "getStats")
-    if stats then
-        local panic = safeCall(stats, "get")
-        -- PZ uses getStats():getPanic() or Stat enum; try multiple
-        state.panic = safeStr(safeCall(player, "getMoodles") and "see_moodles" or "?")
-    end
-
     -- Weapon info
     local weapon = safeCall(player, "getPrimaryHandItem")
     if weapon then
