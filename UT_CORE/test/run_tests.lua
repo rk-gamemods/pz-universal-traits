@@ -829,6 +829,83 @@ test("ZombieCollisionHook does NOT fire when bumpedChr is nil", function()
     assert_eq(fired, false, "expected no callback when bumpedChr is nil")
 end)
 
+test("ZombieCollisionHook clears bumpedChr when player stops running", function()
+    UTCore._zombieCollisionCallbacks = {}
+    -- Set up a zombie in range so the hook activates
+    local z = MockZombie({ x = 0.3, y = 0, z = 0 })
+    local sq = MockCollisionSquare(0, 0, 0, {z})
+    local squares = { ["0,0,0"] = sq }
+    for dx = -1, 1 do for dy = -1, 1 do
+        if dx ~= 0 or dy ~= 0 then squares[dx..","..dy..",0"] = MockCollisionSquare(dx, dy, 0, {}) end
+    end end
+    _G._mockCell = MockCell(squares)
+    local p = MockPlayer({}, { square = sq })
+    p:setRunning(true)
+    UTCore.registerZombieCollisionHandler("test_trait", function() end)
+    Events.OnPlayerUpdate.fire(p) -- sets bumpedChr to the zombie
+    assert_eq(p:getBumpedChr(), z, "expected bumpedChr set while running near zombie")
+
+    -- Player stops running
+    p:setRunning(false)
+    Events.OnPlayerUpdate.fire(p)
+    _G._mockCell = nil
+    assert_eq(p:getBumpedChr(), nil, "expected bumpedChr cleared when player stops running")
+end)
+
+test("ZombieCollisionHook clears bumpedChr when no zombies in range", function()
+    UTCore._zombieCollisionCallbacks = {}
+    -- Set up a zombie in range
+    local z = MockZombie({ x = 0.3, y = 0, z = 0 })
+    local sq = MockCollisionSquare(0, 0, 0, {z})
+    local squares = { ["0,0,0"] = sq }
+    for dx = -1, 1 do for dy = -1, 1 do
+        if dx ~= 0 or dy ~= 0 then squares[dx..","..dy..",0"] = MockCollisionSquare(dx, dy, 0, {}) end
+    end end
+    _G._mockCell = MockCell(squares)
+    local p = MockPlayer({}, { square = sq })
+    p:setRunning(true)
+    UTCore.registerZombieCollisionHandler("test_trait", function() end)
+    Events.OnPlayerUpdate.fire(p)
+    assert_eq(p:getBumpedChr(), z, "expected bumpedChr set while running near zombie")
+
+    -- Remove zombie from square (killed/moved away)
+    sq._movingObjects = {}
+    local squares2 = { ["0,0,0"] = MockCollisionSquare(0, 0, 0, {}) }
+    for dx = -1, 1 do for dy = -1, 1 do
+        if dx ~= 0 or dy ~= 0 then squares2[dx..","..dy..",0"] = MockCollisionSquare(dx, dy, 0, {}) end
+    end end
+    _G._mockCell = MockCell(squares2)
+    Events.OnPlayerUpdate.fire(p)
+    _G._mockCell = nil
+    assert_eq(p:getBumpedChr(), nil, "expected bumpedChr cleared when no zombies in range")
+end)
+
+test("ZombieCollisionHook ignores dead zombies and clears bumpedChr", function()
+    UTCore._zombieCollisionCallbacks = {}
+    local z = MockZombie({ x = 0.3, y = 0, z = 0 })
+    local sq = MockCollisionSquare(0, 0, 0, {z})
+    local squares = { ["0,0,0"] = sq }
+    for dx = -1, 1 do for dy = -1, 1 do
+        if dx ~= 0 or dy ~= 0 then squares[dx..","..dy..",0"] = MockCollisionSquare(dx, dy, 0, {}) end
+    end end
+    _G._mockCell = MockCell(squares)
+    local p = MockPlayer({}, { square = sq })
+    p:setRunning(true)
+    local callCount = 0
+    UTCore.registerZombieCollisionHandler("test_trait", function() callCount = callCount + 1 end)
+    Events.OnPlayerUpdate.fire(p)
+    assert_eq(callCount, 1, "expected callback for live zombie")
+    assert_eq(p:getBumpedChr(), z, "expected bumpedChr set to live zombie")
+
+    -- Kill the zombie — corpse stays on the square
+    z:setDead(true)
+    p:getModData().UT_handledZombies = nil  -- reset dedup so we'd fire again IF it were alive
+    Events.OnPlayerUpdate.fire(p)
+    _G._mockCell = nil
+    assert_eq(callCount, 1, "expected no callback for dead zombie")
+    assert_eq(p:getBumpedChr(), nil, "expected bumpedChr cleared when only dead zombies nearby")
+end)
+
 -- ===== declareZombieCollisionHandler + auto-registration tests =====
 
 test("declareZombieCollisionHandler auto-registers on OnCreatePlayer for active trait", function()

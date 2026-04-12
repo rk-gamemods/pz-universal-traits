@@ -129,7 +129,13 @@ local function onPlayerUpdate(player)
     if not sprinting and not running then
         -- Clear handled set when player stops (fresh start on next run)
         local md = player:getModData()
-        if md.UT_handledZombies then md.UT_handledZombies = nil end
+        if md.UT_handledZombies then
+            md.UT_handledZombies = nil
+            -- Clear the bump guard we set — stale bumpedChr on a dead/distant
+            -- zombie can cause BumpedState to enter and never resolve
+            pcall(function() player:setBumpedChr(nil) end)
+            dbg("Cleared bumpedChr (player stopped running)")
+        end
         -- One-time cleanup of old moddata from previous suppression approach
         if md.UT_bumpSuppress then
             md.UT_bumpSuppress = nil
@@ -161,7 +167,7 @@ local function onPlayerUpdate(player)
                 local objects = checkSq:getMovingObjects()
                 for j = 0, objects:size() - 1 do
                     local obj = objects:get(j)
-                    if obj ~= player and isZombie(obj) then
+                    if obj ~= player and isZombie(obj) and not obj:isDead() then
                         local ox, oy, oz = obj:getX(), obj:getY(), obj:getZ()
                         if math.abs(pz - oz) <= 0.3 then
                             local ddx = px - ox
@@ -215,6 +221,11 @@ local function onPlayerUpdate(player)
         if not ok then
             dbg("FAILED setBumpedChr: " .. tostring(err))
         end
+    else
+        -- No zombies in collision range — clear the bump guard to prevent
+        -- stale bumpedChr references to dead/distant zombies from jamming
+        -- BumpedState (bumpDone never fires → permanent freeze)
+        pcall(function() player:setBumpedChr(nil) end)
     end
 
     if foundNearby and UTSmoke and UTSmoke.record then

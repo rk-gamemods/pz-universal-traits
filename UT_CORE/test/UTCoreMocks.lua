@@ -250,6 +250,7 @@ function MockZombie(opts)
     local _x = opts.x or 0
     local _y = opts.y or 0
     local _z = opts.z or 0
+    local _dead          = opts.dead or false
     return {
         _mockType           = "IsoZombie",
         isAlwaysKnockedDown = function(self) return false end,
@@ -258,6 +259,8 @@ function MockZombie(opts)
             table.insert(knockDownCalls, fromBehind)
         end,
         isKnockedDown       = function(self) return _knocked end,
+        isDead              = function(self) return _dead or _health <= 0 end,
+        setDead             = function(self, v) _dead = v end,
         getHealth           = function(self) return _health end,
         setHealth           = function(self, v) _health = v end,
         getKnockDownCalls   = function(self) return knockDownCalls end,
