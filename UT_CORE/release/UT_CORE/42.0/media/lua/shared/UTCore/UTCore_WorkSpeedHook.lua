@@ -12,7 +12,9 @@ UTCore = UTCore or {}
 -- timedAction: the TimedAction instance (has .character and .Type fields)
 -- base: the original duration from the unpatched getDuration()
 function UTCore.applyWorkDuration(timedAction, base)
-    if not base or base < 1 then return 1 end
+    if not base then return 1 end
+    if base < 0 then return base end   -- preserve animation-driven durations (-1)
+    if base < 1 then return 1 end
     local player = timedAction.character
     if not player then return base end
 
