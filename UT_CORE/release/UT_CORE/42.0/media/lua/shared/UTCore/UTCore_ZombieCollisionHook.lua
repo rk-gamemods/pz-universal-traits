@@ -101,10 +101,7 @@ end
 -- Per-tick update
 ---------------------------------------------------------------------------
 
-local function onPlayerUpdate(player)
-    if not player then return end
-    if player:isDead() then return end
-
+local function onPlayerUpdate(player, tick)
     -- No handlers registered → nothing to do
     local hasHandlers = false
     for _ in pairs(UTCore._zombieCollisionCallbacks) do
@@ -114,11 +111,11 @@ local function onPlayerUpdate(player)
     if not hasHandlers then return end
 
     -- Only active while running or sprinting (walking doesn't trigger bumps)
-    local sprinting = player:isSprinting()
-    local running = player:isRunning()
+    local sprinting = tick and tick.isSprinting or player:isSprinting()
+    local running   = tick and tick.isRunning   or player:isRunning()
     if not sprinting and not running then
         -- Clear handled set when player stops (fresh start on next run)
-        local md = player:getModData()
+        local md = tick and tick.modData or player:getModData()
         if md.UT_handledZombies then
             md.UT_handledZombies = nil
         end
@@ -137,9 +134,11 @@ local function onPlayerUpdate(player)
     local cell = getCell()
     if not cell then return end
 
-    local px, py, pz = player:getX(), player:getY(), player:getZ()
+    local px = tick and tick.x or player:getX()
+    local py = tick and tick.y or player:getY()
+    local pz = tick and tick.z or player:getZ()
     local sqX, sqY, sqZ = sq:getX(), sq:getY(), sq:getZ()
-    local md = player:getModData()
+    local md = tick and tick.modData or player:getModData()
     local prevHandled = md.UT_handledZombies or {}
     local newHandled = {}
     local foundNearby = false
@@ -189,8 +188,12 @@ local function onPlayerUpdate(player)
     end
 end
 
-if Events and Events.OnPlayerUpdate then
-    Events.OnPlayerUpdate.Add(onPlayerUpdate)
+if UTCore.registerCoreHandler then
+    UTCore.registerCoreHandler("ZombieCollisionHook", onPlayerUpdate, { priority = 0 })
+else
+    if Events and Events.OnPlayerUpdate then
+        Events.OnPlayerUpdate.Add(onPlayerUpdate)
+    end
 end
 
 ---------------------------------------------------------------------------

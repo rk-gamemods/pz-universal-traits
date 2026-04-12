@@ -1,8 +1,55 @@
 -- UTCore_API.lua
 -- Public API for Universal Traits shared infrastructure.
--- Phase 1 stub: only hasTrait wrapper implemented. Full API added in Phase 2.
 
 UTCore = UTCore or {}
+
+---------------------------------------------------------------------
+-- Core handler infrastructure (Phase 1 perf: unified dispatch)
+--
+-- Core handlers are UT_CORE's own OnPlayerUpdate hooks (bleed, pain,
+-- freeze detection, stat reconciliation, etc.) that previously each
+-- registered a separate Events.OnPlayerUpdate handler with redundant
+-- Java interop calls. Moving them into the central dispatch loop
+-- eliminates those redundant calls and gives them the shared tick
+-- context for free.
+--
+-- Defined here (UTCore_API) because PZ loads files alphabetically
+-- and hooks (B*, D*, F*, ...) load before TickDispatch (T*).
+---------------------------------------------------------------------
+UTCore._coreHandlers = UTCore._coreHandlers or {}
+UTCore._coreHandlerCount = UTCore._coreHandlerCount or 0
+
+--- Register a core infrastructure handler that runs every tick inside
+--- the central dispatch, BEFORE trait handlers.
+--- @param id   string  identifier for diagnostics
+--- @param fn   function(player, tick)  the handler
+--- @param opts table   optional:
+---   throttle = N     run every Nth tick (0 = every tick, default)
+---   priority = N     higher runs first (default 0)
+function UTCore.registerCoreHandler(id, fn, opts)
+    opts = opts or {}
+    local n = UTCore._coreHandlerCount + 1
+    UTCore._coreHandlerCount = n
+    UTCore._coreHandlers[n] = {
+        id       = id,
+        fn       = fn,
+        throttle = opts.throttle or 0,
+        priority = opts.priority or 0,
+    }
+end
+
+--- Return core handler count (testing/diagnostics).
+function UTCore.getCoreHandlerCount()
+    return UTCore._coreHandlerCount
+end
+
+--- Debug dispatch mode: when true, pcall wraps every handler call.
+--- When false (default, production), handlers are called directly for speed.
+UTCore._debugDispatch = false
+
+function UTCore.setDebugDispatch(enabled)
+    UTCore._debugDispatch = enabled ~= false
+end
 
 -- Cache CharacterTrait objects by string ID to avoid repeated registry lookups.
 local _traitCache = {}

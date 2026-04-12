@@ -71,17 +71,17 @@ local MELEE_TRAITS = {
 local _lastWeapon = nil
 local _lastCategory = nil
 
-local function onPlayerUpdate(player)
+local function onPlayerUpdate(player, tick)
     if not player or not player.isLocalPlayer or not player:isLocalPlayer() then return end
 
-    local weapon = player.getPrimaryHandItem and player:getPrimaryHandItem()
+    local weapon = tick and tick.primaryWeapon or (player.getPrimaryHandItem and player:getPrimaryHandItem())
     if not weapon then
         _lastWeapon = nil
         _lastCategory = nil
         return
     end
 
-    local md = player:getModData()
+    local md = tick and tick.modData or player:getModData()
     local meleeDelay = player:getMeleeDelay()
 
     -- Reset flag when the swing is fully complete (delay returned to 0).
@@ -162,8 +162,12 @@ end
 -- Register with events
 -- ---------------------------------------------------------------------------
 
-if Events and Events.OnPlayerUpdate then
-    Events.OnPlayerUpdate.Add(onPlayerUpdate)
+if UTCore.registerCoreHandler then
+    UTCore.registerCoreHandler("MeleeDelayHook", onPlayerUpdate, { priority = 0 })
+else
+    if Events and Events.OnPlayerUpdate then
+        Events.OnPlayerUpdate.Add(onPlayerUpdate)
+    end
 end
 
 if Events and Events.OnCreatePlayer then

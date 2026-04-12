@@ -453,16 +453,24 @@ if not UTCore._modifierAggregationEventsRegistered then
         UTCore.reconcileAggregatedModifiers(player)
     end
 
-    local function onPlayerUpdate(player)
+    -- Core handler: reconcile carry weight inside central dispatch.
+    -- Throttled to every 30 ticks (~1/sec) because carry weight changes
+    -- only when modifier buckets change, which already triggers an immediate
+    -- refreshAggregatedModifierCache via the apply* API functions.
+    -- This handler is defense-in-depth, not the primary setter.
+    local function coreReconcile(player, tick)
         UTCore.reconcileAggregatedModifiers(player)
+    end
+
+    if UTCore.registerCoreHandler then
+        UTCore.registerCoreHandler("StatModifiers.reconcile", coreReconcile, {
+            throttle = 30,
+            priority = -10,  -- low priority, runs after other core handlers
+        })
     end
 
     if Events and Events.OnCreatePlayer then
         Events.OnCreatePlayer.Add(onCreatePlayer)
-    end
-
-    if Events and Events.OnPlayerUpdate then
-        Events.OnPlayerUpdate.Add(onPlayerUpdate)
     end
 
     UTCore._modifierAggregationEventsRegistered = true

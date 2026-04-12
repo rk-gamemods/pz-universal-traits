@@ -174,6 +174,7 @@ function MockPlayer(traits, opts)
         setBodyDamage        = function(self, bd) bodyDamage = bd end,
         getPrimaryHandItem   = function(self) return primaryHandItem end,
         setPrimaryHandItem   = function(self, item) primaryHandItem = item end,
+        getSecondaryHandItem = function(self) return opts.secondaryHandItem or nil end,
         getPerkLevel         = function(self, perk) return perkLevels[perk] or 0 end,
         setMeleeDelay        = function(self, v) moddata["_lastMeleeDelay"] = v end,
         getMeleeDelay        = function(self)
@@ -238,6 +239,19 @@ function MockPlayer(traits, opts)
         _hitReaction         = "",
         setHitReaction       = function(self, v) self._hitReaction = v end,
         getHitReaction       = function(self) return self._hitReaction end,
+        -- Animation state (used by buildTickContext)
+        _isHostileAnim       = false,
+        isPerformingHostileAnimation = function(self) return self._isHostileAnim end,
+        isPerformingAttackAnimation  = function(self) return false end,
+        isPathing            = function(self) return false end,
+        isAiming             = function(self) return false end,
+        -- Spotted list (used by lazy enemy builder)
+        _spottedList         = nil,
+        getSpottedList       = function(self)
+            return self._spottedList or { size = function() return 0 end, get = function(_, i) return nil end }
+        end,
+        setSpottedList       = function(self, list) self._spottedList = list end,
+        DistTo               = function(self, other) return 10.0 end,
     }
 end
 

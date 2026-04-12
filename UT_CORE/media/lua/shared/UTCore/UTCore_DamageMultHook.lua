@@ -17,10 +17,9 @@
 
 UTCore = UTCore or {}
 
-local function onPlayerUpdate(player)
-    if not player then return end
+local function onPlayerUpdate(player, tick)
     if player:isDead() then return end
-    local md = player:getModData()
+    local md = tick and tick.modData or player:getModData()
     -- Skip health tracking when damage mult is not active (no glassbody trait)
     if not md["UT_damageMult"] then return end
     -- Track health each tick for the hit-detection diff in onWeaponHitCharacter
@@ -48,8 +47,12 @@ local function onWeaponHitCharacter(attacker, weapon, target)
     md["UT_dmgPrevHealth"] = player:getHealth()
 end
 
-if Events and Events.OnPlayerUpdate then
-    Events.OnPlayerUpdate.Add(onPlayerUpdate)
+if UTCore.registerCoreHandler then
+    UTCore.registerCoreHandler("DamageMultHook", onPlayerUpdate, { priority = 0 })
+else
+    if Events and Events.OnPlayerUpdate then
+        Events.OnPlayerUpdate.Add(onPlayerUpdate)
+    end
 end
 
 if Events and Events.OnWeaponHitCharacter then

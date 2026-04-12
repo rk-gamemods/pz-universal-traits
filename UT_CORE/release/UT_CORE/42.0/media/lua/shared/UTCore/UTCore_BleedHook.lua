@@ -60,18 +60,16 @@ UTCore = UTCore or {}
 local THROTTLE = 30
 UTCore._bleedTickCounter = 0
 
-local function onPlayerUpdate(player)
-    if not player then return end
-
+local function onPlayerUpdate(player, tick)
     UTCore._bleedTickCounter = UTCore._bleedTickCounter + 1
     if UTCore._bleedTickCounter < THROTTLE then return end
     UTCore._bleedTickCounter = 0
 
-    local md = player:getModData()
+    local md = tick and tick.modData or player:getModData()
     local mult = md["UT_bleedMult"]
     if not mult or mult == 1.0 then return end
 
-    local bd = player:getBodyDamage()
+    local bd = tick and tick.bodyDamage or player:getBodyDamage()
     if not bd then return end
     if bd:getNumPartsBleeding() == 0 then return end
 
@@ -96,6 +94,10 @@ local function onPlayerUpdate(player)
     end
 end
 
-if Events and Events.OnPlayerUpdate then
-    Events.OnPlayerUpdate.Add(onPlayerUpdate)
+if UTCore.registerCoreHandler then
+    UTCore.registerCoreHandler("BleedHook", onPlayerUpdate, { priority = 0 })
+else
+    if Events and Events.OnPlayerUpdate then
+        Events.OnPlayerUpdate.Add(onPlayerUpdate)
+    end
 end

@@ -8,9 +8,13 @@ package.path = base .. "../media/lua/shared/?.lua;" .. package.path
 dofile(base .. "UTCoreMocks.lua")
 
 -- Load UTCore modules
+-- ORDER MATTERS: API must load before TickDispatch and hooks (registerCoreHandler
+-- is defined in API). TickDispatch must load before any hook that registers via
+-- registerCoreHandler. This mirrors PZ's alphabetical file load order.
 dofile(base .. "../media/lua/shared/UTCore/UTCore_Diagnostics.lua")
-dofile(base .. "../media/lua/shared/UTCore/UTCore_FreezeLogger.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_API.lua")
+dofile(base .. "../media/lua/shared/UTCore/UTCore_TickDispatch.lua")
+dofile(base .. "../media/lua/shared/UTCore/UTCore_FreezeLogger.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_TraitChecks.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_Events.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_StatModifiers.lua")
@@ -20,6 +24,8 @@ dofile(base .. "../media/lua/shared/UTCore/UTCore_SpeedHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_ReadingHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_BleedHook.lua")
+dofile(base .. "../media/lua/shared/UTCore/UTCore_BleedDecayHook.lua")
+dofile(base .. "../media/lua/shared/UTCore/UTCore_BleedDrainHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_PainHook.lua")

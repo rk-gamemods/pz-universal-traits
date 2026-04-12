@@ -25,23 +25,20 @@ local NATIVE_UNBANDAGED = 0.00002
 
 local _bleedDecayTick = 0
 
-local function onPlayerUpdate(player)
-    if not player then return end
-    if player:isDead() then return end
-
+local function onPlayerUpdate(player, tick)
     -- Throttle: body part iteration is expensive. Check every 10 ticks (~3x/sec).
     _bleedDecayTick = _bleedDecayTick + 1
     if _bleedDecayTick < 10 then return end
     _bleedDecayTick = 0
 
-    local md = player:getModData()
+    local md = tick and tick.modData or player:getModData()
     local mult        = md["UT_bleedDecayMult"]
     local bandagedOnly = md["UT_bleedDecayBandagedOnly"]
 
     if not mult or mult == 1.0 then return end
 
     local gameMultiplier = GameTime.getInstance():getMultiplier()
-    local bd = player:getBodyDamage()
+    local bd = tick and tick.bodyDamage or player:getBodyDamage()
     if not bd then return end
 
     local parts = bd:getBodyParts()
@@ -62,6 +59,10 @@ local function onPlayerUpdate(player)
     end
 end
 
-if Events and Events.OnPlayerUpdate then
-    Events.OnPlayerUpdate.Add(onPlayerUpdate)
+if UTCore.registerCoreHandler then
+    UTCore.registerCoreHandler("BleedDecayHook", onPlayerUpdate, { priority = 0 })
+else
+    if Events and Events.OnPlayerUpdate then
+        Events.OnPlayerUpdate.Add(onPlayerUpdate)
+    end
 end

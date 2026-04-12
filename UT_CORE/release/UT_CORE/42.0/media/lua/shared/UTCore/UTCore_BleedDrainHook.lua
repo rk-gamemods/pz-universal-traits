@@ -31,18 +31,17 @@ local DAMAGE_SCALER_STANDARD = 0.0057142857
 local DAMAGE_SCALER_NECK     = 0.0057142857 * 5.0
 local BLEED_COEFF            = 0.2857143
 
-local function onPlayerUpdate(player)
-    if not player then return end
-
-    local md = player:getModData()
-    local mult = md["UT_bleedDrainMult"]
-    if not mult or mult == 1.0 then return end
-
+local function onPlayerUpdate(player, tick)
+    -- Throttle first, before any Java calls
     UTCore._bleedDrainTickCounter = UTCore._bleedDrainTickCounter + 1
     if UTCore._bleedDrainTickCounter < THROTTLE then return end
     UTCore._bleedDrainTickCounter = 0
 
-    local bd = player:getBodyDamage()
+    local md = tick and tick.modData or player:getModData()
+    local mult = md["UT_bleedDrainMult"]
+    if not mult or mult == 1.0 then return end
+
+    local bd = tick and tick.bodyDamage or player:getBodyDamage()
     if not bd then return end
     if bd:getNumPartsBleeding() == 0 then return end
 
@@ -71,6 +70,10 @@ local function onPlayerUpdate(player)
     player:setHealth(math.max(currentHealth + offset, 0.0))
 end
 
-if Events and Events.OnPlayerUpdate then
-    Events.OnPlayerUpdate.Add(onPlayerUpdate)
+if UTCore.registerCoreHandler then
+    UTCore.registerCoreHandler("BleedDrainHook", onPlayerUpdate, { priority = 0 })
+else
+    if Events and Events.OnPlayerUpdate then
+        Events.OnPlayerUpdate.Add(onPlayerUpdate)
+    end
 end

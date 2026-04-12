@@ -9,12 +9,11 @@
 
 UTCore = UTCore or {}
 
-local function onPlayerUpdate(player)
-    if not player then return end
-    local md = player:getModData()
+local function onPlayerUpdate(player, tick)
+    local md = tick and tick.modData or player:getModData()
     if not md["UT_painImmune"] then return end
 
-    local stats = player:getStats()
+    local stats = tick and tick.stats or player:getStats()
     if not stats then return end
 
     if stats:get(CharacterStat.PAIN) > 0 then
@@ -22,6 +21,10 @@ local function onPlayerUpdate(player)
     end
 end
 
-if Events and Events.OnPlayerUpdate then
-    Events.OnPlayerUpdate.Add(onPlayerUpdate)
+if UTCore.registerCoreHandler then
+    UTCore.registerCoreHandler("PainHook", onPlayerUpdate, { priority = 0 })
+else
+    if Events and Events.OnPlayerUpdate then
+        Events.OnPlayerUpdate.Add(onPlayerUpdate)
+    end
 end

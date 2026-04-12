@@ -202,19 +202,17 @@ end
 ---------------------------------------------------------------------------
 -- Main tick handler
 ---------------------------------------------------------------------------
-local function onPlayerUpdate(player)
-    if not player then return end
-    if safeCall(player, "isDead") then
-        _stuckCount = 0
-        return
-    end
-    if safeCall(player, "getVehicle") ~= nil then
+local function onPlayerUpdate(player, tick)
+    -- Core handler: centralDispatch already skips dead players.
+    -- Vehicle check: reset freeze state when driving (can't freeze in vehicle).
+    local vehicle = tick and tick.vehicle or safeCall(player, "getVehicle")
+    if vehicle ~= nil then
         _stuckCount = 0
         return
     end
 
-    local x = safeCall(player, "getX") or 0
-    local y = safeCall(player, "getY") or 0
+    local x = tick and tick.x or safeCall(player, "getX") or 0
+    local y = tick and tick.y or safeCall(player, "getY") or 0
 
     if _prevX == nil then
         _prevX, _prevY = x, y
@@ -223,7 +221,7 @@ local function onPlayerUpdate(player)
     end
 
     local moved = (x ~= _prevX or y ~= _prevY)
-    local wantsToMove = safeCall(player, "isMoving") or false
+    local wantsToMove = tick and tick.isMoving or safeCall(player, "isMoving") or false
 
     if moved then
         -- Player actually moved — reset everything
@@ -275,10 +273,14 @@ local function onPlayerUpdate(player)
     _onPlayerMoveFired = false  -- reset for next tick
 end
 
--- Register EARLY so we see state before other hooks modify it
--- (Events.OnPlayerUpdate processes in registration order)
-if Events and Events.OnPlayerUpdate then
-    Events.OnPlayerUpdate.Add(onPlayerUpdate)
+-- Register as high-priority core handler so we see state before other hooks
+-- modify it. Priority 100 ensures FreezeLogger runs first among core handlers.
+if UTCore.registerCoreHandler then
+    UTCore.registerCoreHandler("FreezeLogger", onPlayerUpdate, { priority = 100 })
+else
+    if Events and Events.OnPlayerUpdate then
+        Events.OnPlayerUpdate.Add(onPlayerUpdate)
+    end
 end
 if Events and Events.OnPlayerMove then
     Events.OnPlayerMove.Add(onPlayerMove)
