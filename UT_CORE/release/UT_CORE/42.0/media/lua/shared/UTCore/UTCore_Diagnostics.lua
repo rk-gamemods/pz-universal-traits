@@ -268,7 +268,9 @@ local function onPlayerUpdate(player)
     end
 end
 
-Events.OnPlayerUpdate.Add(onPlayerUpdate)
+-- Perf reporting OnPlayerUpdate removed (v2): external profiling via
+-- 00_ModProfiler eliminates the need for an always-on internal tick counter.
+-- The perfEnter/perfExit/dumpPerfReport API remains available for manual use.
 
 ---------------------------------------------------------------------------
 -- Profiled handler wrapper

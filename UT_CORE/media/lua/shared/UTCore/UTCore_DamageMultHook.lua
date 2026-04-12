@@ -49,17 +49,9 @@ local function onWeaponHitCharacter(attacker, weapon, target)
 end
 
 if Events and Events.OnPlayerUpdate then
-    if UTCore.profiledHandler then
-        Events.OnPlayerUpdate.Add(UTCore.profiledHandler("DamageMultHook", onPlayerUpdate))
-    else
-        Events.OnPlayerUpdate.Add(onPlayerUpdate)
-    end
+    Events.OnPlayerUpdate.Add(onPlayerUpdate)
 end
 
 if Events and Events.OnWeaponHitCharacter then
-    if UTCore.profiledHandlerV then
-        Events.OnWeaponHitCharacter.Add(UTCore.profiledHandlerV("DamageMultHook:hit", onWeaponHitCharacter))
-    else
-        Events.OnWeaponHitCharacter.Add(onWeaponHitCharacter)
-    end
+    Events.OnWeaponHitCharacter.Add(onWeaponHitCharacter)
 end

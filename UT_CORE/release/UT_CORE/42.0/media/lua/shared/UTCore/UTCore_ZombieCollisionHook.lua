@@ -189,9 +189,7 @@ local function onPlayerUpdate(player)
     end
 end
 
-if UTCore.profiledHandler then
-    Events.OnPlayerUpdate.Add(UTCore.profiledHandler("ZombieCollisionHook", onPlayerUpdate))
-else
+if Events and Events.OnPlayerUpdate then
     Events.OnPlayerUpdate.Add(onPlayerUpdate)
 end
 

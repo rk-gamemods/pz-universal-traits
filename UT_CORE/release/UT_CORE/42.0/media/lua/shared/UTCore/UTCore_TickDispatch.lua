@@ -5,11 +5,13 @@
 -- their own Java interop calls, this module provides:
 --   1. A SINGLE OnPlayerUpdate handler that builds a shared tick context ONCE
 --   2. A registration API for trait handlers
---   3. Per-handler profiling with automatic spike detection
 --
 -- PERFORMANCE: With 50+ traits active, this eliminates ~200+ redundant Java
 -- interop calls per tick (shouldSkipTick 40x->1x, getModData 30x->1x,
 -- getStats 18x->1x, getPrimaryHandItem 17x->1x, spottedList iteration 3x->1x).
+--
+-- PROFILING: External profiling via 00_ModProfiler. Internal per-handler
+-- timing removed (v2) to eliminate ~40 getTimestampMs() Java calls/tick.
 
 UTCore = UTCore or {}
 
@@ -37,9 +39,6 @@ function UTCore.registerTickHandler(traitId, fn, opts)
         vehicleAware = opts.vehicleAware == true,
         anyTrait     = opts.anyTrait,
     }
-    -- Initialize perf slot
-    if not _handlerPerf then _handlerPerf = {} end
-    _handlerPerf[traitId] = { totalMs = 0, calls = 0, peakMs = 0 }
 end
 
 --- Return the current handler count (for testing/diagnostics).
@@ -75,102 +74,52 @@ local function buildTickContext(player)
     -- Animation state (bouncer freeze guard)
     t.isHostileAnim = player:isPerformingHostileAnimation()
 
-    -- Spotted list: iterate ONCE, pre-filter dead, pre-compute distances.
-    -- This replaces 3+ independent iterations (bouncer, actionhero, scardycat).
-    t.livingEnemies    = {}
+    -- Spotted list: LAZY — built on first access via getLivingEnemies().
+    -- Only 3 traits (bouncer, actionhero, scardycat) use enemy data;
+    -- skip the pcall + Java list iteration + isDead/DistTo per enemy
+    -- on every tick when those traits aren't active.
+    t.livingEnemies    = nil  -- populated lazily
     t.livingEnemyCount = 0
     t.totalSpotted     = 0
+    t._player          = player
+    t._enemiesBuilt    = false
+
+    return t
+end
+
+--- Build the enemy list on demand. Call from trait handlers that need it.
+--- @param tick table  the tick context returned by buildTickContext
+local function buildEnemyList(tick)
+    if tick._enemiesBuilt then return end
+    tick._enemiesBuilt = true
+    tick.livingEnemies = {}
+    local player = tick._player
     pcall(function()
         local list = player:getSpottedList()
         local size = list:size()
-        t.totalSpotted = size
+        tick.totalSpotted = size
         for i = 0, size - 1 do
             local enemy = list:get(i)
             if not enemy:isDead() then
-                local n = t.livingEnemyCount + 1
-                t.livingEnemyCount = n
-                t.livingEnemies[n] = {
+                local n = tick.livingEnemyCount + 1
+                tick.livingEnemyCount = n
+                tick.livingEnemies[n] = {
                     zombie = enemy,
                     dist   = player:DistTo(enemy),
                 }
             end
         end
     end)
-
-    return t
 end
 
----------------------------------------------------------------------
--- Per-handler profiling
----------------------------------------------------------------------
-local _handlerPerf = {}
-local _dispatchPerf = {
-    ticks      = 0,
-    totalMs    = 0,
-    peakMs     = 0,
-    cacheMs    = 0,
-    spikeCount = 0,
-}
-local REPORT_INTERVAL    = 300
-local SPIKE_THRESHOLD_MS = 3.0
-
-local function resetPerfCounters()
-    for id, _ in pairs(_handlerPerf) do
-        _handlerPerf[id] = { totalMs = 0, calls = 0, peakMs = 0 }
+--- Public accessor for lazy enemy list.
+--- Trait handlers should call UTCore.getLivingEnemies(tick) instead of
+--- accessing tick.livingEnemies directly.
+function UTCore.getLivingEnemies(tick)
+    if not tick._enemiesBuilt then
+        buildEnemyList(tick)
     end
-    _dispatchPerf = {
-        ticks      = 0,
-        totalMs    = 0,
-        peakMs     = 0,
-        cacheMs    = 0,
-        spikeCount = 0,
-    }
-end
-
-local function dumpTraitPerfReport()
-    local lines = {}
-    local totalHandlerMs = 0
-    for i = 1, _handlerCount do
-        local h = _handlers[i]
-        local p = _handlerPerf[h.id]
-        if p and p.calls > 0 then
-            local avg = p.totalMs / p.calls
-            totalHandlerMs = totalHandlerMs + p.totalMs
-            local flag = (p.peakMs >= SPIKE_THRESHOLD_MS) and " !" or "  "
-            lines[#lines + 1] = string.format(
-                "%s %s: avg=%.2fms peak=%.1fms calls=%d total=%.1fms",
-                flag, h.id:match(":(.+)$") or h.id,
-                avg, p.peakMs, p.calls, p.totalMs
-            )
-        end
-    end
-
-    local dp = _dispatchPerf
-    local ticks = math.max(dp.ticks, 1)
-    local avgTick = dp.totalMs / ticks
-    local pctFrame = (avgTick / 16.7) * 100
-
-    print(string.format(
-        "[TRAITS] ===== TRAIT DISPATCH (%d handlers, %d ticks) =====",
-        _handlerCount, dp.ticks
-    ))
-    print(string.format(
-        "[TRAITS]   cache build: avg=%.2fms total=%.1fms",
-        dp.cacheMs / ticks, dp.cacheMs
-    ))
-    for _, line in ipairs(lines) do
-        print("[TRAITS]" .. line)
-    end
-    print(string.format(
-        "[TRAITS] total: %.1fms over %d ticks (avg %.2fms/tick = %.1f%% of 16.7ms frame)",
-        dp.totalMs, dp.ticks, avgTick, pctFrame
-    ))
-    print(string.format(
-        "[TRAITS] peak tick: %.2fms (%.1f%% of frame) spikes(>%.1fms): %d",
-        dp.peakMs, (dp.peakMs / 16.7) * 100, SPIKE_THRESHOLD_MS, dp.spikeCount
-    ))
-
-    resetPerfCounters()
+    return tick.livingEnemies, tick.livingEnemyCount
 end
 
 ---------------------------------------------------------------------
@@ -180,19 +129,13 @@ local function centralDispatch(player)
     if not player then return end
     if _handlerCount == 0 then return end
 
-    local dispatchStart = getTimestampMs()
-
     -- Build shared tick context ONCE
-    local cacheStart = getTimestampMs()
     local tick = buildTickContext(player)
-    local cacheMs = getTimestampMs() - cacheStart
-    _dispatchPerf.cacheMs = _dispatchPerf.cacheMs + cacheMs
 
     -- Dead = skip everything
     if tick.shouldSkip then return end
 
     local inVehicle = tick.vehicle ~= nil
-    local slowParts = nil
 
     for i = 1, _handlerCount do
         local h = _handlers[i]
@@ -214,56 +157,13 @@ local function centralDispatch(player)
                 match = UTCore.hasTrait(player, h.id)
             end
             if match then
-            local hStart = getTimestampMs()
-            local ok, err = pcall(h.fn, player, tick)
-            local hMs = getTimestampMs() - hStart
-
-            -- Track per-handler timing
-            local perf = _handlerPerf[h.id]
-            if not perf then
-                perf = { totalMs = 0, calls = 0, peakMs = 0 }
-                _handlerPerf[h.id] = perf
-            end
-            perf.totalMs = perf.totalMs + hMs
-            perf.calls   = perf.calls + 1
-            if hMs > perf.peakMs then perf.peakMs = hMs end
-
-            -- Collect slow handler names for spike log
-            if hMs >= 1.0 then
-                if not slowParts then slowParts = {} end
-                slowParts[#slowParts + 1] = (h.id:match(":(.+)$") or h.id)
-                    .. "=" .. string.format("%.1f", hMs) .. "ms"
-            end
-
-            if not ok then
-                UTCore.diagLog("DISPATCH", "handler_error",
-                    h.id .. ": " .. tostring(err))
-            end
+                local ok, err = pcall(h.fn, player, tick)
+                if not ok and UTCore.diagLog then
+                    UTCore.diagLog("DISPATCH", "handler_error",
+                        h.id .. ": " .. tostring(err))
+                end
             end -- match
         end -- vehicle gate
-    end
-
-    -- Aggregate tick timing
-    local totalMs = getTimestampMs() - dispatchStart
-    local dp = _dispatchPerf
-    dp.ticks   = dp.ticks + 1
-    dp.totalMs = dp.totalMs + totalMs
-    if totalMs > dp.peakMs then dp.peakMs = totalMs end
-
-    -- Spike detection: immediate log with handler breakdown
-    if totalMs >= SPIKE_THRESHOLD_MS then
-        dp.spikeCount = dp.spikeCount + 1
-        local detail = string.format("%.1fms cache=%.1fms enemies=%d",
-            totalMs, cacheMs, tick.livingEnemyCount)
-        if slowParts then
-            detail = detail .. " slow: " .. table.concat(slowParts, ", ")
-        end
-        UTCore.diagLog("TICK", "SPIKE", detail)
-    end
-
-    -- Periodic report
-    if dp.ticks >= REPORT_INTERVAL then
-        dumpTraitPerfReport()
     end
 end
 

@@ -97,9 +97,5 @@ local function onPlayerUpdate(player)
 end
 
 if Events and Events.OnPlayerUpdate then
-    if UTCore.profiledHandler then
-        Events.OnPlayerUpdate.Add(UTCore.profiledHandler("BleedHook", onPlayerUpdate))
-    else
-        Events.OnPlayerUpdate.Add(onPlayerUpdate)
-    end
+    Events.OnPlayerUpdate.Add(onPlayerUpdate)
 end

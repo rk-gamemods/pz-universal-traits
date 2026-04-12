@@ -110,9 +110,5 @@ local function onPlayerMove()
 end
 
 if Events and Events.OnPlayerMove then
-    if UTCore.profiledHandler then
-        Events.OnPlayerMove.Add(UTCore.profiledHandler("SpeedHook", onPlayerMove))
-    else
-        Events.OnPlayerMove.Add(onPlayerMove)
-    end
+    Events.OnPlayerMove.Add(onPlayerMove)
 end

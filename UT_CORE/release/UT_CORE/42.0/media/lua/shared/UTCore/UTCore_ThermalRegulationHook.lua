@@ -63,9 +63,5 @@ local function onEveryOneMinute()
 end
 
 if Events and Events.EveryOneMinute then
-    if UTCore.profiledHandler then
-        Events.EveryOneMinute.Add(UTCore.profiledHandler("ThermalRegulationHook", onEveryOneMinute))
-    else
-        Events.EveryOneMinute.Add(onEveryOneMinute)
-    end
+    Events.EveryOneMinute.Add(onEveryOneMinute)
 end

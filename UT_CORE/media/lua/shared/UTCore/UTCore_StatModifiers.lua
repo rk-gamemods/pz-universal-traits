@@ -462,11 +462,7 @@ if not UTCore._modifierAggregationEventsRegistered then
     end
 
     if Events and Events.OnPlayerUpdate then
-        if UTCore.profiledHandler then
-            Events.OnPlayerUpdate.Add(UTCore.profiledHandler("StatModifiers", onPlayerUpdate))
-        else
-            Events.OnPlayerUpdate.Add(onPlayerUpdate)
-        end
+        Events.OnPlayerUpdate.Add(onPlayerUpdate)
     end
 
     UTCore._modifierAggregationEventsRegistered = true

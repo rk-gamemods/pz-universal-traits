@@ -68,9 +68,5 @@ local function onWeaponHitCharacter(attacker, weapon, target)
 end
 
 if Events and Events.OnWeaponHitCharacter then
-    if UTCore.profiledHandlerV then
-        Events.OnWeaponHitCharacter.Add(UTCore.profiledHandlerV("FractureHook", onWeaponHitCharacter))
-    else
-        Events.OnWeaponHitCharacter.Add(onWeaponHitCharacter)
-    end
+    Events.OnWeaponHitCharacter.Add(onWeaponHitCharacter)
 end

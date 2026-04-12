@@ -42,9 +42,5 @@ local function onEveryMinute()
 end
 
 if Events and Events.EveryOneMinute then
-    if UTCore.profiledHandler then
-        Events.EveryOneMinute.Add(UTCore.profiledHandler("SleepQualityHook", onEveryMinute))
-    else
-        Events.EveryOneMinute.Add(onEveryMinute)
-    end
+    Events.EveryOneMinute.Add(onEveryMinute)
 end
