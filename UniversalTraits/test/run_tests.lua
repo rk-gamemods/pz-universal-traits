@@ -1439,7 +1439,7 @@ test("INTEGRATION: engine guard allows bump from DIFFERENT zombie (cluster case)
         "expected engine guard to ALLOW bump from different zombie B")
 end)
 
-test("INTEGRATION: v3b setBumpedChr guards nearest zombie in cluster", function()
+test("INTEGRATION: v4 collision hook does NOT set setBumpedChr (knockdown-only)", function()
     local zombieA = MockZombie({ x = 5.3, y = 5, z = 0 })
     local zombieB = MockZombie({ x = 5.5, y = 5, z = 0 })
     local sq = MockCollisionSquare(5, 5, 0, { zombieA, zombieB })
@@ -1449,15 +1449,12 @@ test("INTEGRATION: v3b setBumpedChr guards nearest zombie in cluster", function(
     Events.OnCreatePlayer:fire(0, player)
     player._sprinting = true
     Events.OnPlayerUpdate:fire(player)
-    -- setBumpedChr should point to the nearest zombie (zombieA at dist 0.3)
-    assert_eq(player:getBumpedChr(), zombieA,
-        "setBumpedChr should guard nearest zombie in cluster")
-    -- Engine re-bump guard: separate() checks getBumpedChr() != obj
-    assert_eq(wouldSeparateRebump(player, zombieA), false,
-        "guarded zombie should not trigger re-bump")
+    -- v4: hook NEVER touches player bump state — only fires knockdown callbacks
+    assert_eq(player:getBumpedChr(), nil,
+        "v4 hook must NOT set bumpedChr (knockdown-only defense)")
 end)
 
-test("INTEGRATION: v3b setBumpedChr refreshes each tick", function()
+test("INTEGRATION: v4 collision hook fires knockdown callback per zombie", function()
     local zombie = MockZombie({ x = 5.3, y = 5, z = 0 })
     local sq = MockCollisionSquare(5, 5, 0, { zombie })
     _G._mockCell = MockCell({ ["5,5,0"] = sq })
@@ -1466,11 +1463,9 @@ test("INTEGRATION: v3b setBumpedChr refreshes each tick", function()
     Events.OnCreatePlayer:fire(0, player)
     player._sprinting = true
     Events.OnPlayerUpdate:fire(player)
-    assert_eq(player:getBumpedChr(), zombie, "guarded on tick 1")
-    -- Simulate engine clearing bumpedChr (BumpedState.exit)
-    player:setBumpedChr(nil)
-    Events.OnPlayerUpdate:fire(player)
-    assert_eq(player:getBumpedChr(), zombie, "re-guarded on tick 2")
+    -- Callback should have knocked down the zombie
+    assert_true(zombie:isKnockedDown(),
+        "batteringram callback should knock down zombie on collision")
 end)
 
 test("INTEGRATION: v3 old suppression moddata cleaned up when player stops running", function()

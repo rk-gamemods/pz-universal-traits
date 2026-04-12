@@ -1,35 +1,25 @@
 -- UTCore_ZombieCollisionHook.lua
--- Preemptive bump prevention for zombie collision traits.
+-- Zombie collision detection and trait callback dispatch.
 --
--- STRATEGY (v3 — "work WITH the engine"):
---   TWO-LAYER prevention stops BumpedState from ever being entered:
---   1. Knockdown: callbacks knockDown() zombies on first contact → knocked-down
---      zombies don't trigger the bump condition in separate().
---   2. setBumpedChr guard: we call player:setBumpedChr(nearestZombie) each tick
---      when zombies are nearby. separate() checks getBumpedChr() != obj and
---      SKIPS the bump when they match → prevents re-bump from the guarded zombie.
+-- STRATEGY (v4 — "knockdown only, never touch player bump state"):
+--   Previous versions (v1–v3b) tried to PREVENT BumpedState entry by
+--   calling player:setBumpedChr(zombie) each tick. This was architecturally
+--   broken because:
+--     1. The guard only protects against ONE zombie — separate() checks ALL
+--        moving objects, so zombie B can trigger a bump while A is guarded.
+--     2. Clearing setBumpedChr during an active BumpedState corrupts the
+--        state machine — BumpDone never fires → permanent freeze.
+--     3. Tick ordering: zombies can enter range between OnPlayerUpdate and
+--        separate(), bypassing the guard entirely.
 --
--- HOW IT WORKS (verified from decompiled B42 source):
---   The engine's bump condition in IsoMovingObject.separate() (line ~1224):
---     bump = true when:
---       WalkSpeed > 0.2 AND runningTime > 0.5 AND getBumpedChr() != obj
---
---   We satisfy the third clause: setBumpedChr(zombie) makes getBumpedChr() == obj
---   → bump stays false. Combined with knockdown, the engine never enters BumpedState.
---
--- KAHLUA CONSTRAINT:
---   Kahlua VM cannot WRITE Java public fields from Lua (tableSet on a Java proxy
---   throws "attempted index of non-table"). This rules out setting runningTime
---   or walkSpeed directly. Java METHOD calls (setBumpedChr, knockDown) work fine.
---
--- WHY PREVIOUS APPROACHES FAILED:
---   v1: Cleared bumpType/bumpFall/blockMovement but BumpDone stayed false →
---       BumpedState never exited → animation drove zero-movement → freeze.
---   v2: Forced BumpDone=true + animation variables every tick → still froze
---       because the full BumpedState lifecycle (complexity 65 in separate())
---       has too many interdependent paths to manage from Lua.
---   v3a: Tried to zero runningTime directly — Kahlua can't write Java fields.
---   v3b (this): Uses method calls only. knockDown + setBumpedChr.
+--   v4 removes ALL player bump state manipulation. The hook ONLY:
+--     - Detects nearby zombies while the player is running/sprinting
+--     - Fires trait callbacks (e.g. knockDown) when a zombie enters range
+--     - Tracks per-zombie dedup so callbacks fire once per encounter
+--   Trait callbacks operate on ZOMBIES only (knockDown, setStaggerBack).
+--   If knockDown doesn't prevent the bump in time, the engine's normal
+--   BumpedState lifecycle handles it — animation plays, BumpDone fires,
+--   player recovers. That's designed game mechanics, not a freeze.
 --
 -- CALLBACK TRIGGER:
 --   Callbacks fire when a NEW zombie enters collision range while the player
@@ -131,23 +121,6 @@ local function onPlayerUpdate(player)
         local md = player:getModData()
         if md.UT_handledZombies then
             md.UT_handledZombies = nil
-            -- Clear the bump guard we set — but ONLY if no active bump state.
-            -- If blockMovement is true (+bumpDone false), a bump is in progress
-            -- and clearing bumpedChr would break BumpedState.exit() flow.
-            local inActiveBump = false
-            pcall(function()
-                inActiveBump = player:isBlockMovement() and not player:isBumpDone()
-            end)
-            if not inActiveBump then
-                pcall(function() player:setBumpedChr(nil) end)
-                dbg("Cleared bumpedChr (player stopped running)")
-            else
-                dbg("Skipped bumpedChr clear (active bump in progress)")
-            end
-            if UTCore.diagLog then
-                UTCore.diagLog("ZCollision", "stop_running",
-                    "inActiveBump=" .. tostring(inActiveBump))
-            end
         end
         -- One-time cleanup of old moddata from previous suppression approach
         if md.UT_bumpSuppress then
@@ -170,8 +143,6 @@ local function onPlayerUpdate(player)
     local prevHandled = md.UT_handledZombies or {}
     local newHandled = {}
     local foundNearby = false
-    local nearestZombie = nil
-    local nearestDist = COLLISION_RANGE
 
     for dx = -1, 1 do
         for dy = -1, 1 do
@@ -188,10 +159,6 @@ local function onPlayerUpdate(player)
                             local dist = math.sqrt(ddx * ddx + ddy * ddy)
                             if dist < COLLISION_RANGE then
                                 foundNearby = true
-                                if dist < nearestDist then
-                                    nearestDist = dist
-                                    nearestZombie = obj
-                                end
                                 local zKey = tostring(obj)
                                 newHandled[zKey] = true
 
@@ -216,37 +183,6 @@ local function onPlayerUpdate(player)
     end
 
     md.UT_handledZombies = newHandled
-
-    -- ===== PREEMPTIVE BUMP PREVENTION =====
-    -- Kahlua VM cannot write Java public fields (runningTime, walkSpeed) from
-    -- Lua — tableSet on a Java proxy throws "attempted index of non-table".
-    -- Instead we use the engine's own re-bump guard: setBumpedChr(zombie).
-    -- separate() checks getBumpedChr() != obj → skips bump for matching zombie.
-    -- Combined with knockdown (callback knocks zombies down on contact),
-    -- this prevents BumpedState entry → no stagger/trip/freeze.
-    -- setBumpedChr self-heals: BumpedState.exit() clears it when appropriate.
-    if foundNearby and nearestZombie then
-        local ok, err = pcall(function()
-            player:setBumpedChr(nearestZombie)
-            dbg("setBumpedChr → " .. tostring(nearestZombie)
-                .. " dist=" .. string.format("%.2f", nearestDist))
-        end)
-        if not ok then
-            dbg("FAILED setBumpedChr: " .. tostring(err))
-        end
-    else
-        -- No zombies in collision range — clear the bump guard, but ONLY if
-        -- no active bump is in progress. If we cleared bumpedChr during an
-        -- active BumpedState, BumpDone would never fire and blockMovement
-        -- would stay true forever (the exact freeze bug).
-        local inActiveBump = false
-        pcall(function()
-            inActiveBump = player:isBlockMovement() and not player:isBumpDone()
-        end)
-        if not inActiveBump then
-            pcall(function() player:setBumpedChr(nil) end)
-        end
-    end
 
     if foundNearby and UTSmoke and UTSmoke.record then
         UTSmoke.record("combat.zombie-collision", "preempt")

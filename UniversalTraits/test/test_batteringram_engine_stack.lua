@@ -120,25 +120,31 @@ local function setupCollision(playerOpts)
     return player, zombie
 end
 
-test("PREEMPT: setBumpedChr set to nearest zombie when sprinting", function()
+test("PREEMPT: knockdown fires when sprinting near zombie (v4)", function()
     withFreshHook(function()
         local player, zombie = setupCollision()
         Events.OnCreatePlayer:fire(0, player)
         player._sprinting = true
         Events.OnPlayerUpdate:fire(player)
-        assert_eq(player:getBumpedChr(), zombie,
-            "setBumpedChr must point to nearby zombie — engine re-bump guard")
+        -- v4: hook must NOT touch player bump state
+        assert_eq(player:getBumpedChr(), nil,
+            "v4 hook must NOT set bumpedChr — knockdown-only defense")
+        -- Callback should have knocked down the zombie
+        assert_true(zombie:isKnockedDown(),
+            "batteringram should knock down zombie on sprint collision")
     end)
 end)
 
-test("PREEMPT: setBumpedChr set when running near zombie", function()
+test("PREEMPT: knockdown fires when running near zombie (v4)", function()
     withFreshHook(function()
         local player, zombie = setupCollision()
         Events.OnCreatePlayer:fire(0, player)
         player._running = true
         Events.OnPlayerUpdate:fire(player)
-        assert_eq(player:getBumpedChr(), zombie,
-            "setBumpedChr must be set when running near zombie")
+        assert_eq(player:getBumpedChr(), nil,
+            "v4 hook must NOT set bumpedChr when running")
+        assert_true(zombie:isKnockedDown(),
+            "batteringram should knock down zombie on run collision")
     end)
 end)
 

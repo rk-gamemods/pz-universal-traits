@@ -830,9 +830,8 @@ test("ZombieCollisionHook does NOT fire when bumpedChr is nil", function()
     assert_eq(fired, false, "expected no callback when bumpedChr is nil")
 end)
 
-test("ZombieCollisionHook clears bumpedChr when player stops running", function()
+test("ZombieCollisionHook does NOT set bumpedChr (v4 knockdown-only)", function()
     UTCore._zombieCollisionCallbacks = {}
-    -- Set up a zombie in range so the hook activates
     local z = MockZombie({ x = 0.3, y = 0, z = 0 })
     local sq = MockCollisionSquare(0, 0, 0, {z})
     local squares = { ["0,0,0"] = sq }
@@ -843,45 +842,36 @@ test("ZombieCollisionHook clears bumpedChr when player stops running", function(
     local p = MockPlayer({}, { square = sq })
     p:setRunning(true)
     UTCore.registerZombieCollisionHandler("test_trait", function() end)
-    Events.OnPlayerUpdate.fire(p) -- sets bumpedChr to the zombie
-    assert_eq(p:getBumpedChr(), z, "expected bumpedChr set while running near zombie")
+    Events.OnPlayerUpdate.fire(p)
+    _G._mockCell = nil
+    -- v4: hook never touches player bump state
+    assert_eq(p:getBumpedChr(), nil, "hook must NOT set bumpedChr (v4)")
+end)
 
-    -- Player stops running
+test("ZombieCollisionHook clears handled set when player stops running", function()
+    UTCore._zombieCollisionCallbacks = {}
+    local z = MockZombie({ x = 0.3, y = 0, z = 0 })
+    local sq = MockCollisionSquare(0, 0, 0, {z})
+    local squares = { ["0,0,0"] = sq }
+    for dx = -1, 1 do for dy = -1, 1 do
+        if dx ~= 0 or dy ~= 0 then squares[dx..","..dy..",0"] = MockCollisionSquare(dx, dy, 0, {}) end
+    end end
+    _G._mockCell = MockCell(squares)
+    local p = MockPlayer({}, { square = sq })
+    p:setRunning(true)
+    UTCore.registerZombieCollisionHandler("test_trait", function() end)
+    Events.OnPlayerUpdate.fire(p)
+    assert_true(p:getModData().UT_handledZombies ~= nil, "handled set should exist while running")
+
+    -- Player stops running — handled set should be cleared for fresh start
     p:setRunning(false)
     Events.OnPlayerUpdate.fire(p)
     _G._mockCell = nil
-    assert_eq(p:getBumpedChr(), nil, "expected bumpedChr cleared when player stops running")
+    assert_eq(p:getModData().UT_handledZombies, nil,
+        "handled set should be cleared when player stops running")
 end)
 
-test("ZombieCollisionHook clears bumpedChr when no zombies in range", function()
-    UTCore._zombieCollisionCallbacks = {}
-    -- Set up a zombie in range
-    local z = MockZombie({ x = 0.3, y = 0, z = 0 })
-    local sq = MockCollisionSquare(0, 0, 0, {z})
-    local squares = { ["0,0,0"] = sq }
-    for dx = -1, 1 do for dy = -1, 1 do
-        if dx ~= 0 or dy ~= 0 then squares[dx..","..dy..",0"] = MockCollisionSquare(dx, dy, 0, {}) end
-    end end
-    _G._mockCell = MockCell(squares)
-    local p = MockPlayer({}, { square = sq })
-    p:setRunning(true)
-    UTCore.registerZombieCollisionHandler("test_trait", function() end)
-    Events.OnPlayerUpdate.fire(p)
-    assert_eq(p:getBumpedChr(), z, "expected bumpedChr set while running near zombie")
-
-    -- Remove zombie from square (killed/moved away)
-    sq._movingObjects = {}
-    local squares2 = { ["0,0,0"] = MockCollisionSquare(0, 0, 0, {}) }
-    for dx = -1, 1 do for dy = -1, 1 do
-        if dx ~= 0 or dy ~= 0 then squares2[dx..","..dy..",0"] = MockCollisionSquare(dx, dy, 0, {}) end
-    end end
-    _G._mockCell = MockCell(squares2)
-    Events.OnPlayerUpdate.fire(p)
-    _G._mockCell = nil
-    assert_eq(p:getBumpedChr(), nil, "expected bumpedChr cleared when no zombies in range")
-end)
-
-test("ZombieCollisionHook ignores dead zombies and clears bumpedChr", function()
+test("ZombieCollisionHook ignores dead zombies", function()
     UTCore._zombieCollisionCallbacks = {}
     local z = MockZombie({ x = 0.3, y = 0, z = 0 })
     local sq = MockCollisionSquare(0, 0, 0, {z})
@@ -896,7 +886,6 @@ test("ZombieCollisionHook ignores dead zombies and clears bumpedChr", function()
     UTCore.registerZombieCollisionHandler("test_trait", function() callCount = callCount + 1 end)
     Events.OnPlayerUpdate.fire(p)
     assert_eq(callCount, 1, "expected callback for live zombie")
-    assert_eq(p:getBumpedChr(), z, "expected bumpedChr set to live zombie")
 
     -- Kill the zombie — corpse stays on the square
     z:setDead(true)
@@ -904,7 +893,6 @@ test("ZombieCollisionHook ignores dead zombies and clears bumpedChr", function()
     Events.OnPlayerUpdate.fire(p)
     _G._mockCell = nil
     assert_eq(callCount, 1, "expected no callback for dead zombie")
-    assert_eq(p:getBumpedChr(), nil, "expected bumpedChr cleared when only dead zombies nearby")
 end)
 
 -- ===== declareZombieCollisionHandler + auto-registration tests =====
@@ -1223,150 +1211,6 @@ test("profiledHandler catches and logs errors", function()
     assert_eq(entry.src, "PERF")
     assert_eq(entry.evt, "hook_error")
     assert_true(entry.dat:find("ErrorHook") ~= nil, "error should name the hook")
-end)
-
--- ===== Stuck Bump Recovery tests =====
-
-test("FreezeLogger recovery clears blockMovement after 120 stuck ticks", function()
-    UTCore._resetFreezeLogger()
-    local p = MockPlayer({})
-    p:moveTo(5, 5)
-    p._blockMovement = false
-    p._bumpDone = true
-
-    -- Tick 1: establish position (prev = nil, sets prev)
-    UTCore._freezeLoggerOnPlayerUpdate(p)
-    -- Move player to create "was moving" state
-    p:moveTo(6, 6)
-    UTCore._freezeLoggerOnPlayerUpdate(p)
-
-    -- Now freeze the player (stop moving, set up stuck bump state)
-    p._blockMovement = true
-    p._bumpDone = false
-
-    -- Run 120+ ticks without moving
-    for i = 1, 125 do
-        UTCore._freezeLoggerOnPlayerUpdate(p)
-    end
-
-    -- Recovery should have fired: blockMovement cleared
-    assert_eq(p._blockMovement, false, "blockMovement should be cleared by recovery")
-    assert_eq(p._bumpDone, true, "bumpDone should be set to true by recovery")
-end)
-
-test("FreezeLogger recovery only fires once per freeze", function()
-    UTCore._resetFreezeLogger()
-    local p = MockPlayer({})
-    p:moveTo(5, 5)
-
-    -- Establish movement
-    UTCore._freezeLoggerOnPlayerUpdate(p)
-    p:moveTo(6, 6)
-    UTCore._freezeLoggerOnPlayerUpdate(p)
-
-    -- Freeze with blockMovement
-    p._blockMovement = true
-    p._bumpDone = false
-
-    -- Run 130 ticks
-    for i = 1, 130 do
-        UTCore._freezeLoggerOnPlayerUpdate(p)
-    end
-
-    assert_eq(p._blockMovement, false, "recovery should have fired")
-
-    -- Set blockMovement back to true to simulate re-stuck (shouldn't recover again)
-    p._blockMovement = true
-    for i = 1, 50 do
-        UTCore._freezeLoggerOnPlayerUpdate(p)
-    end
-    -- Recovery should NOT fire again (already fired this freeze)
-    assert_eq(p._blockMovement, true, "recovery should not fire twice in same freeze")
-end)
-
-test("FreezeLogger recovery resets when player moves again", function()
-    UTCore._resetFreezeLogger()
-    local p = MockPlayer({})
-    p:moveTo(5, 5)
-
-    UTCore._freezeLoggerOnPlayerUpdate(p)
-    p:moveTo(6, 6)
-    UTCore._freezeLoggerOnPlayerUpdate(p)
-
-    -- First freeze + recovery
-    p._blockMovement = true
-    p._bumpDone = false
-    for i = 1, 125 do
-        UTCore._freezeLoggerOnPlayerUpdate(p)
-    end
-    assert_eq(p._blockMovement, false, "first recovery should fire")
-
-    -- Player moves again (recovered)
-    p:moveTo(7, 7)
-    UTCore._freezeLoggerOnPlayerUpdate(p)
-
-    -- Second freeze
-    p._blockMovement = true
-    p._bumpDone = false
-    for i = 1, 125 do
-        UTCore._freezeLoggerOnPlayerUpdate(p)
-    end
-    -- Recovery should fire again for new freeze
-    assert_eq(p._blockMovement, false, "second recovery should fire after movement reset")
-end)
-
-test("FreezeLogger does not recover when blockMovement is false", function()
-    UTCore._resetFreezeLogger()
-    local p = MockPlayer({})
-    p:moveTo(5, 5)
-
-    UTCore._freezeLoggerOnPlayerUpdate(p)
-    p:moveTo(6, 6)
-    UTCore._freezeLoggerOnPlayerUpdate(p)
-
-    -- Freeze WITHOUT blockMovement (player just stopped, normal freeze detection)
-    p._blockMovement = false
-    for i = 1, 130 do
-        UTCore._freezeLoggerOnPlayerUpdate(p)
-    end
-    -- blockMovement was false, recovery should NOT have changed it
-    assert_eq(p._blockMovement, false, "recovery should not fire when blockMovement is false")
-end)
-
--- ===== ZombieCollisionHook does not clear bumpedChr during active bump =====
-
-test("ZombieCollisionHook skips bumpedChr clear when bump is active", function()
-    UTCore._zombieCollisionCallbacks = {}
-    local z = MockZombie({ x = 0.3, y = 0, z = 0 })
-    local sq = MockCollisionSquare(0, 0, 0, {z})
-    local squares = { ["0,0,0"] = sq }
-    for dx = -1, 1 do for dy = -1, 1 do
-        if dx ~= 0 or dy ~= 0 then squares[dx..","..dy..",0"] = MockCollisionSquare(dx, dy, 0, {}) end
-    end end
-    _G._mockCell = MockCell(squares)
-    local p = MockPlayer({}, { square = sq })
-    p:setRunning(true)
-    UTCore.registerZombieCollisionHandler("test:dummy", function() end)
-
-    -- Run once while running to set bumpedChr
-    Events.OnPlayerUpdate.fire(p)
-    assert_true(p:getBumpedChr() ~= nil, "bumpedChr should be set to nearest zombie")
-
-    -- Simulate active bump state: blockMovement=true, bumpDone=false
-    p._blockMovement = true
-    p._bumpDone = false
-
-    -- Stop running — cleanup path fires
-    p:setRunning(false)
-    Events.OnPlayerUpdate.fire(p)
-
-    -- Should NOT have cleared bumpedChr because bump is active
-    assert_true(p:getBumpedChr() ~= nil,
-        "bumpedChr should NOT be cleared during active bump")
-
-    -- Clean up
-    UTCore.unregisterZombieCollisionHandler("test:dummy")
-    _G._mockCell = nil
 end)
 
 test("SleepQualityHook skips when not sleeping", function()
