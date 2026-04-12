@@ -5,13 +5,10 @@
 
 local TRAIT_ID = "UniversalTraits:UT_marathonrunner"
 
-local tickCounter    = 0
 local lastEndurance  = nil
 local lastFatigue    = nil
 
 local function onTick(player, tick)
-    tickCounter = tickCounter + 1
-    if tickCounter % 5 ~= 0 then return end
 
     local stats = tick.stats
     if not stats then return end
@@ -37,4 +34,4 @@ local function onTick(player, tick)
     lastFatigue = currentFatigue
 end
 
-UTCore.registerTickHandler(TRAIT_ID, onTick)
+UTCore.registerTickHandler(TRAIT_ID, onTick, { throttle = 5 })

@@ -6,7 +6,6 @@
 -- applied once per item so it is never compounded across inventory checks.
 
 local TRAIT_ID = "UniversalTraits:UT_gordanite"
-local tickCounter = 0
 
 local function boostCookedFood(inv)
     if not inv then return end
@@ -30,9 +29,7 @@ local function boostCookedFood(inv)
 end
 
 local function onTick(player, tick)
-    tickCounter = tickCounter + 1
-    if tickCounter % 60 ~= 0 then return end
     boostCookedFood(player:getInventory())
 end
 
-UTCore.registerTickHandler(TRAIT_ID, onTick)
+UTCore.registerTickHandler(TRAIT_ID, onTick, { throttle = 60, heavy = true })

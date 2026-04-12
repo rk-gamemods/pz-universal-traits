@@ -4,8 +4,6 @@
 
 local TRAIT_ID = "UniversalTraits:UT_gourmand"
 
-local tickCounter = 0
-
 local function applyGourmandToFood(food)
     local itemdata = food:getModData()
 
@@ -42,9 +40,6 @@ local function revertGourmandFood(food)
 end
 
 local function onTick(player, tick)
-    tickCounter = tickCounter + 1
-    if tickCounter % 30 ~= 0 then return end
-
     local inv = player:getInventory()
     local items = inv:getItems()
 
@@ -56,4 +51,4 @@ local function onTick(player, tick)
     end
 end
 
-UTCore.registerTickHandler(TRAIT_ID, onTick)
+UTCore.registerTickHandler(TRAIT_ID, onTick, { throttle = 30, heavy = true })

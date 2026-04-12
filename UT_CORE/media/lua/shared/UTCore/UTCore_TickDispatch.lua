@@ -33,6 +33,9 @@ local _handlerCount = 0
 -- @param opts     table    optional:
 --   vehicleAware=true  — run even when player is in a vehicle
 --   anyTrait={id,...}  — fire if player has ANY of these traits (for multi-tier traits)
+--   throttle=N         — fire every Nth tick (0 = every tick). Dispatch manages counter.
+--   heavy=true         — marks handler as expensive (inventory scan etc.).
+--                         Heavy handlers are staggered so at most 1 runs per tick.
 function UTCore.registerTickHandler(traitId, fn, opts)
     opts = opts or {}
     _handlerCount = _handlerCount + 1
@@ -41,6 +44,9 @@ function UTCore.registerTickHandler(traitId, fn, opts)
         fn           = fn,
         vehicleAware = opts.vehicleAware == true,
         anyTrait     = opts.anyTrait,
+        throttle     = opts.throttle or 0,
+        heavy        = opts.heavy == true,
+        _offset      = 0,
     }
 end
 
@@ -50,20 +56,30 @@ function UTCore.getTickHandlerCount()
 end
 
 ---------------------------------------------------------------------
--- Active-only handler array (Phase 2)
+-- Active-only handler arrays (Phase 2 + Phase 3)
 --
 -- Built once per OnCreatePlayer (new game / save load).
 -- Contains only the handlers whose trait the player actually has.
+-- Split into light and heavy:
+--   Light: run every tick (or at dispatch-managed throttle interval)
+--   Heavy: staggered offsets guarantee max 1 heavy handler per tick
+--
 -- Eliminates 42-handler iteration + hasTrait gate on every tick.
 ---------------------------------------------------------------------
-local _activeHandlers = nil
-local _activeHandlerCount = 0
+local _activeLight = nil
+local _activeLightCount = 0
+local _activeHeavy = nil
+local _activeHeavyCount = 0
 
---- Rebuild the active handler array for a player.
+--- Rebuild the active handler arrays for a player.
 --- Called on OnCreatePlayer and when traits change.
 function UTCore.rebuildActiveHandlers(player)
-    _activeHandlers = {}
-    _activeHandlerCount = 0
+    _activeLight = {}
+    _activeLightCount = 0
+    _activeHeavy = {}
+    _activeHeavyCount = 0
+
+    -- Pass 1: match traits, separate into light/heavy
     for i = 1, _handlerCount do
         local h = _handlers[i]
         local match = false
@@ -78,15 +94,57 @@ function UTCore.rebuildActiveHandlers(player)
             match = UTCore.hasTrait(player, h.id)
         end
         if match then
-            _activeHandlerCount = _activeHandlerCount + 1
-            _activeHandlers[_activeHandlerCount] = h
+            if h.heavy then
+                _activeHeavyCount = _activeHeavyCount + 1
+                _activeHeavy[_activeHeavyCount] = h
+            else
+                _activeLightCount = _activeLightCount + 1
+                _activeLight[_activeLightCount] = h
+            end
+        end
+    end
+
+    -- Pass 2: assign staggered offsets for light handlers (by throttle group)
+    local lightGroups = {}  -- [throttle] = { h1, h2, ... }
+    for i = 1, _activeLightCount do
+        local h = _activeLight[i]
+        local t = h.throttle
+        if t > 0 then
+            if not lightGroups[t] then lightGroups[t] = {} end
+            local g = lightGroups[t]
+            g[#g + 1] = h
+        end
+    end
+    for t, group in pairs(lightGroups) do
+        local n = #group
+        for idx = 1, n do
+            group[idx]._offset = math.floor((idx - 1) * t / n)
+        end
+    end
+
+    -- Pass 3: assign globally staggered offsets for heavy handlers
+    -- Uses min throttle across all heavy handlers so no two fire on the same tick
+    if _activeHeavyCount > 1 then
+        local minThrottle = math.huge
+        for i = 1, _activeHeavyCount do
+            local t = _activeHeavy[i].throttle
+            if t > 0 and t < minThrottle then minThrottle = t end
+        end
+        if minThrottle == math.huge then minThrottle = 30 end
+        for i = 1, _activeHeavyCount do
+            _activeHeavy[i]._offset = math.floor((i - 1) * minThrottle / _activeHeavyCount)
         end
     end
 end
 
 --- Return active handler count (testing/diagnostics).
 function UTCore.getActiveHandlerCount()
-    return _activeHandlerCount
+    return _activeLightCount + _activeHeavyCount
+end
+
+--- Return active heavy handler count (testing/diagnostics).
+function UTCore.getActiveHeavyCount()
+    return _activeHeavyCount
 end
 
 ---------------------------------------------------------------------
@@ -198,6 +256,7 @@ local function centralDispatch(player)
     if tick.shouldSkip then return end
 
     local debugMode = UTCore._debugDispatch
+    local tc = _tickCount
 
     -- ── Core handlers ────────────────────────────────────────────
     local coreCount = UTCore._coreHandlerCount
@@ -205,7 +264,7 @@ local function centralDispatch(player)
         local coreHandlers = UTCore._coreHandlers
         for i = 1, coreCount do
             local h = coreHandlers[i]
-            if h.throttle == 0 or tick.tickCount % h.throttle == 0 then
+            if h.throttle == 0 or tc % h.throttle == 0 then
                 if debugMode then
                     local ok, err = pcall(h.fn, player, tick)
                     if not ok and UTCore.diagLog then
@@ -222,19 +281,41 @@ local function centralDispatch(player)
     -- ── Trait handlers ───────────────────────────────────────────
     local inVehicle = tick.vehicle ~= nil
 
-    if _activeHandlers then
-        -- Phase 2: active-only array (pre-filtered, no trait gate)
-        for i = 1, _activeHandlerCount do
-            local h = _activeHandlers[i]
+    if _activeLight then
+        -- Phase 2+3: active-only arrays with dispatch-managed throttle
+
+        -- Light handlers: all fire (subject to throttle + vehicle gate)
+        for i = 1, _activeLightCount do
+            local h = _activeLight[i]
             if not inVehicle or h.vehicleAware then
-                if debugMode then
-                    local ok, err = pcall(h.fn, player, tick)
-                    if not ok and UTCore.diagLog then
-                        UTCore.diagLog("DISPATCH", "handler_error",
-                            h.id .. ": " .. tostring(err))
+                if h.throttle == 0 or (tc + h._offset) % h.throttle == 0 then
+                    if debugMode then
+                        local ok, err = pcall(h.fn, player, tick)
+                        if not ok and UTCore.diagLog then
+                            UTCore.diagLog("DISPATCH", "handler_error",
+                                h.id .. ": " .. tostring(err))
+                        end
+                    else
+                        h.fn(player, tick)
                     end
-                else
-                    h.fn(player, tick)
+                end
+            end
+        end
+
+        -- Heavy handlers: staggered offsets guarantee max 1 per tick
+        for i = 1, _activeHeavyCount do
+            local h = _activeHeavy[i]
+            if not inVehicle or h.vehicleAware then
+                if h.throttle == 0 or (tc + h._offset) % h.throttle == 0 then
+                    if debugMode then
+                        local ok, err = pcall(h.fn, player, tick)
+                        if not ok and UTCore.diagLog then
+                            UTCore.diagLog("DISPATCH", "handler_error",
+                                h.id .. ": " .. tostring(err))
+                        end
+                    else
+                        h.fn(player, tick)
+                    end
                 end
             end
         end
@@ -242,7 +323,10 @@ local function centralDispatch(player)
         -- Fallback: full loop with trait gate (before rebuildActiveHandlers)
         for i = 1, _handlerCount do
             local h = _handlers[i]
-            if inVehicle and not h.vehicleAware then
+            -- Dispatch-managed throttle (offset defaults to 0 in fallback)
+            if h.throttle > 0 and (tc + (h._offset or 0)) % h.throttle ~= 0 then
+                -- skip: not this handler's throttle tick
+            elseif inVehicle and not h.vehicleAware then
                 -- skip
             else
                 local match = false

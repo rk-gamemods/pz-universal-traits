@@ -5,12 +5,8 @@
 -- ModData keys use UT_fitted_ prefix to avoid collisions with other mods.
 
 local TRAIT_ID   = "UniversalTraits:UT_fitted"
-local THROTTLE   = 30
-local tickCounter = 0
 
 local function onTick(player, tick)
-    tickCounter = tickCounter + 1
-    if tickCounter % THROTTLE ~= 0 then return end
 
     -- Dispatch guarantees hasTrait is true; state is always "Fitted"
     local state      = "Fitted"
@@ -20,8 +16,10 @@ local function onTick(player, tick)
     if wornItems == nil or wornItems:size() <= 1 then return end
 
     -- Pass 1: restore unequipped clothing that was previously modified.
-    for i = 0, inventory:getItems():size() - 1 do
-        local item = inventory:getItems():get(i)
+    local items = inventory:getItems()
+    local itemCount = items:size()
+    for i = 0, itemCount - 1 do
+        local item = items:get(i)
         if item:IsClothing() then
             local md = item:getModData()
             if md.UT_fitted_state ~= nil
@@ -83,4 +81,4 @@ local function onTick(player, tick)
     end
 end
 
-UTCore.registerTickHandler(TRAIT_ID, onTick)
+UTCore.registerTickHandler(TRAIT_ID, onTick, { throttle = 30, heavy = true })

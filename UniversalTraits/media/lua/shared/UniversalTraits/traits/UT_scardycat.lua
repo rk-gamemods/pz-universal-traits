@@ -37,8 +37,11 @@ local function onTick(player, tick)
         return
     end
 
-    -- Use pre-computed living enemy count from tick cache
-    if tick.livingEnemyCount <= 8 then return end
+    -- Build enemy list (lazy in tick context)
+    local _, enemyCount = UTCore.getLivingEnemies(tick)
+
+    -- Use living enemy count from tick cache
+    if enemyCount <= 8 then return end
 
     if ZombRand(100) < 3 then
         -- addSound creates world-audible noise (B42 API): guarded separately so Say() always fires

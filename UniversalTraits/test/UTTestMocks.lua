@@ -547,8 +547,16 @@ UTCore._tickHandlers = UTCore._tickHandlers or {}
 
 UTCore.registerTickHandler = function(traitId, fn, opts)
     opts = opts or {}
-    UTCore._tickHandlers[traitId] = { id = traitId, fn = fn, opts = opts }
+    UTCore._tickHandlers[traitId] = { id = traitId, fn = fn, opts = opts, _offset = 0 }
 end
+
+-- Lazy enemy list accessor (mirrors UTCore.getLivingEnemies in real dispatch)
+UTCore.getLivingEnemies = function(tick)
+    return tick.livingEnemies or {}, tick.livingEnemyCount or 0
+end
+
+-- Mock tick counter for throttle enforcement
+UTCore._mockTickCount = 0
 
 -- Build a mock tick context from a MockPlayer (mirrors buildTickContext in dispatch).
 -- Tests call: local tick = UTCore.buildMockTickContext(player)
@@ -839,8 +847,19 @@ if not _G.Events.OnPlayerUpdate then
             end
             -- Fire tick-dispatch handlers (mirrors centralDispatch)
             if player and UTCore and UTCore._tickHandlers and UTCore.buildMockTickContext then
+                UTCore._mockTickCount = UTCore._mockTickCount + 1
+                local tc = UTCore._mockTickCount
                 local tick = UTCore.buildMockTickContext(player)
                 for _, h in pairs(UTCore._tickHandlers) do
+                    -- Throttle gate (mirrors dispatch throttle check)
+                    local throttle = h.opts and h.opts.throttle
+                    if throttle and throttle > 1 then
+                        local offset = h._offset or 0
+                        if (tc + offset) % throttle ~= 0 then
+                            goto continueTick
+                        end
+                    end
+                    do
                     -- Trait gate: check anyTrait array or single id
                     local hasTrait = false
                     if h.opts and h.opts.anyTrait then
@@ -858,6 +877,8 @@ if not _G.Events.OnPlayerUpdate then
                     if hasTrait then
                         pcall(h.fn, player, tick)
                     end
+                    end
+                    ::continueTick::
                 end
             end
         end,

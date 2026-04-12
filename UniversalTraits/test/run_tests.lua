@@ -13,6 +13,7 @@ dofile(base .. "../media/lua/shared/UniversalTraits/UT_MET.lua")
 
 local passed, failed = 0, 0
 local function test(name, fn)
+    UTCore._mockTickCount = 0   -- reset dispatch tick counter per test
     local ok, err = pcall(fn)
     if ok then
         print("PASS  " .. name)

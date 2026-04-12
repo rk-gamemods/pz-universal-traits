@@ -8,8 +8,6 @@ local CRIT_BONUS = 15
 local ENEMY_THRESHOLD = 3
 local ENEMY_RANGE = 10
 
-local tickCounter = 0
-
 local function applyCritBonus(weapon, active)
     if not weapon or not instanceof(weapon, "HandWeapon") then return end
 
@@ -28,16 +26,16 @@ local function applyCritBonus(weapon, active)
 end
 
 local function onTick(player, tick)
-    tickCounter = tickCounter + 1
-    if tickCounter % 30 ~= 0 then return end
-
     -- Mundane disables crits
     if UTCore.hasTrait(player, "UniversalTraits:UT_mundane") then return end
 
-    -- Count living enemies within range (pre-computed in tick cache)
+    -- Build enemy list (lazy in tick context)
+    local enemies, enemyCount = UTCore.getLivingEnemies(tick)
+
+    -- Count living enemies within range
     local nearbyCount = 0
-    for i = 1, tick.livingEnemyCount do
-        if tick.livingEnemies[i].dist <= ENEMY_RANGE then
+    for i = 1, enemyCount do
+        if enemies[i].dist <= ENEMY_RANGE then
             nearbyCount = nearbyCount + 1
         end
     end
@@ -48,4 +46,4 @@ local function onTick(player, tick)
     applyCritBonus(tick.secondaryWeapon, active)
 end
 
-UTCore.registerTickHandler(TRAIT_ID, onTick)
+UTCore.registerTickHandler(TRAIT_ID, onTick, { throttle = 30 })

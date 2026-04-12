@@ -31,13 +31,16 @@ local function onTick(player, tick)
         return
     end
 
+    -- Build enemy list (lazy in tick context)
+    local enemies, enemyCount = UTCore.getLivingEnemies(tick)
+
     -- Need at least 3 living enemies to trigger
-    if tick.livingEnemyCount < 3 then return end
+    if enemyCount < 3 then return end
 
     -- Filter to within 1.75 tiles (distances pre-computed in tick cache)
     local closeEnemies = {}
-    for i = 1, tick.livingEnemyCount do
-        local e = tick.livingEnemies[i]
+    for i = 1, enemyCount do
+        local e = enemies[i]
         if e.dist < 1.75 then
             closeEnemies[#closeEnemies + 1] = e.zombie
         end

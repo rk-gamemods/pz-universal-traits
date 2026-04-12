@@ -6,7 +6,6 @@
 -- save/loads.  Only ranged weapons are affected.
 
 local TRAIT_ID = "UniversalTraits:UT_sharpshooter"
-local tickCounter = 0
 
 local function applySharpshooter(weapon)
     if not weapon or not instanceof(weapon, "HandWeapon") then return end
@@ -27,10 +26,8 @@ local function applySharpshooter(weapon)
 end
 
 local function onTick(player, tick)
-    tickCounter = tickCounter + 1
-    if tickCounter % 30 ~= 0 then return end
     applySharpshooter(tick.primaryWeapon)
     applySharpshooter(tick.secondaryWeapon)
 end
 
-UTCore.registerTickHandler(TRAIT_ID, onTick)
+UTCore.registerTickHandler(TRAIT_ID, onTick, { throttle = 30 })

@@ -22,13 +22,9 @@
 local TRAIT_ID = "UniversalTraits:UT_natural"
 local SOURCE_ID = "UT_natural"
 
-local tickCounter = 0
-
 local function onTick(player, tick)
-    tickCounter = tickCounter + 1
-    if tickCounter % 30 ~= 0 then return end
-
-    local clothingCount = (player:getWornItems() and player:getWornItems():size()) or 0
+    local wornItems = player:getWornItems()
+    local clothingCount = (wornItems and wornItems:size()) or 0
     local bonus = math.max(0.0, 0.10 - (clothingCount * 0.02))
 
     local md = tick.modData
@@ -40,4 +36,4 @@ local function onTick(player, tick)
     end
 end
 
-UTCore.registerTickHandler(TRAIT_ID, onTick)
+UTCore.registerTickHandler(TRAIT_ID, onTick, { throttle = 30 })

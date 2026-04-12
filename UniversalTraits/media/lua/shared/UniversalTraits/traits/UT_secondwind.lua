@@ -4,11 +4,7 @@
 local TRAIT_ID = "UniversalTraits:UT_secondwind"
 local COOLDOWN_HOURS = 10 / 60.0
 
-local tickCounter = 0
-
 local function onTick(player, tick)
-    tickCounter = tickCounter + 1
-    if tickCounter % 15 ~= 0 then return end
 
     local stats = tick.stats
     local moddata = tick.modData
@@ -42,5 +38,5 @@ local function onEveryMinute()
     end
 end
 
-UTCore.registerTickHandler(TRAIT_ID, onTick)
+UTCore.registerTickHandler(TRAIT_ID, onTick, { throttle = 15 })
 Events.EveryOneMinute.Add(onEveryMinute)

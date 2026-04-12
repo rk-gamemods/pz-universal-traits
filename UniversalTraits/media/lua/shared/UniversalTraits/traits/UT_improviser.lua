@@ -7,7 +7,6 @@
 -- so the multiplier is never compounded across swaps or save/loads.
 
 local TRAIT_ID = "UniversalTraits:UT_improviser"
-local tickCounter = 0
 
 local function applyDegradeReduction(weapon)
     if not weapon or not instanceof(weapon, "HandWeapon") then return end
@@ -24,10 +23,8 @@ local function applyDegradeReduction(weapon)
 end
 
 local function onTick(player, tick)
-    tickCounter = tickCounter + 1
-    if tickCounter % 30 ~= 0 then return end
     applyDegradeReduction(tick.primaryWeapon)
     applyDegradeReduction(tick.secondaryWeapon)
 end
 
-UTCore.registerTickHandler(TRAIT_ID, onTick)
+UTCore.registerTickHandler(TRAIT_ID, onTick, { throttle = 30 })

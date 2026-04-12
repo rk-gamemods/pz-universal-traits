@@ -4,11 +4,7 @@
 local TRAIT_ID = "UniversalTraits:UT_indefatigable"
 local COOLDOWN_MINUTES = 3
 
-local tickCounter = 0
-
 local function onTick(player, tick)
-    tickCounter = tickCounter + 1
-    if tickCounter % 30 ~= 0 then return end
 
     local stats = tick.stats
     local moddata = tick.modData
@@ -49,5 +45,5 @@ local function onEveryMinute()
     end
 end
 
-UTCore.registerTickHandler(TRAIT_ID, onTick)
+UTCore.registerTickHandler(TRAIT_ID, onTick, { throttle = 30 })
 Events.EveryOneMinute.Add(onEveryMinute)

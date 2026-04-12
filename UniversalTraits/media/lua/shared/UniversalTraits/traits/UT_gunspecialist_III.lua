@@ -12,8 +12,6 @@
 local TRAIT_ID = "UniversalTraits:UT_gunspecialist_III"
 local SPEED_MULT = 0.9  -- 10% faster = 90% of base time
 
-local tickCounter = 0
-
 local function isFirearm(item)
     return item and instanceof(item, "HandWeapon") and item:isRanged()
 end
@@ -51,8 +49,6 @@ local function onNewGame(player)
 end
 
 local function onTick(player, tick)
-    tickCounter = tickCounter + 1
-    if tickCounter % 30 ~= 0 then return end
 
     -- Ensure moddata key present (e.g. loaded save)
     if not tick.modData["UT_gunspec3"] then
@@ -69,4 +65,4 @@ local function onTick(player, tick)
 end
 
 Events.OnNewGame.Add(onNewGame)
-UTCore.registerTickHandler(TRAIT_ID, onTick)
+UTCore.registerTickHandler(TRAIT_ID, onTick, { throttle = 30 })
