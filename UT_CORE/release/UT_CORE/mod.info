@@ -2,6 +2,5 @@ name=UT_CORE
 poster=poster.png
 id=UT_CORE
 description=Shared infrastructure library for Universal Traits. Required dependency — enable alongside UniversalTraits. For carry weight above 50, also install RemoveInventoryLimits [JAVA] (Workshop 3625921385) and add its .jar to ProjectZomboid64.json classpath.
-require=RemoveInventoryLimits
 modversion=1.0
 versionMin=42.0
