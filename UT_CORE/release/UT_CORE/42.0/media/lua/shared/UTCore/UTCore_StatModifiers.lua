@@ -207,7 +207,8 @@ function UTCore.reconcileAggregatedModifiers(player)
             local maxW = player.getMaxWeight and player:getMaxWeight() or 0
             local base = player.getMaxWeightBase and player:getMaxWeightBase() or 8
             local wMod = player.getWeightMod and player:getWeightMod() or 1.0
-            local estimated = math.floor(base * wMod)
+            local delta = player.getMaxWeightDelta and player:getMaxWeightDelta() or 1.0
+            local estimated = math.floor(base * wMod * delta)
             local needed = math.max(50, maxW, estimated)
             local currentCap = inv:getCapacity()
             if currentCap < needed then

@@ -107,6 +107,17 @@ local function onPlayerMove()
     -- postupdate() will then see the scaled delta and commit it into x normally.
     player:setNextX(x + scaledDx)
     player:setNextY(y + scaledDy)
+
+    -- ACTION-KILL DIAGNOSIS: log if SpeedHook fires while an action is active
+    pcall(function()
+        local actions = player:getCharacterActions()
+        if actions:size() > 0 then
+            print("[UT_ADIAG] SPEEDHOOK_WHILE_ACTION mod=" .. tostring(mod)
+                .. " dx=" .. string.format("%.6f", dx) .. " dy=" .. string.format("%.6f", dy)
+                .. " scaled_dx=" .. string.format("%.6f", scaledDx) .. " scaled_dy=" .. string.format("%.6f", scaledDy)
+                .. " actionCount=" .. actions:size())
+        end
+    end)
 end
 
 if Events and Events.OnPlayerMove then

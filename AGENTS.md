@@ -109,6 +109,18 @@ python tools/check_smoke_log.py --json
 python tools/run_update_safe_gate.py
 ```
 
+**Performance profiler analysis** (SQLite-based, uses `C:\Users\Admin\Zomboid\console.txt`):
+
+```bash
+python tools/pz_log_query.py profiler          # Full analysis: sessions, trends, spikes, freeze correlation
+python tools/pz_log_query.py freeze             # Show freeze diagnostic blocks with context
+python tools/pz_log_query.py stats              # Quick summary: line counts by tag
+python tools/pz_log_query.py search "PATTERN"   # Regex search
+python tools/pz_log_query.py utcore             # All UTCore-related lines
+```
+
+ALWAYS use `pz_log_query.py profiler` for performance analysis instead of ad-hoc PowerShell Select-String parsing of console.txt. The tool ingests into SQLite, parses all MODPROFILER data, and produces session summaries, mod trends, interval degradation analysis, spike breakdowns, and freeze correlation.
+
 The UniversalTraits suite now includes a cross-file consistency audit that fails when registries, script definitions, translation keys, or `traits/UT_*.lua` files drift out of sync.
 
 ---

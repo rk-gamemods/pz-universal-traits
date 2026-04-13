@@ -236,11 +236,62 @@ function UTCore.getLivingEnemies(tick)
 end
 
 ---------------------------------------------------------------------
+-- Movement-state snapshot for action-kill diagnosis
+-- Captures everything Java uses to decide StopAllActionQueueWalking
+---------------------------------------------------------------------
+local _diagActive = true   -- flip false to disable per-tick logging noise
+local _diagActionActive = false  -- only log when an action is in progress
+
+local function snapMovementState(player)
+    local ok, jm, hp, mv, rn, sp, x, y = pcall(function()
+        return player:isJustMoved(),
+               player:getPath2() ~= nil,
+               player:isMoving(),
+               player:isRunning(),
+               player:isSprinting(),
+               player:getX(),
+               player:getY()
+    end)
+    if ok then
+        return { jm = jm, hp = hp, mv = mv, rn = rn, sp = sp, x = x, y = y }
+    end
+    return nil
+end
+
+local function movementChanged(a, b)
+    if not a or not b then return true end
+    return a.jm ~= b.jm or a.hp ~= b.hp or a.mv ~= b.mv
+        or a.rn ~= b.rn or a.sp ~= b.sp
+        or a.x ~= b.x or a.y ~= b.y
+end
+
+local function fmtSnap(s)
+    if not s then return "nil" end
+    return "jm=" .. tostring(s.jm) .. " hp=" .. tostring(s.hp)
+        .. " mv=" .. tostring(s.mv) .. " rn=" .. tostring(s.rn)
+        .. " sp=" .. tostring(s.sp)
+        .. " xy=" .. tostring(s.x) .. "," .. tostring(s.y)
+end
+
+---------------------------------------------------------------------
 -- Central dispatch (ONE OnPlayerUpdate handler for ALL of UTCore)
 ---------------------------------------------------------------------
 local function centralDispatch(player)
     if not player then return end
 
+    -- Check if player has an active action (only log movement when they do)
+    local hasAction = false
+    if _diagActive then
+        pcall(function()
+            hasAction = player:getCharacterActions():size() > 0
+        end)
+        _diagActionActive = hasAction
+    end
+
+    -- Snapshot movement BEFORE our handlers run
+    local presnap = _diagActionActive and snapMovementState(player) or nil
+
+    -- Sort core handlers by priority once (highest first)
     -- Sort core handlers by priority once (highest first)
     if not _coreHandlersSorted and UTCore._coreHandlerCount > 1 then
         table.sort(UTCore._coreHandlers, function(a, b)
@@ -267,9 +318,10 @@ local function centralDispatch(player)
             if h.throttle == 0 or tc % h.throttle == 0 then
                 if debugMode then
                     local ok, err = pcall(h.fn, player, tick)
-                    if not ok and UTCore.diagLog then
-                        UTCore.diagLog("DISPATCH", "core_handler_error",
-                            h.id .. ": " .. tostring(err))
+                    if not ok then
+                        local msg = "[UT_DISPATCH] core_error: " .. h.id .. ": " .. tostring(err)
+                        print(msg)
+                        if UTCore.diagLog then UTCore.diagLog("DISPATCH", "core_handler_error", h.id .. ": " .. tostring(err)) end
                     end
                 else
                     h.fn(player, tick)
@@ -291,9 +343,10 @@ local function centralDispatch(player)
                 if h.throttle == 0 or (tc + h._offset) % h.throttle == 0 then
                     if debugMode then
                         local ok, err = pcall(h.fn, player, tick)
-                        if not ok and UTCore.diagLog then
-                            UTCore.diagLog("DISPATCH", "handler_error",
-                                h.id .. ": " .. tostring(err))
+                        if not ok then
+                            local msg = "[UT_DISPATCH] handler_error: " .. h.id .. ": " .. tostring(err)
+                            print(msg)
+                            if UTCore.diagLog then UTCore.diagLog("DISPATCH", "handler_error", h.id .. ": " .. tostring(err)) end
                         end
                     else
                         h.fn(player, tick)
@@ -309,9 +362,10 @@ local function centralDispatch(player)
                 if h.throttle == 0 or (tc + h._offset) % h.throttle == 0 then
                     if debugMode then
                         local ok, err = pcall(h.fn, player, tick)
-                        if not ok and UTCore.diagLog then
-                            UTCore.diagLog("DISPATCH", "handler_error",
-                                h.id .. ": " .. tostring(err))
+                        if not ok then
+                            local msg = "[UT_DISPATCH] handler_error: " .. h.id .. ": " .. tostring(err)
+                            print(msg)
+                            if UTCore.diagLog then UTCore.diagLog("DISPATCH", "handler_error", h.id .. ": " .. tostring(err)) end
                         end
                     else
                         h.fn(player, tick)
@@ -343,15 +397,24 @@ local function centralDispatch(player)
                 if match then
                     if debugMode then
                         local ok, err = pcall(h.fn, player, tick)
-                        if not ok and UTCore.diagLog then
-                            UTCore.diagLog("DISPATCH", "handler_error",
-                                h.id .. ": " .. tostring(err))
+                        if not ok then
+                            local msg = "[UT_DISPATCH] handler_error: " .. h.id .. ": " .. tostring(err)
+                            print(msg)
+                            if UTCore.diagLog then UTCore.diagLog("DISPATCH", "handler_error", h.id .. ": " .. tostring(err)) end
                         end
                     else
                         h.fn(player, tick)
                     end
                 end
             end
+        end
+    end
+
+    -- Snapshot movement AFTER our handlers ran — if anything changed, log it
+    if _diagActionActive and presnap then
+        local postsnap = snapMovementState(player)
+        if movementChanged(presnap, postsnap) then
+            print("[UT_ADIAG] DISPATCH_MOVED pre={" .. fmtSnap(presnap) .. "} post={" .. fmtSnap(postsnap) .. "}")
         end
     end
 end
