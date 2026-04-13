@@ -1870,6 +1870,29 @@ test("idealweight halves calorie burn when underweight", function()
         "expected reduced calorie burn at underweight values")
 end)
 
+test("idealweight does not compound drain across multiple ticks", function()
+    -- Regression: previously stored pre-modification calories as prev, so each
+    -- tick's perceived delta included idealweight's own prior drain.  That
+    -- created a quadratically-accelerating feedback loop.
+    local GAME_BURN = 0.5  -- simulated per-tick game burn
+    local TICKS = 20
+    local player = MockPlayer({ "UniversalTraits:UT_idealweight" }, { weight = 85.0, calories = 2000.0 })
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()            -- cache weight
+        Events.OnPlayerUpdate:fire(player)      -- init prev
+        for _ = 1, TICKS do
+            local cal = player:getNutrition():getCalories()
+            player:getNutrition():setCalories(cal - GAME_BURN)  -- simulate game burn
+            Events.OnPlayerUpdate:fire(player)
+        end
+    end)
+    -- With mult=2 and no compounding: total drain = GAME_BURN * 2 * TICKS = 20
+    local expected = 2000.0 - (GAME_BURN * 2.0 * TICKS)
+    local actual   = player:getNutrition():getCalories()
+    assert_true(math.abs(actual - expected) < 0.01,
+        "expected " .. expected .. " but got " .. actual .. "; compounding bug if drain is larger")
+end)
+
 -- ============================================================
 -- P0 coverage: behavioral tests for all audited traits
 -- ============================================================

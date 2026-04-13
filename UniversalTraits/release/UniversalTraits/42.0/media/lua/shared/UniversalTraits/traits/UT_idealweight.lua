@@ -38,13 +38,24 @@ UTCore.registerPeriodicHandler(TRAIT_ID, "OnPlayerUpdate", function(player)
     local nutrition = player:getNutrition()
     local current   = nutrition:getCalories()
     local prev      = UTCore.getModData(player, "idealweightPrevCal", nil)
-    UTCore.setModData(player, "idealweightPrevCal", current)
 
-    if prev == nil then return end
+    if prev == nil then
+        UTCore.setModData(player, "idealweightPrevCal", current)
+        return
+    end
 
     local delta = prev - current  -- positive = calories were burned this tick
-    if delta <= 0 then return end  -- gaining calories (eating) — don't amplify
+    if delta <= 0 then
+        UTCore.setModData(player, "idealweightPrevCal", current)
+        return
+    end
 
     -- Apply (mult - 1) * actual burn as extra drain (or reduction for mult < 1)
-    nutrition:setCalories(current - delta * (mult - 1.0))
+    local newCal = current - delta * (mult - 1.0)
+    nutrition:setCalories(newCal)
+    -- Store POST-modification value so next tick only sees game's actual burn.
+    -- Previously stored pre-modification `current`, causing idealweight to see
+    -- its own prior drain as additional game burn → compounding feedback loop
+    -- with quadratically accelerating calorie loss.
+    UTCore.setModData(player, "idealweightPrevCal", newCal)
 end)
