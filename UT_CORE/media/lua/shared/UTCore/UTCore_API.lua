@@ -43,9 +43,12 @@ function UTCore.getCoreHandlerCount()
     return UTCore._coreHandlerCount
 end
 
---- Debug dispatch mode: when true, pcall wraps every handler call.
---- When false (default, production), handlers are called directly for speed.
-UTCore._debugDispatch = false
+--- Dispatch safety mode: when true, pcall wraps every handler call so a
+--- single handler error cannot propagate and break OnPlayerUpdate or PZ's
+--- action queue.  The pcall overhead is negligible (~2 µs/call) and the
+--- old pre-optimization dispatch ALWAYS used pcall for trait handlers.
+--- Keeping this true matches that proven-safe behaviour.
+UTCore._debugDispatch = true
 
 function UTCore.setDebugDispatch(enabled)
     UTCore._debugDispatch = enabled ~= false
