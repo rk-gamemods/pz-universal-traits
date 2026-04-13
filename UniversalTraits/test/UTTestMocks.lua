@@ -377,6 +377,10 @@ function MockPlayer(traitList, opts)
         isDead = function(self) return self._dead end,
         _performingHostileAnimation = opts.performingHostileAnimation or false,
         isPerformingHostileAnimation = function(self) return self._performingHostileAnimation end,
+        -- Health (IsoLivingCharacter): used by UT_evasive dodge mechanic
+        _health = opts.health or 100,
+        getHealth = function(self) return self._health end,
+        setHealth = function(self, v) self._health = v end,
     }
     return player
 end
@@ -1095,6 +1099,10 @@ function MockWeapon(weaponType, meleeDelay, isTwoHand, isMelee, opts)
     local _moddata = opts.moddata or {}
     local _criticalChance = opts.criticalChance or 0
     local _conditionLowerChance = opts.conditionLowerChance or 1
+    local _subCategory = opts.subCategory or nil
+    local _isRanged = opts.isRanged or false
+    local _hitChance = opts.hitChance or 50
+    local _maxRange = opts.maxRange or 1.0
     local setDelayCalls = {}
     local categories = opts.categories
     if not categories then
@@ -1137,6 +1145,12 @@ function MockWeapon(weaponType, meleeDelay, isTwoHand, isMelee, opts)
         getConditionLowerChance = function(self) return _conditionLowerChance end,
         setConditionLowerChance = function(self, value) _conditionLowerChance = value end,
         getSetDelayCalls = function(self) return setDelayCalls end,
+        getSubCategory = function(self) return _subCategory end,
+        isRanged = function(self) return _isRanged end,
+        getHitChance = function(self) return _hitChance end,
+        setHitChance = function(self, v) _hitChance = v end,
+        getMaxRange = function(self) return _maxRange end,
+        setMaxRange = function(self, v) _maxRange = v end,
     }
 end
 
@@ -1589,5 +1603,151 @@ function MockBackpack(contentsWeight)
     return {
         _contentsWeight = contentsWeight or 0,
         getContentsWeight = function(self) return self._contentsWeight end,
+    }
+end
+
+-- ============================================================
+-- Extended mocks for behavioral QA tests (P0 gap coverage)
+-- ============================================================
+
+-- Events.OnHitZombie stub — needed by UT_tavernbrawler stomp bonus
+if not _G.Events.OnHitZombie then
+    local _handlers = {}
+    _G.Events.OnHitZombie = {
+        Add  = function(fn) table.insert(_handlers, fn) end,
+        fire = function(...) fireHandlers(_G.Events.OnHitZombie, _handlers, ...) end,
+    }
+end
+
+-- Events.OnTreeChopped stub — needed by UT_woodsplitter
+if not _G.Events.OnTreeChopped then
+    local _handlers = {}
+    _G.Events.OnTreeChopped = {
+        Add  = function(fn) table.insert(_handlers, fn) end,
+        fire = function(...) fireHandlers(_G.Events.OnTreeChopped, _handlers, ...) end,
+    }
+end
+
+-- Events.OnRefreshInventoryWindowContainers stub — needed by UT_antique, UT_scrounger
+if not _G.Events.OnRefreshInventoryWindowContainers then
+    local _handlers = {}
+    _G.Events.OnRefreshInventoryWindowContainers = {
+        Add  = function(fn) table.insert(_handlers, fn) end,
+        fire = function(...) fireHandlers(_G.Events.OnRefreshInventoryWindowContainers, _handlers, ...) end,
+    }
+end
+
+-- MockClothingItem — worn clothing stub for UT_fitted tests
+function MockClothingItem(typeName, opts)
+    opts = opts or {}
+    local _moddata        = opts.moddata or {}
+    local _runSpeedMod    = opts.runSpeedModifier or 0.8
+    local _combatSpeedMod = opts.combatSpeedModifier or 0.9
+    local _weight         = opts.actualWeight or 2.0
+    return {
+        _mockType            = "InventoryItem",
+        _type                = typeName or "Shirt",
+        getType              = function(self) return self._type end,
+        getFullType          = function(self) return self._type end,
+        IsClothing           = function(self) return true end,
+        getModData           = function(self) return _moddata end,
+        getRunSpeedModifier  = function(self) return _runSpeedMod end,
+        setRunSpeedModifier  = function(self, v) _runSpeedMod = v end,
+        getCombatSpeedModifier = function(self) return _combatSpeedMod end,
+        setCombatSpeedModifier = function(self, v) _combatSpeedMod = v end,
+        getActualWeight      = function(self) return _weight end,
+        setActualWeight      = function(self, v) _weight = v end,
+    }
+end
+
+-- MockFoodItemFull — food item with full stat accessors for UT_gourmand tests
+function MockFoodItemFull(typeName, opts)
+    opts = opts or {}
+    local _moddata      = opts.moddata or {}
+    local _hungChange   = opts.hungChange or -20
+    local _unhappyChange = opts.unhappyChange or -5
+    local _boredomChange = opts.boredomChange or -5
+    local _category     = opts.category or "Food"
+    return {
+        _mockType         = "InventoryItem",
+        _type             = typeName or "Apple",
+        getType           = function(self) return self._type end,
+        getFullType       = function(self) return self._type end,
+        getCategory       = function(self) return _category end,
+        getModData        = function(self) return _moddata end,
+        getHungChange     = function(self) return _hungChange end,
+        setHungChange     = function(self, v) _hungChange = v end,
+        getUnhappyChange  = function(self) return _unhappyChange end,
+        setUnhappyChange  = function(self, v) _unhappyChange = v end,
+        getBoredomChange  = function(self) return _boredomChange end,
+        setBoredomChange  = function(self, v) _boredomChange = v end,
+    }
+end
+
+-- MockTrapItem — item for UT_trackman (trap condition restoration)
+function MockTrapItem(typeName, condition, conditionMax)
+    local _condition = condition or 5
+    local _conditionMax = conditionMax or 10
+    local _moddata = {}
+    return {
+        _mockType       = "InventoryItem",
+        _type           = typeName or "TrapMouse",
+        getType         = function(self) return self._type end,
+        getFullType     = function(self) return self._type end,
+        getCondition    = function(self) return _condition end,
+        setCondition    = function(self, v) _condition = v end,
+        getConditionMax = function(self) return _conditionMax end,
+        getModData      = function(self) return _moddata end,
+    }
+end
+
+-- MockTree — tree object for UT_woodsplitter tests
+function MockTree(hp)
+    local _hp = hp or 100
+    return {
+        getHp = function(self) return _hp end,
+        setHp = function(self, v) _hp = v end,
+    }
+end
+
+-- MockWornItemsFull — worn items container supporting contains() and getItemByIndex()
+-- items: array of mock clothing/item objects
+function MockWornItemsFull(items)
+    items = items or {}
+    return {
+        size = function(self) return #items end,
+        getItem = function(self, i) return items[i + 1] end,
+        getItemByIndex = function(self, i) return items[i + 1] end,
+        contains = function(self, item)
+            for _, v in ipairs(items) do
+                if v == item then return true end
+            end
+            return false
+        end,
+    }
+end
+
+-- MockInventoryFull — inventory with items list supporting clothing scan
+-- itemList: array of mock item objects
+function MockInventoryFull(itemList, opts)
+    opts = opts or {}
+    itemList = itemList or {}
+    local _weight = opts.weight or 0
+    local _maxWeight = opts.maxWeight or 50
+    return {
+        getWeight = function(self) return _weight end,
+        getCapacityWeight = function(self) return _weight end,
+        getMaxWeight = function(self) return _maxWeight end,
+        getItems = function(self) return {
+            size = function() return #itemList end,
+            get = function(_, i) return itemList[i + 1] end,
+        } end,
+        Remove = function(self, item)
+            for i, v in ipairs(itemList) do
+                if v == item then table.remove(itemList, i); return end
+            end
+        end,
+        AddItem = function(self, item) table.insert(itemList, item) end,
+        _items = itemList,
     }
 end

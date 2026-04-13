@@ -709,8 +709,8 @@ dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_improviser.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_gordanite.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_wildsman.lua")
 
--- Helper: build a minimal weapon mock with crit support
-local function MockWeapon(typeName, opts)
+-- Helper: build a minimal weapon mock with crit support (shadows global MockWeapon)
+local function MockWeaponSimple(typeName, opts)
     opts = opts or {}
     local _crit = opts.critChance or 10
     local _moddata = {}
@@ -766,7 +766,7 @@ end
 
 test("actionhero deals bonus damage when surrounded (5 enemies within 2 tiles)", function()
     local spotted  = MockSpottedList(5, 1)   -- 5 enemies at dist=1 (≤ ENEMY_RANGE of 10)
-    local weapon   = MockWeapon("Axe", { critChance = 10 })
+    local weapon   = MockWeaponSimple("Axe", { critChance = 10 })
     local player   = MockActionPlayer(
         { "UniversalTraits:UT_actionhero" },
         spotted, weapon
@@ -781,7 +781,7 @@ end)
 
 test("actionhero skipped when player has UT_mundane", function()
     local spotted = MockSpottedList(5, 1)
-    local weapon  = MockWeapon("Axe", { critChance = 10 })
+    local weapon  = MockWeaponSimple("Axe", { critChance = 10 })
     local player  = MockActionPlayer(
         { "UniversalTraits:UT_actionhero", "UniversalTraits:UT_mundane" },
         spotted, weapon
@@ -797,7 +797,7 @@ test("actionhero skipped for non-zombie targets", function()
     -- Actionhero applies crit to weapon when enemies are close, regardless of target type.
     -- This test verifies no crit bonus when not enough enemies are spotted.
     local spotted = MockSpottedList(1, 1)  -- only 1 enemy, below threshold of 3
-    local weapon  = MockWeapon("Axe", { critChance = 10 })
+    local weapon  = MockWeaponSimple("Axe", { critChance = 10 })
     local player  = MockActionPlayer(
         { "UniversalTraits:UT_actionhero" },
         spotted, weapon
@@ -818,7 +818,7 @@ test("actionhero ignores dead zombies in enemy count", function()
         { _dist = 1, isDead = function() return true end },
     }
     local spotted = MockSpottedListFromEnemies(enemies)
-    local weapon  = MockWeapon("Axe", { critChance = 10 })
+    local weapon  = MockWeaponSimple("Axe", { critChance = 10 })
     local player  = MockActionPlayer(
         { "UniversalTraits:UT_actionhero" },
         spotted, weapon
@@ -1098,7 +1098,7 @@ test("martial deals bonus damage with bare hands (guaranteed crit)", function()
     player:setPerkLevel(Perks.SmallBlunt, 5)
     -- endurance starts at 1.0 in MockPlayer (no penalty)
 
-    local weapon = MockWeapon("BareHands")
+    local weapon = MockWeaponSimple("BareHands")
     local target = MockTarget(100)
 
     Events.OnWeaponHitCharacter:fire(player, weapon, target)
@@ -1111,7 +1111,7 @@ test("martial skips when weapon is not BareHands", function()
     local player = MockPlayer({ "UniversalTraits:UT_martial" })
     player:setPerkLevel(Perks.SmallBlunt, 5)
 
-    local weapon = MockWeapon("Axe")
+    local weapon = MockWeaponSimple("Axe")
     local target = MockTarget(100)
 
     Events.OnWeaponHitCharacter:fire(player, weapon, target)
@@ -2533,6 +2533,21 @@ dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_sensitivestomach.l
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_ascetic.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_fitted.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_gourmand.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_evasive.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_natural.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_sharpshooter.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_tavernbrawler.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_trackman.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_woodsplitter.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_incomprehensive.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_cleaver.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_long_blades.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_long_blunts.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_onehanded_axes.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_prospear.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_twohanded_axes.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_twohanded_blades.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_twohanded_blunts.lua")
 
 -- ─── Group 1: OnNewGame modData flags ────────────────────────────────────────
 
@@ -3330,6 +3345,661 @@ end)
 test("gourmand OnPlayerUpdate runs without error (smoke test)", function()
     local p = MockPlayer({ "UniversalTraits:UT_gourmand" })
     Events.OnPlayerUpdate:fire(p)  -- must not throw
+end)
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- BEHAVIORAL QA TESTS — multi-tick, proving gameplay-visible outcomes
+-- Written to catch bugs like the idealweight compounding feedback loop.
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+-- ─── trekker: calorie refund stays LINEAR across 20 ticks ──────────────────────
+test("trekker calorie refund is linear (no compounding)", function()
+    local p = MockPlayer({ "UniversalTraits:UT_trekker" }, { endurance = 1.0 })
+    p._moving = true; p._sprinting = false; p._running = false
+    p:getNutrition():setCalories(2000)
+
+    local GAME_BURN = 5     -- simulated game calorie burn per tick
+    local REFUND_RATIO = (0.13 * 0.6 - 0.016) / (0.13 * 0.6)  -- ~0.794
+
+    -- Seed prev values with initial tick
+    Events.OnPlayerUpdate:fire(p)
+
+    local refunds = {}
+    for i = 1, 20 do
+        -- Simulate game burning calories between ticks
+        local before = p:getNutrition():getCalories()
+        p:getNutrition():setCalories(before - GAME_BURN)
+        Events.OnPlayerUpdate:fire(p)
+        local after = p:getNutrition():getCalories()
+        local restored = after - (before - GAME_BURN)
+        refunds[i] = restored
+    end
+
+    -- Each tick's refund should be approximately the same (linear), not growing
+    local firstRefund = refunds[1]
+    local lastRefund = refunds[20]
+    -- Tolerance: refunds should be within 10% of each other (no drift)
+    local ratio = lastRefund / firstRefund
+    assert_true(ratio > 0.9 and ratio < 1.1,
+        "trekker refund should be linear: first=" .. firstRefund .. " last=" .. lastRefund .. " ratio=" .. ratio)
+    -- Verify refund is approximately GAME_BURN * REFUND_RATIO
+    local expected = GAME_BURN * REFUND_RATIO
+    assert_true(firstRefund > expected * 0.8 and firstRefund < expected * 1.2,
+        "trekker refund magnitude wrong: expected ~" .. expected .. " got " .. firstRefund)
+end)
+
+test("trekker does NOT refund when sprinting", function()
+    local p = MockPlayer({ "UniversalTraits:UT_trekker" }, { endurance = 1.0 })
+    p._moving = true; p._sprinting = true; p._running = false
+    p:getNutrition():setCalories(2000)
+    Events.OnPlayerUpdate:fire(p)  -- seed
+    p:getNutrition():setCalories(1995)  -- game burns 5
+    Events.OnPlayerUpdate:fire(p)
+    assert_eq(p:getNutrition():getCalories(), 1995, "no refund while sprinting")
+end)
+
+test("trekker refunds endurance loss while walking", function()
+    local p = MockPlayer({ "UniversalTraits:UT_trekker" }, { endurance = 0.8 })
+    p._moving = true; p._sprinting = false; p._running = false
+    p:getNutrition():setCalories(2000)
+    Events.OnPlayerUpdate:fire(p)  -- seed lastEndurance = 0.8
+    p:getStats():set(CharacterStat.ENDURANCE, 0.75)  -- game drains 0.05
+    Events.OnPlayerUpdate:fire(p)
+    assert_eq(p:getStats():get(CharacterStat.ENDURANCE), 0.8,
+        "trekker should restore endurance to pre-drain level")
+end)
+
+-- ─── marathonrunner: endurance/fatigue refund LINEAR across 20 ticks ───────────
+test("marathonrunner endurance refund is linear (no compounding)", function()
+    local p = MockPlayer({ "UniversalTraits:UT_marathonrunner" })
+    p:getStats():set(CharacterStat.ENDURANCE, 1.0)
+
+    -- Marathonrunner uses file-local lastEndurance, need to prime it
+    -- Fire 5 ticks to pass throttle (throttle=5, fires on tick%5==0)
+    for i = 1, 5 do Events.OnPlayerUpdate:fire(p) end
+
+    local drains = {}
+    for i = 1, 20 do
+        -- Simulate game draining endurance
+        local cur = p:getStats():get(CharacterStat.ENDURANCE)
+        local drained = cur - 0.05
+        p:getStats():set(CharacterStat.ENDURANCE, drained)
+        -- Fire 5 ticks to hit throttle
+        for t = 1, 5 do Events.OnPlayerUpdate:fire(p) end
+        local after = p:getStats():get(CharacterStat.ENDURANCE)
+        drains[i] = after - drained  -- how much was refunded
+    end
+
+    -- Refund should be ~0.05 * 0.15 = 0.0075 each time, not growing
+    local first = drains[1]
+    local last = drains[20]
+    assert_true(first > 0, "should get some endurance refund, got " .. first)
+    local ratio = last / first
+    assert_true(ratio > 0.85 and ratio < 1.15,
+        "marathonrunner refund should be linear: first=" .. first .. " last=" .. last)
+end)
+
+test("marathonrunner fatigue refund is linear (no compounding)", function()
+    local p = MockPlayer({ "UniversalTraits:UT_marathonrunner" }, { fatigue = 0.0 })
+
+    -- Prime the handler
+    for i = 1, 5 do Events.OnPlayerUpdate:fire(p) end
+
+    local refunds = {}
+    for i = 1, 20 do
+        local cur = p:getStats():get(CharacterStat.FATIGUE)
+        p:getStats():set(CharacterStat.FATIGUE, cur + 0.05)  -- game increases fatigue
+        for t = 1, 5 do Events.OnPlayerUpdate:fire(p) end
+        local after = p:getStats():get(CharacterStat.FATIGUE)
+        refunds[i] = (cur + 0.05) - after  -- how much was removed
+    end
+
+    local first = refunds[1]
+    local last = refunds[20]
+    assert_true(first > 0, "should get some fatigue refund")
+    local ratio = last / first
+    assert_true(ratio > 0.85 and ratio < 1.15,
+        "marathonrunner fatigue refund should be linear: first=" .. first .. " last=" .. last)
+end)
+
+-- ─── olympian: same delta pattern as marathonrunner ────────────────────────────
+test("olympian endurance refund is linear (no compounding)", function()
+    local p = MockPlayer({ "UniversalTraits:UT_olympian" })
+    p:getStats():set(CharacterStat.ENDURANCE, 1.0)
+
+    for i = 1, 5 do Events.OnPlayerUpdate:fire(p) end  -- prime
+
+    local drains = {}
+    for i = 1, 20 do
+        local cur = p:getStats():get(CharacterStat.ENDURANCE)
+        p:getStats():set(CharacterStat.ENDURANCE, cur - 0.05)
+        for t = 1, 5 do Events.OnPlayerUpdate:fire(p) end
+        local after = p:getStats():get(CharacterStat.ENDURANCE)
+        drains[i] = after - (cur - 0.05)
+    end
+
+    local first = drains[1]
+    local last = drains[20]
+    assert_true(first > 0, "olympian should refund endurance")
+    local ratio = last / first
+    assert_true(ratio > 0.85 and ratio < 1.15,
+        "olympian endurance refund should be linear: first=" .. first .. " last=" .. last)
+end)
+
+-- ─── evasive: dodge mechanic over 20 ticks ─────────────────────────────────────
+test("evasive restores health on dodge (ZombRand < 50)", function()
+    setMockZombRandDefault(0)  -- always dodge
+    local p = MockPlayer({ "UniversalTraits:UT_evasive" }, { health = 100 })
+    Events.OnPlayerUpdate:fire(p)  -- seed lastHealth
+
+    p._health = 80  -- simulate 20 damage
+    Events.OnPlayerUpdate:fire(p)
+    assert_eq(p._health, 100, "evasive should restore full health on dodge")
+    resetMockZombRand()
+end)
+
+test("evasive does NOT restore health when dodge fails (ZombRand >= 50)", function()
+    setMockZombRandDefault(50)  -- fail dodge
+    local p = MockPlayer({ "UniversalTraits:UT_evasive" }, { health = 100 })
+    Events.OnPlayerUpdate:fire(p)  -- seed lastHealth
+
+    p._health = 80  -- simulate 20 damage
+    Events.OnPlayerUpdate:fire(p)
+    assert_eq(p._health, 80, "evasive should NOT restore when dodge fails")
+    resetMockZombRand()
+end)
+
+test("evasive dodge does not compound over multiple hits", function()
+    setMockZombRandDefault(0)  -- always dodge
+    local p = MockPlayer({ "UniversalTraits:UT_evasive" }, { health = 100 })
+    Events.OnPlayerUpdate:fire(p)  -- seed
+
+    -- Hit 1: 20 damage → dodged
+    p._health = 80
+    Events.OnPlayerUpdate:fire(p)
+    assert_eq(p._health, 100, "first dodge should restore to 100")
+
+    -- Hit 2: 30 damage → dodged
+    p._health = 70
+    Events.OnPlayerUpdate:fire(p)
+    assert_eq(p._health, 100, "second dodge should restore to 100")
+
+    -- Hit 3: no damage this tick
+    Events.OnPlayerUpdate:fire(p)
+    assert_eq(p._health, 100, "no change when no damage")
+    resetMockZombRand()
+end)
+
+-- ─── ascetic: eating detection and passive hunger reduction ────────────────────
+test("ascetic detects eating via healthFromFoodTimer rising edge", function()
+    setMockGameTime(10, 0)  -- worldAgeHours = 10
+    local p = MockPlayer({ "UniversalTraits:UT_ascetic" }, { healthFromFoodTimer = 100 })
+    Events.OnPlayerUpdate:fire(p)  -- seed prevTimer=100
+
+    -- First meal: timer jumps by >50 → sets lastAte=10, no penalty (first meal)
+    p:getBodyDamage()._healthFromFoodTimer = 200
+    Events.OnPlayerUpdate:fire(p)
+    local unhappyAfterFirstMeal = p:getStats():get(CharacterStat.UNHAPPINESS)
+    assert_eq(unhappyAfterFirstMeal, 0, "no penalty on first meal")
+
+    -- Second meal within 1 hour: should trigger penalty
+    p:getBodyDamage()._healthFromFoodTimer = 350
+    Events.OnPlayerUpdate:fire(p)
+    local unhappyAfterSecondMeal = p:getStats():get(CharacterStat.UNHAPPINESS)
+    assert_true(unhappyAfterSecondMeal > 0,
+        "penalty for eating again within 1 hour, got " .. unhappyAfterSecondMeal)
+end)
+
+test("ascetic passive hunger reduction works over 10 minutes", function()
+    local p = MockPlayer({ "UniversalTraits:UT_ascetic" }, { hunger = 0.5 })
+    withActivePlayer(p, function()
+        for i = 1, 10 do
+            Events.EveryOneMinute:fire()
+        end
+    end)
+    local hunger = p:getStats():get(CharacterStat.HUNGER)
+    -- 10 minutes × 0.0015 = 0.015 reduction
+    assert_true(hunger < 0.5, "hunger should decrease from passive reduction")
+    assert_true(hunger > 0.48, "hunger should not drop too fast: " .. hunger)
+end)
+
+-- ─── fast: endurance regen over 30+ ticks ──────────────────────────────────────
+test("fast regens endurance after 30 ticks", function()
+    local p = MockPlayer({ "UniversalTraits:UT_fast" }, { endurance = 0.5 })
+    -- Fire 30 ticks to pass the internal counter
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    local endurance = p:getStats():get(CharacterStat.ENDURANCE)
+    assert_true(endurance > 0.5, "fast should regen endurance after 30 ticks, got " .. endurance)
+end)
+
+test("fast endurance regen is bounded by max", function()
+    local p = MockPlayer({ "UniversalTraits:UT_fast" }, { endurance = 0.99 })
+    for i = 1, 60 do Events.OnPlayerUpdate:fire(p) end
+    local endurance = p:getStats():get(CharacterStat.ENDURANCE)
+    assert_true(endurance <= 1.0, "fast should not exceed max endurance")
+end)
+
+test("fast applies +0.3 speed modifier on create", function()
+    local p = MockPlayer({ "UniversalTraits:UT_fast" })
+    Events.OnCreatePlayer:fire(0, p)
+    local speedMod = p:getModData()["UT_speedMod"]
+    assert_true(speedMod ~= nil and speedMod > 0, "fast should set positive speed modifier")
+end)
+
+-- ─── noodlelegs: endurance drain over 30+ ticks ───────────────────────────────
+test("noodlelegs drains endurance after 30 ticks", function()
+    local p = MockPlayer({ "UniversalTraits:UT_noodlelegs" }, { endurance = 0.5 })
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    local endurance = p:getStats():get(CharacterStat.ENDURANCE)
+    assert_true(endurance < 0.5, "noodlelegs should drain endurance, got " .. endurance)
+end)
+
+test("noodlelegs applies -0.2 speed modifier on create", function()
+    local p = MockPlayer({ "UniversalTraits:UT_noodlelegs" })
+    Events.OnCreatePlayer:fire(0, p)
+    local speedMod = p:getModData()["UT_speedMod"]
+    assert_true(speedMod ~= nil and speedMod < 0, "noodlelegs should set negative speed modifier")
+end)
+
+-- ─── natural: speed bonus scales with clothing count ───────────────────────────
+test("natural gives +10% speed with no clothing", function()
+    local wornItems = MockWornItemsFull({})
+    local p = MockPlayer({ "UniversalTraits:UT_natural" }, { wornItems = wornItems })
+    -- Fire enough ticks to pass throttle (30)
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    local speedMod = p:getModData()["UT_speedMod"] or 0
+    assert_true(math.abs(speedMod - 0.10) < 0.02,
+        "natural should give ~0.10 speed with 0 clothing, got " .. speedMod)
+end)
+
+test("natural gives 0 speed bonus with 5+ clothing items", function()
+    local items = {}
+    for i = 1, 5 do items[i] = MockClothingItem("Shirt" .. i) end
+    local wornItems = MockWornItemsFull(items)
+    local p = MockPlayer({ "UniversalTraits:UT_natural" }, { wornItems = wornItems })
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    local speedMod = p:getModData()["UT_speedMod"] or 0
+    assert_true(math.abs(speedMod) < 0.01,
+        "natural should give ~0 speed with 5 clothing, got " .. speedMod)
+end)
+
+test("natural speed scales: 3 items = +0.04", function()
+    local items = {}
+    for i = 1, 3 do items[i] = MockClothingItem("Shirt" .. i) end
+    local wornItems = MockWornItemsFull(items)
+    local p = MockPlayer({ "UniversalTraits:UT_natural" }, { wornItems = wornItems })
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    local speedMod = p:getModData()["UT_speedMod"] or 0
+    -- 0.10 - 3 * 0.02 = 0.04
+    assert_true(math.abs(speedMod - 0.04) < 0.02,
+        "natural should give ~0.04 speed with 3 clothing, got " .. speedMod)
+end)
+
+-- ─── slowworker: +50% work speed penalty ───────────────────────────────────────
+test("slowworker applies +0.5 work speed on new game", function()
+    local p = MockPlayer({ "UniversalTraits:UT_slowworker" })
+    Events.OnNewGame:fire(p)
+    local workMod = p:getModData()["UT_workSpeedMod"]
+    assert_true(workMod ~= nil and workMod > 0, "slowworker should set positive work speed mod (slower)")
+end)
+
+-- ─── incomprehensive: skill cap reduction on new game ──────────────────────────
+test("incomprehensive sets skill cap reduction on new game", function()
+    local p = MockPlayer({ "UniversalTraits:UT_incomprehensive" })
+    Events.OnNewGame:fire(p)
+    assert_eq(p:getModData()["UT_skillCapReduction"], 2,
+        "incomprehensive should set UT_skillCapReduction = 2")
+end)
+
+-- ─── indefatigable: slows endurance drain while active ─────────────────────────
+test("indefatigable boosts endurance while sprinting above threshold", function()
+    local p = MockPlayer({ "UniversalTraits:UT_indefatigable" })
+    p:getStats():set(CharacterStat.ENDURANCE, 0.5)
+    p._sprinting = true; p._running = false
+    -- Fire enough ticks for throttle=30
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    local endurance = p:getStats():get(CharacterStat.ENDURANCE)
+    assert_true(endurance > 0.5, "indefatigable should boost endurance while sprinting, got " .. endurance)
+end)
+
+test("indefatigable triggers recovery when exhausted", function()
+    setMockGameTime(0, 0)
+    local p = MockPlayer({ "UniversalTraits:UT_indefatigable" })
+    p:getStats():set(CharacterStat.ENDURANCE, 0.03)  -- below 0.05 threshold
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_true(p:getModData()["UT_indefRecovering"] == true,
+        "should enter recovery when exhausted")
+end)
+
+test("indefatigable recovers to 0.5 after cooldown", function()
+    setMockGameTime(0, 0)
+    local p = MockPlayer({ "UniversalTraits:UT_indefatigable" })
+    p:getStats():set(CharacterStat.ENDURANCE, 0.03)
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_true(p:getModData()["UT_indefRecovering"] == true, "should be recovering")
+    -- Advance time past 3-minute cooldown (3/60 = 0.05 hours)
+    advanceMockGameTimeHours(0.1)
+    withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
+    assert_eq(p:getStats():get(CharacterStat.ENDURANCE), 0.5,
+        "indefatigable should recover to 0.5 after cooldown")
+    assert_true(p:getModData()["UT_indefRecovering"] == nil, "recovery flag should be cleared")
+end)
+
+-- ─── secondwind: burst of endurance when exhausted while sprinting ──────────────
+test("secondwind triggers endurance burst when sprinting at low endurance", function()
+    setMockGameTime(0, 0)
+    local p = MockPlayer({ "UniversalTraits:UT_secondwind" })
+    p:getStats():set(CharacterStat.ENDURANCE, 0.08)  -- below 0.1 threshold
+    p._sprinting = true
+    -- Fire enough ticks for throttle=15
+    for i = 1, 15 do Events.OnPlayerUpdate:fire(p) end
+    local endurance = p:getStats():get(CharacterStat.ENDURANCE)
+    assert_true(endurance > 0.3, "secondwind should provide endurance burst, got " .. endurance)
+    assert_true(p:getModData()["UT_secondwindTriggered"] == true, "should be on cooldown")
+end)
+
+test("secondwind does NOT trigger twice without cooldown expiry", function()
+    setMockGameTime(0, 0)
+    local p = MockPlayer({ "UniversalTraits:UT_secondwind" })
+    p:getStats():set(CharacterStat.ENDURANCE, 0.08)
+    p._sprinting = true
+    for i = 1, 15 do Events.OnPlayerUpdate:fire(p) end
+    local after_first = p:getStats():get(CharacterStat.ENDURANCE)
+
+    -- Drain again
+    p:getStats():set(CharacterStat.ENDURANCE, 0.05)
+    for i = 1, 15 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(p:getStats():get(CharacterStat.ENDURANCE), 0.05,
+        "secondwind should NOT trigger while on cooldown")
+end)
+
+test("secondwind cooldown resets after 10 min", function()
+    setMockGameTime(0, 0)
+    local p = MockPlayer({ "UniversalTraits:UT_secondwind" })
+    p:getStats():set(CharacterStat.ENDURANCE, 0.08)
+    p._sprinting = true
+    for i = 1, 15 do Events.OnPlayerUpdate:fire(p) end
+    assert_true(p:getModData()["UT_secondwindTriggered"] == true, "should be triggered")
+    -- Advance time past 10-minute cooldown
+    advanceMockGameTimeHours(0.2)
+    withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
+    assert_true(p:getModData()["UT_secondwindTriggered"] == nil, "cooldown should expire")
+end)
+
+-- ─── hardy: exhaustion tracking and recovery bonus ─────────────────────────────
+test("hardy enters exhaustion state when fatigue > 0.8", function()
+    setMockGameTime(0, 0)
+    local p = MockPlayer({ "UniversalTraits:UT_hardy" }, { fatigue = 0.9 })
+    withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
+    assert_true(p:getModData()["UT_hardyExhausted"] == true,
+        "hardy should enter exhaustion when fatigue > 0.8")
+end)
+
+test("hardy applies stress during exhaustion", function()
+    setMockGameTime(0, 0)
+    local p = MockPlayer({ "UniversalTraits:UT_hardy" }, { fatigue = 0.9, stress = 0.0 })
+    withActivePlayer(p, function()
+        Events.EveryOneMinute:fire()  -- enters exhaustion
+        Events.EveryOneMinute:fire()  -- now applies stress
+    end)
+    assert_true(p:getStats():get(CharacterStat.STRESS) > 0,
+        "hardy should add stress during exhaustion")
+end)
+
+test("hardy recovers after resting 10 minutes below fatigue 0.3", function()
+    setMockGameTime(0, 0)
+    local p = MockPlayer({ "UniversalTraits:UT_hardy" }, { fatigue = 0.9 })
+    withActivePlayer(p, function()
+        Events.EveryOneMinute:fire()  -- enters exhaustion
+    end)
+    -- Drop fatigue and advance 10 game minutes (10 EveryOneMinute calls)
+    p:getStats():set(CharacterStat.FATIGUE, 0.2)
+    withActivePlayer(p, function()
+        for i = 1, 10 do Events.EveryOneMinute:fire() end
+    end)
+    assert_true(p:getModData()["UT_hardyExhausted"] == nil, "hardy should exit exhaustion after resting")
+    assert_true(p:getModData()["UT_hardyBonus"] ~= nil, "hardy should enter bonus phase")
+end)
+
+-- ─── sharpshooter: +25% hit chance and range on ranged weapons ─────────────────
+test("sharpshooter boosts hit chance by 25%", function()
+    local weapon = MockWeapon("Pistol", 0, false, false,
+        { isRanged = true, hitChance = 40, maxRange = 10.0, subCategory = "Pistol" })
+    local p = MockPlayer({ "UniversalTraits:UT_sharpshooter" }, { primaryHandItem = weapon })
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(weapon:getHitChance(), 50, "sharpshooter should boost hit chance from 40 to 50")
+end)
+
+test("sharpshooter boosts max range by 25%", function()
+    local weapon = MockWeapon("Pistol", 0, false, false,
+        { isRanged = true, hitChance = 40, maxRange = 10.0, subCategory = "Pistol" })
+    local p = MockPlayer({ "UniversalTraits:UT_sharpshooter" }, { primaryHandItem = weapon })
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(weapon:getMaxRange(), 12.5, "sharpshooter should boost range from 10 to 12.5")
+end)
+
+test("sharpshooter does NOT compound bonus on repeated ticks", function()
+    local weapon = MockWeapon("Pistol", 0, false, false,
+        { isRanged = true, hitChance = 40, maxRange = 10.0, subCategory = "Pistol" })
+    local p = MockPlayer({ "UniversalTraits:UT_sharpshooter" }, { primaryHandItem = weapon })
+    for i = 1, 60 do Events.OnPlayerUpdate:fire(p) end  -- two full cycles
+    assert_eq(weapon:getHitChance(), 50, "sharpshooter should NOT compound: still 50 after 60 ticks")
+    assert_eq(weapon:getMaxRange(), 12.5, "sharpshooter range should NOT compound")
+end)
+
+-- ─── cleaver: +10% crit on Long Blade weapons ─────────────────────────────────
+test("cleaver adds 10% crit to Long Blade weapon", function()
+    local weapon = MockWeapon("Katana", 0, false, true,
+        { criticalChance = 15, subCategory = "Long Blade" })
+    local p = MockPlayer({ "UniversalTraits:UT_cleaver" }, { primaryHandItem = weapon })
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(weapon:getCriticalChance(), 25, "cleaver should boost crit from 15 to 25")
+end)
+
+test("cleaver does NOT boost non-Long-Blade weapons", function()
+    local weapon = MockWeapon("BaseballBat", 0, false, true,
+        { criticalChance = 15, subCategory = "Long Blunt" })
+    local p = MockPlayer({ "UniversalTraits:UT_cleaver" }, { primaryHandItem = weapon })
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(weapon:getCriticalChance(), 15, "cleaver should NOT affect Long Blunt weapons")
+end)
+
+test("cleaver crit does NOT compound over multiple ticks", function()
+    local weapon = MockWeapon("Katana", 0, false, true,
+        { criticalChance = 15, subCategory = "Long Blade" })
+    local p = MockPlayer({ "UniversalTraits:UT_cleaver" }, { primaryHandItem = weapon })
+    for i = 1, 90 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(weapon:getCriticalChance(), 25, "crit should NOT compound: still 25")
+end)
+
+-- ─── long_blades: +10% crit on Long Blade (redundant with cleaver) ─────────────
+test("long_blades adds 10% crit to Long Blade weapon", function()
+    local weapon = MockWeapon("Katana", 0, false, true,
+        { criticalChance = 15, subCategory = "Long Blade" })
+    local p = MockPlayer({ "UniversalTraits:UT_long_blades" }, { primaryHandItem = weapon })
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(weapon:getCriticalChance(), 25, "long_blades should boost crit from 15 to 25")
+end)
+
+-- ─── long_blunts: +10% crit on Long Blunt weapons ─────────────────────────────
+test("long_blunts adds 10% crit to Long Blunt weapon", function()
+    local weapon = MockWeapon("BaseballBat", 0, false, true,
+        { criticalChance = 10, subCategory = "Long Blunt" })
+    local p = MockPlayer({ "UniversalTraits:UT_long_blunts" }, { primaryHandItem = weapon })
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(weapon:getCriticalChance(), 20, "long_blunts should boost crit from 10 to 20")
+end)
+
+test("long_blunts does NOT compound on repeated ticks", function()
+    local weapon = MockWeapon("BaseballBat", 0, false, true,
+        { criticalChance = 10, subCategory = "Long Blunt" })
+    local p = MockPlayer({ "UniversalTraits:UT_long_blunts" }, { primaryHandItem = weapon })
+    for i = 1, 90 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(weapon:getCriticalChance(), 20, "long_blunts crit should NOT compound")
+end)
+
+-- ─── onehanded_axes: +5% crit on one-handed Axe weapons ───────────────────────
+test("onehanded_axes adds 5% crit to one-handed axe", function()
+    local weapon = MockWeapon("HandAxe", 0, false, true,
+        { criticalChance = 10, categories = { WeaponCategory.AXE } })
+    local p = MockPlayer({ "UniversalTraits:UT_onehanded_axes" }, { primaryHandItem = weapon })
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(weapon:getCriticalChance(), 15, "onehanded_axes should boost from 10 to 15")
+end)
+
+test("onehanded_axes ignores two-handed axes", function()
+    local weapon = MockWeapon("FireAxe", 0, true, true,
+        { criticalChance = 10, categories = { WeaponCategory.AXE } })
+    local p = MockPlayer({ "UniversalTraits:UT_onehanded_axes" }, { primaryHandItem = weapon })
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(weapon:getCriticalChance(), 10, "onehanded_axes should NOT affect two-handed axes")
+end)
+
+-- ─── twohanded_axes: +10% crit on two-handed Axe weapons ──────────────────────
+test("twohanded_axes adds 10% crit to two-handed axe", function()
+    local weapon = MockWeapon("FireAxe", 0, true, true,
+        { criticalChance = 10, categories = { WeaponCategory.AXE } })
+    local p = MockPlayer({ "UniversalTraits:UT_twohanded_axes" }, { primaryHandItem = weapon })
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(weapon:getCriticalChance(), 20, "twohanded_axes should boost from 10 to 20")
+end)
+
+-- ─── twohanded_blades: +10% crit on two-handed Long Blade ─────────────────────
+test("twohanded_blades adds 10% crit to two-handed Long Blade", function()
+    local weapon = MockWeapon("Claymore", 0, true, true,
+        { criticalChance = 10, subCategory = "Long Blade" })
+    local p = MockPlayer({ "UniversalTraits:UT_twohanded_blades" }, { primaryHandItem = weapon })
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(weapon:getCriticalChance(), 20, "twohanded_blades should boost from 10 to 20")
+end)
+
+test("twohanded_blades ignores one-handed Long Blade", function()
+    local weapon = MockWeapon("Machete", 0, false, true,
+        { criticalChance = 10, subCategory = "Long Blade" })
+    local p = MockPlayer({ "UniversalTraits:UT_twohanded_blades" }, { primaryHandItem = weapon })
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(weapon:getCriticalChance(), 10, "twohanded_blades should NOT affect one-handed")
+end)
+
+-- ─── twohanded_blunts: +10% crit on Long Blunt ────────────────────────────────
+test("twohanded_blunts adds 10% crit to Long Blunt weapon", function()
+    local weapon = MockWeapon("Sledgehammer", 0, true, true,
+        { criticalChance = 10, subCategory = "Long Blunt" })
+    local p = MockPlayer({ "UniversalTraits:UT_twohanded_blunts" }, { primaryHandItem = weapon })
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(weapon:getCriticalChance(), 20, "twohanded_blunts should boost from 10 to 20")
+end)
+
+-- ─── prospear: +10% crit on Spear weapons ──────────────────────────────────────
+test("prospear adds 10% crit to spear weapon", function()
+    local weapon = MockWeapon("CraftedSpear", 0, false, true,
+        { criticalChance = 10, categories = { WeaponCategory.SPEAR } })
+    local p = MockPlayer({ "UniversalTraits:UT_prospear" }, { primaryHandItem = weapon })
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(weapon:getCriticalChance(), 20, "prospear should boost from 10 to 20")
+end)
+
+test("prospear does NOT compound on repeated ticks", function()
+    local weapon = MockWeapon("CraftedSpear", 0, false, true,
+        { criticalChance = 10, categories = { WeaponCategory.SPEAR } })
+    local p = MockPlayer({ "UniversalTraits:UT_prospear" }, { primaryHandItem = weapon })
+    for i = 1, 90 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(weapon:getCriticalChance(), 20, "prospear crit should NOT compound")
+end)
+
+-- ─── fitted: clothing weight reduction and speed penalty removal ───────────────
+test("fitted halves clothing weight when worn", function()
+    local shirt = MockClothingItem("Shirt", { actualWeight = 2.0, runSpeedModifier = 0.8, combatSpeedModifier = 0.9 })
+    local wornItems = MockWornItemsFull({ shirt, MockClothingItem("Pants") })
+    local inv = MockInventoryFull({ shirt, MockClothingItem("Pants") })
+    local p = MockPlayer({ "UniversalTraits:UT_fitted" }, { wornItems = wornItems, inventory = inv })
+    -- setWornItems stub
+    p.setWornItems = function(self, wi) end
+    -- Fire enough ticks for throttle=30
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(shirt:getActualWeight(), 1.0, "fitted should halve clothing weight from 2.0 to 1.0")
+end)
+
+test("fitted removes run speed penalty on clothing", function()
+    local shirt = MockClothingItem("Shirt", { actualWeight = 2.0, runSpeedModifier = 0.7, combatSpeedModifier = 0.8 })
+    local wornItems = MockWornItemsFull({ shirt, MockClothingItem("Pants") })
+    local inv = MockInventoryFull({ shirt, MockClothingItem("Pants") })
+    local p = MockPlayer({ "UniversalTraits:UT_fitted" }, { wornItems = wornItems, inventory = inv })
+    p.setWornItems = function(self, wi) end
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(shirt:getRunSpeedModifier(), 1.0, "fitted should set run speed modifier to 1.0")
+    assert_eq(shirt:getCombatSpeedModifier(), 1.0, "fitted should set combat speed modifier to 1.0")
+end)
+
+-- ─── gourmand: food stat modification ──────────────────────────────────────────
+test("gourmand boosts hunger relief by 50%", function()
+    local food = MockFoodItemFull("Steak", { hungChange = -20, unhappyChange = -10, boredomChange = -8, category = "Food" })
+    local inv = MockInventoryFull({ food })
+    local p = MockPlayer({ "UniversalTraits:UT_gourmand" }, { inventory = inv })
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(food:getHungChange(), -30, "gourmand should boost hunger relief from -20 to -30")
+end)
+
+test("gourmand improves happiness on food", function()
+    local food = MockFoodItemFull("Steak", { hungChange = -20, unhappyChange = -10, boredomChange = -8, category = "Food" })
+    local inv = MockInventoryFull({ food })
+    local p = MockPlayer({ "UniversalTraits:UT_gourmand" }, { inventory = inv })
+    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(food:getUnhappyChange(), -15, "gourmand should boost unhappy from -10 to -15")
+    assert_eq(food:getBoredomChange(), -12, "gourmand should boost boredom from -8 to -12")
+end)
+
+test("gourmand does NOT compound food bonuses on repeated ticks", function()
+    local food = MockFoodItemFull("Steak", { hungChange = -20, unhappyChange = -10, boredomChange = -8, category = "Food" })
+    local inv = MockInventoryFull({ food })
+    local p = MockPlayer({ "UniversalTraits:UT_gourmand" }, { inventory = inv })
+    for i = 1, 90 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(food:getHungChange(), -30, "gourmand hunger should NOT compound: still -30")
+end)
+
+-- ─── trackman: trap condition restoration ──────────────────────────────────────
+test("trackman restores trap items to max condition", function()
+    local trap = MockTrapItem("TrapMouse", 3, 10)
+    local inv = MockInventoryFull({ trap })
+    local p = MockPlayer({ "UniversalTraits:UT_trackman" }, { inventory = inv })
+    for i = 1, 60 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(trap:getCondition(), 10, "trackman should restore trap to max condition")
+end)
+
+test("trackman ignores non-trap items", function()
+    local item = MockTrapItem("Hammer", 3, 10)
+    local inv = MockInventoryFull({ item })
+    local p = MockPlayer({ "UniversalTraits:UT_trackman" }, { inventory = inv })
+    for i = 1, 60 do Events.OnPlayerUpdate:fire(p) end
+    assert_eq(item:getCondition(), 3, "trackman should NOT touch non-trap items")
+end)
+
+-- ─── tavernbrawler: stomp bonus damage ─────────────────────────────────────────
+test("tavernbrawler deals 30 bonus damage to downed zombie", function()
+    local zombie = MockZombie({ health = 100 })
+    zombie._knockedDown = true
+    zombie.isKnockedDown = function(self) return true end
+    local p = MockPlayer({ "UniversalTraits:UT_tavernbrawler" })
+    local weapon = MockWeapon("Boots")
+    _G.getSpecificPlayer = function(i) return i == 0 and p or nil end
+    Events.OnHitZombie:fire(zombie, p, weapon, 10)
+    assert_eq(zombie:getHealth(), 70, "tavernbrawler should deal 30 extra HP to downed zombie")
+end)
+
+test("tavernbrawler does NOT fire on standing zombie", function()
+    local zombie = MockZombie({ health = 100 })
+    local p = MockPlayer({ "UniversalTraits:UT_tavernbrawler" })
+    _G.getSpecificPlayer = function(i) return i == 0 and p or nil end
+    Events.OnHitZombie:fire(zombie, p, MockWeapon("Boots"), 10)
+    assert_eq(zombie:getHealth(), 100, "tavernbrawler should NOT fire on standing zombie")
+end)
+
+-- ─── woodsplitter: tree chop bonus ─────────────────────────────────────────────
+test("woodsplitter sets modData flag on new game", function()
+    local p = MockPlayer({ "UniversalTraits:UT_woodsplitter" })
+    Events.OnNewGame:fire(p)
+    assert_eq(p:getModData()["UT_woodsplitterActive"], true,
+        "woodsplitter should set active flag")
 end)
 
 print(string.format("\n%d passed, %d failed", passed, failed))
