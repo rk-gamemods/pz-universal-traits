@@ -21,19 +21,12 @@ local FREEZE_DETECT_TICKS = 5        -- ticks with isMoving+no position change =
 local FREEZE_LOG_INTERVAL = 30       -- while frozen, log state every N ticks
 local MAX_FREEZE_LOGS     = 20       -- stop logging after this many dumps per freeze
 
--- Recovery constants
-local RECOVERY_TICK_1     = 15       -- first recovery attempt (~0.5s into freeze)
-local RECOVERY_TICK_2     = 45       -- second attempt (~1.5s)
-local RECOVERY_TICK_3     = 90       -- third attempt (~3s)
-local MAX_RECOVERY        = 3        -- stop trying after this many attempts per freeze
-
 -- State tracking
 local _prevX, _prevY = nil, nil
 local _stuckCount = 0
 local _freezeLogCount = 0
 local _onPlayerMoveFired = false      -- set by OnPlayerMove hook, read by OnPlayerUpdate
 local _prevMoveX, _prevMoveY = nil, nil -- position last OnPlayerMove saw
-local _recoveryAttempts = 0           -- recovery attempts this freeze event
 
 ---------------------------------------------------------------------------
 -- Safe method caller — returns nil instead of crashing on missing methods
@@ -195,61 +188,6 @@ local function dumpState(prefix, state)
 end
 
 ---------------------------------------------------------------------------
--- Recovery: attempt to unstick the player from a confirmed freeze
----------------------------------------------------------------------------
-local function attemptRecovery(player)
-    -- Safety: never recover dead players or vehicle occupants
-    if safeCall(player, "isDead") then return false end
-    if safeCall(player, "getVehicle") ~= nil then return false end
-
-    -- Safety: skip if a timed action is running (door anim, crafting, etc.)
-    local ok, busy = pcall(function() return player:hasTimedActions() end)
-    if ok and busy then return false end
-
-    _recoveryAttempts = _recoveryAttempts + 1
-    print("[FREEZE:RECOVERY] Attempt " .. _recoveryAttempts .. " at tick " .. _stuckCount)
-
-    -- Step 1: Clear all known blocking state variables
-    pcall(player.setBlockMovement, player, false)
-    if player.setBumpDone then pcall(player.setBumpDone, player, true) end
-    pcall(player.setVariable, player, "BumpDone", true)
-    pcall(player.setVariable, player, "BumpFallAnimFinished", true)
-    pcall(player.setVariable, player, "BumpAnimFinished", true)
-    if player.setHitReaction then pcall(player.setHitReaction, player, "") end
-    pcall(player.setIsAiming, player, false)
-
-    -- Step 2: If stuck in IdleState, force transition to PlayerMovementState
-    local curState = safeCall(player, "getCurrentState")
-    local stateStr = curState and tostring(curState) or ""
-    if stateStr:find("IdleState") then
-        -- PlayerMovementState is exposed to Lua via LuaManager.setExposed()
-        local ok2, pms = pcall(function() return PlayerMovementState.instance() end)
-        if ok2 and pms then
-            pcall(player.changeState, player, pms)
-            print("[FREEZE:RECOVERY] Forced changeState IdleState -> PlayerMovementState")
-            if UTCore.diagLog then
-                UTCore.diagLog("FreezeRecovery", "changeState", "IdleState->PlayerMovementState attempt=" .. _recoveryAttempts)
-            end
-            return true
-        else
-            -- Fallback: re-enter IdleState to trigger setParams re-initialization
-            local ok3, idle = pcall(function() return IdleState.instance() end)
-            if ok3 and idle then
-                pcall(player.changeState, player, idle)
-                print("[FREEZE:RECOVERY] Forced IdleState re-entry (PlayerMovementState unavailable)")
-            end
-        end
-    else
-        print("[FREEZE:RECOVERY] Not in IdleState (" .. stateStr .. "), cleared blocking vars only")
-    end
-
-    if UTCore.diagLog then
-        UTCore.diagLog("FreezeRecovery", "attempt", "state=" .. stateStr .. " attempt=" .. _recoveryAttempts)
-    end
-    return true
-end
-
----------------------------------------------------------------------------
 -- OnPlayerMove tracker — detects if engine calls OnPlayerMove
 ---------------------------------------------------------------------------
 local function onPlayerMove()
@@ -270,15 +208,6 @@ local function onPlayerUpdate(player, tick)
     local vehicle = tick and tick.vehicle or safeCall(player, "getVehicle")
     if vehicle ~= nil then
         _stuckCount = 0
-        _recoveryAttempts = 0
-        return
-    end
-
-    -- Timed action check: player is intentionally immobile during door
-    -- animations, crafting, etc. Don't count these as freezes.
-    local okTA, hasTimed = pcall(function() return player:hasTimedActions() end)
-    if okTA and hasTimed then
-        _stuckCount = 0
         return
     end
 
@@ -296,12 +225,8 @@ local function onPlayerUpdate(player, tick)
 
     if moved then
         -- Player actually moved — reset everything
-        if _recoveryAttempts > 0 then
-            print("[FREEZE:RECOVERY] Player moved after " .. _recoveryAttempts .. " recovery attempt(s) — freeze cleared")
-        end
         _stuckCount = 0
         _freezeLogCount = 0
-        _recoveryAttempts = 0
     elseif wantsToMove then
         -- Player is PRESSING movement keys but position didn't change — real stuck
         _stuckCount = _stuckCount + 1
@@ -338,19 +263,10 @@ local function onPlayerUpdate(player, tick)
         if _freezeLogCount >= MAX_FREEZE_LOGS and _stuckCount % (FREEZE_LOG_INTERVAL * 10) == 0 then
             print("[FREEZE] (logging paused, " .. _stuckCount .. " ticks frozen)")
         end
-
-        -- Recovery: attempt to unstick the player at progressive intervals
-        if _recoveryAttempts < MAX_RECOVERY
-            and (_stuckCount == RECOVERY_TICK_1
-              or _stuckCount == RECOVERY_TICK_2
-              or _stuckCount == RECOVERY_TICK_3) then
-            attemptRecovery(player)
-        end
     else
         -- Player is NOT pressing movement keys and not moving — normal idle, reset
         _stuckCount = 0
         _freezeLogCount = 0
-        _recoveryAttempts = 0
     end
 
     _prevX, _prevY = x, y
@@ -373,17 +289,10 @@ end
 -- Expose for testing
 UTCore._freezeLoggerOnPlayerUpdate = onPlayerUpdate
 UTCore._freezeLoggerOnPlayerMove = onPlayerMove
-UTCore._freezeLoggerAttemptRecovery = attemptRecovery
 UTCore._getFreezeLoggerStuckCount = function() return _stuckCount end
-UTCore._getFreezeLoggerRecoveryAttempts = function() return _recoveryAttempts end
 UTCore._resetFreezeLogger = function()
     _prevX, _prevY = nil, nil
     _stuckCount = 0
     _freezeLogCount = 0
     _onPlayerMoveFired = false
-    _recoveryAttempts = 0
 end
-UTCore.FREEZE_RECOVERY_TICK_1 = RECOVERY_TICK_1
-UTCore.FREEZE_RECOVERY_TICK_2 = RECOVERY_TICK_2
-UTCore.FREEZE_RECOVERY_TICK_3 = RECOVERY_TICK_3
-UTCore.FREEZE_MAX_RECOVERY = MAX_RECOVERY
