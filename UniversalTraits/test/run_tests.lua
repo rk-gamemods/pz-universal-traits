@@ -853,7 +853,9 @@ local function MockInjuryPart(partType, injuries)
     p.bitten            = function(self) return self._bitten end
     p.SetBitten         = function(self, v) self._bitten = v end
     p.setBiteTime       = function(self, v) self._biteTime = v end
+    p.isInfected        = function(self) return self._isInfected end
     p.SetInfected       = function(self, v) self._isInfected = v end
+    p.isFakeInfected    = function(self) return self._isFakeInfected end
     p.SetFakeInfected   = function(self, v) self._isFakeInfected = v end
     p.isDeepWounded     = function(self) return self._deepWounded end
     p.setDeepWounded    = function(self, v) self._deepWounded = v end
@@ -884,8 +886,8 @@ local function MockBouncerPlayer(traitList, parts, strengthLevel)
     return p
 end
 
--- Cooldown formula: max(10, baseSec - STR * 10) * 60
--- Tier I base = 300s, Tier II base = 240s
+-- Cooldown formula: max(10, baseSec - STR * secPerStr) * 60
+-- Tier I: 300 - 10*STR,  Tier II: 220 - 20*STR
 
 test("bouncer downgrades bite to deep wound (STR 5)", function()
     local part = MockInjuryPart("Torso_Upper", { bitten = true, biteTime = 60, isInfected = true })
@@ -932,8 +934,8 @@ test("bouncer tier II uses shorter cooldown (STR 5)", function()
     Events.OnPlayerUpdate:fire(player)
 
     assert_true(not part:bitten(), "bite should be cleared")
-    -- (240 - 5*10) * 60 = 190 * 60 = 11400
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 11400, "tier II STR5 cooldown = 11400")
+    -- (220 - 5*20) * 60 = 120 * 60 = 7200
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 7200, "tier II STR5 cooldown = 7200")
 end)
 
 test("bouncer does NOT fire during cooldown", function()
@@ -1007,8 +1009,8 @@ test("bouncer tier II STR 10 cooldown", function()
     Events.OnPlayerUpdate:fire(player)
 
     assert_true(not part:isDeepWounded(), "deep wound should be cleared")
-    -- (240 - 10*10) * 60 = 140 * 60 = 8400
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 8400, "tier II STR10 cooldown = 8400")
+    -- (220 - 10*20) * 60 = 20 * 60 = 1200
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 1200, "tier II STR10 cooldown = 1200")
 end)
 
 test("bouncer tier II STR 9 cooldown", function()
@@ -1018,8 +1020,51 @@ test("bouncer tier II STR 9 cooldown", function()
     Events.OnPlayerUpdate:fire(player)
 
     assert_true(not part:bitten(), "bite should be cleared")
-    -- (240 - 9*10) * 60 = 150 * 60 = 9000
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 9000, "tier II STR9 cooldown = 9000")
+    -- (220 - 9*20) * 60 = 40 * 60 = 2400
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 2400, "tier II STR9 cooldown = 2400")
+end)
+
+test("bouncer preserves pre-existing infection when downgrading bite", function()
+    -- Part starts infected (from a prior wound) but not bitten
+    local part = MockInjuryPart("Torso_Upper", { isInfected = true })
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 5)
+
+    -- Tick 1: no bite, bouncer records infection snapshot
+    Events.OnPlayerUpdate:fire(player)
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 0, "no injury, cooldown stays 0")
+
+    -- Simulate a new bite landing on the already-infected part
+    part._bitten = true
+    part._biteTime = 60
+
+    -- Tick 2: bouncer sees bite, checks snapshot → part was already infected → keeps it
+    Events.OnPlayerUpdate:fire(player)
+
+    assert_true(not part:bitten(), "bite should be cleared")
+    assert_eq(part._isInfected, true, "pre-existing infection should be PRESERVED")
+    assert_true(part:isDeepWounded(), "deep wound should be applied")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 15000, "cooldown should be set")
+end)
+
+test("bouncer clears new infection from fresh bite", function()
+    -- Part starts clean, no infection
+    local part = MockInjuryPart("Torso_Upper", {})
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 5)
+
+    -- Tick 1: nothing to do, records clean snapshot
+    Events.OnPlayerUpdate:fire(player)
+
+    -- Simulate a bite with new infection landing
+    part._bitten = true
+    part._biteTime = 60
+    part._isInfected = true
+
+    -- Tick 2: bouncer sees bite, checks snapshot → part was NOT infected → clears it
+    Events.OnPlayerUpdate:fire(player)
+
+    assert_true(not part:bitten(), "bite should be cleared")
+    assert_eq(part._isInfected, false, "new infection should be cleared")
+    assert_true(part:isDeepWounded(), "deep wound should be applied")
 end)
 
 -- ===== UT_vagabond loot mechanic tests =====
