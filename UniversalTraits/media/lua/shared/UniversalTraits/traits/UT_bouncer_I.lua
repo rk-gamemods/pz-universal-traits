@@ -8,9 +8,9 @@
 --   Deep wound  → Scratch
 --   Fracture    → Halved fracture time
 --
--- Cooldown scales with Strength: max(MIN_CD_SEC, baseSec - STR * 20) * 60 ticks
---   Tier I  base = 220s  →  at STR 10 = 20s
---   Tier II base = 180s  →  at STR 9+ = 10s (floor)
+-- Cooldown scales with Strength: max(MIN_CD_SEC, baseSec - STR * 10) * 60 ticks
+--   Tier I  base = 300s  →  at STR 10 = 200s
+--   Tier II base = 240s  →  at STR 10 = 140s
 -- Only one downgrade per cooldown. Logs each event to console.
 --
 -- SAFETY: reads + writes only BodyPart boolean/float fields via Java
@@ -20,9 +20,9 @@ local TRAIT_I  = "UniversalTraits:UT_bouncer_I"
 local TRAIT_II = "UniversalTraits:UT_bouncer_II"
 
 -- Cooldown formula constants
-local BASE_SEC_I    = 220   -- Tier I base cooldown in real-world seconds
-local BASE_SEC_II   = 180   -- Tier II base cooldown in real-world seconds
-local SEC_PER_STR   = 20    -- seconds removed per Strength level
+local BASE_SEC_I    = 300   -- Tier I base cooldown in real-world seconds
+local BASE_SEC_II   = 240   -- Tier II base cooldown in real-world seconds
+local SEC_PER_STR   = 10    -- seconds removed per Strength level
 local MIN_CD_SEC    = 10    -- absolute minimum cooldown (seconds)
 local TICKS_PER_SEC = 60    -- PZ runs at ~60 ticks/second
 

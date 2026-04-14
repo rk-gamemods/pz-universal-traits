@@ -884,8 +884,8 @@ local function MockBouncerPlayer(traitList, parts, strengthLevel)
     return p
 end
 
--- Cooldown formula: max(10, baseSec - STR * 20) * 60
--- Tier I base = 220s, Tier II base = 180s
+-- Cooldown formula: max(10, baseSec - STR * 10) * 60
+-- Tier I base = 300s, Tier II base = 240s
 
 test("bouncer downgrades bite to deep wound (STR 5)", function()
     local part = MockInjuryPart("Torso_Upper", { bitten = true, biteTime = 60, isInfected = true })
@@ -898,8 +898,8 @@ test("bouncer downgrades bite to deep wound (STR 5)", function()
     assert_eq(part._isInfected, false, "infection should be cleared")
     assert_true(part:isDeepWounded(), "deep wound should be applied")
     assert_eq(part._deepWoundTime, 20, "deepWoundTime should be set to 20")
-    -- (220 - 5*20) * 60 = 120 * 60 = 7200
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 7200, "tier I STR5 cooldown = 7200")
+    -- (300 - 5*10) * 60 = 250 * 60 = 15000
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 15000, "tier I STR5 cooldown = 15000")
 end)
 
 test("bouncer downgrades deep wound to scratch (STR 5)", function()
@@ -912,7 +912,7 @@ test("bouncer downgrades deep wound to scratch (STR 5)", function()
     assert_eq(part._deepWoundTime, 0, "deepWoundTime should be cleared")
     assert_true(part._scratched, "scratch should be applied")
     assert_eq(part._scratchNoInfect, true, "scratch should use forceNoInfection=true")
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 7200, "tier I STR5 cooldown = 7200")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 15000, "tier I STR5 cooldown = 15000")
 end)
 
 test("bouncer halves fracture time (STR 5)", function()
@@ -922,7 +922,7 @@ test("bouncer halves fracture time (STR 5)", function()
     Events.OnPlayerUpdate:fire(player)
 
     assert_eq(part._fractureTime, 20, "fracture time should be halved from 40 to 20")
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 7200, "tier I STR5 cooldown = 7200")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 15000, "tier I STR5 cooldown = 15000")
 end)
 
 test("bouncer tier II uses shorter cooldown (STR 5)", function()
@@ -932,8 +932,8 @@ test("bouncer tier II uses shorter cooldown (STR 5)", function()
     Events.OnPlayerUpdate:fire(player)
 
     assert_true(not part:bitten(), "bite should be cleared")
-    -- (180 - 5*20) * 60 = 80 * 60 = 4800
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 4800, "tier II STR5 cooldown = 4800")
+    -- (240 - 5*10) * 60 = 190 * 60 = 11400
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 11400, "tier II STR5 cooldown = 11400")
 end)
 
 test("bouncer does NOT fire during cooldown", function()
@@ -985,8 +985,8 @@ test("bouncer STR 0 uses full base cooldown", function()
     Events.OnPlayerUpdate:fire(player)
 
     assert_true(not part:bitten(), "bite should be cleared")
-    -- (220 - 0*20) * 60 = 220 * 60 = 13200
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 13200, "tier I STR0 cooldown = 13200")
+    -- (300 - 0*10) * 60 = 300 * 60 = 18000
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 18000, "tier I STR0 cooldown = 18000")
 end)
 
 test("bouncer STR 10 produces minimum tier I cooldown", function()
@@ -996,30 +996,30 @@ test("bouncer STR 10 produces minimum tier I cooldown", function()
     Events.OnPlayerUpdate:fire(player)
 
     assert_true(not part:bitten(), "bite should be cleared")
-    -- (220 - 10*20) * 60 = 20 * 60 = 1200
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 1200, "tier I STR10 cooldown = 1200")
+    -- (300 - 10*10) * 60 = 200 * 60 = 12000
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 12000, "tier I STR10 cooldown = 12000")
 end)
 
-test("bouncer tier II STR 10 hits 10s floor", function()
+test("bouncer tier II STR 10 cooldown", function()
     local part = MockInjuryPart("Torso_Upper", { deepWounded = true, deepWoundTime = 30 })
     local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_II" }, { part }, 10)
 
     Events.OnPlayerUpdate:fire(player)
 
     assert_true(not part:isDeepWounded(), "deep wound should be cleared")
-    -- max(10, 180 - 10*20) = max(10, -20) = 10 → 10 * 60 = 600
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 600, "tier II STR10 cooldown floors at 600")
+    -- (240 - 10*10) * 60 = 140 * 60 = 8400
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 8400, "tier II STR10 cooldown = 8400")
 end)
 
-test("bouncer tier II STR 9 also hits floor", function()
+test("bouncer tier II STR 9 cooldown", function()
     local part = MockInjuryPart("Head", { bitten = true, biteTime = 50, isInfected = true })
     local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_II" }, { part }, 9)
 
     Events.OnPlayerUpdate:fire(player)
 
     assert_true(not part:bitten(), "bite should be cleared")
-    -- max(10, 180 - 9*20) = max(10, 0) = 10 → 10 * 60 = 600
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 600, "tier II STR9 cooldown floors at 600")
+    -- (240 - 9*10) * 60 = 150 * 60 = 9000
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 9000, "tier II STR9 cooldown = 9000")
 end)
 
 -- ===== UT_vagabond loot mechanic tests =====
