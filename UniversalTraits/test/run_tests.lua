@@ -830,170 +830,196 @@ test("actionhero ignores dead zombies in enemy count", function()
         "crit chance unchanged — dead zombies should not inflate enemy count")
 end)
 
--- ===== UT_bouncer_I stagger mechanic tests =====
--- Load the trait file so its Events.OnPlayerUpdate.Add() fires.
+-- ===== UT_bouncer_I injury downgrade tests =====
+-- Load the trait file so its UTCore.registerTickHandler() fires.
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_bouncer_I.lua")
 
--- Helper: build an enemy mock with Build 42 stagger API
-local function MockEnemy(dist, dead)
-    return {
-        _dist      = dist,
-        _dead      = dead or false,
-        _bumpType  = nil,
-        _vars      = {},
-        isDead      = function(self) return self._dead end,
-        setBumpType = function(self, v) self._bumpType = v end,
-        setVariable = function(self, k, v) self._vars[k] = v end,
+-- Helper: create a mock body part with full injury state
+local function MockInjuryPart(partType, injuries)
+    injuries = injuries or {}
+    local p = {
+        _type           = partType or "Torso_Upper",
+        _bitten         = injuries.bitten or false,
+        _biteTime       = injuries.biteTime or 0,
+        _isInfected     = injuries.isInfected or false,
+        _isFakeInfected = injuries.isFakeInfected or false,
+        _deepWounded    = injuries.deepWounded or false,
+        _deepWoundTime  = injuries.deepWoundTime or 0,
+        _scratched      = injuries.scratched or false,
+        _scratchTime    = injuries.scratchTime or 0,
+        _fractureTime   = injuries.fractureTime or 0,
     }
-end
-
--- Helper: extend MockPlayer with the methods bouncer needs
-local function MockBouncerPlayer(traitList, spottedList)
-    local p = MockPlayer(traitList)
-    p.getSpottedList = function(self) return spottedList end
-    p.DistTo = function(self, enemy) return enemy._dist end
-    p.isBlockMovement = p.isBlockMovement or function(self) return self._blockMovement end
+    p.getType           = function(self) return self._type end
+    p.bitten            = function(self) return self._bitten end
+    p.SetBitten         = function(self, v) self._bitten = v end
+    p.setBiteTime       = function(self, v) self._biteTime = v end
+    p.SetInfected       = function(self, v) self._isInfected = v end
+    p.SetFakeInfected   = function(self, v) self._isFakeInfected = v end
+    p.isDeepWounded     = function(self) return self._deepWounded end
+    p.setDeepWounded    = function(self, v) self._deepWounded = v end
+    p.setDeepWoundTime  = function(self, v) self._deepWoundTime = v end
+    p.setScratched      = function(self, v, noInfect) self._scratched = v; self._scratchNoInfect = noInfect end
+    p.getFractureTime   = function(self) return self._fractureTime end
+    p.setFractureTime   = function(self, v) self._fractureTime = v end
     return p
 end
 
-test("bouncer stagger fires when >=3 close enemies and cooldown=0", function()
-    local enemies = {
-        MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5),
+-- Helper: create a mock body damage with a part list
+local function MockInjuryBodyDamage(parts)
+    local list = {
+        size = function(self) return #parts end,
+        get  = function(self, i) return parts[i + 1] end,
     }
-    local spotted = MockSpottedListFromEnemies(enemies)
-    local player  = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, spotted)
-    -- Cooldown starts at 0 (nil → initialized to 0 in handler)
+    return { getBodyParts = function(self) return list end }
+end
+
+-- Helper: create a mock player with bouncer trait and custom body damage
+local function MockBouncerPlayer(traitList, parts, strengthLevel)
+    local p = MockPlayer(traitList)
+    local bd = MockInjuryBodyDamage(parts)
+    p.getBodyDamage = function(self) return bd end
+    if strengthLevel then
+        p:setPerkLevel(Perks.Strength, strengthLevel)
+    end
+    return p
+end
+
+-- Cooldown formula: max(10, baseSec - STR * 20) * 60
+-- Tier I base = 220s, Tier II base = 180s
+
+test("bouncer downgrades bite to deep wound (STR 5)", function()
+    local part = MockInjuryPart("Torso_Upper", { bitten = true, biteTime = 60, isInfected = true })
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 5)
 
     Events.OnPlayerUpdate:fire(player)
 
-    -- ZombRand is stubbed to always return 0, so 0 < 5 is true → stagger fires
-    local staggered = false
-    for _, e in ipairs(enemies) do
-        if e._bumpType == "stagger" then staggered = true end
-    end
-    assert_true(staggered, "expected at least one enemy to be staggered")
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 60, "cooldown should be set to 60")
+    assert_true(not part:bitten(), "bite should be cleared")
+    assert_eq(part._biteTime, 0, "biteTime should be cleared")
+    assert_eq(part._isInfected, false, "infection should be cleared")
+    assert_true(part:isDeepWounded(), "deep wound should be applied")
+    assert_eq(part._deepWoundTime, 20, "deepWoundTime should be set to 20")
+    -- (220 - 5*20) * 60 = 120 * 60 = 7200
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 7200, "tier I STR5 cooldown = 7200")
 end)
 
-test("bouncer stagger does NOT fire during cooldown", function()
-    local enemies = {
-        MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5),
-    }
-    local spotted = MockSpottedListFromEnemies(enemies)
-    local player  = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, spotted)
-    player:getModData()["UT_bouncer_cooldown"] = 30
+test("bouncer downgrades deep wound to scratch (STR 5)", function()
+    local part = MockInjuryPart("UpperArm_L", { deepWounded = true, deepWoundTime = 30 })
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 5)
 
     Events.OnPlayerUpdate:fire(player)
 
-    local staggered = false
-    for _, e in ipairs(enemies) do
-        if e._bumpType == "stagger" then staggered = true end
-    end
-    assert_true(not staggered, "expected no enemy to be staggered during cooldown")
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 29, "cooldown should decrement to 29")
+    assert_true(not part:isDeepWounded(), "deep wound should be cleared")
+    assert_eq(part._deepWoundTime, 0, "deepWoundTime should be cleared")
+    assert_true(part._scratched, "scratch should be applied")
+    assert_eq(part._scratchNoInfect, true, "scratch should use forceNoInfection=true")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 7200, "tier I STR5 cooldown = 7200")
 end)
 
-test("bouncer stagger does NOT fire during hostile animation (freeze prevention)", function()
-    local enemies = {
-        MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5),
-    }
-    local spotted = MockSpottedListFromEnemies(enemies)
-    local player  = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, spotted)
-    player._performingHostileAnimation = true  -- simulate mid-swing
+test("bouncer halves fracture time (STR 5)", function()
+    local part = MockInjuryPart("LowerLeg_R", { fractureTime = 40 })
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 5)
 
     Events.OnPlayerUpdate:fire(player)
 
-    local staggered = false
-    for _, e in ipairs(enemies) do
-        if e._bumpType == "stagger" then staggered = true end
-    end
-    assert_true(not staggered,
-        "bouncer must NOT stagger zombies during attack animations (causes blockMovement freeze)")
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 0,
-        "cooldown should remain 0 (bouncer was suppressed, not triggered)")
+    assert_eq(part._fractureTime, 20, "fracture time should be halved from 40 to 20")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 7200, "tier I STR5 cooldown = 7200")
 end)
 
-test("bouncer stagger fires after hostile animation ends", function()
-    local enemies = {
-        MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5),
-    }
-    local spotted = MockSpottedListFromEnemies(enemies)
-    local player  = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, spotted)
-    player._performingHostileAnimation = false  -- attack finished
+test("bouncer tier II uses shorter cooldown (STR 5)", function()
+    local part = MockInjuryPart("Head", { bitten = true, biteTime = 50, isInfected = true })
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_II" }, { part }, 5)
 
     Events.OnPlayerUpdate:fire(player)
 
-    local staggered = false
-    for _, e in ipairs(enemies) do
-        if e._bumpType == "stagger" then staggered = true end
-    end
-    assert_true(staggered, "bouncer should fire normally when player is not in hostile animation")
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 60, "cooldown should be set to 60")
+    assert_true(not part:bitten(), "bite should be cleared")
+    -- (180 - 5*20) * 60 = 80 * 60 = 4800
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 4800, "tier II STR5 cooldown = 4800")
 end)
 
-test("bouncer stagger does NOT fire when player movement is blocked (freeze prevention)", function()
-    local enemies = {
-        MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5), MockEnemy(1.5),
-    }
-    local spotted = MockSpottedListFromEnemies(enemies)
-    local player  = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, spotted)
-    player._blockMovement = true  -- player is being bumped/knocked down/getting up
+test("bouncer does NOT fire during cooldown", function()
+    local part = MockInjuryPart("Torso_Upper", { bitten = true, biteTime = 60 })
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 5)
+    player:getModData()["UT_bouncer_cooldown"] = 500
 
     Events.OnPlayerUpdate:fire(player)
 
-    local staggered = false
-    for _, e in ipairs(enemies) do
-        if e._bumpType == "stagger" then staggered = true end
-    end
-    assert_true(not staggered,
-        "bouncer must NOT stagger zombies when player movement is blocked (causes chain-collision freeze)")
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 0,
-        "cooldown should remain 0 (bouncer was suppressed)")
+    assert_true(part:bitten(), "bite should still be present during cooldown")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 499, "cooldown should decrement by 1")
 end)
 
-test("bouncer ignores dead zombies in threshold and target selection", function()
-    -- 2 alive + 2 dead = only 2 count toward the 3-enemy threshold → should NOT fire
-    local enemies = {
-        MockEnemy(1.5, false), MockEnemy(1.5, false),
-        MockEnemy(1.5, true),  MockEnemy(1.5, true),
-    }
-    local spotted = MockSpottedListFromEnemies(enemies)
-    local player  = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, spotted)
+test("bouncer processes highest severity first (bite before deep wound)", function()
+    local bitePart = MockInjuryPart("Head", { bitten = true, biteTime = 60, isInfected = true })
+    local deepPart = MockInjuryPart("Torso_Upper", { deepWounded = true, deepWoundTime = 30 })
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { bitePart, deepPart }, 5)
 
     Events.OnPlayerUpdate:fire(player)
 
-    local staggered = false
-    for _, e in ipairs(enemies) do
-        if e._bumpType == "stagger" then staggered = true end
-    end
-    assert_true(not staggered,
-        "bouncer should NOT fire when only 2 living enemies are close (dead don't count)")
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 0,
-        "cooldown should stay 0 (bouncer didn't fire)")
+    -- Bite should be downgraded, deep wound untouched (only one per cooldown)
+    assert_true(not bitePart:bitten(), "bite should be cleared first")
+    assert_true(deepPart:isDeepWounded(), "deep wound should still be present (one per cooldown)")
 end)
 
-test("bouncer fires when 3+ living enemies even if dead zombies present", function()
-    -- 3 alive + 1 dead = 3 living → should fire, target must be alive
-    local enemies = {
-        MockEnemy(1.5, false), MockEnemy(1.5, false), MockEnemy(1.5, false),
-        MockEnemy(1.5, true),
-    }
-    local spotted = MockSpottedListFromEnemies(enemies)
-    local player  = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, spotted)
+test("bouncer does nothing when no injuries present", function()
+    local part = MockInjuryPart("Torso_Upper", {})
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 5)
 
     Events.OnPlayerUpdate:fire(player)
 
-    -- Verify stagger target is alive
-    local staggeredAlive = false
-    local staggeredDead = false
-    for _, e in ipairs(enemies) do
-        if e._bumpType == "stagger" then
-            if e._dead then staggeredDead = true else staggeredAlive = true end
-        end
-    end
-    assert_true(staggeredAlive, "bouncer should stagger a living enemy")
-    assert_true(not staggeredDead, "bouncer must NOT stagger a dead zombie")
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 60, "cooldown should be set")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 0, "cooldown should remain 0 (no injury found)")
+end)
+
+test("bouncer ignores fracture time <= 1", function()
+    local part = MockInjuryPart("LowerLeg_L", { fractureTime = 0.5 })
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 5)
+
+    Events.OnPlayerUpdate:fire(player)
+
+    assert_eq(part._fractureTime, 0.5, "fracture time should remain unchanged when <= 1")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 0, "cooldown should remain 0")
+end)
+
+test("bouncer STR 0 uses full base cooldown", function()
+    local part = MockInjuryPart("Torso_Upper", { bitten = true, biteTime = 60, isInfected = true })
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 0)
+
+    Events.OnPlayerUpdate:fire(player)
+
+    assert_true(not part:bitten(), "bite should be cleared")
+    -- (220 - 0*20) * 60 = 220 * 60 = 13200
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 13200, "tier I STR0 cooldown = 13200")
+end)
+
+test("bouncer STR 10 produces minimum tier I cooldown", function()
+    local part = MockInjuryPart("Torso_Upper", { bitten = true, biteTime = 60, isInfected = true })
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 10)
+
+    Events.OnPlayerUpdate:fire(player)
+
+    assert_true(not part:bitten(), "bite should be cleared")
+    -- (220 - 10*20) * 60 = 20 * 60 = 1200
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 1200, "tier I STR10 cooldown = 1200")
+end)
+
+test("bouncer tier II STR 10 hits 10s floor", function()
+    local part = MockInjuryPart("Torso_Upper", { deepWounded = true, deepWoundTime = 30 })
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_II" }, { part }, 10)
+
+    Events.OnPlayerUpdate:fire(player)
+
+    assert_true(not part:isDeepWounded(), "deep wound should be cleared")
+    -- max(10, 180 - 10*20) = max(10, -20) = 10 → 10 * 60 = 600
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 600, "tier II STR10 cooldown floors at 600")
+end)
+
+test("bouncer tier II STR 9 also hits floor", function()
+    local part = MockInjuryPart("Head", { bitten = true, biteTime = 50, isInfected = true })
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_II" }, { part }, 9)
+
+    Events.OnPlayerUpdate:fire(player)
+
+    assert_true(not part:bitten(), "bite should be cleared")
+    -- max(10, 180 - 9*20) = max(10, 0) = 10 → 10 * 60 = 600
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 600, "tier II STR9 cooldown floors at 600")
 end)
 
 -- ===== UT_vagabond loot mechanic tests =====

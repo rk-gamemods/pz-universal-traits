@@ -1,18 +1,50 @@
 -- UT_bouncer_I.lua
--- Bouncer (I & II): when surrounded by 3+ enemies within 1.75 tiles,
--- 5% chance per update tick to stagger one close enemy back.
--- Cooldown: 60 ticks between triggers (stored in moddata as UT_bouncer_cooldown).
+-- Bouncer (I & II): injury downgrade — experience handling rough crowds
+-- means the character rolls with hits, reducing serious injuries to
+-- lesser ones on a cooldown timer.
 --
--- SAFETY: bouncer must NOT fire during player attack/shove/stomp/grapple animations.
--- Staggering a zombie mid-swing corrupts the animation sequence, causing the
--- SwipeStatePlayer to never exit → blockMovement stuck forever (permanent freeze).
--- See: freeze at frame 101723, UT_bouncer_cooldown=57 (fired 3 ticks before freeze).
+-- Downgrade table (checked in severity order):
+--   Bite        → Deep wound (laceration), clears zombie infection
+--   Deep wound  → Scratch
+--   Fracture    → Halved fracture time
+--
+-- Cooldown scales with Strength: max(MIN_CD_SEC, baseSec - STR * 20) * 60 ticks
+--   Tier I  base = 220s  →  at STR 10 = 20s
+--   Tier II base = 180s  →  at STR 9+ = 10s (floor)
+-- Only one downgrade per cooldown. Logs each event to console.
+--
+-- SAFETY: reads + writes only BodyPart boolean/float fields via Java
+-- setter methods. No animation, bump, or movement state touched.
 
 local TRAIT_I  = "UniversalTraits:UT_bouncer_I"
 local TRAIT_II = "UniversalTraits:UT_bouncer_II"
 
+-- Cooldown formula constants
+local BASE_SEC_I    = 220   -- Tier I base cooldown in real-world seconds
+local BASE_SEC_II   = 180   -- Tier II base cooldown in real-world seconds
+local SEC_PER_STR   = 20    -- seconds removed per Strength level
+local MIN_CD_SEC    = 10    -- absolute minimum cooldown (seconds)
+local TICKS_PER_SEC = 60    -- PZ runs at ~60 ticks/second
+
+local BodyPartType = BodyPartType
+
+local function partName(part)
+    return BodyPartType.ToString(part:getType())
+end
+
+--- Compute cooldown in ticks based on tier and player strength.
+local function computeCooldown(player, isTierII)
+    local baseSec = isTierII and BASE_SEC_II or BASE_SEC_I
+    local strength = 0
+    pcall(function() strength = player:getPerkLevel(Perks.Strength) end)
+    local cdSec = math.max(MIN_CD_SEC, baseSec - strength * SEC_PER_STR)
+    return cdSec * TICKS_PER_SEC, strength, cdSec
+end
+
 local function onTick(player, tick)
     local md = tick.modData
+
+    -- Init cooldown
     if md["UT_bouncer_cooldown"] == nil then
         md["UT_bouncer_cooldown"] = 0
     end
@@ -23,48 +55,56 @@ local function onTick(player, tick)
         return
     end
 
-    -- GUARD: never stagger zombies while the player is mid-attack/shove/stomp/grapple.
-    -- Mutating a zombie's bump state during SwipeStatePlayer corrupts the animation
-    -- sequence and can permanently lock blockMovement=true (freeze bug).
-    if tick.isHostileAnim then
-        UTCore.diagLog("bouncer", "SUPPRESSED", "hostile_anim=true")
-        return
-    end
+    -- Determine tier and compute strength-scaled cooldown
+    local isTierII = UTCore.hasTrait(player, TRAIT_II)
+    local cooldown, strength, cdSec = computeCooldown(player, isTierII)
 
-    -- Build enemy list (lazy in tick context)
-    local enemies, enemyCount = UTCore.getLivingEnemies(tick)
+    -- Scan all body parts for downgradeable injuries (severity order)
+    local bd = player:getBodyDamage()
+    local parts = bd:getBodyParts()
+    local count = parts:size()
 
-    -- Need at least 3 living enemies to trigger
-    if enemyCount < 3 then return end
+    for i = 0, count - 1 do
+        local part = parts:get(i)
+        local name = partName(part)
 
-    -- Filter to within 1.75 tiles (distances pre-computed in tick cache)
-    local closeEnemies = {}
-    for i = 1, enemyCount do
-        local e = enemies[i]
-        if e.dist < 1.75 then
-            closeEnemies[#closeEnemies + 1] = e.zombie
+        -- Priority 1: Bite → Deep wound (laceration)
+        if part:bitten() then
+            part:SetBitten(false)
+            part:setBiteTime(0)
+            part:SetInfected(false)
+            part:SetFakeInfected(false)
+            -- Apply deep wound as the downgraded injury
+            part:setDeepWounded(true)
+            part:setDeepWoundTime(20)
+            md["UT_bouncer_cooldown"] = cooldown
+            UTCore.diagLog("bouncer", "DOWNGRADE",
+                name .. " bite->deepwound STR=" .. strength .. " cd=" .. cdSec .. "s")
+            return
         end
-    end
 
-    if #closeEnemies < 3 then return end
+        -- Priority 2: Deep wound → Scratch
+        if part:isDeepWounded() then
+            part:setDeepWounded(false)
+            part:setDeepWoundTime(0)
+            -- Apply scratch as the downgraded injury
+            part:setScratched(true, true)
+            md["UT_bouncer_cooldown"] = cooldown
+            UTCore.diagLog("bouncer", "DOWNGRADE",
+                name .. " deepwound->scratch STR=" .. strength .. " cd=" .. cdSec .. "s")
+            return
+        end
 
-    -- GUARD: never stagger while player movement is already blocked.
-    -- If player is being bumped, knocked down, or getting up, a stagger
-    -- can chain-collide into the player and permanently lock blockMovement.
-    if player:isBlockMovement() then
-        UTCore.diagLog("bouncer", "SUPPRESSED", "blockMovement=true")
-        return
-    end
-
-    -- 5% chance to stagger one close enemy
-    if ZombRand(100) < 5 then
-        local target = closeEnemies[1]
-        target:setBumpType("stagger")
-        target:setVariable("BumpDone", false)
-        target:setVariable("BumpFall", true)
-        md["UT_bouncer_cooldown"] = 60
-        UTCore.diagLog("bouncer", "STAGGER", "close=" .. #closeEnemies
-            .. " blockMov=" .. tostring(player:isBlockMovement()))
+        -- Priority 3: Fracture → Halve fracture time
+        if part:getFractureTime() > 1 then
+            local ft = part:getFractureTime()
+            part:setFractureTime(ft * 0.5)
+            md["UT_bouncer_cooldown"] = cooldown
+            UTCore.diagLog("bouncer", "DOWNGRADE",
+                name .. " fracture " .. string.format("%.1f->%.1f", ft, ft * 0.5)
+                .. " STR=" .. strength .. " cd=" .. cdSec .. "s")
+            return
+        end
     end
 end
 

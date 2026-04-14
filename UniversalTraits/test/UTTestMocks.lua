@@ -1033,6 +1033,7 @@ _G.BodyPartType.Torso_Lower = _G.BodyPartType.Torso_Lower or "Torso_Lower"
 _G.BodyPartType.UpperArm_L  = _G.BodyPartType.UpperArm_L  or "UpperArm_L"
 _G.BodyPartType.UpperArm_R  = _G.BodyPartType.UpperArm_R  or "UpperArm_R"
 _G.BodyPartType.FromString   = _G.BodyPartType.FromString  or function(s) return s end
+_G.BodyPartType.ToString     = _G.BodyPartType.ToString    or function(bpt) return tostring(bpt) end
 
 function MockBodyPart(partType, isBleeding, isStemmed)
     local _type = partType or "Torso_Upper"

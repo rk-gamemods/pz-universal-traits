@@ -2111,7 +2111,7 @@ module UniversalTraits
         Cost = 4,
         UIName = UI_UT_bouncer_I,
         UIDescription = UI_UT_bouncer_IDesc,
-        XPBoosts = Strength=1;SmallBlunt=1,
+        XPBoosts = Strength=1;FirstAid=1,
         MutuallyExclusiveTraits = UniversalTraits:UT_bouncer_II,
     }
 
@@ -2123,7 +2123,7 @@ module UniversalTraits
         Cost = 6,
         UIName = UI_UT_bouncer_II,
         UIDescription = UI_UT_bouncer_IIDesc,
-        XPBoosts = Strength=2;SmallBlunt=2,
+        XPBoosts = Strength=2;FirstAid=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_bouncer_I,
     }
 
