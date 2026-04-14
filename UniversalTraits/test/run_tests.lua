@@ -1117,6 +1117,121 @@ test("bouncer clears new infection from fresh bite", function()
     assert_true(part:isDeepWounded(), "deep wound should be applied")
 end)
 
+-- Edge case: bite arrives during cooldown. The infection from that
+-- bite must be cleared when bouncer finally processes it, NOT treated
+-- as pre-existing just because cooldown-expiry sees it.
+test("bouncer clears infection from bite received during cooldown", function()
+    local partA = MockInjuryPart("Torso_Upper", {})
+    local partB = MockInjuryPart("Head", {})
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { partA, partB }, 5)
+
+    -- Init tick: both clean, snapshot taken
+    Events.OnPlayerUpdate:fire(player)
+
+    -- Bite on A → processed immediately (cooldown was 0)
+    partA._bitten = true
+    partA._biteTime = 60
+    partA._isInfected = true
+    Events.OnPlayerUpdate:fire(player)
+    assert_true(not partA:bitten(), "A bite processed")
+
+    -- Simulate: during cooldown, zombie bites B → B now bitten+infected
+    partB._bitten = true
+    partB._biteTime = 60
+    partB._isInfected = true
+
+    -- Clear A's residual deep wound (from the downgrade) so B's bite
+    -- is the only injury when bouncer fires next.
+    partA._deepWounded = false
+    partA._deepWoundTime = 0
+
+    -- Fast-forward cooldown to 0 (simulating full cooldown elapsing)
+    player:getModData()["UT_bouncer_cooldown"] = 0
+
+    -- Bouncer fires again: B's infection came from the bite → must clear
+    Events.OnPlayerUpdate:fire(player)
+
+    assert_true(not partB:bitten(), "B bite should be cleared")
+    assert_eq(partB._isInfected, false, "B infection should be cleared (came from bite, not pre-existing)")
+    assert_true(partB:isDeepWounded(), "B should get deep wound")
+end)
+
+-- Edge case: part is already infected when bite arrives during cooldown.
+-- Bouncer should preserve that infection because it predates the bite.
+test("bouncer preserves pre-existing infection through mid-cooldown bite", function()
+    -- Part B starts infected (from a prior wound)
+    local partA = MockInjuryPart("Torso_Upper", {})
+    local partB = MockInjuryPart("Head", { isInfected = true })
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { partA, partB }, 5)
+
+    -- Init tick: B is infected (no bite) → snapshot records B as infected
+    Events.OnPlayerUpdate:fire(player)
+
+    -- Bite on A → processed
+    partA._bitten = true
+    partA._biteTime = 60
+    Events.OnPlayerUpdate:fire(player)
+    assert_true(not partA:bitten(), "A bite processed")
+
+    -- During cooldown: zombie bites B (already-infected part)
+    partB._bitten = true
+    partB._biteTime = 60
+
+    -- Clear A's residual deep wound so B is processed next
+    partA._deepWounded = false
+    partA._deepWoundTime = 0
+
+    -- Fast-forward cooldown
+    player:getModData()["UT_bouncer_cooldown"] = 0
+
+    -- Bouncer fires: B was infected BEFORE the bite → must preserve
+    Events.OnPlayerUpdate:fire(player)
+
+    assert_true(not partB:bitten(), "B bite should be cleared")
+    assert_eq(partB._isInfected, true, "B pre-existing infection should be PRESERVED")
+    assert_true(partB:isDeepWounded(), "B should get deep wound")
+end)
+
+-- Edge case: two parts bitten simultaneously on the same tick.
+-- First bite is processed and infection cleared. Second bite must
+-- also have its infection cleared on the next cycle (not locked in
+-- by the post-trigger snapshot).
+test("bouncer clears infection on both parts when bitten simultaneously", function()
+    local partA = MockInjuryPart("Torso_Upper", {})
+    local partB = MockInjuryPart("Head", {})
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { partA, partB }, 5)
+
+    -- Init tick: both clean
+    Events.OnPlayerUpdate:fire(player)
+
+    -- Both parts get bitten+infected simultaneously
+    partA._bitten = true
+    partA._biteTime = 60
+    partA._isInfected = true
+    partB._bitten = true
+    partB._biteTime = 60
+    partB._isInfected = true
+
+    -- Bouncer processes A first (lower index = first in scan order)
+    Events.OnPlayerUpdate:fire(player)
+    assert_true(not partA:bitten(), "A processed first")
+    assert_eq(partA._isInfected, false, "A infection cleared")
+    assert_true(partB:bitten(), "B still waiting (one per cooldown)")
+
+    -- Clear A's residual deep wound so B is processed next
+    partA._deepWounded = false
+    partA._deepWoundTime = 0
+
+    -- Fast-forward cooldown
+    player:getModData()["UT_bouncer_cooldown"] = 0
+
+    -- Bouncer processes B: infection should be cleared (was clean before bite)
+    Events.OnPlayerUpdate:fire(player)
+    assert_true(not partB:bitten(), "B bite should be cleared")
+    assert_eq(partB._isInfected, false, "B infection should be cleared (not pre-existing)")
+    assert_true(partB:isDeepWounded(), "B should get deep wound")
+end)
+
 -- ===== UT_vagabond loot mechanic tests =====
 -- Load the trait file so handleContainerInspect is exposed as a global.
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_vagabond.lua")

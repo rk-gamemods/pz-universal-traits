@@ -14,14 +14,14 @@
 --   Tier II: max(10, 220 - STR * 20) seconds  →  STR 10 = 20s
 -- Only one downgrade per cooldown. Logs each event to console.
 --
--- Infection preservation: a snapshot of which body parts carry zombie
--- infection is taken ONCE when cooldown expires. When a bite is later
--- downgraded, the snapshot is checked. If the bitten part was already
--- infected at cooldown expiry, the infection is kept (bouncer prevents
--- the new wound, not a pre-existing virus). This is efficient because
--- infections only come from bites/lacerations — the same events that
--- trigger bouncer — so nothing can change infection state between
--- cooldown expiry and the next trigger.
+-- Infection preservation: each tick that bouncer is ready (cooldown==0),
+-- a selective snapshot updates infection records for NON-BITTEN parts
+-- only. Bitten parts retain whatever infection record they had from
+-- before the bite landed, so we always compare against the pre-bite
+-- state. This correctly handles bites that arrive mid-cooldown:
+-- their infection is recorded as "new" (part was clean before the
+-- bite) even though the infection has been running for the full
+-- cooldown duration.
 --
 -- SAFETY: reads + writes only BodyPart boolean/float fields via Java
 -- setter methods. No animation, bump, or movement state touched.
@@ -59,7 +59,7 @@ local function loadPrevInfected(md)
     return set
 end
 
---- Snapshot current infected parts into moddata for next tick.
+--- Full snapshot: record all infected parts. Used at init only.
 local function snapshotInfected(md, parts, count)
     local buf = {}
     for i = 0, count - 1 do
@@ -68,6 +68,31 @@ local function snapshotInfected(md, parts, count)
         end
     end
     md[PREV_INFECTED_KEY] = table.concat(buf, ",")
+end
+
+--- Selective update + load: refresh infection records for non-bitten
+--- parts only. Bitten parts keep their pre-bite record so we can
+--- distinguish pre-existing infections from bite-caused ones.
+--- Returns the updated { [partIndex] = true } set.
+local function updateAndLoadInfected(md, parts, count)
+    local prev = loadPrevInfected(md)
+    for i = 0, count - 1 do
+        local p = parts:get(i)
+        if not p:bitten() then
+            if p:isInfected() then
+                prev[i] = true
+            else
+                prev[i] = nil
+            end
+        end
+        -- bitten parts: keep existing record (pre-bite state)
+    end
+    local buf = {}
+    for idx, _ in pairs(prev) do
+        buf[#buf + 1] = tostring(idx)
+    end
+    md[PREV_INFECTED_KEY] = table.concat(buf, ",")
+    return prev
 end
 
 --- Compute cooldown in ticks based on tier and player strength.
@@ -93,32 +118,24 @@ local function onTick(player, tick)
         snapshotInfected(md, parts, parts:size())
     end
 
-    -- Decrement cooldown each tick
+    -- Decrement cooldown each tick; no work during cooldown
     if md["UT_bouncer_cooldown"] > 0 then
         md["UT_bouncer_cooldown"] = md["UT_bouncer_cooldown"] - 1
-        -- Snapshot infection state at the moment cooldown expires.
-        -- Infections only come from bites/lacerations (bouncer events),
-        -- so state can't change between this snapshot and the next trigger.
-        if md["UT_bouncer_cooldown"] == 0 then
-            local bd = player:getBodyDamage()
-            local parts = bd:getBodyParts()
-            snapshotInfected(md, parts, parts:size())
-        end
         return
     end
 
-    -- Load the infection snapshot taken when cooldown last expired
-    local prevInfected = loadPrevInfected(md)
+    -- Ready (cooldown==0): selective snapshot skipping bitten parts,
+    -- then load the result for use in the scan below.
+    local bd = player:getBodyDamage()
+    local parts = bd:getBodyParts()
+    local count = parts:size()
+    local prevInfected = updateAndLoadInfected(md, parts, count)
 
     -- Determine tier and compute strength-scaled cooldown
     local isTierII = UTCore.hasTrait(player, TRAIT_II)
     local cooldown, strength, cdSec = computeCooldown(player, isTierII)
 
     -- Scan all body parts for downgradeable injuries (severity order)
-    local bd = player:getBodyDamage()
-    local parts = bd:getBodyParts()
-    local count = parts:size()
-
     for i = 0, count - 1 do
         local part = parts:get(i)
         local name = partName(part)
