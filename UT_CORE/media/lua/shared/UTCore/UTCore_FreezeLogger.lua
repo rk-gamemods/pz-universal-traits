@@ -87,6 +87,38 @@ local function captureState(player)
     state.varBumpType = safeStr(safeCall(player, "getVariable", "BumpType"))
     state.varMovementState = safeStr(safeCall(player, "getVariable", "MovementState"))
 
+    -- CRITICAL: Animation system's isMoving (what ActionContext's idle→movement
+    -- transition actually reads) vs isMoving() (input-based, what we check above).
+    -- isMoving anim var = callback to isPlayerMoving() field which depends on
+    -- isJustMoved(). If these diverge from state.isMoving, the transition
+    -- condition fails and the player stays stuck in IdleState.
+    state.varIsMoving      = safeStr(safeCall(player, "getVariableBoolean", "isMoving"))
+    state.isPlayerMoving   = safeStr(safeCall(player, "isPlayerMoving"))
+    state.isJustMoved      = safeStr(safeCall(player, "isJustMoved"))
+    state.pressedMovement  = safeStr(safeCall(player, "getVariableBoolean", "pressedMovement"))
+
+    -- Java BaseAction queue — checkActionsBlockingMovement() causes early
+    -- return from updateInternal2() before keyboard processing runs.
+    -- If characterActions is non-empty with a blocking action, input never
+    -- reaches setJustMoved(true), isPlayerMoving stays false, and the
+    -- idle→movement transition cannot fire.
+    local charActions = safeCall(player, "getCharacterActions")
+    if charActions then
+        local actSize = safeCall(charActions, "size") or 0
+        state.javaActionQueueSize = actSize
+        if actSize > 0 then
+            local firstAction = safeCall(charActions, "get", 0)
+            if firstAction then
+                state.javaAction0 = tostring(firstAction)
+                -- blockMovementEtc is a public boolean field on BaseAction
+                local ok, bmv = pcall(function() return firstAction.blockMovementEtc end)
+                state.javaAction0BlocksMov = ok and safeStr(bmv) or "err"
+            end
+        end
+    else
+        state.javaActionQueueSize = "no_method"
+    end
+
     -- Player state machine: getCurrentState returns a Java State object
     -- whose tostring gives us the class name (e.g. IdleState, PlayerHitReactionState)
     local curState = safeCall(player, "getCurrentState")
@@ -160,6 +192,17 @@ local function dumpState(prefix, state)
         .. " var:IsAiming=" .. state.varIsAiming)
     print(prefix .. " var:BumpType=" .. state.varBumpType
         .. " var:MovementState=" .. state.varMovementState)
+    print(prefix .. " var:isMoving=" .. state.varIsMoving
+        .. " isPlayerMoving=" .. state.isPlayerMoving
+        .. " isJustMoved=" .. state.isJustMoved
+        .. " pressedMovement=" .. state.pressedMovement)
+    -- Java BaseAction queue (checkActionsBlockingMovement)
+    local jaqLine = " javaActionQ=" .. safeStr(state.javaActionQueueSize)
+    if state.javaAction0 then
+        jaqLine = jaqLine .. " action0=" .. state.javaAction0
+            .. " blocksMov=" .. safeStr(state.javaAction0BlocksMov)
+    end
+    print(prefix .. jaqLine)
     print(prefix .. " currentState=" .. state.currentState
         .. " prevState=" .. state.prevState
         .. " isPathing=" .. state.isPathing
