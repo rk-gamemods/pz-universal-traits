@@ -7,6 +7,18 @@ local base = source:match("(.*[/\\])") or "./"
 dofile(base .. "../../UniversalTraits/test/UTTestMocks.lua")-- UTCoreMocks.lua
 -- Mock PZ globals for unit tests (standard Lua 5.x, NOT Kahlua).
 
+-- Mock PZ Java state classes (used by FreezeLogger recovery)
+local _mockIdleState = { _name = "IdleState" }
+_mockIdleState.__tostring = function() return "zombie.ai.states.IdleState@mock" end
+setmetatable(_mockIdleState, _mockIdleState)
+
+local _mockPlayerMovementState = { _name = "PlayerMovementState" }
+_mockPlayerMovementState.__tostring = function() return "zombie.ai.states.player.PlayerMovementState@mock" end
+setmetatable(_mockPlayerMovementState, _mockPlayerMovementState)
+
+IdleState = { instance = function() return _mockIdleState end }
+PlayerMovementState = { instance = function() return _mockPlayerMovementState end }
+
 -- Mock IsoPlayer
 function MockPlayer(traits, opts)
     local t = traits or {}
@@ -252,6 +264,15 @@ function MockPlayer(traits, opts)
         end,
         setSpottedList       = function(self, list) self._spottedList = list end,
         DistTo               = function(self, other) return 10.0 end,
+        -- State machine (used by FreezeLogger recovery)
+        _currentState        = nil,
+        _previousStateName   = nil,
+        _hasTimedActions     = false,
+        getCurrentState      = function(self) return self._currentState end,
+        getPreviousStateName = function(self) return self._previousStateName end,
+        changeState          = function(self, state) self._currentState = state end,
+        hasTimedActions      = function(self) return self._hasTimedActions end,
+        setIsAiming          = function(self, v) end, -- no-op (isAiming already returns false)
     }
 end
 
