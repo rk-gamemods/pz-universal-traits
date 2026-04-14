@@ -14,11 +14,14 @@
 --   Tier II: max(10, 220 - STR * 20) seconds  →  STR 10 = 20s
 -- Only one downgrade per cooldown. Logs each event to console.
 --
--- Infection preservation: each tick, a snapshot of which body parts
--- carry zombie infection is stored in moddata. When a bite is
--- downgraded, the snapshot from the PREVIOUS tick is checked. If that
--- part was already infected before the bite landed, the infection is
--- kept (bouncer prevents the wound, not the pre-existing virus).
+-- Infection preservation: a snapshot of which body parts carry zombie
+-- infection is taken ONCE when cooldown expires. When a bite is later
+-- downgraded, the snapshot is checked. If the bitten part was already
+-- infected at cooldown expiry, the infection is kept (bouncer prevents
+-- the new wound, not a pre-existing virus). This is efficient because
+-- infections only come from bites/lacerations — the same events that
+-- trigger bouncer — so nothing can change infection state between
+-- cooldown expiry and the next trigger.
 --
 -- SAFETY: reads + writes only BodyPart boolean/float fields via Java
 -- setter methods. No animation, bump, or movement state touched.
@@ -80,33 +83,41 @@ end
 local function onTick(player, tick)
     local md = tick.modData
 
-    -- Access body parts early — needed for infection snapshot every tick
-    local bd = player:getBodyDamage()
-    local parts = bd:getBodyParts()
-    local count = parts:size()
-
-    -- Infection tracking: load last tick's snapshot, then record current
-    -- state BEFORE any modifications. Runs every tick (even during
-    -- cooldown) so the snapshot stays fresh.
-    local prevInfected = loadPrevInfected(md)
-    snapshotInfected(md, parts, count)
-
     -- Init cooldown
     if md["UT_bouncer_cooldown"] == nil then
         md["UT_bouncer_cooldown"] = 0
+        -- First-ever tick: take initial snapshot so pre-existing
+        -- infections from save load are recorded before any trigger.
+        local bd = player:getBodyDamage()
+        local parts = bd:getBodyParts()
+        snapshotInfected(md, parts, parts:size())
     end
 
-    -- Decrement cooldown each tick (minimum 0)
+    -- Decrement cooldown each tick
     if md["UT_bouncer_cooldown"] > 0 then
         md["UT_bouncer_cooldown"] = md["UT_bouncer_cooldown"] - 1
+        -- Snapshot infection state at the moment cooldown expires.
+        -- Infections only come from bites/lacerations (bouncer events),
+        -- so state can't change between this snapshot and the next trigger.
+        if md["UT_bouncer_cooldown"] == 0 then
+            local bd = player:getBodyDamage()
+            local parts = bd:getBodyParts()
+            snapshotInfected(md, parts, parts:size())
+        end
         return
     end
+
+    -- Load the infection snapshot taken when cooldown last expired
+    local prevInfected = loadPrevInfected(md)
 
     -- Determine tier and compute strength-scaled cooldown
     local isTierII = UTCore.hasTrait(player, TRAIT_II)
     local cooldown, strength, cdSec = computeCooldown(player, isTierII)
 
     -- Scan all body parts for downgradeable injuries (severity order)
+    local bd = player:getBodyDamage()
+    local parts = bd:getBodyParts()
+    local count = parts:size()
 
     for i = 0, count - 1 do
         local part = parts:get(i)

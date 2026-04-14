@@ -890,8 +890,16 @@ end
 -- Tier I: 300 - 10*STR,  Tier II: 220 - 20*STR
 
 test("bouncer downgrades bite to deep wound (STR 5)", function()
-    local part = MockInjuryPart("Torso_Upper", { bitten = true, biteTime = 60, isInfected = true })
+    local part = MockInjuryPart("Torso_Upper", {})
     local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 5)
+
+    -- Init tick: snapshot clean state
+    Events.OnPlayerUpdate:fire(player)
+
+    -- Fresh bite lands with infection
+    part._bitten = true
+    part._biteTime = 60
+    part._isInfected = true
 
     Events.OnPlayerUpdate:fire(player)
 
@@ -928,8 +936,16 @@ test("bouncer halves fracture time (STR 5)", function()
 end)
 
 test("bouncer tier II uses shorter cooldown (STR 5)", function()
-    local part = MockInjuryPart("Head", { bitten = true, biteTime = 50, isInfected = true })
+    local part = MockInjuryPart("Head", {})
     local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_II" }, { part }, 5)
+
+    -- Init tick
+    Events.OnPlayerUpdate:fire(player)
+
+    -- Fresh bite
+    part._bitten = true
+    part._biteTime = 50
+    part._isInfected = true
 
     Events.OnPlayerUpdate:fire(player)
 
@@ -950,9 +966,19 @@ test("bouncer does NOT fire during cooldown", function()
 end)
 
 test("bouncer processes highest severity first (bite before deep wound)", function()
-    local bitePart = MockInjuryPart("Head", { bitten = true, biteTime = 60, isInfected = true })
-    local deepPart = MockInjuryPart("Torso_Upper", { deepWounded = true, deepWoundTime = 30 })
+    local bitePart = MockInjuryPart("Head", {})
+    local deepPart = MockInjuryPart("Torso_Upper", {})
     local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { bitePart, deepPart }, 5)
+
+    -- Init tick: both clean, snapshot taken
+    Events.OnPlayerUpdate:fire(player)
+
+    -- Both injuries land simultaneously
+    bitePart._bitten = true
+    bitePart._biteTime = 60
+    bitePart._isInfected = true
+    deepPart._deepWounded = true
+    deepPart._deepWoundTime = 30
 
     Events.OnPlayerUpdate:fire(player)
 
@@ -981,8 +1007,16 @@ test("bouncer ignores fracture time <= 1", function()
 end)
 
 test("bouncer STR 0 uses full base cooldown", function()
-    local part = MockInjuryPart("Torso_Upper", { bitten = true, biteTime = 60, isInfected = true })
+    local part = MockInjuryPart("Torso_Upper", {})
     local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 0)
+
+    -- Init tick
+    Events.OnPlayerUpdate:fire(player)
+
+    -- Fresh bite
+    part._bitten = true
+    part._biteTime = 60
+    part._isInfected = true
 
     Events.OnPlayerUpdate:fire(player)
 
@@ -992,8 +1026,16 @@ test("bouncer STR 0 uses full base cooldown", function()
 end)
 
 test("bouncer STR 10 produces minimum tier I cooldown", function()
-    local part = MockInjuryPart("Torso_Upper", { bitten = true, biteTime = 60, isInfected = true })
+    local part = MockInjuryPart("Torso_Upper", {})
     local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 10)
+
+    -- Init tick
+    Events.OnPlayerUpdate:fire(player)
+
+    -- Fresh bite
+    part._bitten = true
+    part._biteTime = 60
+    part._isInfected = true
 
     Events.OnPlayerUpdate:fire(player)
 
@@ -1014,8 +1056,16 @@ test("bouncer tier II STR 10 cooldown", function()
 end)
 
 test("bouncer tier II STR 9 cooldown", function()
-    local part = MockInjuryPart("Head", { bitten = true, biteTime = 50, isInfected = true })
+    local part = MockInjuryPart("Head", {})
     local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_II" }, { part }, 9)
+
+    -- Init tick
+    Events.OnPlayerUpdate:fire(player)
+
+    -- Fresh bite
+    part._bitten = true
+    part._biteTime = 50
+    part._isInfected = true
 
     Events.OnPlayerUpdate:fire(player)
 
