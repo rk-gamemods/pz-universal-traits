@@ -43,6 +43,13 @@ function UTCore.getCoreHandlerCount()
     return UTCore._coreHandlerCount
 end
 
+---------------------------------------------------------------------------
+-- Diagnostic / profiling subsystem toggles.
+-- Set to true to re-enable without code changes; false = disabled at load.
+---------------------------------------------------------------------------
+UTCore.FREEZE_LOGGER_ENABLED = false    -- per-tick freeze detection (FreezeLogger)
+UTCore.MET_DEBUG_ENABLED     = false    -- character-creation MET null-guard + audit
+
 --- Dispatch safety mode: when true, pcall wraps every handler call so a
 --- single handler error cannot propagate and break OnPlayerUpdate or PZ's
 --- action queue.  The pcall overhead is negligible (~2 µs/call) and the

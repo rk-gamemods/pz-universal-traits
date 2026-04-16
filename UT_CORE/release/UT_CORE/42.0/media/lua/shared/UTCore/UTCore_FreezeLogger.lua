@@ -318,15 +318,20 @@ end
 
 -- Register as high-priority core handler so we see state before other hooks
 -- modify it. Priority 100 ensures FreezeLogger runs first among core handlers.
-if UTCore.registerCoreHandler then
-    UTCore.registerCoreHandler("FreezeLogger", onPlayerUpdate, { priority = 100 })
-else
-    if Events and Events.OnPlayerUpdate then
-        Events.OnPlayerUpdate.Add(onPlayerUpdate)
+-- Gated by UTCore.FREEZE_LOGGER_ENABLED (set in UTCore_API.lua).
+if UTCore.FREEZE_LOGGER_ENABLED then
+    if UTCore.registerCoreHandler then
+        UTCore.registerCoreHandler("FreezeLogger", onPlayerUpdate, { priority = 100 })
+    else
+        if Events and Events.OnPlayerUpdate then
+            Events.OnPlayerUpdate.Add(onPlayerUpdate)
+        end
     end
-end
-if Events and Events.OnPlayerMove then
-    Events.OnPlayerMove.Add(onPlayerMove)
+    if Events and Events.OnPlayerMove then
+        Events.OnPlayerMove.Add(onPlayerMove)
+    end
+else
+    print("[UTCore] FreezeLogger disabled (UTCore.FREEZE_LOGGER_ENABLED = false)")
 end
 
 -- Expose for testing

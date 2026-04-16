@@ -1,5 +1,11 @@
 require "OptionScreens/CharacterCreationProfession"
 
+-- Gated by UTCore.MET_DEBUG_ENABLED (set in UTCore_API.lua).
+-- When disabled, the crash-guard wrapper and MET audit are skipped entirely.
+if not UTCore or not UTCore.MET_DEBUG_ENABLED then
+    return
+end
+
 if CharacterCreationProfession and not CharacterCreationProfession._UTCoreMetDebugWrapped then
     local originalDoTestForMutuallyExclusiveTraits = CharacterCreationProfession.doTestForMutuallyExclusiveTraits
 
