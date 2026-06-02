@@ -285,6 +285,8 @@ Timed-action gotcha: PZ Lua timed actions commonly expose their class identity t
 
 Optional-helper gotcha: if a trait comment says a UT_CORE helper is optional, guard it explicitly with `if UTCore.someHelper then ... end` before calling it. Wrapping a nil function call in `pcall()` still surfaces a user-visible Kahlua error dialog.
 
+B42.17 inventory-capacity gotcha: do not use deprecated RemoveInventoryLimits [JAVA] / Workshop `3625921385`; its jar overrides `zombie.inventory.ItemContainer` and can throw `NoSuchFieldError: zombie.debug.DebugLog.General`. The supported helper is Remove Inventory Limits ZombieBuddy Edition / Workshop `3711508756`, mod id `RemoveInventoryLimitsZB`, with `ZombieBuddy` enabled. UTCore carry traits may raise `player:setMaxWeightBase()`, but inventory capacity sync must stay at or below 100 unless `getActivatedMods():contains("RemoveInventoryLimitsZB")` is true.
+
 Spawn-wound gotcha: reducing a body part's health alone is not the same as creating a visible wound. For traits that are meant to start with actual injuries, use wound setters such as `setScratched`, `setCut`, or `setDeepWounded` rather than only `setHealth`.
 
 For periodic handlers, use `getPlayer()` (no args):
@@ -644,3 +646,7 @@ All 6 previously documented gaps are now resolved. See new UTCore hook modules:
 - **UT_amputee** — complex limb system, deferred indefinitely
 - **poster.png** — cosmetic, not required for function
 - **In-game verification** — all traits need visual/functional confirmation in PZ character creation
+
+## Normal-operation blockers
+
+When a tool, MCP server, index, automation, config surface, or other setup piece is required for normal operation, a failure in that surface is repair work, not a note to leave behind. Diagnose and fix the blocker when it is within local control. Use a temporary fallback only to keep work moving while the repair is underway, and record any remaining remount, restart, approval, or external-state requirement explicitly.
