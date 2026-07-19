@@ -130,15 +130,112 @@ test("getCharacterTraitId retains getName and printable fallbacks", function()
     assert_eq(UTCore.getCharacterTraitId(nil), "<nil>")
 end)
 
-test("getTraitDefinitionId resolves through getType", function()
-    local def = {
-        getType = function(self)
+test("getTraitDefinitionId preserves the namespaced identity from an engine-faithful definition", function()
+    local trait = setmetatable({
+        getName = function(self) return "UT_specaid" end
+    }, {
+        __tostring = function() return "UniversalTraits:UT_specaid" end
+    })
+    local definition = {
+        getType = function(self) return trait end
+    }
+
+    assert_eq(UTCore.getTraitDefinitionId(definition), "UniversalTraits:UT_specaid")
+end)
+
+test("getTraitDefinitionId preserves nil and failed getType fallbacks", function()
+    local missingGetType = setmetatable({}, {
+        __tostring = function() return "UniversalTraits:UT_missing" end
+    })
+    local throwingGetType = setmetatable({
+        getType = function(self) error("getType failed") end
+    }, {
+        __tostring = function() return "UniversalTraits:UT_throwing" end
+    })
+    local nilGetType = setmetatable({
+        getType = function(self) return nil end
+    }, {
+        __tostring = function() return "UniversalTraits:UT_niltype" end
+    })
+
+    assert_eq(UTCore.getTraitDefinitionId(nil), "<nil>")
+    assert_eq(UTCore.getTraitDefinitionId(missingGetType), "UniversalTraits:UT_missing")
+    assert_eq(UTCore.getTraitDefinitionId(throwingGetType), "UniversalTraits:UT_throwing")
+    assert_eq(UTCore.getTraitDefinitionId(nilGetType), "UniversalTraits:UT_niltype")
+end)
+
+test("MET nil diagnostic prints the complete selected definition identity", function()
+    local trait = setmetatable({
+        getName = function(self) return "UT_specaid" end
+    }, {
+        __tostring = function() return "UniversalTraits:UT_specaid" end
+    })
+    local definition = {
+        getType = function(self) return trait end,
+        getLabel = function(self) return "Spec Aid" end,
+        getMutuallyExclusiveTraits = function(self)
             return {
-                getName = function(innerSelf) return "UT_specaid" end
+                size = function(list) return 0 end,
+                get = function(list, index) return nil end
             }
         end
     }
-    assert_eq(UTCore.getTraitDefinitionId(def), "UT_specaid")
+    local originalPrint = print
+    local output
+    print = function(message) output = message end
+    local ok, err = pcall(UTCore.logCharacterCreationMetNull, definition, nil, 2, false)
+    print = originalPrint
+    if not ok then error(err, 0) end
+
+    assert_eq(
+        output,
+        "[UT_MET_DEBUG] selected=UniversalTraits:UT_specaid label=Spec Aid removing=false nil_index=2 exclusive=<nil> mutex_list=[]"
+    )
+end)
+
+test("MET crash diagnostic prints the complete selected definition identity", function()
+    local trait = setmetatable({
+        getName = function(self) return "UT_specaid" end
+    }, {
+        __tostring = function() return "UniversalTraits:UT_specaid" end
+    })
+    local definition = {
+        getType = function(self) return trait end
+    }
+    local moduleName = "OptionScreens/CharacterCreationProfession"
+    local originalModule = package.loaded[moduleName]
+    local originalProfession = CharacterCreationProfession
+    local originalDefinitionApi = CharacterTraitDefinition
+    local originalDebugEnabled = UTCore.MET_DEBUG_ENABLED
+    local originalPrint = print
+    local output
+
+    package.loaded[moduleName] = true
+    CharacterTraitDefinition = nil
+    CharacterCreationProfession = {
+        doTestForMutuallyExclusiveTraits = function()
+            error("vanilla MET failure", 0)
+        end
+    }
+    UTCore.MET_DEBUG_ENABLED = true
+    print = function(message) output = message end
+
+    local ok, err = pcall(function()
+        dofile(base .. "../media/lua/client/UTCore/UTCore_CharacterCreationMETDebug.lua")
+        CharacterCreationProfession:doTestForMutuallyExclusiveTraits(definition, true)
+    end)
+
+    print = originalPrint
+    UTCore.MET_DEBUG_ENABLED = originalDebugEnabled
+    CharacterCreationProfession = originalProfession
+    CharacterTraitDefinition = originalDefinitionApi
+    package.loaded[moduleName] = originalModule
+    if not ok then error(err, 0) end
+
+    assert_eq(
+        output,
+        "[UT_MET_DEBUG] CRASH prevented in doTestForMutuallyExclusiveTraits selected=UniversalTraits:UT_specaid removing=true err=vanilla MET failure"
+    )
 end)
 
 -- hasAnyTrait
