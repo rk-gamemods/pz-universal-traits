@@ -27,6 +27,12 @@ from build_campaign_manifest import (
     build_manifest,
     render_manifest,
 )
+from build_remediation_queue import (
+    DIMENSION_OUTPUT_PATH,
+    QUEUE_OUTPUT_PATH,
+    SUMMARY_OUTPUT_PATH,
+    build_outputs,
+)
 
 
 def generated_artifact_errors(path: Path, expected: str, label: str) -> list[str]:
@@ -58,6 +64,25 @@ def main() -> int:
     errors.extend(
         generated_artifact_errors(
             PATTERN_OUTPUT_PATH, expected_patterns, "recurring_pattern_findings.json"
+        )
+    )
+
+    expected_dimensions, expected_queue, expected_summary = build_outputs()
+    errors.extend(
+        generated_artifact_errors(
+            DIMENSION_OUTPUT_PATH,
+            expected_dimensions,
+            "dimension_ledger_rows.jsonl",
+        )
+    )
+    errors.extend(
+        generated_artifact_errors(
+            QUEUE_OUTPUT_PATH, expected_queue, "remediation_queue.jsonl"
+        )
+    )
+    errors.extend(
+        generated_artifact_errors(
+            SUMMARY_OUTPUT_PATH, expected_summary, "remediation_summary.json"
         )
     )
 
@@ -99,6 +124,8 @@ def main() -> int:
         "independent_review_findings": ledger["counts"]["independent_review_findings"],
         "recurring_pattern_findings": len(pattern_ids),
         "globally_unique_finding_ids": len(set(all_ids)),
+        "dimension_records": len(expected_dimensions.splitlines()),
+        "open_remediation_records": len(expected_queue.splitlines()),
         "ledger_sha256": (
             hashlib.sha256(OUTPUT_PATH.read_bytes()).hexdigest().upper()
             if OUTPUT_PATH.exists()

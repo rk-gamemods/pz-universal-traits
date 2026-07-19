@@ -40,6 +40,14 @@ assert MANIFEST_SPEC and MANIFEST_SPEC.loader
 MANIFEST_MODULE = importlib.util.module_from_spec(MANIFEST_SPEC)
 MANIFEST_SPEC.loader.exec_module(MANIFEST_MODULE)
 
+QUEUE_MODULE_PATH = CAMPAIGN_ROOT / "tools" / "build_remediation_queue.py"
+QUEUE_SPEC = importlib.util.spec_from_file_location(
+    "build_remediation_queue", QUEUE_MODULE_PATH
+)
+assert QUEUE_SPEC and QUEUE_SPEC.loader
+QUEUE_MODULE = importlib.util.module_from_spec(QUEUE_SPEC)
+QUEUE_SPEC.loader.exec_module(QUEUE_MODULE)
+
 
 class NormalizationTests(unittest.TestCase):
     def test_legacy_states_map_to_terminal_vocabulary(self) -> None:
@@ -117,6 +125,9 @@ class NormalizationTests(unittest.TestCase):
             MODULE.OUTPUT_JSONL_PATH,
             PATTERN_MODULE.OUTPUT_PATH,
             MANIFEST_MODULE.OUTPUT_PATH,
+            QUEUE_MODULE.DIMENSION_OUTPUT_PATH,
+            QUEUE_MODULE.QUEUE_OUTPUT_PATH,
+            QUEUE_MODULE.SUMMARY_OUTPUT_PATH,
         ]
         before = {path: hashlib.sha256(path.read_bytes()).hexdigest() for path in outputs}
         scripts = [
@@ -124,6 +135,7 @@ class NormalizationTests(unittest.TestCase):
             PATTERN_MODULE_PATH,
             VALIDATOR_MODULE_PATH,
             MANIFEST_MODULE_PATH,
+            QUEUE_MODULE_PATH,
         ]
         for script in scripts:
             help_result = subprocess.run(
@@ -158,6 +170,39 @@ class NormalizationTests(unittest.TestCase):
         self.assertEqual(len(ledger["traits"]), 198)
         self.assertTrue(all(len(row["dimensions"]) == 24 for row in ledger["traits"]))
         self.assertTrue(all(row["independent_review"] for row in ledger["traits"]))
+
+    def test_remediation_queue_is_closed_world_and_dependency_ordered(self) -> None:
+        ledger = MODULE.build_ledger(CAMPAIGN_ROOT)
+        dimensions = QUEUE_MODULE.build_dimension_rows(ledger)
+        findings = QUEUE_MODULE.build_finding_rows(ledger, CAMPAIGN_ROOT)
+        queue = QUEUE_MODULE.build_queue(dimensions, findings)
+
+        self.assertEqual(len(dimensions), 198 * 24)
+        self.assertEqual(len({row["queue_id"] for row in dimensions}), 198 * 24)
+        self.assertEqual(
+            {row["state"] for row in dimensions}, set(MODULE.TERMINAL_STATES)
+        )
+        self.assertEqual(len(findings), 296)
+        self.assertEqual(len({row["queue_id"] for row in findings}), 296)
+        self.assertTrue(queue)
+        self.assertEqual(len(queue), len({row["queue_id"] for row in queue}))
+        self.assertTrue(all(row["state"] != "proven-correct" for row in queue))
+        queue_ids = {row["queue_id"] for row in queue}
+        self.assertTrue(
+            all(set(row["depends_on"]).issubset(queue_ids) for row in queue)
+        )
+
+    def test_remediation_outputs_are_deterministic_and_match_ledger_counts(self) -> None:
+        first = QUEUE_MODULE.build_outputs(CAMPAIGN_ROOT)
+        second = QUEUE_MODULE.build_outputs(CAMPAIGN_ROOT)
+        self.assertEqual(first, second)
+        dimension_rows = [json.loads(line) for line in first[0].splitlines()]
+        queue_rows = [json.loads(line) for line in first[1].splitlines()]
+        summary = json.loads(first[2])
+        self.assertEqual(len(dimension_rows), 4752)
+        self.assertEqual(summary["counts"]["dimension_records"], 4752)
+        self.assertEqual(summary["counts"]["open_queue_records"], len(queue_rows))
+        self.assertEqual(summary["acceptance"]["allowed_terminal_state"], "proven-correct")
 
 
 class CampaignManifestTests(unittest.TestCase):

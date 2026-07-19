@@ -3,6 +3,7 @@
   "inventory_type": "closed-world campaign content manifest",
   "required_artifacts": [
     "MASTER_COVERAGE_LEDGER.md",
+    "dimension_ledger_rows.jsonl",
     "final_trait_ledger.json",
     "final_trait_ledger_rows.jsonl",
     "independent_reviews/documentation_localization_skills.json",
@@ -12,6 +13,8 @@
     "independent_reviews/traits_09_12.json",
     "independent_reviews/ut_core_integration.json",
     "recurring_pattern_findings.json",
+    "remediation_queue.jsonl",
+    "remediation_summary.json",
     "source_inventory.json",
     "trait_batches/batch_01.jsonl",
     "trait_batches/batch_02.jsonl",
@@ -27,14 +30,20 @@
     "trait_batches/batch_12.jsonl",
     "translation_audit.json"
   ],
-  "file_count": 30,
-  "total_bytes": 6992649,
+  "file_count": 34,
+  "total_bytes": 11135773,
   "files": [
     {
       "path": "MASTER_COVERAGE_LEDGER.md",
       "kind": "master-ledger",
       "bytes": 30463,
       "sha256": "F30AD45E2A53C782EE13F5743F6AFFCCCCF88EF40DB1AE0B4D3ABFAF2EAC321A"
+    },
+    {
+      "path": "dimension_ledger_rows.jsonl",
+      "kind": "normalized-dimension-ledger",
+      "bytes": 2257648,
+      "sha256": "832F90D87CD0FC65D20738060A67D473E704A2C9A2999EF1A34981CAD17222FF"
     },
     {
       "path": "final_trait_ledger.json",
@@ -91,6 +100,18 @@
       "sha256": "D187FBCF3136C24119AF1CB6B73AFCD16E48C5B7622A6C0027F687AD48AB8619"
     },
     {
+      "path": "remediation_queue.jsonl",
+      "kind": "remediation-queue",
+      "bytes": 1867291,
+      "sha256": "36D805C6B8024BF3DCE24005378E441EF0B926E5912F6894FCC6A4EC0CA8561E"
+    },
+    {
+      "path": "remediation_summary.json",
+      "kind": "remediation-queue",
+      "bytes": 1183,
+      "sha256": "DFE3A0316A3679B061C68146643B4D35CEBD4AEC0EBB60319A8920CE97F91086"
+    },
+    {
       "path": "source_inventory.json",
       "kind": "source-inventory",
       "bytes": 230054,
@@ -99,20 +120,26 @@
     {
       "path": "tests/test_campaign_tools.py",
       "kind": "regression-test",
-      "bytes": 12732,
-      "sha256": "446CDE457F239BAFD50EA9EE69725B711A6F1DBB07F8E99CCFF8E0BFC976AF49"
+      "bytes": 15022,
+      "sha256": "1883C24F076200EE8FC7325521CFBB682123C908AE3A20027B089B9798E0B165"
     },
     {
       "path": "tools/build_campaign_manifest.py",
       "kind": "deterministic-tool",
-      "bytes": 4513,
-      "sha256": "12706A2F77ED6EF0F38CC3467863ABAEF69951C800A941B3BA321C836970FA12"
+      "bytes": 4795,
+      "sha256": "E3D704D43874E2E04D5DD250BB7D6B475F25070FBCC399A087E72737C37F1B13"
     },
     {
       "path": "tools/build_final_trait_ledger.py",
       "kind": "deterministic-tool",
       "bytes": 19927,
       "sha256": "B96A6A1F16057B977E7B328A864F770EC4E23B945FFC1DEE1431D297BB040CE5"
+    },
+    {
+      "path": "tools/build_remediation_queue.py",
+      "kind": "deterministic-tool",
+      "bytes": 13609,
+      "sha256": "EAD6E41E2E208811C0C9741F3E1D72879F2461E37826A9565857023F1E13139D"
     },
     {
       "path": "tools/campaign_cli.py",
@@ -129,8 +156,8 @@
     {
       "path": "tools/validate_campaign.py",
       "kind": "deterministic-tool",
-      "bytes": 4126,
-      "sha256": "EAC629FFBAC39115C3C9D2D434827C9C4608160F403DD1E93AF6884CEBC65BF3"
+      "bytes": 4947,
+      "sha256": "21091862A8F3EE9A9DDC90ED679C19BDB5B68C6A77C53325C8BC4C8038FB596D"
     },
     {
       "path": "trait_batches/batch_01.jsonl",

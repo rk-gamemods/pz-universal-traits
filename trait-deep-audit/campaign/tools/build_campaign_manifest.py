@@ -15,8 +15,11 @@ CAMPAIGN_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_PATH = CAMPAIGN_ROOT / "campaign_manifest.json"
 REQUIRED_ARTIFACTS = (
     "MASTER_COVERAGE_LEDGER.md",
+    "dimension_ledger_rows.jsonl",
     "final_trait_ledger.json",
     "final_trait_ledger_rows.jsonl",
+    "remediation_queue.jsonl",
+    "remediation_summary.json",
     "recurring_pattern_findings.json",
     "source_inventory.json",
     "translation_audit.json",
@@ -45,6 +48,10 @@ def file_kind(relative_path: str) -> str:
         return "master-ledger"
     if relative_path.startswith("final_trait_ledger"):
         return "normalized-ledger"
+    if relative_path == "dimension_ledger_rows.jsonl":
+        return "normalized-dimension-ledger"
+    if relative_path.startswith("remediation_"):
+        return "remediation-queue"
     if relative_path == "source_inventory.json":
         return "source-inventory"
     if relative_path == "translation_audit.json":
