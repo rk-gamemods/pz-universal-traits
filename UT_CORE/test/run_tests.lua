@@ -870,10 +870,23 @@ test("MockPlayer owns mutable melee delay and clamps writes at zero", function()
 end)
 
 test("MeleeDelayHook reduces delay 50% for axe weapon with UT_axes", function()
-    local weapon = MockWeapon("HandAxe", 20)
-    local p = MockPlayer({"UniversalTraits:UT_axes"}, { primaryHandItem = weapon })
+    local weapon = MockWeapon("HandAxe", nil, false, true, {
+        categories = { WeaponCategory.AXE },
+    })
+    local p = MockPlayer({"UniversalTraits:UT_axes"}, {
+        primaryHandItem = weapon,
+        meleeDelay = 20,
+    })
     UTCore._meleeDelayOnPlayerUpdate(p)
-    assert_eq(p:getModData()["_lastMeleeDelay"], 10, "expected delay set to 10 (50% of 20)")
+    assert_eq(p:getMeleeDelay(), 10, "expected character delay reduced to 10 (50% of 20)")
+    assert_eq(p:getModData()["UT_meleeDelaySet"], true, "expected same-swing guard set")
+
+    UTCore._meleeDelayOnPlayerUpdate(p)
+    assert_eq(p:getMeleeDelay(), 10, "expected same swing to remain at 10")
+
+    p:setMeleeDelay(0)
+    UTCore._meleeDelayOnPlayerUpdate(p)
+    assert_eq(p:getModData()["UT_meleeDelaySet"], false, "expected guard cleared when character delay reaches zero")
 end)
 
 -- MeleeDelayHook: strength-scaled reduction for UT_heavyswing
