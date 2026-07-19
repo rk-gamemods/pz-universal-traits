@@ -12,28 +12,28 @@
       "proven-correct": 2607,
       "runtime-unproven": 998
     },
-    "finding_records": 290,
+    "finding_records": 288,
     "finding_states": {
-      "confirmed-defect": 281,
+      "confirmed-defect": 279,
       "coverage-gap": 7,
       "runtime-unproven": 2
     },
-    "open_queue_records": 2435,
+    "open_queue_records": 2433,
     "queue_stages": {
       "inventory-contract": 162,
       "packaging": 102,
       "player-facing": 575,
       "product-semantics": 292,
-      "runtime-contract": 910,
+      "runtime-contract": 908,
       "validation": 394
     },
     "queue_states": {
-      "confirmed-defect": 606,
+      "confirmed-defect": 604,
       "coverage-gap": 829,
       "runtime-unproven": 1000
     },
     "queue_subject_types": {
-      "finding": 290,
+      "finding": 288,
       "trait-dimension": 2145
     },
     "traits": 198

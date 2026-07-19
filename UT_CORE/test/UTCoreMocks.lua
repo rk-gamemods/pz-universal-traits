@@ -315,8 +315,7 @@ Events.OnPlayerMove           = _makeEventTable()
 Events.OnGameBoot             = _makeEventTable()
 Events.OnWeaponHitCharacter   = _makeEventTable()
 Events.OnCreatePlayer         = _makeEventTable()
-Events.OnVehicleEnter         = _makeEventTable()
-Events.OnVehicleExit          = _makeEventTable()
+Events.OnEnterVehicle         = _makeEventTable()
 -- Reset registration flag so UTCore_StatModifiers re-registers into these fresh tables.
 if UTCore then UTCore._vehicleTraitEventsRegistered = false end
 

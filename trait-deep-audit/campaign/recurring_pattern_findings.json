@@ -13,8 +13,8 @@
     "source_release_media_parity": true
   },
   "summary": {
-    "findings": 9,
-    "unknown_event_names": 7,
+    "findings": 7,
+    "unknown_event_names": 5,
     "literal_percent_keys": 56,
     "source_release_drift_files": 4
   },
@@ -114,44 +114,6 @@
       "missing_proof": "",
       "recommended_correction": "Use the current engine event name and contract, or implement an explicit project-owned event producer.",
       "smallest_regression_test": "Build the engine event set and assert OnTreeChopped is registered before any Events.OnTreeChopped.Add call is accepted."
-    },
-    {
-      "id": "RP-EVENT-UNKNOWN-ONVEHICLEENTER",
-      "state": "confirmed-defect",
-      "severity": "high",
-      "confidence": "high",
-      "title": "Runtime registers event OnVehicleEnter absent from the current engine event registry",
-      "anchors": [
-        "UTMods/UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua:523"
-      ],
-      "affected_surfaces": [
-        "event-lifecycle",
-        "runtime",
-        "tests"
-      ],
-      "reproduction_evidence": "The current PZCodebase event registry contains 270 names but not OnVehicleEnter; UTMods registers it at 1 call site(s).",
-      "missing_proof": "",
-      "recommended_correction": "Use the current engine event name and contract, or implement an explicit project-owned event producer.",
-      "smallest_regression_test": "Build the engine event set and assert OnVehicleEnter is registered before any Events.OnVehicleEnter.Add call is accepted."
-    },
-    {
-      "id": "RP-EVENT-UNKNOWN-ONVEHICLEEXIT",
-      "state": "confirmed-defect",
-      "severity": "high",
-      "confidence": "high",
-      "title": "Runtime registers event OnVehicleExit absent from the current engine event registry",
-      "anchors": [
-        "UTMods/UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua:527"
-      ],
-      "affected_surfaces": [
-        "event-lifecycle",
-        "runtime",
-        "tests"
-      ],
-      "reproduction_evidence": "The current PZCodebase event registry contains 270 names but not OnVehicleExit; UTMods registers it at 1 call site(s).",
-      "missing_proof": "",
-      "recommended_correction": "Use the current engine event name and contract, or implement an explicit project-owned event producer.",
-      "smallest_regression_test": "Build the engine event set and assert OnVehicleExit is registered before any Events.OnVehicleExit.Add call is accepted."
     },
     {
       "id": "RP-PACKAGE-PARITY-UniversalTraits",

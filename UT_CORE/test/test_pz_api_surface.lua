@@ -232,7 +232,7 @@ test("API:Global — Events table exists with all required events", function()
     local required = {
         "OnPlayerUpdate", "OnCreatePlayer", "OnPlayerMove", "OnGameBoot",
         "OnWeaponHitCharacter", "EveryOneMinute", "EveryTenMinutes",
-        "EveryHours", "AddXP", "OnVehicleEnter", "OnVehicleExit",
+        "EveryHours", "AddXP", "OnEnterVehicle",
     }
     for _, name in ipairs(required) do
         assert(Events[name] ~= nil, "Events." .. name .. " must exist")

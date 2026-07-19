@@ -357,6 +357,7 @@ function UTCore.applyBleedDrainMult(player, mult)
 end
 
 UTCore._vehicleTraitDefs = UTCore._vehicleTraitDefs or {}
+UTCore._vehicleTraitActiveVehicles = UTCore._vehicleTraitActiveVehicles or {}
 
 local function cacheVehicleBaseline(vehicle)
     local vmd = vehicle:getModData()
@@ -476,6 +477,25 @@ function UTCore.syncVehicleTrait(player, vehicle)
     UTCore.applyVehicleMod(player, selected.stateKey, selected.mods, targetVehicle)
 end
 
+-- Tracks the engine's real one-argument OnEnterVehicle contract and detects
+-- exit/vehicle switches from the player's current vehicle reference. Exit is
+-- intentionally edge-detected here because OnExitVehicle is not in the core
+-- event registry during shared-mod loading.
+function UTCore.updateVehicleTraitState(player)
+    if not player then return end
+
+    local previous = UTCore._vehicleTraitActiveVehicles[player]
+    local current = player.getVehicle and player:getVehicle() or nil
+    if previous and previous ~= current then
+        UTCore.restoreVehicleMod(previous)
+        UTCore._vehicleTraitActiveVehicles[player] = nil
+    end
+    if current and previous ~= current then
+        UTCore.syncVehicleTrait(player, current)
+        UTCore._vehicleTraitActiveVehicles[player] = current
+    end
+end
+
 if not UTCore._modifierAggregationEventsRegistered then
     local function onCreatePlayer(_playerIndex, player)
         -- Clear session-level hasTrait result cache so it rebuilds for this player.
@@ -507,24 +527,25 @@ if not UTCore._modifierAggregationEventsRegistered then
 end
 
 if not UTCore._vehicleTraitEventsRegistered then
-    local function onVehicleEnter(player, vehicle)
-        UTCore.syncVehicleTrait(player, vehicle)
-    end
-
-    local function onVehicleExit(player, vehicle)
-        UTCore.restoreVehicleMod(vehicle)
+    local function onEnterVehicle(player)
+        UTCore.updateVehicleTraitState(player)
     end
 
     local function onCreatePlayer(_playerIndex, player)
-        UTCore.syncVehicleTrait(player)
+        UTCore._vehicleTraitActiveVehicles[player] = nil
+        UTCore.updateVehicleTraitState(player)
     end
 
-    if Events and Events.OnVehicleEnter then
-        Events.OnVehicleEnter.Add(onVehicleEnter)
+    if UTCore.registerCoreHandler then
+        UTCore.registerCoreHandler("StatModifiers.vehicleState", function(player)
+            UTCore.updateVehicleTraitState(player)
+        end, { priority = -9 })
+    elseif Events and Events.OnPlayerUpdate then
+        Events.OnPlayerUpdate.Add(UTCore.updateVehicleTraitState)
     end
 
-    if Events and Events.OnVehicleExit then
-        Events.OnVehicleExit.Add(onVehicleExit)
+    if Events and Events.OnEnterVehicle then
+        Events.OnEnterVehicle.Add(onEnterVehicle)
     end
 
     if Events and Events.OnCreatePlayer then

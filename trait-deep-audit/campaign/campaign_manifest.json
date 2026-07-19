@@ -31,7 +31,7 @@
     "translation_audit.json"
   ],
   "file_count": 34,
-  "total_bytes": 11616792,
+  "total_bytes": 11612619,
   "files": [
     {
       "path": "MASTER_COVERAGE_LEDGER.md",
@@ -96,20 +96,20 @@
     {
       "path": "recurring_pattern_findings.json",
       "kind": "recurring-pattern-report",
-      "bytes": 10910,
-      "sha256": "4FDB1B4B2BCFC4DCE7A88F579CF68244C585FFA581202B9AAD2A4E60FE443FE2"
+      "bytes": 9045,
+      "sha256": "6C3799C19A65EFD287C035EBF17820F1BED6C67C7B781C52DB8562DC7D7B23DD"
     },
     {
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
-      "bytes": 2352422,
-      "sha256": "9F00B5439D13F7A328EDAD537B8B13EFFC5DD512F3026E00F18981ACA22B8035"
+      "bytes": 2350114,
+      "sha256": "3EE21FDAA44BF817F58EA789471F578B791E440CC719860960FFE7BBA94E4998"
     },
     {
       "path": "remediation_summary.json",
       "kind": "remediation-queue",
       "bytes": 1183,
-      "sha256": "B288C949241AF0A288F2F2894C22AF17FF5EEDBAF3A161EA84659BF8C15F05D3"
+      "sha256": "E4D1163D70E2922DDEE3AD04F5198074F58EA3947EE00680F4D0C2E602DAE095"
     },
     {
       "path": "source_inventory.json",

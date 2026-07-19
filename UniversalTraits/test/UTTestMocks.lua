@@ -984,36 +984,23 @@ if not _G.Events.OnActionAdded then
     }
 end
 
-if not _G.Events.OnVehicleEnter then
+if not _G.Events.OnEnterVehicle then
     local _vehicleEnterHandlers = {}
-    _G.Events.OnVehicleEnter = {
+    _G.Events.OnEnterVehicle = {
         Add  = function(fn) table.insert(_vehicleEnterHandlers, fn) end,
         Remove = function(fn)
             for i, handler in ipairs(_vehicleEnterHandlers) do
                 if handler == fn then table.remove(_vehicleEnterHandlers, i) return end
             end
         end,
-        fire = function(...) fireHandlers(_G.Events.OnVehicleEnter, _vehicleEnterHandlers, ...) end,
-    }
-end
-
-if not _G.Events.OnVehicleExit then
-    local _vehicleExitHandlers = {}
-    _G.Events.OnVehicleExit = {
-        Add  = function(fn) table.insert(_vehicleExitHandlers, fn) end,
-        Remove = function(fn)
-            for i, handler in ipairs(_vehicleExitHandlers) do
-                if handler == fn then table.remove(_vehicleExitHandlers, i) return end
-            end
-        end,
-        fire = function(...) fireHandlers(_G.Events.OnVehicleExit, _vehicleExitHandlers, ...) end,
+        fire = function(...) fireHandlers(_G.Events.OnEnterVehicle, _vehicleEnterHandlers, ...) end,
     }
 end
 
 local _mockGameTime = {
     worldAgeHours = 0,
     ticks = 0,
-    timeOfDay = 0.5,  -- 0.0–1.0; < 0.25 or > 0.75 = night
+    timeOfDay = 12,  -- engine contract is an hour on a 0..24 clock
 }
 
 function setMockGameTime(worldAgeHours, ticks)
@@ -1318,15 +1305,28 @@ if not _G.Events.EveryHours then
     }
 end
 
+UTCore._vehicleTraitActiveVehicles = UTCore._vehicleTraitActiveVehicles or {}
+UTCore.updateVehicleTraitState = function(player)
+    if not player then return end
+    local previous = UTCore._vehicleTraitActiveVehicles[player]
+    local current = player.getVehicle and player:getVehicle() or nil
+    if previous and previous ~= current then
+        UTCore.restoreVehicleMod(previous)
+        UTCore._vehicleTraitActiveVehicles[player] = nil
+    end
+    if current and previous ~= current then
+        UTCore.syncVehicleTrait(player, current)
+        UTCore._vehicleTraitActiveVehicles[player] = current
+    end
+end
+
 if not UTCore._vehicleTraitEventsRegistered then
-    _G.Events.OnVehicleEnter.Add(function(player, vehicle)
-        UTCore.syncVehicleTrait(player, vehicle)
-    end)
-    _G.Events.OnVehicleExit.Add(function(player, vehicle)
-        UTCore.restoreVehicleMod(vehicle)
+    _G.Events.OnEnterVehicle.Add(function(player)
+        UTCore.updateVehicleTraitState(player)
     end)
     _G.Events.OnCreatePlayer.Add(function(_playerIndex, player)
-        UTCore.syncVehicleTrait(player)
+        UTCore._vehicleTraitActiveVehicles[player] = nil
+        UTCore.updateVehicleTraitState(player)
     end)
     UTCore._vehicleTraitEventsRegistered = true
 end

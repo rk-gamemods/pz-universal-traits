@@ -763,7 +763,8 @@ test("Vehicle trait registration applies modifiers on vehicle enter", function()
         brakingForce = 0.5,
     }, 1)
 
-    Events.OnVehicleEnter.fire(player, vehicle)
+    player:setVehicle(vehicle)
+    Events.OnEnterVehicle.fire(player)
 
     assert_eq(vehicle:getMaxSpeed(), 150, "expected vehicle max speed multiplier on enter")
     assert_eq(vehicle:getBrakingForce(), 5, "expected braking force multiplier on enter")
@@ -780,8 +781,10 @@ test("Vehicle trait helpers restore the baseline on vehicle exit", function()
         mass = 0.75,
     }, 1)
 
-    Events.OnVehicleEnter.fire(player, vehicle)
-    Events.OnVehicleExit.fire(player, vehicle)
+    player:setVehicle(vehicle)
+    Events.OnEnterVehicle.fire(player)
+    player:setVehicle(nil)
+    UTCore.updateVehicleTraitState(player)
 
     assert_eq(vehicle:getMaxSpeed(), 100, "expected max speed restored")
     assert_eq(vehicle:getBrakingForce(), 10, "expected braking restored")
