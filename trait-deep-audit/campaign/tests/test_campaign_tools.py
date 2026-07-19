@@ -182,10 +182,16 @@ class NormalizationTests(unittest.TestCase):
         self.assertEqual(
             {row["state"] for row in dimensions}, set(MODULE.TERMINAL_STATES)
         )
-        self.assertEqual(len(findings), 296)
-        self.assertEqual(len({row["queue_id"] for row in findings}), 296)
+        expected_findings = (
+            ledger["counts"]["findings"]
+            + ledger["counts"]["independent_review_findings"]
+            + len(PATTERN_MODULE.build_report()["findings"])
+        )
+        self.assertEqual(len(findings), expected_findings)
+        self.assertEqual(len({row["queue_id"] for row in findings}), expected_findings)
         self.assertTrue(queue)
         self.assertEqual(len(queue), len({row["queue_id"] for row in queue}))
+        self.assertTrue(all(tuple(row) == QUEUE_MODULE.QUEUE_COLUMNS for row in queue))
         self.assertTrue(all(row["state"] != "proven-correct" for row in queue))
         queue_ids = {row["queue_id"] for row in queue}
         self.assertTrue(

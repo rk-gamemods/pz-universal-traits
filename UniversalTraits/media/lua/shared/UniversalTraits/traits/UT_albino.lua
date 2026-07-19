@@ -9,7 +9,7 @@ local function handler()
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
     if player:isOutside() then
         local timeOfDay = getGameTime():getTimeOfDay()
-        if timeOfDay >= 0.25 and timeOfDay <= 0.75 then
+        if timeOfDay >= 6 and timeOfDay < 18 then
             local stats = player:getStats()
             stats:set(CharacterStat.STRESS, math.min(1, stats:get(CharacterStat.STRESS) + 0.03))
             stats:set(CharacterStat.FATIGUE, math.min(1, stats:get(CharacterStat.FATIGUE) + 0.02))

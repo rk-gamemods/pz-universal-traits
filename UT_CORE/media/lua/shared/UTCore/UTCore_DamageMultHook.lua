@@ -26,7 +26,7 @@ local function onPlayerUpdate(player, tick)
     md["UT_dmgPrevHealth"] = player:getHealth()
 end
 
-local function onWeaponHitCharacter(attacker, weapon, target)
+local function onWeaponHitCharacter(attacker, target, weapon, damage)
     local player = getPlayer()
     if not player or target ~= player then return end
 

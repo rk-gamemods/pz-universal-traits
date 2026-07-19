@@ -71,7 +71,7 @@ function UT_martial.applyBonusDamage(player, target, endurance)
     return damage, isCrit
 end
 
-local function onWeaponHitCharacter(player, weapon, target)
+local function onWeaponHitCharacter(player, target, weapon, damage)
     if not player then return end
 
     -- Guard: bare-hands only

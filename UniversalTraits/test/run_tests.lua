@@ -1489,7 +1489,7 @@ test("martial deals bonus damage with bare hands (guaranteed crit)", function()
     local weapon = MockWeaponSimple("BareHands")
     local target = MockTarget(100)
 
-    Events.OnWeaponHitCharacter:fire(player, weapon, target)
+    Events.OnWeaponHitCharacter:fire(player, target, weapon, 1)
 
     assert_true(target:getHealth() < 100,
         "expected health < 100 after martial crit, got " .. tostring(target:getHealth()))
@@ -1502,7 +1502,7 @@ test("martial skips when weapon is not BareHands", function()
     local weapon = MockWeaponSimple("Axe")
     local target = MockTarget(100)
 
-    Events.OnWeaponHitCharacter:fire(player, weapon, target)
+    Events.OnWeaponHitCharacter:fire(player, target, weapon, 1)
 
     assert_eq(target:getHealth(), 100,
         "expected health unchanged when weapon is not BareHands")
@@ -3328,7 +3328,7 @@ test("acrophobic does NOT fire when z == 0", function()
 end)
 
 test("albino raises stress and fatigue when outdoors during daytime", function()
-    setMockTimeOfDay(0.5)  -- midday
+    setMockTimeOfDay(12)  -- midday on the engine's 0..24 clock
     -- default _indoors = false → isOutside() = true
     local p = MockPlayer({ "UniversalTraits:UT_albino" }, { stress = 0.0, fatigue = 0.0 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
@@ -3336,7 +3336,7 @@ test("albino raises stress and fatigue when outdoors during daytime", function()
     assert_true(p:getStats():get(CharacterStat.FATIGUE) > 0, "fatigue should increase outdoors at midday")
 end)
 test("albino does NOT fire when indoors", function()
-    setMockTimeOfDay(0.5)
+    setMockTimeOfDay(12)
     local p = MockPlayer({ "UniversalTraits:UT_albino" }, { stress = 0.0, fatigue = 0.0 })
     p._indoors = true
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
@@ -3373,29 +3373,67 @@ test("ironliver does NOT fire when intoxication <= 10", function()
 end)
 
 test("larkperson reduces stress during daytime", function()
-    setMockTimeOfDay(0.5)  -- midday
+    setMockTimeOfDay(12)  -- midday
     local p = MockPlayer({ "UniversalTraits:UT_larkperson" }, { stress = 0.5 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
     assert_true(p:getStats():get(CharacterStat.STRESS) < 0.5, "stress should decrease during day")
 end)
 test("larkperson increases stress at night", function()
-    setMockTimeOfDay(0.1)  -- night
+    setMockTimeOfDay(0)  -- night
     local p = MockPlayer({ "UniversalTraits:UT_larkperson" }, { stress = 0.3 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
     assert_true(p:getStats():get(CharacterStat.STRESS) > 0.3, "stress should increase at night")
 end)
 
 test("owlperson reduces stress at night", function()
-    setMockTimeOfDay(0.1)  -- night
+    setMockTimeOfDay(0)  -- night
     local p = MockPlayer({ "UniversalTraits:UT_owlperson" }, { stress = 0.5 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
     assert_true(p:getStats():get(CharacterStat.STRESS) < 0.5, "stress should decrease at night")
 end)
 test("owlperson increases stress during day", function()
-    setMockTimeOfDay(0.5)  -- midday
+    setMockTimeOfDay(12)  -- midday
     local p = MockPlayer({ "UniversalTraits:UT_owlperson" }, { stress = 0.3 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
     assert_true(p:getStats():get(CharacterStat.STRESS) > 0.3, "stress should increase during day")
+end)
+
+test("day and night traits honor 0..24 clock boundaries", function()
+    local cases = {
+        { 0, false }, { 5.99, false }, { 6, true },
+        { 17.99, true }, { 18, false }, { 23.99, false },
+    }
+    for _, case in ipairs(cases) do
+        local hour, isDay = case[1], case[2]
+        setMockTimeOfDay(hour)
+
+        local lark = MockPlayer({ "UniversalTraits:UT_larkperson" }, { stress = 0.5 })
+        withActivePlayer(lark, function() Events.EveryOneMinute:fire() end)
+        assert_eq(
+            lark:getStats():get(CharacterStat.STRESS) < 0.5,
+            isDay,
+            "lark day classification mismatch at hour " .. tostring(hour)
+        )
+
+        local owl = MockPlayer({ "UniversalTraits:UT_owlperson" }, { stress = 0.5 })
+        withActivePlayer(owl, function() Events.EveryOneMinute:fire() end)
+        assert_eq(
+            owl:getStats():get(CharacterStat.STRESS) < 0.5,
+            not isDay,
+            "owl night classification mismatch at hour " .. tostring(hour)
+        )
+
+        local albino = MockPlayer(
+            { "UniversalTraits:UT_albino" },
+            { stress = 0.0, fatigue = 0.0 }
+        )
+        withActivePlayer(albino, function() Events.EveryOneMinute:fire() end)
+        assert_eq(
+            albino:getStats():get(CharacterStat.STRESS) > 0,
+            isDay,
+            "albino daylight classification mismatch at hour " .. tostring(hour)
+        )
+    end
 end)
 
 test("panicattacks adds panic spike on guaranteed roll", function()

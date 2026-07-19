@@ -13,69 +13,12 @@
     "source_release_media_parity": true
   },
   "summary": {
-    "findings": 15,
+    "findings": 9,
     "unknown_event_names": 7,
     "literal_percent_keys": 56,
     "source_release_drift_files": 4
   },
   "findings": [
-    {
-      "id": "RP-EVENT-ARGS-UTCORE_DAMAGEMULTHOOK",
-      "state": "confirmed-defect",
-      "severity": "high",
-      "confidence": "high",
-      "title": "OnWeaponHitCharacter handler swaps target and weapon positions",
-      "anchors": [
-        "UTMods/UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua:29"
-      ],
-      "affected_surfaces": [
-        "event-contract",
-        "runtime",
-        "tests"
-      ],
-      "reproduction_evidence": "PZ triggers OnWeaponHitCharacter as (wielder, target, weapon, damage); onWeaponHitCharacter declares (attacker, weapon, target).",
-      "missing_proof": "",
-      "recommended_correction": "Declare and consume the callback as (attacker, target, weapon, damage).",
-      "smallest_regression_test": "Invoke the handler through an event mock using the engine argument order and assert the target and weapon operations hit the correct objects."
-    },
-    {
-      "id": "RP-EVENT-ARGS-UTCORE_FRACTUREHOOK",
-      "state": "confirmed-defect",
-      "severity": "high",
-      "confidence": "high",
-      "title": "OnWeaponHitCharacter handler swaps target and weapon positions",
-      "anchors": [
-        "UTMods/UT_CORE/media/lua/shared/UTCore/UTCore_FractureHook.lua:32"
-      ],
-      "affected_surfaces": [
-        "event-contract",
-        "runtime",
-        "tests"
-      ],
-      "reproduction_evidence": "PZ triggers OnWeaponHitCharacter as (wielder, target, weapon, damage); onWeaponHitCharacter declares (attacker, weapon, target).",
-      "missing_proof": "",
-      "recommended_correction": "Declare and consume the callback as (attacker, target, weapon, damage).",
-      "smallest_regression_test": "Invoke the handler through an event mock using the engine argument order and assert the target and weapon operations hit the correct objects."
-    },
-    {
-      "id": "RP-EVENT-ARGS-UT_MARTIAL",
-      "state": "confirmed-defect",
-      "severity": "high",
-      "confidence": "high",
-      "title": "OnWeaponHitCharacter handler swaps target and weapon positions",
-      "anchors": [
-        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_martial.lua:74"
-      ],
-      "affected_surfaces": [
-        "event-contract",
-        "runtime",
-        "tests"
-      ],
-      "reproduction_evidence": "PZ triggers OnWeaponHitCharacter as (wielder, target, weapon, damage); onWeaponHitCharacter declares (player, weapon, target).",
-      "missing_proof": "",
-      "recommended_correction": "Declare and consume the callback as (attacker, target, weapon, damage).",
-      "smallest_regression_test": "Invoke the handler through an event mock using the engine argument order and assert the target and weapon operations hit the correct objects."
-    },
     {
       "id": "RP-EVENT-UNKNOWN-ONACTIONADDED",
       "state": "confirmed-defect",
@@ -228,65 +171,6 @@
       "missing_proof": "",
       "recommended_correction": "Regenerate the release tree only through the authorized deployment workflow after product fixes and passing tests.",
       "smallest_regression_test": "Hash every relative source/release media file and require empty missing, extra, and content-mismatch sets."
-    },
-    {
-      "id": "RP-TIME-RANGE-UT_ALBINO",
-      "state": "confirmed-defect",
-      "severity": "high",
-      "confidence": "high",
-      "title": "getTimeOfDay result is compared to fractional-day thresholds",
-      "anchors": [
-        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua:12"
-      ],
-      "affected_surfaces": [
-        "numerical-behavior",
-        "runtime",
-        "tests"
-      ],
-      "reproduction_evidence": "Current PZ getTimeOfDay returns an hour on a 0..24 scale; the file compares it to 0.25/0.75.",
-      "missing_proof": "",
-      "recommended_correction": "Use hour thresholds such as 6 and 18, with explicit boundary behavior.",
-      "smallest_regression_test": "Run boundary cases at 0, 5.99, 6, 17.99, 18, and 23.99 on a 0..24 mock clock."
-    },
-    {
-      "id": "RP-TIME-RANGE-UT_LARKPERSON",
-      "state": "confirmed-defect",
-      "severity": "high",
-      "confidence": "high",
-      "title": "getTimeOfDay result is compared to fractional-day thresholds",
-      "anchors": [
-        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_larkperson.lua:15",
-        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_larkperson.lua:16"
-      ],
-      "affected_surfaces": [
-        "numerical-behavior",
-        "runtime",
-        "tests"
-      ],
-      "reproduction_evidence": "Current PZ getTimeOfDay returns an hour on a 0..24 scale; the file compares it to 0.25/0.75.",
-      "missing_proof": "",
-      "recommended_correction": "Use hour thresholds such as 6 and 18, with explicit boundary behavior.",
-      "smallest_regression_test": "Run boundary cases at 0, 5.99, 6, 17.99, 18, and 23.99 on a 0..24 mock clock."
-    },
-    {
-      "id": "RP-TIME-RANGE-UT_OWLPERSON",
-      "state": "confirmed-defect",
-      "severity": "high",
-      "confidence": "high",
-      "title": "getTimeOfDay result is compared to fractional-day thresholds",
-      "anchors": [
-        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_owlperson.lua:15",
-        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_owlperson.lua:16"
-      ],
-      "affected_surfaces": [
-        "numerical-behavior",
-        "runtime",
-        "tests"
-      ],
-      "reproduction_evidence": "Current PZ getTimeOfDay returns an hour on a 0..24 scale; the file compares it to 0.25/0.75.",
-      "missing_proof": "",
-      "recommended_correction": "Use hour thresholds such as 6 and 18, with explicit boundary behavior.",
-      "smallest_regression_test": "Run boundary cases at 0, 5.99, 6, 17.99, 18, and 23.99 on a 0..24 mock clock."
     },
     {
       "id": "RP-TRANSLATION-LITERAL-PERCENT",

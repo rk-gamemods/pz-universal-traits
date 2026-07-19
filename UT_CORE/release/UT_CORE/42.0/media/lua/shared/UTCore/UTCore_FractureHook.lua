@@ -11,13 +11,13 @@
 -- Only parts that are NOT already fractured are eligible.
 -- If all eligible parts are already fractured, the roll is skipped gracefully.
 --
--- Cooldown: 10 seconds (300 ticks) between fracture rolls to prevent fracture spam
--- from rapid zombie attacks.
+-- Cooldown: 10 in-game seconds between fracture rolls, measured from
+-- world-age hours so it expires with elapsed time rather than incoming hits.
 
 UTCore = UTCore or {}
 
 local BASE_CHANCE  = 4   -- percent
-local COOLDOWN     = 300 -- ticks (~10 seconds at 30 ticks/sec)
+local COOLDOWN_HOURS = 10 / 3600
 
 -- Parts ordered by priority: legs first (most impactful in PZ)
 local ELIGIBLE_PART_TYPES = {
@@ -29,7 +29,7 @@ local ELIGIBLE_PART_TYPES = {
     BodyPartType.LowerArm_R,
 }
 
-local function onWeaponHitCharacter(attacker, weapon, target)
+local function onWeaponHitCharacter(attacker, target, weapon, damage)
     local player = getPlayer()
     if not player or target ~= player then return end
 
@@ -37,12 +37,11 @@ local function onWeaponHitCharacter(attacker, weapon, target)
     local mult = md["UT_fractureMult"]
     if not mult or mult <= 1.0 then return end
 
-    -- Cooldown check
-    local cooldown = md["UT_fractureCooldown"] or 0
-    if cooldown > 0 then
-        md["UT_fractureCooldown"] = cooldown - 1
-        return
-    end
+    -- Remove the obsolete hit-count cooldown from older saves.
+    md["UT_fractureCooldown"] = nil
+    local now = getGameTime():getWorldAgeHours()
+    local cooldownUntil = md["UT_fractureCooldownUntil"] or 0
+    if now < cooldownUntil then return end
 
     local chance = math.floor(BASE_CHANCE * mult)
     if ZombRand(100) >= chance then return end
@@ -64,7 +63,7 @@ local function onWeaponHitCharacter(attacker, weapon, target)
     -- Fracture a random eligible part
     local idx = ZombRand(#eligible) + 1
     eligible[idx]:setFractured(true)
-    md["UT_fractureCooldown"] = COOLDOWN
+    md["UT_fractureCooldownUntil"] = now + COOLDOWN_HOURS
 end
 
 if Events and Events.OnWeaponHitCharacter then

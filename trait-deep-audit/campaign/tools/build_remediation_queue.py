@@ -89,6 +89,46 @@ DIMENSION_DEPENDENCIES = {
     "packaging": ("source_release_parity",),
 }
 
+QUEUE_COLUMNS = (
+    "queue_id",
+    "subject_type",
+    "status",
+    "validation_mode",
+    "depends_on",
+    "trait_id",
+    "batch",
+    "dimension",
+    "stage",
+    "state",
+    "evidence",
+    "missing_proof",
+    "source_dimensions",
+    "finding_ids",
+    "translation_terminal_state",
+    "finding_id",
+    "severity",
+    "confidence",
+    "title",
+    "anchors",
+    "affected_surfaces",
+    "reproduction_evidence",
+    "recommended_correction",
+    "smallest_regression_test",
+    "source_artifact",
+)
+QUEUE_LIST_COLUMNS = frozenset(
+    {
+        "depends_on",
+        "evidence",
+        "missing_proof",
+        "source_dimensions",
+        "finding_ids",
+        "anchors",
+        "affected_surfaces",
+        "reproduction_evidence",
+    }
+)
+
 
 def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest().upper()
@@ -263,7 +303,7 @@ def build_queue(
                     "depends_on": [],
                 }
             )
-    return sorted(
+    ordered = sorted(
         queue,
         key=lambda row: (
             STAGE_ORDER[row["stage"]],
@@ -272,6 +312,13 @@ def build_queue(
             row["queue_id"],
         ),
     )
+    return [
+        {
+            column: row.get(column, [] if column in QUEUE_LIST_COLUMNS else None)
+            for column in QUEUE_COLUMNS
+        }
+        for row in ordered
+    ]
 
 
 def build_summary(

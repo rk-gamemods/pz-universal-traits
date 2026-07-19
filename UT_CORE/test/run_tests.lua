@@ -1010,7 +1010,7 @@ test("DamageMultHook applies extra health loss on weapon hit", function()
     _G.getPlayer = function() return p end
     Events.OnPlayerUpdate.fire(p)   -- store prevHealth = 100
     p:setHealth(80)                  -- simulate 20 damage taken
-    Events.OnWeaponHitCharacter.fire(nil, nil, p)
+    Events.OnWeaponHitCharacter.fire(nil, p, nil, 20)
     _G.getPlayer = function() return nil end
     -- lost=20; extra = 20*(1.5-1.0)=10; final = 80-10 = 70
     assert(math.abs(p:getHealth() - 70) < 0.01,
@@ -1024,7 +1024,7 @@ test("DamageMultHook does nothing when mult is 1.0", function()
     _G.getPlayer = function() return p end
     Events.OnPlayerUpdate.fire(p)
     p:setHealth(80)
-    Events.OnWeaponHitCharacter.fire(nil, nil, p)
+    Events.OnWeaponHitCharacter.fire(nil, p, nil, 20)
     _G.getPlayer = function() return nil end
     assert_eq(p:getHealth(), 80, "expected no extra loss when mult=1.0")
 end)
@@ -1037,7 +1037,7 @@ test("DamageMultHook does not fire for a different target", function()
     Events.OnPlayerUpdate.fire(p)
     p:setHealth(80)
     local otherTarget = MockPlayer({})
-    Events.OnWeaponHitCharacter.fire(nil, nil, otherTarget)
+    Events.OnWeaponHitCharacter.fire(nil, otherTarget, nil, 20)
     _G.getPlayer = function() return nil end
     assert_eq(p:getHealth(), 80, "expected no extra loss when target is another character")
 end)
@@ -1046,15 +1046,19 @@ end)
 -- ZombRand always returns 0 in tests (set in mocks), so any chance > 0 succeeds.
 
 test("FractureHook fractures eligible part on successful roll", function()
+    setMockGameTime(100, 0)
     local p = MockPlayer({})
     p:getModData()["UT_fractureMult"] = 1.5
     local legPart = MockBodyPart(BodyPartType.Leg_L, false, false)
     p:setBodyDamage(MockBodyDamage({ legPart }))
     _G.getPlayer = function() return p end
-    Events.OnWeaponHitCharacter.fire(nil, nil, p)
+    Events.OnWeaponHitCharacter.fire(nil, p, nil, 20)
     _G.getPlayer = function() return nil end
     assert_eq(legPart:isFractured(), true, "expected Leg_L to be fractured on successful roll")
-    assert(p:getModData()["UT_fractureCooldown"] > 0, "expected cooldown set after fracture")
+    assert(
+        p:getModData()["UT_fractureCooldownUntil"] > 100,
+        "expected elapsed-time cooldown set after fracture"
+    )
 end)
 
 test("FractureHook does nothing when fractureMult is 1.0", function()
@@ -1063,22 +1067,28 @@ test("FractureHook does nothing when fractureMult is 1.0", function()
     local legPart = MockBodyPart(BodyPartType.Leg_L, false, false)
     p:setBodyDamage(MockBodyDamage({ legPart }))
     _G.getPlayer = function() return p end
-    Events.OnWeaponHitCharacter.fire(nil, nil, p)
+    Events.OnWeaponHitCharacter.fire(nil, p, nil, 20)
     _G.getPlayer = function() return nil end
     assert_eq(legPart:isFractured(), false, "expected no fracture when mult<=1.0")
 end)
 
-test("FractureHook respects cooldown and decrements it", function()
+test("FractureHook cooldown expires from elapsed world time without extra hits", function()
+    setMockGameTime(100, 0)
     local p = MockPlayer({})
     p:getModData()["UT_fractureMult"] = 1.5
-    p:getModData()["UT_fractureCooldown"] = 50
+    p:getModData()["UT_fractureCooldown"] = 50 -- obsolete save value is discarded
+    p:getModData()["UT_fractureCooldownUntil"] = 100 + (10 / 3600)
     local legPart = MockBodyPart(BodyPartType.Leg_L, false, false)
     p:setBodyDamage(MockBodyDamage({ legPart }))
     _G.getPlayer = function() return p end
-    Events.OnWeaponHitCharacter.fire(nil, nil, p)
+    Events.OnWeaponHitCharacter.fire(nil, p, nil, 20)
+    assert_eq(legPart:isFractured(), false, "expected no fracture before cooldown expiry")
+    assert_eq(p:getModData()["UT_fractureCooldown"], nil, "expected legacy cooldown removed")
+
+    setMockGameTime(100 + (11 / 3600), 0)
+    Events.OnWeaponHitCharacter.fire(nil, p, nil, 20)
     _G.getPlayer = function() return nil end
-    assert_eq(legPart:isFractured(), false, "expected no fracture during cooldown")
-    assert_eq(p:getModData()["UT_fractureCooldown"], 49, "expected cooldown decremented by 1")
+    assert_eq(legPart:isFractured(), true, "expected fracture after elapsed-time cooldown")
 end)
 
 test("FractureHook skips already-fractured parts", function()
@@ -1091,10 +1101,10 @@ test("FractureHook skips already-fractured parts", function()
     legR:setFractured(true)
     p:setBodyDamage(MockBodyDamage({ legL, legR }))
     _G.getPlayer = function() return p end
-    Events.OnWeaponHitCharacter.fire(nil, nil, p)
+    Events.OnWeaponHitCharacter.fire(nil, p, nil, 20)
     _G.getPlayer = function() return nil end
     -- No new fracture should be applied (all eligible parts already broken)
-    assert_eq(p:getModData()["UT_fractureCooldown"], nil,
+    assert_eq(p:getModData()["UT_fractureCooldownUntil"], nil,
         "expected no cooldown set when all parts already fractured")
 end)
 

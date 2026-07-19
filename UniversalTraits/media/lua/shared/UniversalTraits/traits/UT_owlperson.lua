@@ -12,8 +12,8 @@ local function onEveryMinute()
     local stats = player:getStats()
     local stress = stats:get(CharacterStat.STRESS)
 
-    -- Night is roughly 6pm-6am (timeOfDay < 0.25 or timeOfDay > 0.75)
-    if timeOfDay < 0.25 or timeOfDay > 0.75 then
+    -- GameTime.getTimeOfDay() is a 0..24 hour clock; night is 18:00..<06:00.
+    if timeOfDay < 6 or timeOfDay >= 18 then
         -- Night: reduce stress
         stats:set(CharacterStat.STRESS, math.max(0, stress - 0.02))
     else
