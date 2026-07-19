@@ -891,18 +891,32 @@ end)
 
 -- MeleeDelayHook: strength-scaled reduction for UT_heavyswing
 test("MeleeDelayHook uses strength-scaled formula for UT_heavyswing", function()
-    local weapon = MockWeapon("PickAxe", 20)
+    local weapon = MockWeapon("PickAxe", nil, false, true, {
+        categories = { WeaponCategory.AXE },
+    })
     local p = MockPlayer({"UniversalTraits:UT_heavyswing"}, {
         primaryHandItem = weapon,
+        meleeDelay = 20,
         perkLevels = { Strength = 5 },
     })
+    local setterCalls = 0
+    local setMeleeDelay = p.setMeleeDelay
+    p.setMeleeDelay = function(self, value)
+        setterCalls = setterCalls + 1
+        return setMeleeDelay(self, value)
+    end
+    assert_eq(weapon:isOfWeaponCategory(WeaponCategory.AXE), true, "expected AXE weapon category")
+    assert_eq(p:getMeleeDelay(), 20, "expected initial character delay 20")
+    assert_eq(p:getPerkLevel("Strength"), 5, "expected Strength 5")
     -- Perks global not defined in test env; getPerkLevel uses key "Strength"
     local _savedPerks = _G.Perks
     _G.Perks = { Strength = "Strength" }
     UTCore._meleeDelayOnPlayerUpdate(p)
     _G.Perks = _savedPerks
     -- newDelay = 20 - 20 * (5 * 0.1) = 20 - 10 = 10
-    assert_eq(p:getModData()["_lastMeleeDelay"], 10, "expected delay 10 (strength-scaled)")
+    assert_eq(p:getMeleeDelay(), 10, "expected character delay reduced from 20 to 10 (strength-scaled)")
+    assert_eq(setterCalls, 1, "expected exactly one player setter call")
+    assert_eq(p:getModData()["UT_meleeDelaySet"], true, "expected same-swing guard set")
 end)
 
 -- MeleeDelayHook: no trait means setMeleeDelay is NOT called
