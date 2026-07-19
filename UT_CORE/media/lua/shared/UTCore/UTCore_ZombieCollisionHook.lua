@@ -38,6 +38,7 @@
 
 UTCore = UTCore or {}
 UTCore._zombieCollisionCallbacks = UTCore._zombieCollisionCallbacks or {}
+UTCore._zombieCollisionCallbackCount = UTCore._zombieCollisionCallbackCount or 0
 
 -- Declarations live in a local upvalue: trait files add to it via the public
 -- declare function, but nothing can accidentally wipe it by clearing a UTCore field.
@@ -78,10 +79,19 @@ function UTCore.declareZombieCollisionHandler(traitId, handlerFn)
 end
 
 function UTCore.registerZombieCollisionHandler(traitId, handlerFn)
+    if UTCore._zombieCollisionCallbacks[traitId] == nil and handlerFn ~= nil then
+        UTCore._zombieCollisionCallbackCount = UTCore._zombieCollisionCallbackCount + 1
+    end
     UTCore._zombieCollisionCallbacks[traitId] = handlerFn
 end
 
 function UTCore.unregisterZombieCollisionHandler(traitId)
+    if UTCore._zombieCollisionCallbacks[traitId] ~= nil then
+        UTCore._zombieCollisionCallbackCount = UTCore._zombieCollisionCallbackCount - 1
+        if UTCore._zombieCollisionCallbackCount < 0 then
+            UTCore._zombieCollisionCallbackCount = 0
+        end
+    end
     UTCore._zombieCollisionCallbacks[traitId] = nil
 end
 
@@ -102,13 +112,8 @@ end
 ---------------------------------------------------------------------------
 
 local function onPlayerUpdate(player, tick)
-    -- No handlers registered → nothing to do
-    local hasHandlers = false
-    for _ in pairs(UTCore._zombieCollisionCallbacks) do
-        hasHandlers = true
-        break
-    end
-    if not hasHandlers then return end
+    -- No handlers registered → nothing to do (O(1) counter check)
+    if UTCore._zombieCollisionCallbackCount == 0 then return end
 
     -- Only active while running or sprinting (walking doesn't trigger bumps)
     local sprinting = tick and tick.isSprinting or player:isSprinting()
@@ -206,6 +211,9 @@ local function onCreatePlayer(_playerIndex, player)
     if not player then return end
     for traitId, fn in pairs(_declarations) do
         if UTCore.hasTrait(player, traitId) then
+            if UTCore._zombieCollisionCallbacks[traitId] == nil then
+                UTCore._zombieCollisionCallbackCount = UTCore._zombieCollisionCallbackCount + 1
+            end
             UTCore._zombieCollisionCallbacks[traitId] = fn
         end
     end
@@ -231,9 +239,15 @@ local function integrityCheck()
         if UTCore.hasTrait(player, traitId) then
             if not UTCore._zombieCollisionCallbacks[traitId] then
                 UTCore._zombieCollisionCallbacks[traitId] = fn
+                UTCore._zombieCollisionCallbackCount = UTCore._zombieCollisionCallbackCount + 1
             end
         end
     end
+
+    -- Resync the counter from ground truth: drift-safe against any external mutation.
+    local n = 0
+    for _ in pairs(UTCore._zombieCollisionCallbacks) do n = n + 1 end
+    UTCore._zombieCollisionCallbackCount = n
 end
 
 Events.EveryOneMinute.Add(integrityCheck)

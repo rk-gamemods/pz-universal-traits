@@ -28,30 +28,16 @@ local WORK_MIN_DELTA = -0.75
 local WORK_MAX_DELTA = 2.0
 local TRANSFER_MIN_MULT = 0.25
 local TRANSFER_MAX_MULT = 2.0
-
--- Cached result of the Java capacity-cap probe.
--- nil = not yet tested, true = caps removed, false = vanilla 50/100 caps.
-local _javaCapRemoved = nil
-
---- Probe whether RemoveInventoryLimits (or equivalent) has lifted the
---- hardcoded ItemContainer.getCapacity() cap.  Vanilla returns
---- min(capacity, 100) for player inventory; the Java mod raises that to 30000.
---- We set capacity to 101, read it back, then restore the original value.
-local function probeCapacityCap(inv)
-    if _javaCapRemoved ~= nil then return _javaCapRemoved end
-    local original = inv:getCapacity()
-    inv:setCapacity(101)
-    local readback = inv:getCapacity()
-    inv:setCapacity(original)          -- restore
-    _javaCapRemoved = (readback > 100)
-    if _javaCapRemoved then
-        print("[UT_CORE] RemoveInventoryLimits detected — capacity sync enabled")
-    else
-        print("[UT_CORE] WARNING: RemoveInventoryLimits NOT detected (cap=" .. tostring(readback) .. "). Carry weight above 50 will be display-only. Install RemoveInventoryLimits [JAVA] (Workshop 3625921385) and add its .jar to ProjectZomboid64.json classpath to unlock full capacity.")
-    end
-    return _javaCapRemoved
-end
+local INVENTORY_LIMIT_PATCH_MOD_ID = "RemoveInventoryLimitsZB"
+local SAFE_INVENTORY_CAPACITY_MAX = 100
 local DEFAULT_CARRY_BASE = 8
+
+local function isInventoryLimitPatchActive()
+    if getActivatedMods == nil then return false end
+
+    local mods = getActivatedMods()
+    return mods ~= nil and mods.contains ~= nil and mods:contains(INVENTORY_LIMIT_PATCH_MOD_ID)
+end
 
 local function clamp(value, minValue, maxValue)
     if value < minValue then return minValue end
@@ -197,26 +183,24 @@ function UTCore.reconcileAggregatedModifiers(player)
     end
 
     -- Sync inventory container capacity with actual carry ability.
-    -- Vanilla Java hardcodes ItemContainer.getCapacity() to min(capacity, 100)
-    -- for player inventory — hasRoomFor() / isFull() use this, not maxWeight.
-    -- RemoveInventoryLimits [JAVA] raises that cap to 30000 so setCapacity
-    -- actually takes effect.  Without it, we leave capacity at vanilla 50.
+    -- Vanilla B42.17 is safe only up to 100. Higher values require the
+    -- ZombieBuddy-based RemoveInventoryLimitsZB patch to lift Java caps.
     local inv = player.getInventory and player:getInventory()
     if inv and inv.setCapacity and inv.getCapacity then
-        if probeCapacityCap(inv) then
-            local maxW = player.getMaxWeight and player:getMaxWeight() or 0
-            local base = player.getMaxWeightBase and player:getMaxWeightBase() or 8
-            local wMod = player.getWeightMod and player:getWeightMod() or 1.0
-            local delta = player.getMaxWeightDelta and player:getMaxWeightDelta() or 1.0
-            local estimated = math.floor(base * wMod * delta)
-            local needed = math.max(50, maxW, estimated)
-            local currentCap = inv:getCapacity()
-            if currentCap < needed then
-                inv:setCapacity(needed)
-            end
+        local maxW = player.getMaxWeight and player:getMaxWeight() or 0
+        local base = player.getMaxWeightBase and player:getMaxWeightBase() or 8
+        local wMod = player.getWeightMod and player:getWeightMod() or 1.0
+        local delta = player.getMaxWeightDelta and player:getMaxWeightDelta() or 1.0
+        local estimated = math.floor(base * wMod * delta)
+        local needed = math.max(50, maxW, estimated)
+        local targetCap = needed
+        if not isInventoryLimitPatchActive() then
+            targetCap = math.min(SAFE_INVENTORY_CAPACITY_MAX, needed)
         end
-        -- Without the Java mod the vanilla 50 cap stays — traits still affect
-        -- encumbrance thresholds and display but pickup/actions remain capped.
+        local currentCap = inv:getCapacity()
+        if currentCap < targetCap then
+            inv:setCapacity(targetCap)
+        end
     end
 
     return summary

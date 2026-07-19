@@ -1,0 +1,214 @@
+{
+  "schema_version": "1.0.0",
+  "inventory_type": "closed-world campaign content manifest",
+  "required_artifacts": [
+    "MASTER_COVERAGE_LEDGER.md",
+    "final_trait_ledger.json",
+    "final_trait_ledger_rows.jsonl",
+    "independent_reviews/documentation_localization_skills.json",
+    "independent_reviews/toolchain_semantic_impact.json",
+    "independent_reviews/traits_01_04.json",
+    "independent_reviews/traits_05_08.json",
+    "independent_reviews/traits_09_12.json",
+    "independent_reviews/ut_core_integration.json",
+    "recurring_pattern_findings.json",
+    "source_inventory.json",
+    "trait_batches/batch_01.jsonl",
+    "trait_batches/batch_02.jsonl",
+    "trait_batches/batch_03.jsonl",
+    "trait_batches/batch_04.jsonl",
+    "trait_batches/batch_05.jsonl",
+    "trait_batches/batch_06.jsonl",
+    "trait_batches/batch_07.jsonl",
+    "trait_batches/batch_08.jsonl",
+    "trait_batches/batch_09.jsonl",
+    "trait_batches/batch_10.jsonl",
+    "trait_batches/batch_11.jsonl",
+    "trait_batches/batch_12.jsonl",
+    "translation_audit.json"
+  ],
+  "file_count": 30,
+  "total_bytes": 6992649,
+  "files": [
+    {
+      "path": "MASTER_COVERAGE_LEDGER.md",
+      "kind": "master-ledger",
+      "bytes": 30463,
+      "sha256": "F30AD45E2A53C782EE13F5743F6AFFCCCCF88EF40DB1AE0B4D3ABFAF2EAC321A"
+    },
+    {
+      "path": "final_trait_ledger.json",
+      "kind": "normalized-ledger",
+      "bytes": 2081847,
+      "sha256": "CF9E7883195407ABA182C958361AC6AA1CF60DB0027AFAB0AB5ADA88B92999C6"
+    },
+    {
+      "path": "final_trait_ledger_rows.jsonl",
+      "kind": "normalized-ledger",
+      "bytes": 1277642,
+      "sha256": "829A08A7DD22AC22A59E93E41C99574D739ABE91CB79980F91BF3087FBDD0973"
+    },
+    {
+      "path": "independent_reviews/documentation_localization_skills.json",
+      "kind": "independent-review",
+      "bytes": 174167,
+      "sha256": "5B4129F3ABB759950685D0A975368BA6B9FEE2D757DF58FA4936D1333D7D8660"
+    },
+    {
+      "path": "independent_reviews/toolchain_semantic_impact.json",
+      "kind": "independent-review",
+      "bytes": 180835,
+      "sha256": "DBBA83DA1A80A07F93387A60B2D8123D36BC70D010EAAD587438AEF497760CBA"
+    },
+    {
+      "path": "independent_reviews/traits_01_04.json",
+      "kind": "independent-review",
+      "bytes": 667700,
+      "sha256": "4F7338C65D9EC8C15B9D3E749A9A82ADB60F09D968265F4E0A09E65660E93326"
+    },
+    {
+      "path": "independent_reviews/traits_05_08.json",
+      "kind": "independent-review",
+      "bytes": 251531,
+      "sha256": "D042BBCD575D70897788E1598054972D118246E3CABF7F738072A71B8E955B82"
+    },
+    {
+      "path": "independent_reviews/traits_09_12.json",
+      "kind": "independent-review",
+      "bytes": 112865,
+      "sha256": "7FCBDB6750959B0137174F375BAFA81E7330736449EDAEC9B2600677FDFC9A8E"
+    },
+    {
+      "path": "independent_reviews/ut_core_integration.json",
+      "kind": "independent-review",
+      "bytes": 174180,
+      "sha256": "5BC6ED5BF08290BB21DF7EB84910B5C1A2B571B2FADE1DF960C06E5E011B14D1"
+    },
+    {
+      "path": "recurring_pattern_findings.json",
+      "kind": "recurring-pattern-report",
+      "bytes": 16297,
+      "sha256": "D187FBCF3136C24119AF1CB6B73AFCD16E48C5B7622A6C0027F687AD48AB8619"
+    },
+    {
+      "path": "source_inventory.json",
+      "kind": "source-inventory",
+      "bytes": 230054,
+      "sha256": "47781D8C6AE00795C0DD5CFF8F89E295F49826BB57B64DC9DCD6DE6A767941C9"
+    },
+    {
+      "path": "tests/test_campaign_tools.py",
+      "kind": "regression-test",
+      "bytes": 12732,
+      "sha256": "446CDE457F239BAFD50EA9EE69725B711A6F1DBB07F8E99CCFF8E0BFC976AF49"
+    },
+    {
+      "path": "tools/build_campaign_manifest.py",
+      "kind": "deterministic-tool",
+      "bytes": 4513,
+      "sha256": "12706A2F77ED6EF0F38CC3467863ABAEF69951C800A941B3BA321C836970FA12"
+    },
+    {
+      "path": "tools/build_final_trait_ledger.py",
+      "kind": "deterministic-tool",
+      "bytes": 19927,
+      "sha256": "B96A6A1F16057B977E7B328A864F770EC4E23B945FFC1DEE1431D297BB040CE5"
+    },
+    {
+      "path": "tools/campaign_cli.py",
+      "kind": "deterministic-tool",
+      "bytes": 601,
+      "sha256": "CEF27239D1EED7381B8C6ED1A27CD1BA22376E9834245500EC154CD28F0CA7AD"
+    },
+    {
+      "path": "tools/check_recurring_patterns.py",
+      "kind": "deterministic-tool",
+      "bytes": 12209,
+      "sha256": "BA3F12BC45B5890F12224BC300B87CE36115F682652EA41D57203744D8EAEFD7"
+    },
+    {
+      "path": "tools/validate_campaign.py",
+      "kind": "deterministic-tool",
+      "bytes": 4126,
+      "sha256": "EAC629FFBAC39115C3C9D2D434827C9C4608160F403DD1E93AF6884CEBC65BF3"
+    },
+    {
+      "path": "trait_batches/batch_01.jsonl",
+      "kind": "trait-batch",
+      "bytes": 121393,
+      "sha256": "4FA9A60E8D86362B22C33D2BD2DC334565EB564071514576AAD0E90F7FF4BB81"
+    },
+    {
+      "path": "trait_batches/batch_02.jsonl",
+      "kind": "trait-batch",
+      "bytes": 112243,
+      "sha256": "8B1EAD1B3C9B6C33F0A40B0A78455432E3604F5C5023ECF1585CCE5CC18AAE4D"
+    },
+    {
+      "path": "trait_batches/batch_03.jsonl",
+      "kind": "trait-batch",
+      "bytes": 108726,
+      "sha256": "33481D2A1F6227C331C16BA8B5CCB006099D07A15649099B8EC0627887679337"
+    },
+    {
+      "path": "trait_batches/batch_04.jsonl",
+      "kind": "trait-batch",
+      "bytes": 109920,
+      "sha256": "2A7857094C09D1CAD329C8DC2BDA2B96DE56FD6A6AF0866F323D7D6B3C377217"
+    },
+    {
+      "path": "trait_batches/batch_05.jsonl",
+      "kind": "trait-batch",
+      "bytes": 92013,
+      "sha256": "2146BF05002A28EC9D01FD93F1DE4E0532F4769896EF382652E6A02167F3CF6A"
+    },
+    {
+      "path": "trait_batches/batch_06.jsonl",
+      "kind": "trait-batch",
+      "bytes": 106365,
+      "sha256": "5B8992F62051687AEB85158F9D498E7AAF130443609881BC1DFE1C77C25BB3D3"
+    },
+    {
+      "path": "trait_batches/batch_07.jsonl",
+      "kind": "trait-batch",
+      "bytes": 86251,
+      "sha256": "6BFC2D4966C29749BFF856067ABD0EB3B3F3E6E53E37E72A4A4FE271BE9E892C"
+    },
+    {
+      "path": "trait_batches/batch_08.jsonl",
+      "kind": "trait-batch",
+      "bytes": 163637,
+      "sha256": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A"
+    },
+    {
+      "path": "trait_batches/batch_09.jsonl",
+      "kind": "trait-batch",
+      "bytes": 78499,
+      "sha256": "FFB64ADB79BEDD95F4F340F169A2BEB7A1158BF4C1E1602538AC75BA65F7D759"
+    },
+    {
+      "path": "trait_batches/batch_10.jsonl",
+      "kind": "trait-batch",
+      "bytes": 111518,
+      "sha256": "2FFE37D42F2DC928789EAE78A16880F4A283BAFB1D735113BB8D25ADE3A90F10"
+    },
+    {
+      "path": "trait_batches/batch_11.jsonl",
+      "kind": "trait-batch",
+      "bytes": 72004,
+      "sha256": "46B75AB40DF0F1939D1B381E7AC16710C8F3C3A793A26B2F9249799150A43362"
+    },
+    {
+      "path": "trait_batches/batch_12.jsonl",
+      "kind": "trait-batch",
+      "bytes": 83872,
+      "sha256": "807C099B09F2B4E23BBF3EEB6BF40C05F7AD0C81EA5A438CD7903AD463FEEC12"
+    },
+    {
+      "path": "translation_audit.json",
+      "kind": "translation-audit",
+      "bytes": 494519,
+      "sha256": "BC16195EDEA83B435C2A005F01C2940F5EB25C4AF21F7E142AC501AC462DFD8B"
+    }
+  ]
+}

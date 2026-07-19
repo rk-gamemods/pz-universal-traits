@@ -1,0 +1,4040 @@
+{
+  "schema_version": "utmods-toolchain-semantic-impact-audit/v1",
+  "audit_date": "2026-07-19",
+  "state_vocabulary": [
+    "proven-correct",
+    "confirmed-defect",
+    "coverage-gap",
+    "runtime-unproven"
+  ],
+  "severity_vocabulary": [
+    "critical",
+    "high",
+    "medium",
+    "low"
+  ],
+  "confidence_vocabulary": [
+    "high",
+    "medium",
+    "low"
+  ],
+  "source_version_identity_ledger": {
+    "utmods": {
+      "git_head": "a32f251e7cebdc27b533907b6b16c7aa135eb882",
+      "working_tree": "dirty pre-existing/concurrent; audit did not normalize it"
+    },
+    "pzcodebase": {
+      "git_head": "8cab29ac5ec332c3d0e5c37ce3ca07ec50ea2daa",
+      "version_json_sha256": "3d6278e697ae3d08d5d44d32cd41a15f47563a7e06e6709467cf12d0bb7e7df7",
+      "version_json_exact": {
+        "game_build": "svn-964",
+        "decompiled_at": "2026-05-12T19:44:59",
+        "game_path": "C:\\Steam\\steamapps\\common\\ProjectZomboid",
+        "decompiler_launcher": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\tools\\ZomboidDecompiler-v3.0.0\\ZomboidDecompiler\\bin\\ZomboidDecompiler.bat",
+        "java_runtime": "openjdk version \"17.0.18\" 2026-01-20",
+        "layer_hashes": {
+          "java": "57846aee98be92e3fa56b8891c884a941d56005459d9d7f26088652fc17fd054",
+          "lua": "c199bf9514fdfd8884191bf94105db8fe4622dc22293384e61b2ba2918a1dda3",
+          "media": "c4aa0009db10efd3353b4f84a67db22d6afd743b172c7c3acca3e5063136bace"
+        }
+      },
+      "working_tree": [
+        " M README.md"
+      ],
+      "identity_conclusion": "VERSION.json machine-proves game_build svn-964 and the three layer hashes; it does not prove Steam BuildID or a 42.19 release label."
+    },
+    "steam": {
+      "appmanifest_path": "C:\\Steam\\steamapps\\appmanifest_108600.acf",
+      "appmanifest_sha256": "462a5c20ad484b33afbfba83d48eba2fca0f064772821d28da87071e66011e6b",
+      "build_id": "23504596",
+      "last_updated_epoch": "1780371715",
+      "svn_revision_path": "C:\\Steam\\steamapps\\common\\ProjectZomboid\\SVNRevision.txt",
+      "svn_revision_file_sha256": "835cc509d6d86a3a287de70581b43415aee21309f2dfd9533df5f563f37e3b22",
+      "svn_revision": "964",
+      "identity_conclusion": "BuildID 23504596 and SVN revision 964 are independent current machine cross-checks; neither maps itself to operator label 42.19."
+    },
+    "retry3_experiment": {
+      "root": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717",
+      "experiment_sha256": "290ed580aee9bb5deb5dc1ddb8e9d078ce0e9aa8f0e21bd957f363a58884fa74",
+      "status": "succeeded",
+      "user_release_label": "42.19",
+      "user_release_label_evidence": "operator-supplied; not machine-verified",
+      "baseline_head": "8cab29ac5ec332c3d0e5c37ce3ca07ec50ea2daa",
+      "steam_build_id": "23504596",
+      "svn_revision": "964"
+    },
+    "identity_rule": "SVN r964 and Steam BuildID 23504596 are starting cross-checks only; 42.19 remains an operator label because no inspected machine identity file establishes that mapping."
+  },
+  "toolchain_inventory": [
+    {
+      "id": "INV-0001",
+      "path": "_check_trait_refs.ps1",
+      "sha256": "351a0111266fdf04d46574c8945b78a0e21d632f7816269a002fed2c3f15c55e",
+      "size_bytes": 2514,
+      "classification": "maintenance_read_helper"
+    },
+    {
+      "id": "INV-0002",
+      "path": "AGENTS.md",
+      "sha256": "6b70b3c3e804ac3b0d7287634adca66b8f3a00430b9954cf18b61d6f54244614",
+      "size_bytes": 36745,
+      "classification": "governing_config"
+    },
+    {
+      "id": "INV-0003",
+      "path": "C:\\Steam\\steamapps\\appmanifest_108600.acf",
+      "sha256": "462a5c20ad484b33afbfba83d48eba2fca0f064772821d28da87071e66011e6b",
+      "size_bytes": 978,
+      "classification": "source_version_identity"
+    },
+    {
+      "id": "INV-0004",
+      "path": "C:\\Steam\\steamapps\\common\\ProjectZomboid\\SVNRevision.txt",
+      "sha256": "835cc509d6d86a3a287de70581b43415aee21309f2dfd9533df5f563f37e3b22",
+      "size_bytes": 3,
+      "classification": "source_version_identity"
+    },
+    {
+      "id": "INV-0005",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\canonical-manifest.json",
+      "sha256": "97624c2275f974ce63b01e505ac10fae71ec812ba8e2698c1f4e630b99c9490c",
+      "size_bytes": 1173177,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0006",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\canonical-post-manifest.json",
+      "sha256": "97624c2275f974ce63b01e505ac10fae71ec812ba8e2698c1f4e630b99c9490c",
+      "size_bytes": 1173177,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0007",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\exact-snapshot-diff.json",
+      "sha256": "82b3db90e88d1e1e47ecbe349685c78292bcdc4cc191068fc57ff403071828a7",
+      "size_bytes": 8386485,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0008",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\exact-snapshot-summary.json",
+      "sha256": "e4214d8c9f0f7986d625380dd3045a332447b934e1fc4524b08ad7748d18dcf8",
+      "size_bytes": 3517,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0009",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\execution-surface-manifest.json",
+      "sha256": "a100ee86f5d70aa459fb39c78ef56b3fcb87aace5deb41c62f52bf7ead184e0d",
+      "size_bytes": 9998,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0010",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\execution-surface-verification.json",
+      "sha256": "a958d018c232f6c9b9ed4b6791d9136d3b96cfa922aa11b19d2dd3173a4e0329",
+      "size_bytes": 43900,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0011",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\experiment.json",
+      "sha256": "290ed580aee9bb5deb5dc1ddb8e9d078ce0e9aa8f0e21bd957f363a58884fa74",
+      "size_bytes": 31596,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0012",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\pz-intel\\current\\version_identity.jsonl",
+      "sha256": "2050aa86c0b78c278eeb9846f4f53ac7929b19a0dd769d60fd42f34ee5cc7110",
+      "size_bytes": 1302,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0013",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\pz-intel\\dataset-catalog.json",
+      "sha256": "245f50b16aee97858ffb342ccc191b27deabcf4f3eeb6bfd6cf7e591aed64608",
+      "size_bytes": 1755,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0014",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\pz-intel\\old\\version_identity.jsonl",
+      "sha256": "113ff145a4dec07c2be9bbce0d0d8610f49c8abbd30ec1d9ef3daefa2f7b8572",
+      "size_bytes": 1280,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0015",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\refresh-completeness.json",
+      "sha256": "8fa88eeb704eb402c107ed236cd7cd8cc3bd0df593f3b1536f373a435a79f5df",
+      "size_bytes": 1333,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0016",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\restored-manifest.json",
+      "sha256": "97624c2275f974ce63b01e505ac10fae71ec812ba8e2698c1f4e630b99c9490c",
+      "size_bytes": 1173177,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0017",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\orchestration-summary.json",
+      "sha256": "fef7e11677cd8412717be0a01e9b824b52a286cdac50314bdf200a7e5bce8f9e",
+      "size_bytes": 3727,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0018",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\artifact-index.json",
+      "sha256": "255acab3827763e8dd5e90cb5e3eb6e14f803485fda4628cc0e462d8f992ad37",
+      "size_bytes": 11829,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0019",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\bundle-summary.json",
+      "sha256": "e697118a865ef20e54185213b216356aa01aa2389d5999514966309692c9bb05",
+      "size_bytes": 31675,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0020",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\catalog.json",
+      "sha256": "d938e76404179d2fe9db984dcd6532ac7d1dfd4b8ce844b3c5f729d310f39839",
+      "size_bytes": 12271,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0021",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\landing-dashboard.html",
+      "sha256": "ffa1d1ac1980af0ff082f8701b4d8b6c16f5537b077e7e40f856694c21492442",
+      "size_bytes": 79008,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0022",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\landing-dashboard.json",
+      "sha256": "97682be6768fab1f2d08a6fb32246265accdb0b475efd15cf3240c34d18d437b",
+      "size_bytes": 180043,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0023",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\metrics\\process_metrics.html",
+      "sha256": "679c0ccd10cec62e9446327d333cd27b71f11d9b5bb46add2824dae2bda4044a",
+      "size_bytes": 45325,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0024",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\metrics\\process_metrics.json",
+      "sha256": "42707590de8f454bad48d055bb014e10d0d8301d2b199881980c1a61096389c0",
+      "size_bytes": 39938,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0025",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\00_LCGCompat\\mod_identity.jsonl",
+      "sha256": "32aa3b27e91769647aef55ec2f045c029eb71b132cde91a5fe3e3e2fe60d400e",
+      "size_bytes": 1107,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0026",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\00_LCGCompat\\mod_touchpoint.jsonl",
+      "sha256": "ecd68ba5f09209f567d9de53dc604d67603ffdce0035b4c8bd5df73a6662447c",
+      "size_bytes": 54723,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0027",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\00_LCGCompat\\summary.json",
+      "sha256": "8e9a705d06a22f467c3eeee8b1ce4ddb9ff72bbc76275197c98a6194f962ae84",
+      "size_bytes": 875,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0028",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\00_ModProfiler\\mod_identity.jsonl",
+      "sha256": "f70f3626c955ebe06942f8d9c1051143c027b03e75430b8b5cc9ca9d509cdb5e",
+      "size_bytes": 1119,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0029",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\00_ModProfiler\\mod_touchpoint.jsonl",
+      "sha256": "c2018e55a60790a7574df180af15f0aa87858f7c2ea75846a87b86a7d0667ce1",
+      "size_bytes": 3582881,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0030",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\00_ModProfiler\\summary.json",
+      "sha256": "d0a886d76d7daaabdbd3085f57c210c32932f6dd4512a30f05141a75e2a2e447",
+      "size_bytes": 958,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0031",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\ProximityInventoryLocal\\mod_identity.jsonl",
+      "sha256": "35e86c3e6654efe37ffac9ca3b2f4c68371c0a02033ccd939a8177df358abbc8",
+      "size_bytes": 1173,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0032",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\ProximityInventoryLocal\\mod_touchpoint.jsonl",
+      "sha256": "97caede962456cf200fce6c345b9cbadb5fa871760c1f7a0bc30c47619eb4020",
+      "size_bytes": 2220211,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0033",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\ProximityInventoryLocal\\summary.json",
+      "sha256": "759edffe1bb35a53f9003da602c703c25d33ae1c3e8572ec8751c0ad38898621",
+      "size_bytes": 977,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0034",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\SixthSenseMoodle\\mod_identity.jsonl",
+      "sha256": "33ad7dfe87aa6db0e23111b267e968a9f887ec9723f020226c06c75cff28437f",
+      "size_bytes": 1131,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0035",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\SixthSenseMoodle\\mod_touchpoint.jsonl",
+      "sha256": "47ce9674ea378bccf80f8bca944693009c18139f04988e0ac590458d82d225bd",
+      "size_bytes": 325239,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0036",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\SixthSenseMoodle\\summary.json",
+      "sha256": "6e349843c1034aaf88344532e143365b3917b1ac448873785e1d7a633d3ef65c",
+      "size_bytes": 889,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0037",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\UniversalTraits\\mod_identity.jsonl",
+      "sha256": "b05358142f5b8b4d1a6c78c73ac0541e95726421dce26ca41a54aece0ff87ec4",
+      "size_bytes": 1107,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0038",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\UniversalTraits\\mod_touchpoint.jsonl",
+      "sha256": "afabee2366667cee93c9e296ca22475ed5e7f357ca5cc990a3063c562bd9f8b2",
+      "size_bytes": 4547018,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0039",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\UniversalTraits\\summary.json",
+      "sha256": "1e1e5fbe1f2c6653bf2ed1ba181896882a6959141669613cd61dfa746b62dc43",
+      "size_bytes": 948,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0040",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\UT_CORE\\mod_identity.jsonl",
+      "sha256": "9160deef6b128c9bd7053e0039d0014c749858ca3851da1cc8da8b5930fba2bd",
+      "size_bytes": 1075,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0041",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\UT_CORE\\mod_touchpoint.jsonl",
+      "sha256": "997f7b0691d9a28e84b9fa6b5b9f2209dc91b0744126b0d6b5b1db5c1f9034c3",
+      "size_bytes": 2433257,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0042",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\UT_CORE\\summary.json",
+      "sha256": "967eb8fec869c6a2e1f2b4536d268e1c8177b17c7647d5f6657744af7ea8b38a",
+      "size_bytes": 945,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0043",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\00_LCGCompat\\mod_identity.jsonl",
+      "sha256": "3c6d34a0104852d161032108980a09f3f2fc8fba4eb589da8a47ba793218424f",
+      "size_bytes": 1107,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0044",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\00_LCGCompat\\mod_touchpoint.jsonl",
+      "sha256": "2e8e299108f8f874ae64cb9634f26d1f4cc7bd8b7d6ee8a7cbeaff72efca3bb4",
+      "size_bytes": 54723,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0045",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\00_LCGCompat\\summary.json",
+      "sha256": "a672f187d1e32b576dabd10d446d8a9fe97f075edb044cc9d0dfd71baed4ff7a",
+      "size_bytes": 875,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0046",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\00_ModProfiler\\mod_identity.jsonl",
+      "sha256": "c5abb358dc864940c75a54785f0a27ca0cc88af8c1906d0e796a668b827dffdb",
+      "size_bytes": 1119,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0047",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\00_ModProfiler\\mod_touchpoint.jsonl",
+      "sha256": "eb2518b2818e37326d371ca2afc41fc83b8e21cbb9e26bbc0465d2d4ba71794e",
+      "size_bytes": 3582881,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0048",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\00_ModProfiler\\summary.json",
+      "sha256": "19daf396e822bdbdee237aa6866f7712f35b5d4ff39b6c179f88ea308f1d5f2e",
+      "size_bytes": 958,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0049",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\ProximityInventoryLocal\\mod_identity.jsonl",
+      "sha256": "2dcecfa57abf5f2c6fe81f180fdb9005f6efb7f77f96d0fbe5e173e71cd3d2a5",
+      "size_bytes": 1173,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0050",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\ProximityInventoryLocal\\mod_touchpoint.jsonl",
+      "sha256": "fe52024449b924a304418914ef2948d602765372c89431c025d508ace65fc9ad",
+      "size_bytes": 2220211,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0051",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\ProximityInventoryLocal\\summary.json",
+      "sha256": "6f4006ae985cdf4a024c5d390228f2c108b8b682d8e06640b3b0b9e7e1c71d4b",
+      "size_bytes": 977,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0052",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\SixthSenseMoodle\\mod_identity.jsonl",
+      "sha256": "febcb899df7a005255d56164829bc320d7b16318f5a1ce693a0e593b8330c036",
+      "size_bytes": 1131,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0053",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\SixthSenseMoodle\\mod_touchpoint.jsonl",
+      "sha256": "b5490594d85e49d4194a07e365b261dd050ad9bff8e89adc3aa39a27a2e7a27a",
+      "size_bytes": 325239,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0054",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\SixthSenseMoodle\\summary.json",
+      "sha256": "85a2d2005a4e981c024ef61cf2237cc36a574e262d59dc60f185d44231931953",
+      "size_bytes": 889,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0055",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\UniversalTraits\\mod_identity.jsonl",
+      "sha256": "56b26bffac4ba892e801858734647ac8a59b820b3ee4cd60c91705649de6f89d",
+      "size_bytes": 1107,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0056",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\UniversalTraits\\mod_touchpoint.jsonl",
+      "sha256": "cf076678d0a419354205bedc1aeeac7449c6d88c73aef76005192923c0aba608",
+      "size_bytes": 4547018,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0057",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\UniversalTraits\\summary.json",
+      "sha256": "091be4bfe66c2edfb2c6d39a37f5ddb3f38e9d6288b32440965cc3d0fba4db95",
+      "size_bytes": 948,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0058",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\UT_CORE\\mod_identity.jsonl",
+      "sha256": "9e3b8217efc0a491f326e256d4aa1cddc5f8054e5ade8f14f7e5fcfa7059db73",
+      "size_bytes": 1075,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0059",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\UT_CORE\\mod_touchpoint.jsonl",
+      "sha256": "4379fffb5b1b5e60a58d483eced3d9114a8778b00d546c2bd93d8229b9e623c5",
+      "size_bytes": 2433257,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0060",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\UT_CORE\\summary.json",
+      "sha256": "451d27dd27cc790563b76fbd5d5c34d0c32ffe7865dac21021d52c76209b4b44",
+      "size_bytes": 945,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0061",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\process-observations\\evidence-manifest.json",
+      "sha256": "4cec89ad2a7f59e7cc8198290354b2027c58803f87423f120f2e63b2de538cab",
+      "size_bytes": 749,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0062",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\process-observations\\evidence\\events.jsonl",
+      "sha256": "2de57ba645bc73730d891c6ba13bad1d97cc72f8e824ad3791f4e44ca6c907e5",
+      "size_bytes": 4074,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0063",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\process-observations\\evidence\\run.json",
+      "sha256": "3106725edc83ee53aa2da7af5fdcb5652ccc1f5f9914acc64e7d90fe33de80ff",
+      "size_bytes": 106,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0064",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\process-observations\\process_observations.jsonl",
+      "sha256": "5dc323e560ca8973aa83fb275c750b7b8a2d2698543f4eddfc9ffc19b6358922",
+      "size_bytes": 12918,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0065",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\purpose-diff\\purpose-diff-review.html",
+      "sha256": "08b748de07c3928d8dcd52dff77e2baaad063914c87e4b4eb9028bb444059a98",
+      "size_bytes": 51558,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0066",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\purpose-diff\\purpose-diff-review.json",
+      "sha256": "f776251f7e76496a14217d3e666258f3d197359260e93f2a354271125d7aaba1",
+      "size_bytes": 192612,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0067",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\trace\\findings.jsonl",
+      "sha256": "5040446e697842f73f31f10ad26c484f488bc0ce52042906ed64ab096c2e8ee1",
+      "size_bytes": 5452374,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0068",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\trace\\steps.jsonl",
+      "sha256": "892a8fe1aa7051f4efd12a2963e86e41bdc533db4a026641830957c94b9028f0",
+      "size_bytes": 2934830,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0069",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\trace\\summary.json",
+      "sha256": "4342d354ca846ca09a823e966c98a88eb202953df0b1371d1a02cefa17377e6c",
+      "size_bytes": 444,
+      "classification": "preserved_semantic_evidence"
+    },
+    {
+      "id": "INV-0070",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\docs\\PZ_SOURCE_42_19_SEMANTIC_IMPACT.md",
+      "sha256": "00663a3ef35def14c269a0f26efa1c1f6fecab998ea253b005e21b1e4dec7922",
+      "size_bytes": 22383,
+      "classification": "semantic_workflow_document"
+    },
+    {
+      "id": "INV-0071",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\docs\\PZ_UPDATE_RESEARCH_BUNDLE.md",
+      "sha256": "e67bf081bee066ccfb0ccb99bf360264a785790a261f1ad420ab5d1a9daf06b3",
+      "size_bytes": 13307,
+      "classification": "semantic_workflow_document"
+    },
+    {
+      "id": "INV-0072",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\docs\\SOURCE_UPDATE_RUNBOOK.md",
+      "sha256": "3706cd54ec07a6bca350e6cf1903e0df09fe3a26d0c36464daa3c0878f554b38",
+      "size_bytes": 18711,
+      "classification": "semantic_workflow_document"
+    },
+    {
+      "id": "INV-0073",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\docs\\TOOL_SURFACE.md",
+      "sha256": "98d67b516e460df56a5bc6c09443ceeee54271bc9c4ee772a2165a0bf1157666",
+      "size_bytes": 12968,
+      "classification": "semantic_workflow_document"
+    },
+    {
+      "id": "INV-0074",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\__main__.py",
+      "sha256": "b2557ccf866c981fd65bc19b07e7280cc6963a4ee9558bbc1a08fa3cbe5e6158",
+      "size_bytes": 85,
+      "classification": "semantic_workflow_implementation"
+    },
+    {
+      "id": "INV-0075",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\baseline_experiment.py",
+      "sha256": "0dfa37524822625092c00ca5256c9f08eaac1e32b4a8a27c8ba19e60814989e8",
+      "size_bytes": 104315,
+      "classification": "semantic_workflow_implementation"
+    },
+    {
+      "id": "INV-0076",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\cli.py",
+      "sha256": "c4e3e3464dbc69ac8ef72a6f3e60f2f6160de95aa6d80b73330f4f02711e5fec",
+      "size_bytes": 20560,
+      "classification": "semantic_workflow_implementation"
+    },
+    {
+      "id": "INV-0077",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\exact_snapshot_diff.py",
+      "sha256": "98f260efa21a75b65c26a19bf43770710434c59d8db37a5479e5f0d750f897bd",
+      "size_bytes": 20384,
+      "classification": "semantic_workflow_implementation"
+    },
+    {
+      "id": "INV-0078",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\purpose_diff_report.py",
+      "sha256": "5eabd17dad576c6b6776ba0d83fa89753dba085ea02daa5bfedae402567a7574",
+      "size_bytes": 62657,
+      "classification": "semantic_workflow_implementation"
+    },
+    {
+      "id": "INV-0079",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\pz_intel\\mod_manifest.py",
+      "sha256": "42748dbae6dda9fc14390c59a9bba36a6a4e34a1294ca947d6bc26f8e16606da",
+      "size_bytes": 34036,
+      "classification": "semantic_workflow_implementation"
+    },
+    {
+      "id": "INV-0080",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\pz_intel\\semantic_diff.py",
+      "sha256": "3b218cfcb98e7af574a61b5dd75539e264c23abbc6d68aceae28892fb38a74bb",
+      "size_bytes": 45392,
+      "classification": "semantic_workflow_implementation"
+    },
+    {
+      "id": "INV-0081",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\refresh_to_research_doctor.py",
+      "sha256": "a64871b6b00332126205623c5547de187fefc45b868534ebaf1c16a847fd56cf",
+      "size_bytes": 26370,
+      "classification": "semantic_workflow_implementation"
+    },
+    {
+      "id": "INV-0082",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\research_bundle.py",
+      "sha256": "dceb4edcb222ab4846e8421f268e46cf586288b46c23a359e1ac23285182415d",
+      "size_bytes": 65713,
+      "classification": "semantic_workflow_implementation"
+    },
+    {
+      "id": "INV-0083",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\research_bundle_components.py",
+      "sha256": "3e402785f0b1d16ea6bb6f13ec31ad95586823f2c65af60464c36aecf0d07cb5",
+      "size_bytes": 7224,
+      "classification": "semantic_workflow_implementation"
+    },
+    {
+      "id": "INV-0084",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\research_bundle_doctor.py",
+      "sha256": "7410ae4745afdcb31dc73ecce412bf3ab1b1ace0d9ab4040ad47a650bcfce0bd",
+      "size_bytes": 19019,
+      "classification": "semantic_workflow_implementation"
+    },
+    {
+      "id": "INV-0085",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\state_manifest.py",
+      "sha256": "c80d322b3b9758d4ed62f6ba43de0ef00b4381cb94b18132c1acd92851aafabe",
+      "size_bytes": 11678,
+      "classification": "semantic_workflow_implementation"
+    },
+    {
+      "id": "INV-0086",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\tool_surface_doctor.py",
+      "sha256": "acdabf19acbc4e4f1b42fb22dd5b7de2505b398c06cc0f9b483fa9e52545545e",
+      "size_bytes": 14364,
+      "classification": "semantic_workflow_implementation"
+    },
+    {
+      "id": "INV-0087",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZCodebase\\VERSION.json",
+      "sha256": "3d6278e697ae3d08d5d44d32cd41a15f47563a7e06e6709467cf12d0bb7e7df7",
+      "size_bytes": 649,
+      "classification": "source_version_identity"
+    },
+    {
+      "id": "INV-0088",
+      "path": "deploy.py",
+      "sha256": "a04fa9fd1983c7e453e42b0bcba7a399755ccd9afebcc28c86cd80792453704c",
+      "size_bytes": 4797,
+      "classification": "deployment_helper"
+    },
+    {
+      "id": "INV-0089",
+      "path": "deploy.sh",
+      "sha256": "3e1217da276869c62e3e3112fb5c0db022b7e7702a67dbc00fa9b935edddde01",
+      "size_bytes": 998,
+      "classification": "deployment_helper"
+    },
+    {
+      "id": "INV-0090",
+      "path": "fix_accum_keys.py",
+      "sha256": "cd150d2c4cecc4b3f61168e3b6918bbb991e33de25338cae8aba2d61a202b1cf",
+      "size_bytes": 789,
+      "classification": "maintenance_mutator"
+    },
+    {
+      "id": "INV-0091",
+      "path": "fix_b4216_pass2.py",
+      "sha256": "f7dc47b41a49c063d588402ae82c124e458dd89ff579273236c3a2ae35751b09",
+      "size_bytes": 14632,
+      "classification": "maintenance_mutator"
+    },
+    {
+      "id": "INV-0092",
+      "path": "fix_b4216_pass3_tests.py",
+      "sha256": "73c5cd3340dba67a71e9a56e22994b416c0ac783ac0ce717f140da12adc40237",
+      "size_bytes": 6559,
+      "classification": "maintenance_mutator"
+    },
+    {
+      "id": "INV-0093",
+      "path": "fix_b4216_stats.py",
+      "sha256": "8f94af050b434a0ebaf7d4c3a0ff3ab631df44b81a0f7983821bb484032b9adc",
+      "size_bytes": 10409,
+      "classification": "maintenance_mutator"
+    },
+    {
+      "id": "INV-0094",
+      "path": "fix_test_sickness.py",
+      "sha256": "974fc0e1de26bf23ea1d4c0a150f790efddf4bdb733c931324e6fa7302f0d615",
+      "size_bytes": 883,
+      "classification": "maintenance_mutator"
+    },
+    {
+      "id": "INV-0095",
+      "path": "profiler_extract.txt",
+      "sha256": "121e5e11364048ac550b34f6ac847537339eb30a8ae7562c89daddba7d773650",
+      "size_bytes": 324019,
+      "classification": "generated_maintenance_report"
+    },
+    {
+      "id": "INV-0096",
+      "path": "tmp_compare_hashes.ps1",
+      "sha256": "786a201307240df09be738153faa6deff5b135cabb514e4325a3838fb70d524b",
+      "size_bytes": 2757,
+      "classification": "maintenance_read_helper"
+    },
+    {
+      "id": "INV-0097",
+      "path": "tmp_hash_details.ps1",
+      "sha256": "0fc83cb3be13b9a83cc27e9a4c137c51f80950691020d0daf0a1bce0e78021ec",
+      "size_bytes": 1170,
+      "classification": "maintenance_read_helper"
+    },
+    {
+      "id": "INV-0098",
+      "path": "tmp_ut_report.ps1",
+      "sha256": "b05b35c0d9dfde8d471a9af797eb2b9f4491aeb1ae88b9a92ddaaea025bfba98",
+      "size_bytes": 3815,
+      "classification": "maintenance_mutator"
+    },
+    {
+      "id": "INV-0099",
+      "path": "tools/__pycache__/generate_smoke_pings.cpython-313.pyc",
+      "sha256": "308df7f616125e8d09609017ebd6d16cf55ecf4f475f6b1b97e9aade822c2158",
+      "size_bytes": 10859,
+      "classification": "generated_python_cache"
+    },
+    {
+      "id": "INV-0100",
+      "path": "tools/__pycache__/pz_log_query.cpython-313.pyc",
+      "sha256": "903073133e4b0a3252ff7a05d010713e62b77384c5ffbc348863d10e560b06f1",
+      "size_bytes": 58856,
+      "classification": "generated_python_cache"
+    },
+    {
+      "id": "INV-0101",
+      "path": "tools/check_smoke_log.py",
+      "sha256": "f8180d0a6c6b2df55fd15e3e1f939b6ae199d6b49bdc67736b9d7ba1a12d7407",
+      "size_bytes": 5425,
+      "classification": "smoke_log_checker"
+    },
+    {
+      "id": "INV-0102",
+      "path": "tools/generate_smoke_pings.py",
+      "sha256": "0e64673d8fa8843e430f88ea5b427e9fe0c52581c47fe6910fb0556854384255",
+      "size_bytes": 11879,
+      "classification": "smoke_generator"
+    },
+    {
+      "id": "INV-0103",
+      "path": "tools/pz_api_baseline.json",
+      "sha256": "cc7aa6f7f0dc328999ce675cd650be1da8c5af5de0b83dca05c2e9a0e6e4c5b2",
+      "size_bytes": 162185,
+      "classification": "api_baseline"
+    },
+    {
+      "id": "INV-0104",
+      "path": "tools/pz_api_inventory.json",
+      "sha256": "f8c11efd1c10486cb88c6b32c588ad69a3d895188aaf640b58fe8c28160495b3",
+      "size_bytes": 1101860,
+      "classification": "api_inventory"
+    },
+    {
+      "id": "INV-0105",
+      "path": "tools/pz_log_query.py",
+      "sha256": "d7729b4c15b10a17ccaa2ee3aafb00e34b644c0bf0db9e8cd27b6406f81155f8",
+      "size_bytes": 47692,
+      "classification": "profiler_log_helper"
+    },
+    {
+      "id": "INV-0106",
+      "path": "tools/run_update_safe_gate.py",
+      "sha256": "3278ff54f74bb77772cd955af52e34d14f5b70e1eea4c3d734939c6c6e7714cb",
+      "size_bytes": 7093,
+      "classification": "update_safe_gate"
+    },
+    {
+      "id": "INV-0107",
+      "path": "tools/verify_pz_api.py",
+      "sha256": "6c7fac54e2fa6eab60214118d9e4dadfcfdb36a3ef8f2ed4e2990117eecd45e2",
+      "size_bytes": 47320,
+      "classification": "api_verifier"
+    },
+    {
+      "id": "INV-0108",
+      "path": "trait-deep-audit/campaign/final_trait_ledger.json",
+      "sha256": "267ec1d48998e0be1c13f9e1ad456822fd7e627875fa2755db03f9aab8f342ab",
+      "size_bytes": 2037308,
+      "classification": "campaign_generated_artifact"
+    },
+    {
+      "id": "INV-0109",
+      "path": "trait-deep-audit/campaign/final_trait_ledger_rows.jsonl",
+      "sha256": "9d3bd1b3842f3e7f1f29e5d6e8084d485bcd1c0172ae276e27d775dc7de41928",
+      "size_bytes": 1244695,
+      "classification": "campaign_generated_artifact"
+    },
+    {
+      "id": "INV-0110",
+      "path": "trait-deep-audit/campaign/independent_reviews/documentation_localization_skills.json",
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "size_bytes": 3,
+      "classification": "campaign_independent_review"
+    },
+    {
+      "id": "INV-0111",
+      "path": "trait-deep-audit/campaign/independent_reviews/traits_01_04.json",
+      "sha256": "4f7338c65d9ec8c15b9d3e749a9a82adb60f09d968265f4e0a09e65660e93326",
+      "size_bytes": 667700,
+      "classification": "campaign_independent_review"
+    },
+    {
+      "id": "INV-0112",
+      "path": "trait-deep-audit/campaign/independent_reviews/traits_05_08.json",
+      "sha256": "d042bbcd575d70897788e1598054972d118246e3cabf7f738072a71b8e955b82",
+      "size_bytes": 251531,
+      "classification": "campaign_independent_review"
+    },
+    {
+      "id": "INV-0113",
+      "path": "trait-deep-audit/campaign/independent_reviews/traits_09_12.json",
+      "sha256": "7fcbdb6750959b0137174f375bafa81e7330736449edaec9b2600677fdfc9a8e",
+      "size_bytes": 112865,
+      "classification": "campaign_independent_review"
+    },
+    {
+      "id": "INV-0114",
+      "path": "trait-deep-audit/campaign/independent_reviews/ut_core_integration.json",
+      "sha256": "5bc6ed5bf08290bb21df7eb84910b5c1a2b571b2fade1df960c06e5e011b14d1",
+      "size_bytes": 174180,
+      "classification": "campaign_independent_review"
+    },
+    {
+      "id": "INV-0115",
+      "path": "trait-deep-audit/campaign/recurring_pattern_findings.json",
+      "sha256": "d187fbcf3136c24119af1cb6b73afcd16e48c5b7622a6c0027f687ad48ab8619",
+      "size_bytes": 16297,
+      "classification": "campaign_generated_artifact"
+    },
+    {
+      "id": "INV-0116",
+      "path": "trait-deep-audit/campaign/source_inventory.json",
+      "sha256": "47781d8c6ae00795c0dd5cff8f89e295f49826bb57b64dc9dcd6de6a767941c9",
+      "size_bytes": 230054,
+      "classification": "campaign_generated_artifact"
+    },
+    {
+      "id": "INV-0117",
+      "path": "trait-deep-audit/campaign/tests/__pycache__/test_campaign_tools.cpython-313.pyc",
+      "sha256": "e3d8edffdad45df307c2351b49fdfe6840f5b7f26d813ec37307c6fb5801b98f",
+      "size_bytes": 12167,
+      "classification": "generated_python_cache"
+    },
+    {
+      "id": "INV-0118",
+      "path": "trait-deep-audit/campaign/tests/test_campaign_tools.py",
+      "sha256": "4da6e48e9f49e74d094907dd64d933ac556da9da782e650b0eb0b24c0b1ea624",
+      "size_bytes": 9424,
+      "classification": "campaign_test"
+    },
+    {
+      "id": "INV-0119",
+      "path": "trait-deep-audit/campaign/tools/__pycache__/build_final_trait_ledger.cpython-313.pyc",
+      "sha256": "dc8b3214d98929cb1a4597a24e84d5f62e18f229d20ccff3cdac8ad5770c69e1",
+      "size_bytes": 23335,
+      "classification": "generated_python_cache"
+    },
+    {
+      "id": "INV-0120",
+      "path": "trait-deep-audit/campaign/tools/__pycache__/campaign_cli.cpython-313.pyc",
+      "sha256": "089ea9bec5936e7b09ee23ddb7282f966c406a2103afe50ec8f7950025ac7065",
+      "size_bytes": 1081,
+      "classification": "generated_python_cache"
+    },
+    {
+      "id": "INV-0121",
+      "path": "trait-deep-audit/campaign/tools/__pycache__/check_recurring_patterns.cpython-313.pyc",
+      "sha256": "135dd8be740a6533a13d0ab2c176325b94a2216821c43e47cd5c809c0430ae8a",
+      "size_bytes": 16928,
+      "classification": "generated_python_cache"
+    },
+    {
+      "id": "INV-0122",
+      "path": "trait-deep-audit/campaign/tools/build_final_trait_ledger.py",
+      "sha256": "c59c56dd306f73a0d7ab7edb7fdc309b18860f142c157e0010b8191526c3b70c",
+      "size_bytes": 19601,
+      "classification": "campaign_generator_or_validator"
+    },
+    {
+      "id": "INV-0123",
+      "path": "trait-deep-audit/campaign/tools/campaign_cli.py",
+      "sha256": "cef27239d1eed7381b8c6ed1a27cd1ba22376e9834245500ec154cd28f0ca7ad",
+      "size_bytes": 601,
+      "classification": "campaign_cli_contract"
+    },
+    {
+      "id": "INV-0124",
+      "path": "trait-deep-audit/campaign/tools/check_recurring_patterns.py",
+      "sha256": "ba3f12bc45b5890f12224bc300b87ce36115f682652ea41d57203744d8eaefd7",
+      "size_bytes": 12209,
+      "classification": "campaign_generator_or_validator"
+    },
+    {
+      "id": "INV-0125",
+      "path": "trait-deep-audit/campaign/tools/validate_campaign.py",
+      "sha256": "57d7ba72a4bf18dd6fce6451ded410c554abd0ebcdfa2ef89e9a40cbb2c81daf",
+      "size_bytes": 3439,
+      "classification": "campaign_generator_or_validator"
+    },
+    {
+      "id": "INV-0126",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_01.jsonl",
+      "sha256": "4fa9a60e8d86362b22c33d2bd2dc334565eb564071514576aad0e90f7ff4bb81",
+      "size_bytes": 121393,
+      "classification": "campaign_trait_batch"
+    },
+    {
+      "id": "INV-0127",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_02.jsonl",
+      "sha256": "8b1ead1b3c9b6c33f0a40b0a78455432e3604f5c5023ecf1585cce5cc18aae4d",
+      "size_bytes": 112243,
+      "classification": "campaign_trait_batch"
+    },
+    {
+      "id": "INV-0128",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_03.jsonl",
+      "sha256": "33481d2a1f6227c331c16ba8b5ccb006099d07a15649099b8ec0627887679337",
+      "size_bytes": 108726,
+      "classification": "campaign_trait_batch"
+    },
+    {
+      "id": "INV-0129",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_04.jsonl",
+      "sha256": "2a7857094c09d1cad329c8dc2bda2b96de56fd6a6af0866f323d7d6b3c377217",
+      "size_bytes": 109920,
+      "classification": "campaign_trait_batch"
+    },
+    {
+      "id": "INV-0130",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_05.jsonl",
+      "sha256": "2146bf05002a28ec9d01fd93f1de4e0532f4769896ef382652e6a02167f3cf6a",
+      "size_bytes": 92013,
+      "classification": "campaign_trait_batch"
+    },
+    {
+      "id": "INV-0131",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_06.jsonl",
+      "sha256": "5b8992f62051687aeb85158f9d498e7aaf130443609881bc1dfe1c77c25bb3d3",
+      "size_bytes": 106365,
+      "classification": "campaign_trait_batch"
+    },
+    {
+      "id": "INV-0132",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_07.jsonl",
+      "sha256": "6bfc2d4966c29749bff856067abd0eb3b3f3e6e53e37e72a4a4fe271be9e892c",
+      "size_bytes": 86251,
+      "classification": "campaign_trait_batch"
+    },
+    {
+      "id": "INV-0133",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_08.jsonl",
+      "sha256": "58722c1e8c681aab2e4631e00092436a62058f339414859a66b2afe10b8a326a",
+      "size_bytes": 163637,
+      "classification": "campaign_trait_batch"
+    },
+    {
+      "id": "INV-0134",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl",
+      "sha256": "ffb64adb79bedd95f4f340f169a2beb7a1158bf4c1e1602538ac75ba65f7d759",
+      "size_bytes": 78499,
+      "classification": "campaign_trait_batch"
+    },
+    {
+      "id": "INV-0135",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl",
+      "sha256": "2ffe37d42f2dc928789eae78a16880f4a283bafb1d735113bb8d25ade3a90f10",
+      "size_bytes": 111518,
+      "classification": "campaign_trait_batch"
+    },
+    {
+      "id": "INV-0136",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl",
+      "sha256": "46b75ab40df0f1939d1b381e7ac16710c8f3c3a793a26b2f9249799150a43362",
+      "size_bytes": 72004,
+      "classification": "campaign_trait_batch"
+    },
+    {
+      "id": "INV-0137",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl",
+      "sha256": "807c099b09f2b4e23bbf3eeb6bf40c05f7ad0c81ea5a438cd7903ad463feec12",
+      "size_bytes": 83872,
+      "classification": "campaign_trait_batch"
+    },
+    {
+      "id": "INV-0138",
+      "path": "trait-deep-audit/campaign/translation_audit.json",
+      "sha256": "bc16195edea83b435c2a005f01c2940f5eb25c4af21f7e142ac501ac462dfd8b",
+      "size_bytes": 494519,
+      "classification": "campaign_generated_artifact"
+    },
+    {
+      "id": "INV-0139",
+      "path": "trait-deep-audit/check_hashes.py",
+      "sha256": "e1ca07598c3f97516e311278c1a69f36990c56729b2ddc7d9b70acbba9e95f7e",
+      "size_bytes": 1309,
+      "classification": "maintenance_read_helper"
+    },
+    {
+      "id": "INV-0140",
+      "path": "trait-deep-audit/fix_translations.py",
+      "sha256": "82585c2fc07f9b584062cf167f0323e1f4d7273603537451114fa07b08a6ae5e",
+      "size_bytes": 893,
+      "classification": "maintenance_mutator"
+    },
+    {
+      "id": "INV-0141",
+      "path": "trait-deep-audit/write_scardycat.py",
+      "sha256": "368bdb3a0afdd5a1aa20cf4654b80bc1e3c1b70a0f44e4db3fc80407662007b6",
+      "size_bytes": 2430,
+      "classification": "maintenance_mutator"
+    },
+    {
+      "id": "INV-0142",
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+      "sha256": "e2e4c472a2f6dd6ee235481d129bd9731fd402bc33dfe9d5c4bd6b1c8aa9fb63",
+      "size_bytes": 2912,
+      "classification": "generated_smoke_ping_source"
+    },
+    {
+      "id": "INV-0143",
+      "path": "UniversalTraits/mod.info",
+      "sha256": "6dc0f672fe0bfbe25b56dcd72a921b0c89eef92977f94272e829d23c1305fca7",
+      "size_bytes": 374,
+      "classification": "package_metadata"
+    },
+    {
+      "id": "INV-0144",
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+      "sha256": "926b7d244be020482616e37fd4081c8ed0959bd497c21ce2352175b02096f845",
+      "size_bytes": 2737,
+      "classification": "generated_smoke_ping_source"
+    },
+    {
+      "id": "INV-0145",
+      "path": "UniversalTraits/release/UniversalTraits/42.0/mod.info",
+      "sha256": "6dc0f672fe0bfbe25b56dcd72a921b0c89eef92977f94272e829d23c1305fca7",
+      "size_bytes": 374,
+      "classification": "package_metadata"
+    },
+    {
+      "id": "INV-0146",
+      "path": "UniversalTraits/release/UniversalTraits/mod.info",
+      "sha256": "6dc0f672fe0bfbe25b56dcd72a921b0c89eef92977f94272e829d23c1305fca7",
+      "size_bytes": 374,
+      "classification": "package_metadata"
+    },
+    {
+      "id": "INV-0147",
+      "path": "UniversalTraits/test/java_api_validation.lua",
+      "sha256": "703a605dbad336e54063bc351dbf622567b21672a7312c6c15a421436b918cc6",
+      "size_bytes": 4829,
+      "classification": "lua_test_fixture"
+    },
+    {
+      "id": "INV-0148",
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "430db5020d0b2923b228f5ab30f6fec1d3a9a8def0ea9cad33952d756adde989",
+      "size_bytes": 209667,
+      "classification": "lua_test_runner"
+    },
+    {
+      "id": "INV-0149",
+      "path": "UniversalTraits/test/test_batteringram_engine_stack.lua",
+      "sha256": "e7b650f224412de64dda43f200809ce4705fb74351b5f913abbf9eb861536b23",
+      "size_bytes": 10703,
+      "classification": "lua_test_fixture"
+    },
+    {
+      "id": "INV-0150",
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "sha256": "4759c9be1413c2daea01c974ca989b43a4f0e27a1b28d466d288c53d738a4edb",
+      "size_bytes": 71590,
+      "classification": "lua_engine_mock"
+    },
+    {
+      "id": "INV-0151",
+      "path": "UT_CORE/mod.info",
+      "sha256": "1e60ee7c7a95bd44a66dac272a3e9edbadb07d9af87ecd6d6efbe3458c8eac07",
+      "size_bytes": 329,
+      "classification": "package_metadata"
+    },
+    {
+      "id": "INV-0152",
+      "path": "UT_CORE/release/UT_CORE/42.0/mod.info",
+      "sha256": "1e60ee7c7a95bd44a66dac272a3e9edbadb07d9af87ecd6d6efbe3458c8eac07",
+      "size_bytes": 329,
+      "classification": "package_metadata"
+    },
+    {
+      "id": "INV-0153",
+      "path": "UT_CORE/release/UT_CORE/mod.info",
+      "sha256": "1e60ee7c7a95bd44a66dac272a3e9edbadb07d9af87ecd6d6efbe3458c8eac07",
+      "size_bytes": 329,
+      "classification": "package_metadata"
+    },
+    {
+      "id": "INV-0154",
+      "path": "UT_CORE/test/run_tests.lua",
+      "sha256": "8bbecc2ef9c8e686d2d8c556fb645e69f6e4cd7b47f0958d0c6d8e562453d6f2",
+      "size_bytes": 62373,
+      "classification": "lua_test_runner"
+    },
+    {
+      "id": "INV-0155",
+      "path": "UT_CORE/test/test_engine_contracts.lua",
+      "sha256": "645697ad26990f7026d035369d1ef691eec4ac4b4daef533130fe488afb5bd21",
+      "size_bytes": 16511,
+      "classification": "lua_test_fixture"
+    },
+    {
+      "id": "INV-0156",
+      "path": "UT_CORE/test/test_pz_api_surface.lua",
+      "sha256": "9f11d11f56ffb5ed4667e387c4c8f3a914084ef367a35bc75bf80e0255e91168",
+      "size_bytes": 27386,
+      "classification": "lua_test_fixture"
+    },
+    {
+      "id": "INV-0157",
+      "path": "UT_CORE/test/UTCoreMocks.lua",
+      "sha256": "035b7285473960a203633e1109a470720af63fd803fca5d9c9d2e27b781e5e06",
+      "size_bytes": 21467,
+      "classification": "lua_engine_mock"
+    },
+    {
+      "id": "INV-0158",
+      "path": "ut_mutuallyexclusive_report.txt",
+      "sha256": "1af3a488501a6339451c8d3ce348287746a7cd2b33796b9ebdf6deaf30a1dd34",
+      "size_bytes": 23383,
+      "classification": "generated_maintenance_report"
+    }
+  ],
+  "toolchain_reviews": [
+    {
+      "inventory_id": "INV-0001",
+      "path": "_check_trait_refs.ps1",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "_check_trait_refs.ps1"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0002",
+      "path": "AGENTS.md",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "AGENTS.md"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0003",
+      "path": "C:\\Steam\\steamapps\\appmanifest_108600.acf",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "C:\\Steam\\steamapps\\appmanifest_108600.acf"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0004",
+      "path": "C:\\Steam\\steamapps\\common\\ProjectZomboid\\SVNRevision.txt",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "C:\\Steam\\steamapps\\common\\ProjectZomboid\\SVNRevision.txt"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0005",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\canonical-manifest.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\canonical-manifest.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0006",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\canonical-post-manifest.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\canonical-post-manifest.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0007",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\exact-snapshot-diff.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\exact-snapshot-diff.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0008",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\exact-snapshot-summary.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\exact-snapshot-summary.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0009",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\execution-surface-manifest.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\execution-surface-manifest.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0010",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\execution-surface-verification.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\execution-surface-verification.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0011",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\experiment.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\experiment.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0012",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\pz-intel\\current\\version_identity.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\pz-intel\\current\\version_identity.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0013",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\pz-intel\\dataset-catalog.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\pz-intel\\dataset-catalog.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0014",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\pz-intel\\old\\version_identity.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\pz-intel\\old\\version_identity.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0015",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\refresh-completeness.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\refresh-completeness.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0016",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\restored-manifest.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\baseline-experiment\\restored-manifest.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0017",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\orchestration-summary.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\orchestration-summary.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0018",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\artifact-index.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\artifact-index.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0019",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\bundle-summary.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\bundle-summary.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0020",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\catalog.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\catalog.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0021",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\landing-dashboard.html",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\landing-dashboard.html"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0022",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\landing-dashboard.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\landing-dashboard.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0023",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\metrics\\process_metrics.html",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\metrics\\process_metrics.html"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0024",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\metrics\\process_metrics.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\metrics\\process_metrics.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0025",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\00_LCGCompat\\mod_identity.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\00_LCGCompat\\mod_identity.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0026",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\00_LCGCompat\\mod_touchpoint.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\00_LCGCompat\\mod_touchpoint.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0027",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\00_LCGCompat\\summary.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\00_LCGCompat\\summary.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0028",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\00_ModProfiler\\mod_identity.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\00_ModProfiler\\mod_identity.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0029",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\00_ModProfiler\\mod_touchpoint.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\00_ModProfiler\\mod_touchpoint.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0030",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\00_ModProfiler\\summary.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\00_ModProfiler\\summary.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0031",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\ProximityInventoryLocal\\mod_identity.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\ProximityInventoryLocal\\mod_identity.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0032",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\ProximityInventoryLocal\\mod_touchpoint.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\ProximityInventoryLocal\\mod_touchpoint.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0033",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\ProximityInventoryLocal\\summary.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\ProximityInventoryLocal\\summary.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0034",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\SixthSenseMoodle\\mod_identity.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\SixthSenseMoodle\\mod_identity.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0035",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\SixthSenseMoodle\\mod_touchpoint.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\SixthSenseMoodle\\mod_touchpoint.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0036",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\SixthSenseMoodle\\summary.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\SixthSenseMoodle\\summary.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0037",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\UniversalTraits\\mod_identity.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\UniversalTraits\\mod_identity.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0038",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\UniversalTraits\\mod_touchpoint.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\UniversalTraits\\mod_touchpoint.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0039",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\UniversalTraits\\summary.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\UniversalTraits\\summary.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0040",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\UT_CORE\\mod_identity.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\UT_CORE\\mod_identity.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0041",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\UT_CORE\\mod_touchpoint.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\UT_CORE\\mod_touchpoint.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0042",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\UT_CORE\\summary.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\current\\UT_CORE\\summary.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0043",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\00_LCGCompat\\mod_identity.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\00_LCGCompat\\mod_identity.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0044",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\00_LCGCompat\\mod_touchpoint.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\00_LCGCompat\\mod_touchpoint.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0045",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\00_LCGCompat\\summary.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\00_LCGCompat\\summary.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0046",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\00_ModProfiler\\mod_identity.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\00_ModProfiler\\mod_identity.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0047",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\00_ModProfiler\\mod_touchpoint.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\00_ModProfiler\\mod_touchpoint.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0048",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\00_ModProfiler\\summary.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\00_ModProfiler\\summary.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0049",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\ProximityInventoryLocal\\mod_identity.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\ProximityInventoryLocal\\mod_identity.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0050",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\ProximityInventoryLocal\\mod_touchpoint.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\ProximityInventoryLocal\\mod_touchpoint.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0051",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\ProximityInventoryLocal\\summary.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\ProximityInventoryLocal\\summary.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0052",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\SixthSenseMoodle\\mod_identity.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\SixthSenseMoodle\\mod_identity.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0053",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\SixthSenseMoodle\\mod_touchpoint.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\SixthSenseMoodle\\mod_touchpoint.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0054",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\SixthSenseMoodle\\summary.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\SixthSenseMoodle\\summary.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0055",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\UniversalTraits\\mod_identity.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\UniversalTraits\\mod_identity.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0056",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\UniversalTraits\\mod_touchpoint.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\UniversalTraits\\mod_touchpoint.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0057",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\UniversalTraits\\summary.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\UniversalTraits\\summary.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0058",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\UT_CORE\\mod_identity.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\UT_CORE\\mod_identity.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0059",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\UT_CORE\\mod_touchpoint.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\UT_CORE\\mod_touchpoint.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0060",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\UT_CORE\\summary.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\mod-intel\\old\\UT_CORE\\summary.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0061",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\process-observations\\evidence-manifest.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\process-observations\\evidence-manifest.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0062",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\process-observations\\evidence\\events.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\process-observations\\evidence\\events.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0063",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\process-observations\\evidence\\run.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\process-observations\\evidence\\run.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0064",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\process-observations\\process_observations.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\process-observations\\process_observations.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0065",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\purpose-diff\\purpose-diff-review.html",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\purpose-diff\\purpose-diff-review.html"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0066",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\purpose-diff\\purpose-diff-review.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\purpose-diff\\purpose-diff-review.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0067",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\trace\\findings.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\trace\\findings.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0068",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\trace\\steps.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\trace\\steps.jsonl"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0069",
+      "path": "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\trace\\summary.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\CodexBackups\\PZMods\\refresh-to-research-42.19-final-retry3-20260717\\research-bundle\\trace\\summary.json"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0070",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\docs\\PZ_SOURCE_42_19_SEMANTIC_IMPACT.md",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\docs\\PZ_SOURCE_42_19_SEMANTIC_IMPACT.md"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0071",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\docs\\PZ_UPDATE_RESEARCH_BUNDLE.md",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\docs\\PZ_UPDATE_RESEARCH_BUNDLE.md"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0072",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\docs\\SOURCE_UPDATE_RUNBOOK.md",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\docs\\SOURCE_UPDATE_RUNBOOK.md"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0073",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\docs\\TOOL_SURFACE.md",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\docs\\TOOL_SURFACE.md"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0074",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\__main__.py",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\__main__.py"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0075",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\baseline_experiment.py",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\baseline_experiment.py"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0076",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\cli.py",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\cli.py"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0077",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\exact_snapshot_diff.py",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\exact_snapshot_diff.py"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0078",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\purpose_diff_report.py",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\purpose_diff_report.py"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0079",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\pz_intel\\mod_manifest.py",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\pz_intel\\mod_manifest.py"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0080",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\pz_intel\\semantic_diff.py",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\pz_intel\\semantic_diff.py"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0081",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\refresh_to_research_doctor.py",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\refresh_to_research_doctor.py"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0082",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\research_bundle.py",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\research_bundle.py"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0083",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\research_bundle_components.py",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\research_bundle_components.py"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0084",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\research_bundle_doctor.py",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\research_bundle_doctor.py"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0085",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\state_manifest.py",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\state_manifest.py"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0086",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\tool_surface_doctor.py",
+      "state": "runtime-unproven",
+      "review_conclusion": "Hash-inventoried and reconciled as preserved static evidence; runtime gates are explicitly not run.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\pz_toolkit\\tool_surface_doctor.py"
+      ],
+      "missing_proof": [
+        "No Project Zomboid runtime was executed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0087",
+      "path": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZCodebase\\VERSION.json",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZCodebase\\VERSION.json"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0088",
+      "path": "deploy.py",
+      "state": "confirmed-defect",
+      "review_conclusion": "Reviewed for source/release/live boundaries; defects are recorded in CF-004 or CF-005.",
+      "precise_anchors": [
+        "deploy.py"
+      ],
+      "missing_proof": [
+        "No real deployment was authorized or performed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0089",
+      "path": "deploy.sh",
+      "state": "confirmed-defect",
+      "review_conclusion": "Reviewed for source/release/live boundaries; defects are recorded in CF-004 or CF-005.",
+      "precise_anchors": [
+        "deploy.sh"
+      ],
+      "missing_proof": [
+        "No real deployment was authorized or performed."
+      ]
+    },
+    {
+      "inventory_id": "INV-0090",
+      "path": "fix_accum_keys.py",
+      "state": "coverage-gap",
+      "review_conclusion": "One-shot relative-path mutator lacks a dry-run, transaction boundary, and idempotence oracle.",
+      "precise_anchors": [
+        "fix_accum_keys.py"
+      ],
+      "missing_proof": [
+        "No bounded fixture contract demonstrates safe repeat execution."
+      ]
+    },
+    {
+      "inventory_id": "INV-0091",
+      "path": "fix_b4216_pass2.py",
+      "state": "coverage-gap",
+      "review_conclusion": "One-shot relative-path mutator lacks a dry-run, transaction boundary, and idempotence oracle.",
+      "precise_anchors": [
+        "fix_b4216_pass2.py"
+      ],
+      "missing_proof": [
+        "No bounded fixture contract demonstrates safe repeat execution."
+      ]
+    },
+    {
+      "inventory_id": "INV-0092",
+      "path": "fix_b4216_pass3_tests.py",
+      "state": "coverage-gap",
+      "review_conclusion": "One-shot relative-path mutator lacks a dry-run, transaction boundary, and idempotence oracle.",
+      "precise_anchors": [
+        "fix_b4216_pass3_tests.py"
+      ],
+      "missing_proof": [
+        "No bounded fixture contract demonstrates safe repeat execution."
+      ]
+    },
+    {
+      "inventory_id": "INV-0093",
+      "path": "fix_b4216_stats.py",
+      "state": "coverage-gap",
+      "review_conclusion": "One-shot relative-path mutator lacks a dry-run, transaction boundary, and idempotence oracle.",
+      "precise_anchors": [
+        "fix_b4216_stats.py"
+      ],
+      "missing_proof": [
+        "No bounded fixture contract demonstrates safe repeat execution."
+      ]
+    },
+    {
+      "inventory_id": "INV-0094",
+      "path": "fix_test_sickness.py",
+      "state": "coverage-gap",
+      "review_conclusion": "One-shot relative-path mutator lacks a dry-run, transaction boundary, and idempotence oracle.",
+      "precise_anchors": [
+        "fix_test_sickness.py"
+      ],
+      "missing_proof": [
+        "No bounded fixture contract demonstrates safe repeat execution."
+      ]
+    },
+    {
+      "inventory_id": "INV-0095",
+      "path": "profiler_extract.txt",
+      "state": "runtime-unproven",
+      "review_conclusion": "Historical/generated report has no self-contained freshness or source-identity attestation.",
+      "precise_anchors": [
+        "profiler_extract.txt"
+      ],
+      "missing_proof": [
+        "Regeneration command and current oracle are not encoded."
+      ]
+    },
+    {
+      "inventory_id": "INV-0096",
+      "path": "tmp_compare_hashes.ps1",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "tmp_compare_hashes.ps1"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0097",
+      "path": "tmp_hash_details.ps1",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "tmp_hash_details.ps1"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0098",
+      "path": "tmp_ut_report.ps1",
+      "state": "coverage-gap",
+      "review_conclusion": "One-shot relative-path mutator lacks a dry-run, transaction boundary, and idempotence oracle.",
+      "precise_anchors": [
+        "tmp_ut_report.ps1"
+      ],
+      "missing_proof": [
+        "No bounded fixture contract demonstrates safe repeat execution."
+      ]
+    },
+    {
+      "inventory_id": "INV-0099",
+      "path": "tools/__pycache__/generate_smoke_pings.cpython-313.pyc",
+      "state": "coverage-gap",
+      "review_conclusion": "Interpreter cache is generated state, excluded from source authority and not independently reproducible across interpreters.",
+      "precise_anchors": [
+        "tools/__pycache__/generate_smoke_pings.cpython-313.pyc"
+      ],
+      "missing_proof": [
+        "Exact interpreter/cache provenance is not encoded."
+      ]
+    },
+    {
+      "inventory_id": "INV-0100",
+      "path": "tools/__pycache__/pz_log_query.cpython-313.pyc",
+      "state": "coverage-gap",
+      "review_conclusion": "Interpreter cache is generated state, excluded from source authority and not independently reproducible across interpreters.",
+      "precise_anchors": [
+        "tools/__pycache__/pz_log_query.cpython-313.pyc"
+      ],
+      "missing_proof": [
+        "Exact interpreter/cache provenance is not encoded."
+      ]
+    },
+    {
+      "inventory_id": "INV-0101",
+      "path": "tools/check_smoke_log.py",
+      "state": "coverage-gap",
+      "review_conclusion": "Reviewed with read-only execution or bounded negative fixture; limitations are cross-referenced in the findings.",
+      "precise_anchors": [
+        "tools/check_smoke_log.py"
+      ],
+      "missing_proof": [
+        "Live game/runtime proof is absent."
+      ]
+    },
+    {
+      "inventory_id": "INV-0102",
+      "path": "tools/generate_smoke_pings.py",
+      "state": "coverage-gap",
+      "review_conclusion": "Reviewed with read-only execution or bounded negative fixture; limitations are cross-referenced in the findings.",
+      "precise_anchors": [
+        "tools/generate_smoke_pings.py"
+      ],
+      "missing_proof": [
+        "Live game/runtime proof is absent."
+      ]
+    },
+    {
+      "inventory_id": "INV-0103",
+      "path": "tools/pz_api_baseline.json",
+      "state": "coverage-gap",
+      "review_conclusion": "Reviewed with read-only execution or bounded negative fixture; limitations are cross-referenced in the findings.",
+      "precise_anchors": [
+        "tools/pz_api_baseline.json"
+      ],
+      "missing_proof": [
+        "Live game/runtime proof is absent."
+      ]
+    },
+    {
+      "inventory_id": "INV-0104",
+      "path": "tools/pz_api_inventory.json",
+      "state": "coverage-gap",
+      "review_conclusion": "Reviewed with read-only execution or bounded negative fixture; limitations are cross-referenced in the findings.",
+      "precise_anchors": [
+        "tools/pz_api_inventory.json"
+      ],
+      "missing_proof": [
+        "Live game/runtime proof is absent."
+      ]
+    },
+    {
+      "inventory_id": "INV-0105",
+      "path": "tools/pz_log_query.py",
+      "state": "coverage-gap",
+      "review_conclusion": "Reviewed with read-only execution or bounded negative fixture; limitations are cross-referenced in the findings.",
+      "precise_anchors": [
+        "tools/pz_log_query.py"
+      ],
+      "missing_proof": [
+        "Live game/runtime proof is absent."
+      ]
+    },
+    {
+      "inventory_id": "INV-0106",
+      "path": "tools/run_update_safe_gate.py",
+      "state": "coverage-gap",
+      "review_conclusion": "Reviewed with read-only execution or bounded negative fixture; limitations are cross-referenced in the findings.",
+      "precise_anchors": [
+        "tools/run_update_safe_gate.py"
+      ],
+      "missing_proof": [
+        "Live game/runtime proof is absent."
+      ]
+    },
+    {
+      "inventory_id": "INV-0107",
+      "path": "tools/verify_pz_api.py",
+      "state": "coverage-gap",
+      "review_conclusion": "Reviewed with read-only execution or bounded negative fixture; limitations are cross-referenced in the findings.",
+      "precise_anchors": [
+        "tools/verify_pz_api.py"
+      ],
+      "missing_proof": [
+        "Live game/runtime proof is absent."
+      ]
+    },
+    {
+      "inventory_id": "INV-0108",
+      "path": "trait-deep-audit/campaign/final_trait_ledger.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Byte-stable under the current validator; static campaign conclusions do not establish runtime safety.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/final_trait_ledger.json"
+      ],
+      "missing_proof": [
+        "Live PZ/Kahlua confirmation remains absent."
+      ]
+    },
+    {
+      "inventory_id": "INV-0109",
+      "path": "trait-deep-audit/campaign/final_trait_ledger_rows.jsonl",
+      "state": "runtime-unproven",
+      "review_conclusion": "Byte-stable under the current validator; static campaign conclusions do not establish runtime safety.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/final_trait_ledger_rows.jsonl"
+      ],
+      "missing_proof": [
+        "Live PZ/Kahlua confirmation remains absent."
+      ]
+    },
+    {
+      "inventory_id": "INV-0110",
+      "path": "trait-deep-audit/campaign/independent_reviews/documentation_localization_skills.json",
+      "state": "coverage-gap",
+      "review_conclusion": "Parses as an empty JSON object and is not ingested by the current campaign builder; it is an unfinished concurrent artifact, not proof.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/independent_reviews/documentation_localization_skills.json"
+      ],
+      "missing_proof": [
+        "No schema, finding, validation, or completion evidence is present."
+      ]
+    },
+    {
+      "inventory_id": "INV-0111",
+      "path": "trait-deep-audit/campaign/independent_reviews/traits_01_04.json",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/independent_reviews/traits_01_04.json"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0112",
+      "path": "trait-deep-audit/campaign/independent_reviews/traits_05_08.json",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/independent_reviews/traits_05_08.json"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0113",
+      "path": "trait-deep-audit/campaign/independent_reviews/traits_09_12.json",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/independent_reviews/traits_09_12.json"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0114",
+      "path": "trait-deep-audit/campaign/independent_reviews/ut_core_integration.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "The JSON parses and exposes an independent UT_CORE review schema, but the current campaign builder/validator does not ingest it and this audit does not inherit its 18 findings as an oracle.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/independent_reviews/ut_core_integration.json"
+      ],
+      "missing_proof": [
+        "Its internal claims require their own evidence checks and are outside this toolchain review's source-of-truth boundary."
+      ]
+    },
+    {
+      "inventory_id": "INV-0115",
+      "path": "trait-deep-audit/campaign/recurring_pattern_findings.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Byte-stable under the current validator; static campaign conclusions do not establish runtime safety.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/recurring_pattern_findings.json"
+      ],
+      "missing_proof": [
+        "Live PZ/Kahlua confirmation remains absent."
+      ]
+    },
+    {
+      "inventory_id": "INV-0116",
+      "path": "trait-deep-audit/campaign/source_inventory.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Byte-stable under the current validator; static campaign conclusions do not establish runtime safety.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/source_inventory.json"
+      ],
+      "missing_proof": [
+        "Live PZ/Kahlua confirmation remains absent."
+      ]
+    },
+    {
+      "inventory_id": "INV-0117",
+      "path": "trait-deep-audit/campaign/tests/__pycache__/test_campaign_tools.cpython-313.pyc",
+      "state": "coverage-gap",
+      "review_conclusion": "Interpreter cache is generated state, excluded from source authority and not independently reproducible across interpreters.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/tests/__pycache__/test_campaign_tools.cpython-313.pyc"
+      ],
+      "missing_proof": [
+        "Exact interpreter/cache provenance is not encoded."
+      ]
+    },
+    {
+      "inventory_id": "INV-0118",
+      "path": "trait-deep-audit/campaign/tests/test_campaign_tools.py",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/tests/test_campaign_tools.py"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0119",
+      "path": "trait-deep-audit/campaign/tools/__pycache__/build_final_trait_ledger.cpython-313.pyc",
+      "state": "coverage-gap",
+      "review_conclusion": "Interpreter cache is generated state, excluded from source authority and not independently reproducible across interpreters.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/tools/__pycache__/build_final_trait_ledger.cpython-313.pyc"
+      ],
+      "missing_proof": [
+        "Exact interpreter/cache provenance is not encoded."
+      ]
+    },
+    {
+      "inventory_id": "INV-0120",
+      "path": "trait-deep-audit/campaign/tools/__pycache__/campaign_cli.cpython-313.pyc",
+      "state": "coverage-gap",
+      "review_conclusion": "Interpreter cache is generated state, excluded from source authority and not independently reproducible across interpreters.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/tools/__pycache__/campaign_cli.cpython-313.pyc"
+      ],
+      "missing_proof": [
+        "Exact interpreter/cache provenance is not encoded."
+      ]
+    },
+    {
+      "inventory_id": "INV-0121",
+      "path": "trait-deep-audit/campaign/tools/__pycache__/check_recurring_patterns.cpython-313.pyc",
+      "state": "coverage-gap",
+      "review_conclusion": "Interpreter cache is generated state, excluded from source authority and not independently reproducible across interpreters.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/tools/__pycache__/check_recurring_patterns.cpython-313.pyc"
+      ],
+      "missing_proof": [
+        "Exact interpreter/cache provenance is not encoded."
+      ]
+    },
+    {
+      "inventory_id": "INV-0122",
+      "path": "trait-deep-audit/campaign/tools/build_final_trait_ledger.py",
+      "state": "coverage-gap",
+      "review_conclusion": "Current outputs are deterministic and validator-clean, but semantic and referential validation gaps remain.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/tools/build_final_trait_ledger.py"
+      ],
+      "missing_proof": [
+        "Independent review confidence/state/reference vocabularies are not fully enforced."
+      ]
+    },
+    {
+      "inventory_id": "INV-0123",
+      "path": "trait-deep-audit/campaign/tools/campaign_cli.py",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/tools/campaign_cli.py"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0124",
+      "path": "trait-deep-audit/campaign/tools/check_recurring_patterns.py",
+      "state": "coverage-gap",
+      "review_conclusion": "Current outputs are deterministic and validator-clean, but semantic and referential validation gaps remain.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/tools/check_recurring_patterns.py"
+      ],
+      "missing_proof": [
+        "Independent review confidence/state/reference vocabularies are not fully enforced."
+      ]
+    },
+    {
+      "inventory_id": "INV-0125",
+      "path": "trait-deep-audit/campaign/tools/validate_campaign.py",
+      "state": "coverage-gap",
+      "review_conclusion": "Current outputs are deterministic and validator-clean, but semantic and referential validation gaps remain.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/tools/validate_campaign.py"
+      ],
+      "missing_proof": [
+        "Independent review confidence/state/reference vocabularies are not fully enforced."
+      ]
+    },
+    {
+      "inventory_id": "INV-0126",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_01.jsonl",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/trait_batches/batch_01.jsonl"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0127",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_02.jsonl",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/trait_batches/batch_02.jsonl"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0128",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_03.jsonl",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/trait_batches/batch_03.jsonl"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0129",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_04.jsonl",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/trait_batches/batch_04.jsonl"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0130",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_05.jsonl",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/trait_batches/batch_05.jsonl"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0131",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_06.jsonl",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/trait_batches/batch_06.jsonl"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0132",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_07.jsonl",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/trait_batches/batch_07.jsonl"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0133",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_08.jsonl",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/trait_batches/batch_08.jsonl"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0134",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/trait_batches/batch_09.jsonl"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0135",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/trait_batches/batch_10.jsonl"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0136",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/trait_batches/batch_11.jsonl"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0137",
+      "path": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/trait_batches/batch_12.jsonl"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0138",
+      "path": "trait-deep-audit/campaign/translation_audit.json",
+      "state": "runtime-unproven",
+      "review_conclusion": "Byte-stable under the current validator; static campaign conclusions do not establish runtime safety.",
+      "precise_anchors": [
+        "trait-deep-audit/campaign/translation_audit.json"
+      ],
+      "missing_proof": [
+        "Live PZ/Kahlua confirmation remains absent."
+      ]
+    },
+    {
+      "inventory_id": "INV-0139",
+      "path": "trait-deep-audit/check_hashes.py",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "trait-deep-audit/check_hashes.py"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0140",
+      "path": "trait-deep-audit/fix_translations.py",
+      "state": "coverage-gap",
+      "review_conclusion": "One-shot relative-path mutator lacks a dry-run, transaction boundary, and idempotence oracle.",
+      "precise_anchors": [
+        "trait-deep-audit/fix_translations.py"
+      ],
+      "missing_proof": [
+        "No bounded fixture contract demonstrates safe repeat execution."
+      ]
+    },
+    {
+      "inventory_id": "INV-0141",
+      "path": "trait-deep-audit/write_scardycat.py",
+      "state": "coverage-gap",
+      "review_conclusion": "One-shot relative-path mutator lacks a dry-run, transaction boundary, and idempotence oracle.",
+      "precise_anchors": [
+        "trait-deep-audit/write_scardycat.py"
+      ],
+      "missing_proof": [
+        "No bounded fixture contract demonstrates safe repeat execution."
+      ]
+    },
+    {
+      "inventory_id": "INV-0142",
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+      "state": "coverage-gap",
+      "review_conclusion": "Source copy matches a fresh generator render, but emitted pings do not produce an affirmative success marker.",
+      "precise_anchors": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "missing_proof": [
+        "No current game log proves execution of all emitted calls."
+      ]
+    },
+    {
+      "inventory_id": "INV-0143",
+      "path": "UniversalTraits/mod.info",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "UniversalTraits/mod.info"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0144",
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+      "state": "coverage-gap",
+      "review_conclusion": "Source copy matches a fresh generator render, but emitted pings do not produce an affirmative success marker.",
+      "precise_anchors": [
+        "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "missing_proof": [
+        "No current game log proves execution of all emitted calls."
+      ]
+    },
+    {
+      "inventory_id": "INV-0145",
+      "path": "UniversalTraits/release/UniversalTraits/42.0/mod.info",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "UniversalTraits/release/UniversalTraits/42.0/mod.info"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0146",
+      "path": "UniversalTraits/release/UniversalTraits/mod.info",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "UniversalTraits/release/UniversalTraits/mod.info"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0147",
+      "path": "UniversalTraits/test/java_api_validation.lua",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "UniversalTraits/test/java_api_validation.lua"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0148",
+      "path": "UniversalTraits/test/run_tests.lua",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "UniversalTraits/test/run_tests.lua"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0149",
+      "path": "UniversalTraits/test/test_batteringram_engine_stack.lua",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "UniversalTraits/test/test_batteringram_engine_stack.lua"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0150",
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "state": "runtime-unproven",
+      "review_conclusion": "Standard-Lua mock coverage is substantial but is not a Kahlua/game-runtime oracle.",
+      "precise_anchors": [
+        "UniversalTraits/test/UTTestMocks.lua"
+      ],
+      "missing_proof": [
+        "Live Kahlua behavior and Java collection/conversion fidelity remain unexecuted."
+      ]
+    },
+    {
+      "inventory_id": "INV-0151",
+      "path": "UT_CORE/mod.info",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "UT_CORE/mod.info"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0152",
+      "path": "UT_CORE/release/UT_CORE/42.0/mod.info",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "UT_CORE/release/UT_CORE/42.0/mod.info"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0153",
+      "path": "UT_CORE/release/UT_CORE/mod.info",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "UT_CORE/release/UT_CORE/mod.info"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0154",
+      "path": "UT_CORE/test/run_tests.lua",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "UT_CORE/test/run_tests.lua"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0155",
+      "path": "UT_CORE/test/test_engine_contracts.lua",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "UT_CORE/test/test_engine_contracts.lua"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0156",
+      "path": "UT_CORE/test/test_pz_api_surface.lua",
+      "state": "proven-correct",
+      "review_conclusion": "Reviewed; current deterministic or structural contract was exercised where applicable.",
+      "precise_anchors": [
+        "UT_CORE/test/test_pz_api_surface.lua"
+      ],
+      "missing_proof": []
+    },
+    {
+      "inventory_id": "INV-0157",
+      "path": "UT_CORE/test/UTCoreMocks.lua",
+      "state": "runtime-unproven",
+      "review_conclusion": "Standard-Lua mock coverage is substantial but is not a Kahlua/game-runtime oracle.",
+      "precise_anchors": [
+        "UT_CORE/test/UTCoreMocks.lua"
+      ],
+      "missing_proof": [
+        "Live Kahlua behavior and Java collection/conversion fidelity remain unexecuted."
+      ]
+    },
+    {
+      "inventory_id": "INV-0158",
+      "path": "ut_mutuallyexclusive_report.txt",
+      "state": "runtime-unproven",
+      "review_conclusion": "Historical/generated report has no self-contained freshness or source-identity attestation.",
+      "precise_anchors": [
+        "ut_mutuallyexclusive_report.txt"
+      ],
+      "missing_proof": [
+        "Regeneration command and current oracle are not encoded."
+      ]
+    }
+  ],
+  "command_execution_ledger": [
+    {
+      "id": "CMD-001",
+      "command": "live JCodeMunch guide + repo list/search/context",
+      "exit_code": null,
+      "status": "pass",
+      "skip_count": 0,
+      "unknown_count": 1,
+      "mutation": "none",
+      "determinism_evidence": "Guide returned content; current UTMods handle identified as stale/partial, so current campaign claims were not taken from it."
+    },
+    {
+      "id": "CMD-002",
+      "command": "live JDocMunch guide, resolve semantic doc, verify_index",
+      "exit_code": null,
+      "status": "pass-with-skips",
+      "skip_count": 48,
+      "unknown_count": 0,
+      "mutation": "none",
+      "determinism_evidence": "1878 clean, 0 drift/missing/errors; 48 empty/root ranges skipped; all substantive semantic-doc sections retrieved."
+    },
+    {
+      "id": "CMD-003",
+      "command": "live JDataMunch guide, list/query/validate retry3 identity and touchpoint datasets",
+      "exit_code": null,
+      "status": "pass",
+      "skip_count": 0,
+      "unknown_count": 0,
+      "mutation": "none",
+      "determinism_evidence": "Current/old identity and bounded touchpoint/trace datasets validated OK."
+    },
+    {
+      "id": "CMD-004",
+      "command": "lua.exe UT_CORE/test/run_tests.lua",
+      "exit_code": 0,
+      "status": "pass",
+      "skip_count": 0,
+      "unknown_count": 0,
+      "mutation": "none",
+      "determinism_evidence": "218 passed, 0 failed."
+    },
+    {
+      "id": "CMD-005",
+      "command": "lua.exe UniversalTraits/test/run_tests.lua",
+      "exit_code": 0,
+      "status": "pass",
+      "skip_count": 0,
+      "unknown_count": 0,
+      "mutation": "none",
+      "determinism_evidence": "374 passed, 0 failed."
+    },
+    {
+      "id": "CMD-006",
+      "command": "verify_pz_api.py --compare-baseline --output <temp> (pass 1)",
+      "exit_code": 0,
+      "status": "pass-with-skips",
+      "skip_count": 56,
+      "unknown_count": 56,
+      "mutation": "temp-only",
+      "determinism_evidence": "912 calls; 296 unique; OK 240; WARN 0; FAIL 0; SKIP 56; raw SHA differs by generated_at."
+    },
+    {
+      "id": "CMD-007",
+      "command": "verify_pz_api.py --compare-baseline --output <temp> (pass 2)",
+      "exit_code": 0,
+      "status": "pass-with-skips",
+      "skip_count": 56,
+      "unknown_count": 56,
+      "mutation": "temp-only",
+      "determinism_evidence": "Normalized JSON after removing generated_at is byte-equal to pass 1; raw outputs differ because timestamps differ."
+    },
+    {
+      "id": "CMD-008",
+      "command": "generate_smoke_pings.py rendered in memory/temp and compared to source",
+      "exit_code": 0,
+      "status": "pass",
+      "skip_count": 0,
+      "unknown_count": 0,
+      "mutation": "temp-only",
+      "determinism_evidence": "Fresh SHA-256 988228c48a17c8965e3700d9753cd80b6fd99887e9cad80c85e75415150887f3 equals source; 59 ping call lines."
+    },
+    {
+      "id": "CMD-009",
+      "command": "check_smoke_log.py <synthetic error fixture>",
+      "exit_code": 0,
+      "status": "false-green-observed",
+      "skip_count": 0,
+      "unknown_count": 0,
+      "mutation": "temp-only",
+      "determinism_evidence": "Reported status=errors_found,error_count=1 yet exited 0; fixture deleted."
+    },
+    {
+      "id": "CMD-010",
+      "command": "pz_log_query.py --log <copied console> stats",
+      "exit_code": 0,
+      "status": "pass",
+      "skip_count": 0,
+      "unknown_count": 0,
+      "mutation": "temp-only",
+      "determinism_evidence": "18625 lines ingested; ERROR 1, FREEZE 0, WARNING 0, UTCORE 0, MODPROFILER 17194."
+    },
+    {
+      "id": "CMD-011",
+      "command": "pz_log_query.py --log <copied console> profiler",
+      "exit_code": 1,
+      "status": "fail",
+      "skip_count": 0,
+      "unknown_count": 0,
+      "mutation": "temp-only",
+      "determinism_evidence": "UnicodeEncodeError on U+2192 under cp1252 at pz_log_query.py:432; temp database/log deleted."
+    },
+    {
+      "id": "CMD-012",
+      "command": "independent recursive SHA-256 package parity",
+      "exit_code": 0,
+      "status": "defects-found",
+      "skip_count": 0,
+      "unknown_count": 0,
+      "mutation": "none",
+      "determinism_evidence": "UT_CORE 24/24 equal; UniversalTraits 294/294 equal path sets with four content mismatches; metadata hashes equal."
+    },
+    {
+      "id": "CMD-013",
+      "command": "verify_pz_api.py with malformed baseline fixture",
+      "exit_code": 2,
+      "status": "expected-failure",
+      "skip_count": 0,
+      "unknown_count": 0,
+      "mutation": "temp-only",
+      "determinism_evidence": "Malformed baseline rejected; fixture deleted."
+    },
+    {
+      "id": "CMD-014",
+      "command": "generate_smoke_pings.py with invalid JSON fixture",
+      "exit_code": 1,
+      "status": "expected-failure",
+      "skip_count": 0,
+      "unknown_count": 0,
+      "mutation": "temp-only",
+      "determinism_evidence": "Invalid JSON rejected; fixture deleted."
+    },
+    {
+      "id": "CMD-015",
+      "command": "deploy.py --mod definitely-invalid --verify",
+      "exit_code": 1,
+      "status": "expected-failure",
+      "skip_count": 0,
+      "unknown_count": 0,
+      "mutation": "none",
+      "determinism_evidence": "Invalid mod rejected before destination mutation."
+    },
+    {
+      "id": "CMD-016",
+      "command": "campaign three entrypoints --help and --definitely-unknown with pre/post output hashes",
+      "exit_code": 0,
+      "status": "pass",
+      "skip_count": 0,
+      "unknown_count": 0,
+      "mutation": "none",
+      "determinism_evidence": "help exits 0, unknown args exit 2, five output hashes identical before/after."
+    },
+    {
+      "id": "CMD-017",
+      "command": "py -3 -B -m unittest discover -s trait-deep-audit/campaign/tests -p test_*.py",
+      "exit_code": 0,
+      "status": "pass",
+      "skip_count": 0,
+      "unknown_count": 0,
+      "mutation": "none",
+      "determinism_evidence": "11 tests passed."
+    },
+    {
+      "id": "CMD-018",
+      "command": "py -3 -B trait-deep-audit/campaign/tools/validate_campaign.py",
+      "exit_code": 0,
+      "status": "pass",
+      "skip_count": 0,
+      "unknown_count": 0,
+      "mutation": "none",
+      "determinism_evidence": "traits 198; first-pass findings 163; independent-review findings 118; recurring findings 15; globally unique IDs 296; checked artifacts current."
+    },
+    {
+      "id": "CMD-019",
+      "command": "py -3 -m pz_toolkit compare for retry3 old/new refs",
+      "exit_code": null,
+      "status": "not-run",
+      "skip_count": 0,
+      "unknown_count": 1,
+      "mutation": "none",
+      "determinism_evidence": "No immutable old/new Git ref pair is recorded; current PZCodebase is restored baseline. Preserved exact diff/summary and catalog hashes were verified instead."
+    },
+    {
+      "id": "CMD-020",
+      "command": "tools/run_update_safe_gate.py",
+      "exit_code": null,
+      "status": "not-run",
+      "skip_count": 1,
+      "unknown_count": 1,
+      "mutation": "prohibited",
+      "determinism_evidence": "Static review proves normal invocation writes UT_SmokePings.lua; product writes were forbidden."
+    }
+  ],
+  "semantic_impact_reconciliation": {
+    "document": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\PZ-DecompilerScript\\docs\\PZ_SOURCE_42_19_SEMANTIC_IMPACT.md",
+    "document_sha256": "00663a3ef35def14c269a0f26efa1c1f6fecab998ea253b005e21b1e4dec7922",
+    "preserved_retry3": {
+      "exact_diff_counts": {
+        "added": 34,
+        "modified": 404,
+        "removed": 6,
+        "moved_or_ambiguous": 0,
+        "unchanged": 5634
+      },
+      "semantic_changes": {
+        "total": 1478,
+        "actionable": 147,
+        "raw_or_unknown": 1331
+      },
+      "bundle": {
+        "catalogued_payload_files": 51,
+        "files_including_catalog": 52,
+        "catalogued_bytes": 35388749,
+        "jsonl_records": 17030,
+        "findings": 1923,
+        "trace_steps": 1433,
+        "process_observations": 16
+      },
+      "static_only": true,
+      "runtime_safety": "unknown",
+      "exact_snapshot_summary_sha256": "e4214d8c9f0f7986d625380dd3045a332447b934e1fc4524b08ad7748d18dcf8",
+      "exact_snapshot_diff_sha256": "82b3db90e88d1e1e47ecbe349685c78292bcdc4cc191068fc57ff403071828a7",
+      "catalog_sha256": "d938e76404179d2fe9db984dcd6532ac7d1dfd4b8ce844b3c5f729d310f39839"
+    },
+    "machine_reconciliation": {
+      "canonical_manifest_sha256": "97624c2275f974ce63b01e505ac10fae71ec812ba8e2698c1f4e630b99c9490c",
+      "canonical_post_manifest_sha256": "97624c2275f974ce63b01e505ac10fae71ec812ba8e2698c1f4e630b99c9490c",
+      "restored_manifest_sha256": "97624c2275f974ce63b01e505ac10fae71ec812ba8e2698c1f4e630b99c9490c",
+      "restoration_hashes_equal": true,
+      "current_pzcodebase_is_baseline_not_refreshed_target": true
+    },
+    "current_ut_rerun": {
+      "ut_core": {
+        "passed": 218,
+        "failed": 0
+      },
+      "universal_traits": {
+        "passed": 374,
+        "failed": 0
+      },
+      "api_verifier": {
+        "total_calls": 912,
+        "unique_apis": 296,
+        "ok": 240,
+        "warn": 0,
+        "fail": 0,
+        "skip": 56
+      },
+      "conclusion": "No current off-game or static-verifier failure was demonstrated; 56 skipped/unknown APIs and all live runtime surfaces remain unresolved."
+    },
+    "document_currentness": "The retry3 static counts and preserved artifact hashes reconcile. The UT test/verifier metrics in line 42 are historical and stale relative to the current working tree."
+  },
+  "verified_prior_findings": [
+    {
+      "id": "PR-001",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Recurring detector correctly identifies OnWeaponHitCharacter argument inversion",
+      "anchors": [
+        "trait-deep-audit/campaign/recurring_pattern_findings.json",
+        "PZCodebase\\Java\\source\\zombie\\characters\\IsoGameCharacter.java:6768"
+      ],
+      "affected_surfaces": [
+        "campaign",
+        "event callbacks",
+        "UniversalTraits"
+      ],
+      "reproduction_or_source_evidence": [
+        "JCodeMunch source context shows trigger(wielder, this, weapon, damageSplit); three current handlers use attacker, weapon, target ordering."
+      ],
+      "missing_proof": [
+        "Live callback execution remains unrun."
+      ],
+      "recommended_correction": "Correct the three handler parameter orders and add semantic assertions.",
+      "smallest_regression_test": "Trigger each handler with sentinels and assert target/weapon identity before mutation."
+    },
+    {
+      "id": "PR-002",
+      "state": "confirmed-defect",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Recurring detector correctly identifies unregistered event names",
+      "anchors": [
+        "trait-deep-audit/campaign/recurring_pattern_findings.json",
+        "PZCodebase\\Java\\source\\zombie\\Lua\\LuaEventManager.java"
+      ],
+      "affected_surfaces": [
+        "campaign",
+        "event registration"
+      ],
+      "reproduction_or_source_evidence": [
+        "Current PZ source event registry lacks the reported event names; bounded negative fixture detects an unknown event."
+      ],
+      "missing_proof": [
+        "Dynamic or mod-created producers are not modeled."
+      ],
+      "recommended_correction": "Replace or explicitly register the events and document custom producers.",
+      "smallest_regression_test": "Fixture a known and unknown event against an extracted AddEvent registry."
+    },
+    {
+      "id": "PR-003",
+      "state": "confirmed-defect",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Literal percent findings are supported by Translator preprocessing",
+      "anchors": [
+        "trait-deep-audit/campaign/recurring_pattern_findings.json",
+        "PZCodebase\\Java\\source\\zombie\\core\\Translator.java:252"
+      ],
+      "affected_surfaces": [
+        "translations",
+        "campaign"
+      ],
+      "reproduction_or_source_evidence": [
+        "JCodeMunch shows percent escaping before formatting; 56 current keys are reported."
+      ],
+      "missing_proof": [
+        "No live UI render was captured."
+      ],
+      "recommended_correction": "Use the engine-safe percent representation or formatted placeholders consistently.",
+      "smallest_regression_test": "Load one affected key through Translator with zero and formatted arguments and assert rendered percent count."
+    },
+    {
+      "id": "PR-004",
+      "state": "confirmed-defect",
+      "severity": "medium",
+      "confidence": "medium",
+      "title": "Fractional getTimeOfDay thresholds are plausible source defects",
+      "anchors": [
+        "trait-deep-audit/campaign/recurring_pattern_findings.json"
+      ],
+      "affected_surfaces": [
+        "time logic",
+        "mocks",
+        "campaign"
+      ],
+      "reproduction_or_source_evidence": [
+        "Current PZ getTimeOfDay uses a 0..24 hour domain while three findings compare 0.25/0.75; the detector and fixture reproduce the literals."
+      ],
+      "missing_proof": [
+        "Detector is file-level rather than dataflow-specific; live trait behavior is unrun."
+      ],
+      "recommended_correction": "Express thresholds in hour units and align mocks to 0..24.",
+      "smallest_regression_test": "At 00:15, 00:45, 06:00, and 18:00 assert intended activation boundaries."
+    },
+    {
+      "id": "PR-005",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Package parity finding independently reproduces four UniversalTraits mismatches",
+      "anchors": [
+        "UniversalTraits/media",
+        "UniversalTraits/release/UniversalTraits/42.0/media",
+        "C:\\Users\\Admin\\Zomboid\\mods\\UniversalTraits\\42.0\\media"
+      ],
+      "affected_surfaces": [
+        "source",
+        "release",
+        "live"
+      ],
+      "reproduction_or_source_evidence": [
+        "Independent recursive SHA-256 parity found 294 files in each tree with no missing/extra files and four content mismatches: UT_SmokePings.lua, UT_antique.lua, UT_scrounger.lua, UT_character_traits.txt. UT_CORE was 24/24 equal."
+      ],
+      "missing_proof": [
+        "No deployment was authorized."
+      ],
+      "recommended_correction": "Run the validated deploy workflow only after tests and fix its verify oracle first.",
+      "smallest_regression_test": "Compare relative path sets and hashes across source, release, and live, including metadata."
+    },
+    {
+      "id": "PR-006",
+      "state": "proven-correct",
+      "severity": "low",
+      "confidence": "high",
+      "title": "Historical campaign --help mutation defect is corrected",
+      "anchors": [
+        "trait-deep-audit/campaign/tools/campaign_cli.py",
+        "trait-deep-audit/campaign/tests/test_campaign_tools.py:81"
+      ],
+      "affected_surfaces": [
+        "campaign CLI",
+        "generated artifacts"
+      ],
+      "reproduction_or_source_evidence": [
+        "All three commands return 0 for --help and 2 for an unknown argument; pre/post hashes of five generated artifacts are identical; 11 tests pass."
+      ],
+      "missing_proof": [],
+      "recommended_correction": "Keep the shared fail-closed CLI contract and end-to-end hash regression.",
+      "smallest_regression_test": "For every campaign entrypoint assert help=0, unknown=2, and all output hashes unchanged."
+    }
+  ],
+  "rejected_prior_findings": [
+    {
+      "id": "RJ-001",
+      "state": "confirmed-defect",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Semantic-impact document's UT verifier counts are stale as current-state evidence",
+      "anchors": [
+        "PZ-DecompilerScript\\docs\\PZ_SOURCE_42_19_SEMANTIC_IMPACT.md:42"
+      ],
+      "affected_surfaces": [
+        "documentation",
+        "API verifier"
+      ],
+      "reproduction_or_source_evidence": [
+        "Current verifier twice reports 912 calls, 296 unique, 240 OK, 0 WARN, 0 FAIL, 56 SKIP; document records 908/297/242/0/3/52."
+      ],
+      "missing_proof": [
+        "The document may intentionally preserve historical retry3 evidence, but it is not labeled with a current rerun beside the old counts."
+      ],
+      "recommended_correction": "Add a dated current-state reconciliation without erasing historical provenance.",
+      "smallest_regression_test": "Doc check compares embedded verifier metrics to a captured, identity-bound current verifier artifact."
+    },
+    {
+      "id": "RJ-002",
+      "state": "proven-correct",
+      "severity": "low",
+      "confidence": "high",
+      "title": "Prior current-failure claim for UniversalTraits is rejected",
+      "anchors": [
+        "PZ-DecompilerScript\\docs\\PZ_SOURCE_42_19_SEMANTIC_IMPACT.md:42",
+        "UniversalTraits/test/run_tests.lua"
+      ],
+      "affected_surfaces": [
+        "documentation",
+        "tests"
+      ],
+      "reproduction_or_source_evidence": [
+        "Current suite exits 0 with 374 passed and 0 failed, not 371/2."
+      ],
+      "missing_proof": [],
+      "recommended_correction": "Retain the older 371/2 only as historical evidence and record the current pass separately.",
+      "smallest_regression_test": "Run the full suite and parse final pass/fail counters."
+    },
+    {
+      "id": "RJ-003",
+      "state": "proven-correct",
+      "severity": "low",
+      "confidence": "high",
+      "title": "Prior current API verifier failure claim is rejected",
+      "anchors": [
+        "PZ-DecompilerScript\\docs\\PZ_SOURCE_42_19_SEMANTIC_IMPACT.md:42",
+        "tools/verify_pz_api.py"
+      ],
+      "affected_surfaces": [
+        "documentation",
+        "API verifier"
+      ],
+      "reproduction_or_source_evidence": [
+        "Both current reruns exit 0 with FAIL=0; the historical three FAIL values do not describe the current tree."
+      ],
+      "missing_proof": [
+        "56 SKIP remain and are not safety proof."
+      ],
+      "recommended_correction": "Version verifier evidence by source tree and PZ identity.",
+      "smallest_regression_test": "Assert captured tree hashes and all five status counters before accepting a doc metric."
+    }
+  ],
+  "omissions": [
+    {
+      "id": "OM-001",
+      "state": "coverage-gap",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Current UTMods JCodeMunch index is stale and partial for campaign sources",
+      "anchors": [
+        "JCodeMunch local/UTMods-80cf9c1d",
+        "trait-deep-audit/campaign/tools/campaign_cli.py"
+      ],
+      "affected_surfaces": [
+        "Munch evidence",
+        "campaign",
+        "current code"
+      ],
+      "reproduction_or_source_evidence": [
+        "The handle reports 389 files indexed 2026-07-18 15:31; current campaign files and later edits are absent/stale."
+      ],
+      "missing_proof": [
+        "User prohibited index mutation, so current campaign evidence required direct source inspection after the live guide succeeded."
+      ],
+      "recommended_correction": "Refresh the canonical UTMods handle under a separately authorized single-writer task.",
+      "smallest_regression_test": "After refresh, retrieve campaign_cli.py and compare the Munch content hash to disk."
+    },
+    {
+      "id": "OM-002",
+      "state": "coverage-gap",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "JDoc semantic-doc surface has duplicate equal-root handles and skipped root sections",
+      "anchors": [
+        "JDocMunch local/PZ-DecompilerScript",
+        "PZ_SOURCE_42_19_SEMANTIC_IMPACT.md"
+      ],
+      "affected_surfaces": [
+        "documentation index",
+        "semantic reconciliation"
+      ],
+      "reproduction_or_source_evidence": [
+        "The newer canonical handle verifies 1,878 clean sections, 0 drift/missing/errors, and 48 skipped empty/root ranges; repository resolution returned two equal-root candidates."
+      ],
+      "missing_proof": [
+        "The root section of the semantic doc is among skipped ranges, although all substantive heading sections were retrieved clean."
+      ],
+      "recommended_correction": "Retire the unintended duplicate handle and make root/empty skip semantics explicit.",
+      "smallest_regression_test": "Resolve normalized source_root to exactly one canonical handle and require all substantive sections clean."
+    },
+    {
+      "id": "OM-003",
+      "state": "coverage-gap",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Full semantic delta cannot be regenerated from current PZCodebase Git refs",
+      "anchors": [
+        "PZCodebase\\VERSION.json",
+        "CodexBackups\\...\\exact-snapshot-diff.json"
+      ],
+      "affected_surfaces": [
+        "semantic impact",
+        "PZ source identity",
+        "reproducibility"
+      ],
+      "reproduction_or_source_evidence": [
+        "Current PZCodebase is restored to the baseline manifest/HEAD; the refreshed target exists as preserved experiment artifacts and archives, not a named Git ref. The document does not provide an old-ref/new-ref pair for pz_toolkit compare."
+      ],
+      "missing_proof": [
+        "A full replay would be mutating/expensive and was not authorized; preserved exact diff was hash-verified instead."
+      ],
+      "recommended_correction": "Publish immutable old/new snapshot identities or refs and a read-only replay command.",
+      "smallest_regression_test": "Given two immutable snapshot roots, regenerate exact summary/diff in temp and compare canonicalized hashes."
+    },
+    {
+      "id": "OM-004",
+      "state": "runtime-unproven",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Static semantic evidence does not prove Kahlua, UI, callback, or game-runtime safety",
+      "anchors": [
+        "PZ-DecompilerScript\\docs\\PZ_SOURCE_42_19_SEMANTIC_IMPACT.md:24-25",
+        "research-bundle\\bundle-summary.json"
+      ],
+      "affected_surfaces": [
+        "runtime",
+        "semantic impact",
+        "mocks"
+      ],
+      "reproduction_or_source_evidence": [
+        "The bundle itself marks runtime, mutation, and index gates not-run; standard Lua mock suites are off-game."
+      ],
+      "missing_proof": [
+        "Require relocation, overload/conversion, event timing, UI mouse-consumption, and live smoke fixtures remain unresolved."
+      ],
+      "recommended_correction": "Run targeted runtime fixtures against the identity-bound game build and retain logs.",
+      "smallest_regression_test": "Execute one minimal fixture for each unresolved require/bridge/event/UI surface and require affirmative markers."
+    }
+  ],
+  "cross_surface_findings": [
+    {
+      "id": "CF-001",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Update-safe gate mutates source and can report green without smoke/log success",
+      "anchors": [
+        "tools/run_update_safe_gate.py"
+      ],
+      "affected_surfaces": [
+        "gate",
+        "generated source",
+        "smoke logs"
+      ],
+      "reproduction_or_source_evidence": [
+        "Step 3 invokes generate_smoke_pings.py without --dry-run; final success depends only on steps 1-3 while ping-run failure and log errors are informational."
+      ],
+      "missing_proof": [
+        "Gate was not executed because product mutation was prohibited."
+      ],
+      "recommended_correction": "Make the gate read-only by default, validate generated bytes in temp, and fail on required smoke/log evidence.",
+      "smallest_regression_test": "Run against a copied tree with a failing ping command and an error log; assert nonzero and no source hash change."
+    },
+    {
+      "id": "CF-002",
+      "state": "coverage-gap",
+      "severity": "high",
+      "confidence": "high",
+      "title": "API verifier permits false confidence through skips, stale baselines, and weak comparison keys",
+      "anchors": [
+        "tools/verify_pz_api.py",
+        "tools/pz_api_baseline.json",
+        "tools/pz_api_inventory.json"
+      ],
+      "affected_surfaces": [
+        "API verification",
+        "baseline",
+        "semantic impact"
+      ],
+      "reproduction_or_source_evidence": [
+        "Current run has 56 SKIP and still exits 0; generated_at makes raw output nondeterministic; baseline comparison keys omit occurrence count/ownership. Checked inventory was generated 2026-04-08 against older layer hashes."
+      ],
+      "missing_proof": [
+        "Unknown receiver semantics and dynamic calls remain unresolved."
+      ],
+      "recommended_correction": "Make codebase root explicit, separate unknown budget, canonicalize timestamps, bind baselines to VERSION layer hashes, and compare ownership/count deltas.",
+      "smallest_regression_test": "Inject a new skipped receiver and a moved same-status call; both must produce a non-green delta."
+    },
+    {
+      "id": "CF-003",
+      "state": "coverage-gap",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Smoke generator and log checker cannot establish affirmative execution",
+      "anchors": [
+        "tools/generate_smoke_pings.py",
+        "tools/check_smoke_log.py",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+      ],
+      "affected_surfaces": [
+        "smoke generation",
+        "logs",
+        "runtime"
+      ],
+      "reproduction_or_source_evidence": [
+        "Fresh generator output equals source, but it creates every root chain and emits no [UT_SMOKE] success marker. Log checker requires error marker and UT path on the same line and returns 0 even for a synthetic detected error."
+      ],
+      "missing_proof": [
+        "No live current log proves the generated calls ran."
+      ],
+      "recommended_correction": "Emit start/per-call/completion markers, parse multiline stack records, and use a nonzero gate exit for errors/missing completion.",
+      "smallest_regression_test": "Feed success, missing-completion, split-line stack, and explicit-error logs and assert distinct nonzero outcomes."
+    },
+    {
+      "id": "CF-004",
+      "state": "confirmed-defect",
+      "severity": "critical",
+      "confidence": "high",
+      "title": "deploy.sh targets obsolete 42 path and destructively replaces live content",
+      "anchors": [
+        "deploy.sh:13",
+        "deploy.sh:20"
+      ],
+      "affected_surfaces": [
+        "release",
+        "live deployment",
+        "package layout"
+      ],
+      "reproduction_or_source_evidence": [
+        "Script writes release/UniversalTraits/42/media while project contract requires 42.0, does not clear release extras, then rm -rf's the live target and has no verification."
+      ],
+      "missing_proof": [
+        "Not executed due destructive scope."
+      ],
+      "recommended_correction": "Retire or rewrite with 42.0, staged atomic copy, full parity verification, and explicit authorization.",
+      "smallest_regression_test": "Deploy a fixture containing stale release/live extras and assert exact 42.0 parity without touching any real mod path."
+    },
+    {
+      "id": "CF-005",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "deploy.py --verify deploys first and verifies only source versus live media",
+      "anchors": [
+        "deploy.py:23",
+        "deploy.py:67"
+      ],
+      "affected_surfaces": [
+        "source",
+        "release",
+        "live",
+        "metadata"
+      ],
+      "reproduction_or_source_evidence": [
+        "mirror() removes the destination; --verify is not read-only; verification omits release and mod.info. Invalid-mod negative fixture exits 1 before mutation."
+      ],
+      "missing_proof": [
+        "No real deployment was authorized."
+      ],
+      "recommended_correction": "Split read-only verify from deploy, stage atomically, and verify source/release/live media plus metadata.",
+      "smallest_regression_test": "Corrupt only release and only mod.info in a temp fixture; read-only verify must fail and preserve all hashes."
+    },
+    {
+      "id": "CF-006",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Current UniversalTraits release/live package is stale in four files",
+      "anchors": [
+        "UniversalTraits/release/UniversalTraits/42.0/media",
+        "C:\\Users\\Admin\\Zomboid\\mods\\UniversalTraits\\42.0\\media"
+      ],
+      "affected_surfaces": [
+        "package",
+        "release",
+        "live"
+      ],
+      "reproduction_or_source_evidence": [
+        "Independent full-tree parity: equal path sets, four SHA mismatches; mod.info hashes are equal at source/release/live. UT_CORE is fully equal."
+      ],
+      "missing_proof": [
+        "No deploy authority."
+      ],
+      "recommended_correction": "After source tests and deploy-helper correction, update release/live through the authorized workflow.",
+      "smallest_regression_test": "Exact path-set and SHA parity gate across all three copies."
+    },
+    {
+      "id": "CF-007",
+      "state": "confirmed-defect",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Profiler log helper crashes on Windows cp1252 output",
+      "anchors": [
+        "tools/pz_log_query.py:432"
+      ],
+      "affected_surfaces": [
+        "profiler",
+        "log analysis",
+        "Windows CLI"
+      ],
+      "reproduction_or_source_evidence": [
+        "Temp ingest of 18,625-line console log succeeds for stats; profiler exits 1 with UnicodeEncodeError for U+2192 at line 432 under cp1252."
+      ],
+      "missing_proof": [
+        "Other console encodings were not exhaustively tested."
+      ],
+      "recommended_correction": "Use ASCII-safe output or explicitly configured UTF-8 with error handling; add a read-only database mode.",
+      "smallest_regression_test": "Run profiler under cp1252 on a one-session fixture and require exit 0."
+    },
+    {
+      "id": "CF-008",
+      "state": "coverage-gap",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Maintenance/fix scripts are broad relative-path mutators without transaction or idempotence contracts",
+      "anchors": [
+        "fix_accum_keys.py",
+        "fix_b4216_pass2.py",
+        "fix_b4216_pass3_tests.py",
+        "fix_b4216_stats.py",
+        "fix_test_sickness.py",
+        "trait-deep-audit/fix_translations.py",
+        "trait-deep-audit/write_scardycat.py",
+        "tmp_ut_report.ps1"
+      ],
+      "affected_surfaces": [
+        "maintenance",
+        "tests",
+        "translations",
+        "reports"
+      ],
+      "reproduction_or_source_evidence": [
+        "Source review found direct write_text/Set-Content operations and cwd-relative targeting; no dry-run/backup/expected-hash guards."
+      ],
+      "missing_proof": [
+        "They were not executed against product state."
+      ],
+      "recommended_correction": "Constrain each to explicit input/output, precondition hashes, temp staging, and deterministic dry-run.",
+      "smallest_regression_test": "Run twice on a disposable fixture; second run must be byte-identical and out-of-root paths must be rejected."
+    },
+    {
+      "id": "CF-009",
+      "state": "coverage-gap",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Campaign maps not-applicable without missing proof to proven-correct",
+      "anchors": [
+        "trait-deep-audit/campaign/tools/build_final_trait_ledger.py:154-175"
+      ],
+      "affected_surfaces": [
+        "campaign ledger",
+        "state semantics"
+      ],
+      "reproduction_or_source_evidence": [
+        "normalize_state returns proven-correct for not_applicable when missing_proof is empty; tests explicitly lock that behavior."
+      ],
+      "missing_proof": [
+        "No explicit user-approved non-goal terminal state or per-dimension applicability proof exists."
+      ],
+      "recommended_correction": "Represent non-goal/applicability separately; never infer positive proof from empty missing_proof.",
+      "smallest_regression_test": "A not-applicable dimension without applicability evidence must fail validation or remain runtime-unproven."
+    },
+    {
+      "id": "CF-010",
+      "state": "coverage-gap",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Campaign independent-review schema does not validate confidence, review-state, or ID references",
+      "anchors": [
+        "trait-deep-audit/campaign/tools/build_final_trait_ledger.py:237-336",
+        "trait-deep-audit/campaign/tools/validate_campaign.py:59-76"
+      ],
+      "affected_surfaces": [
+        "campaign schema",
+        "independent reviews"
+      ],
+      "reproduction_or_source_evidence": [
+        "Severity and normalized finding state are checked, but confidence is copied verbatim, review_state is counted verbatim, and cross/verified/rejected/runtime-proof ID arrays are not resolved to declared IDs."
+      ],
+      "missing_proof": [
+        "Current validator green does not prove those relationships."
+      ],
+      "recommended_correction": "Define vocabularies and referential integrity for every ID-bearing field.",
+      "smallest_regression_test": "Inject invalid confidence/review_state and dangling IDs; validator must exit nonzero."
+    },
+    {
+      "id": "CF-011",
+      "state": "coverage-gap",
+      "severity": "medium",
+      "confidence": "medium",
+      "title": "Recurring-pattern heuristics can overstate event/time defects",
+      "anchors": [
+        "trait-deep-audit/campaign/tools/check_recurring_patterns.py"
+      ],
+      "affected_surfaces": [
+        "campaign detector",
+        "false positives"
+      ],
+      "reproduction_or_source_evidence": [
+        "Fractional thresholds are flagged by file co-occurrence with getTimeOfDay rather than dataflow; event registry derives only literal AddEvent names."
+      ],
+      "missing_proof": [
+        "Dynamic/custom event production and threshold dataflow are unmodeled."
+      ],
+      "recommended_correction": "Add dataflow-bounded checks or mark heuristic candidates runtime-unproven until source-linked.",
+      "smallest_regression_test": "Fixture an unrelated 0.25 constant and a custom registered event; neither should be a confirmed defect."
+    },
+    {
+      "id": "CF-012",
+      "state": "coverage-gap",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "No CI configuration closes the local pass/fail surface",
+      "anchors": [
+        "UTMods repository root (no .github workflow, YAML CI, or equivalent discovered)"
+      ],
+      "affected_surfaces": [
+        "CI",
+        "tests",
+        "packaging"
+      ],
+      "reproduction_or_source_evidence": [
+        "Closed-world inventory found no CI/config runner beyond AGENTS.md and local scripts."
+      ],
+      "missing_proof": [
+        "Local commands can be skipped by release operators."
+      ],
+      "recommended_correction": "Add a deterministic CI entrypoint for Lua suites, campaign tests/validator, API verification with unknown budget, and read-only package parity.",
+      "smallest_regression_test": "Fresh checkout CI must fail on one injected test failure, skipped-API budget increase, and package mismatch."
+    },
+    {
+      "id": "CF-013",
+      "state": "runtime-unproven",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Passing standard-Lua mocks do not establish PZ/Kahlua semantics",
+      "anchors": [
+        "UT_CORE/test/UTCoreMocks.lua",
+        "UniversalTraits/test/UTTestMocks.lua"
+      ],
+      "affected_surfaces": [
+        "tests",
+        "mocks",
+        "runtime"
+      ],
+      "reproduction_or_source_evidence": [
+        "Current suites pass 218/0 and 374/0, but run under standalone Lua with mocked Java/PZ APIs."
+      ],
+      "missing_proof": [
+        "0-based Java collections, overload selection, callback timing, and UI propagation require live or closer-fidelity evidence."
+      ],
+      "recommended_correction": "Keep off-game tests but add targeted Kahlua/live contracts for changed semantic surfaces.",
+      "smallest_regression_test": "Run a small in-game fixture that exercises ArrayList indexing, overload selection, event arguments, and completion markers."
+    }
+  ],
+  "negative_fixture_results": [
+    {
+      "id": "NEG-001",
+      "surface": "API baseline parser",
+      "expected": "nonzero and no product mutation",
+      "observed": "exit 2; rejected malformed baseline; temp deleted",
+      "finding_ids": [
+        "CF-002"
+      ]
+    },
+    {
+      "id": "NEG-002",
+      "surface": "smoke generator input",
+      "expected": "nonzero and no product mutation",
+      "observed": "exit 1 for invalid JSON; temp deleted",
+      "finding_ids": [
+        "CF-003"
+      ]
+    },
+    {
+      "id": "NEG-003",
+      "surface": "smoke log checker",
+      "expected": "detected error must be non-green",
+      "observed": "detected one error but exited 0; temp deleted",
+      "finding_ids": [
+        "CF-003"
+      ]
+    },
+    {
+      "id": "NEG-004",
+      "surface": "deploy.py invalid mod",
+      "expected": "reject before mutation",
+      "observed": "exit 1; no destination touched",
+      "finding_ids": [
+        "CF-005"
+      ]
+    },
+    {
+      "id": "NEG-005",
+      "surface": "campaign CLI arguments",
+      "expected": "help=0, unknown=2, no output mutation",
+      "observed": "all three entrypoints comply; output hashes unchanged",
+      "finding_ids": [
+        "PR-006"
+      ]
+    },
+    {
+      "id": "NEG-006",
+      "surface": "campaign pattern fixtures",
+      "expected": "unknown event, parity mismatch, percent, inversion, and fractional clock are detected",
+      "observed": "11-test suite passes, including bounded temp fixtures",
+      "finding_ids": [
+        "PR-001",
+        "PR-002",
+        "PR-003",
+        "PR-004",
+        "PR-005"
+      ]
+    }
+  ],
+  "surface_gap_reconciliation": {
+    "inventory_review_bijection": {
+      "inventory_count": 158,
+      "review_count": 158,
+      "inventory_ids_equal_review_ids": true
+    },
+    "required_surfaces": {
+      "test_runners_and_mocks": "inventoried and current suites run",
+      "api_baseline_inventory_verifier": "inventoried; rerun twice; skips and staleness explicit",
+      "smoke_generator_pings_log_checker": "inventoried; render compared; negative log fixture run",
+      "update_safe_gate": "inventoried and statically reviewed; not run because mutating",
+      "profiler_log_helper": "inventoried; temp stats/profiler run exposed encoding crash",
+      "deploy_package_verification": "both helpers reviewed; full source/release/live parity independently run",
+      "maintenance_fix_scripts": "all discovered root/trait-audit mutators and read helpers inventoried",
+      "generated_artifacts": "campaign outputs, batches, reviews, caches, smoke source/release, reports, and semantic bundle inventoried",
+      "campaign_deterministic_tools_tests": "current CLI reread; 11 tests and validator pass",
+      "ci_config": "no CI configuration discovered; recorded as CF-012",
+      "semantic_workflow": "docs, implementation entrypoints, preserved key experiment artifacts, and all research-bundle files hash-inventoried"
+    },
+    "unexamined_required_surface": [],
+    "qualified_not_executed": [
+      "mutating update-safe gate",
+      "real deployment",
+      "full baseline refresh/replay",
+      "Project Zomboid runtime"
+    ]
+  },
+  "unresolved_runtime_proofs": [
+    {
+      "id": "RTP-001",
+      "state": "runtime-unproven",
+      "surface": "Kahlua overload and Java collection conversion",
+      "reason": "standalone Lua mocks and static source cannot establish overload selection/conversion"
+    },
+    {
+      "id": "RTP-002",
+      "state": "runtime-unproven",
+      "surface": "event timing and argument dispatch",
+      "reason": "no live immediate/queued callback fixture"
+    },
+    {
+      "id": "RTP-003",
+      "state": "runtime-unproven",
+      "surface": "UI mouse consumption and downstream behavior",
+      "reason": "no live UI fixture"
+    },
+    {
+      "id": "RTP-004",
+      "state": "runtime-unproven",
+      "surface": "smoke completion",
+      "reason": "generated code lacks affirmative completion marker and no current live log was supplied"
+    },
+    {
+      "id": "RTP-005",
+      "state": "runtime-unproven",
+      "surface": "package deployment",
+      "reason": "release/live mismatch remains and deployment was not authorized"
+    }
+  ],
+  "validation_run": {
+    "required_top_level_keys_present": true,
+    "json_parse": "pass",
+    "finding_id_uniqueness": "pass: 26 findings, no duplicate IDs",
+    "finding_vocabularies": "pass: states, severities, and confidence values are in declared vocabularies",
+    "inventory_hashes": "pass: 158/158 rows have lowercase SHA-256 values",
+    "inventory_review_bijection": true,
+    "command_accounting": {
+      "commands": 20,
+      "skips": 161,
+      "unknowns": 115
+    },
+    "deterministic_second_pass": {
+      "method": "execute this fixed-input generator twice and compare output SHA-256",
+      "equal": true
+    },
+    "scope_boundary": "Only this artifact persists; all bounded negative/temp artifacts were deleted."
+  },
+  "blockers": [
+    {
+      "id": "BLK-001",
+      "state": "coverage-gap",
+      "surface": "current Munch code evidence",
+      "detail": "UTMods JCodeMunch handle is stale/partial and index mutation was prohibited; current campaign evidence was verified from disk after live guide health."
+    },
+    {
+      "id": "BLK-002",
+      "state": "coverage-gap",
+      "surface": "semantic replay identity",
+      "detail": "No immutable old/new Git ref pair maps the preserved retry3 delta into current PZCodebase; exact preserved artifacts were verified instead."
+    },
+    {
+      "id": "BLK-003",
+      "state": "runtime-unproven",
+      "surface": "game runtime",
+      "detail": "No launch/runtime mutation was authorized; static and off-game evidence cannot close runtime proofs."
+    }
+  ]
+}

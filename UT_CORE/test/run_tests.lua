@@ -145,6 +145,46 @@ test("carry reconciliation combines flat and strength-based bonuses without over
     assert_eq(p:getMaxWeightBase(), 20)
 end)
 
+test("carry reconciliation never sets inventory capacity above vanilla safe limit", function()
+    _activatedMods = {}
+    local calls = {}
+    local inv = {
+        _capacity = 50,
+        getCapacity = function(self) return self._capacity end,
+        setCapacity = function(self, value)
+            table.insert(calls, value)
+            assert_true(value <= 100, "inventory capacity write must stay at or below 100")
+            self._capacity = value
+        end,
+    }
+    local p = MockPlayer({}, { inventory = inv })
+    UTCore.applyCarryWeight(p, 150, "bulk_test")
+    UTCore.reconcileAggregatedModifiers(p)
+    assert_eq(p:getMaxWeightBase(), 158)
+    assert_eq(#calls, 1)
+    assert_eq(calls[1], 100)
+end)
+
+test("carry reconciliation allows high inventory capacity with RemoveInventoryLimitsZB", function()
+    _activatedMods = { RemoveInventoryLimitsZB = true }
+    local calls = {}
+    local inv = {
+        _capacity = 50,
+        getCapacity = function(self) return self._capacity end,
+        setCapacity = function(self, value)
+            table.insert(calls, value)
+            self._capacity = value
+        end,
+    }
+    local p = MockPlayer({}, { inventory = inv })
+    UTCore.applyCarryWeight(p, 150, "bulk_test")
+    UTCore.reconcileAggregatedModifiers(p)
+    assert_eq(p:getMaxWeightBase(), 158)
+    assert_eq(#calls, 1)
+    assert_eq(calls[1], 158)
+    _activatedMods = {}
+end)
+
 -- applyBleedRate
 test("applyBleedRate stores multiplier in moddata", function()
     local p = MockPlayer()

@@ -35,7 +35,7 @@ local function rollAntiqueItem(container, containerObj)
     local i = ZombRand(#ITEMS) + 1
     local item = container:AddItem(ITEMS[i])
     if item then
-        container:addItemOnServer(item)
+        sendAddItemToContainer(container, item)
     end
 end
 

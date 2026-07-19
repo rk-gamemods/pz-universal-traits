@@ -28,7 +28,7 @@ local function onContainerUpdate(inventoryPage, state, player)
                             if sourceItem then
                                 local newItem = inv:AddItem(sourceItem:getFullType())
                                 if newItem then
-                                    inv:addItemOnServer(newItem)
+                                    sendAddItemToContainer(inv, newItem)
                                 end
                             end
                         end

@@ -1,0 +1,3913 @@
+{
+  "schema_version": "1.0.0",
+  "exact_document_inventory": [
+    {
+      "path": "UTMods/AGENTS.md",
+      "sha256": "6B70B3C3E804AC3B0D7287634ADCA66B8F3A00430B9954CF18B61D6F54244614",
+      "bytes": 36745,
+      "lifecycle": "current",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "stale",
+      "stale_current_contract_reason": "Runtime documentation points to stale per-trait authority.",
+      "finding_links": [
+        "F-DOC-001",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/PRD.md",
+      "sha256": "542C28801D9891C0B28EA19675E8D5B67BE494D0CC122EC00828ED7C99849EAE",
+      "bytes": 53260,
+      "lifecycle": "current",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "stale",
+      "stale_current_contract_reason": "Acceptance and description authority are not reconciled to the campaign ledger.",
+      "finding_links": [
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/TRAIT_CHANGE_CHECKLIST.md",
+      "sha256": "67BD11AC692D2716965033A67571002DFF126ACF5757839B976B415549C030AE",
+      "bytes": 4375,
+      "lifecycle": "current",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "stale",
+      "stale_current_contract_reason": "Semantic verification routes through superseded trait documents.",
+      "finding_links": [
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/UniversalTraits/planning/qa_trait_update_checklist_2026-04-05.md",
+      "sha256": "35D4BB48A3E1933CBE3E6FE75BBD052A3F13D0D9BF66D8F53CBA6A31D64509F3",
+      "bytes": 8776,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/_archive/completed-docs/QA_CHECKLIST.md",
+      "sha256": "0A4E4CF5004520A969E29D0544746FEE2AF3E45F820B38F39EC69EF4C4B0FDDD",
+      "bytes": 6009,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001"
+      ]
+    },
+    {
+      "path": "UTMods/_archive/completed-docs/README.md",
+      "sha256": "C99A71C247FE61436947856F35FA7840D578E35F42DE0BBAC437EE74CA2981E5",
+      "bytes": 443,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/dev/spike-research/ANALYSIS_root_cause_periodic_growing_spikes.md",
+      "sha256": "E8CAB5F446D641F3C2B3D21BDBFDA3F2A780E35388ACB902BE74649EAC164C3E",
+      "bytes": 21631,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/docs/superpowers/plans/2026-04-07-smoke-system-redesign.md",
+      "sha256": "470CF08B93B1F188CA75FC5478F978BF9BD804100BB3C7D88D6EED259718147E",
+      "bytes": 35229,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/docs/superpowers/specs/2026-03-28-utmods-cheat-traits-design.md",
+      "sha256": "89E3AB7D3FCC53937C2A69CB3035A4A44135B2733FDA72DE8F8C29E4353DECC6",
+      "bytes": 11824,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001"
+      ]
+    },
+    {
+      "path": "UTMods/docs/superpowers/specs/2026-03-28-utmods-completion-design.md",
+      "sha256": "F43062C1AD4795DD888CF82066E8B88EAF76AAA93F870BE462F6A35113297689",
+      "bytes": 9399,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/docs/superpowers/specs/2026-04-07-smoke-system-redesign.md",
+      "sha256": "E54906B998276FB4064A596F07F6D92FA488DA11E8A4E7822DFF8CBDCFD4C31D",
+      "bytes": 6757,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/planning/2026-03-27-universaltraits-implementation-plan.md",
+      "sha256": "AB42F540306F2156F2186E3F1B6C5CAD07DA18B42D39696FC24D7D80DA1B316B",
+      "bytes": 13307,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001"
+      ]
+    },
+    {
+      "path": "UTMods/planning/2026-04-06_universal_traits_movement_bug_handoff.md",
+      "sha256": "0E22EFDDC1F615BA4FF446735BCA3E9D5BCA42DF2DBAB15DFA0D2608F6CC8C25",
+      "bytes": 13328,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/planning/PLAN_movement_bug_fix.md",
+      "sha256": "95CA0A70AA9DB8E31C97F8B28FE3757389E9B18A9689CC8ED10CCAA94E99097B",
+      "bytes": 20053,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/planning/balance-review-2026-03-28.md",
+      "sha256": "85015AD1FBF70EADA6331082CD05C1C8CEBD7595B5E15DBB5D215625CCBD0A8D",
+      "bytes": 10399,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/planning/trait-description-review-handoff.md",
+      "sha256": "62D2E8721E359FC5AA3D7E806328B541FAA75EAB8CE0BF2FD5D54C4E96C0C86D",
+      "bytes": 9886,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/planning/vivid-roaming-cosmos.md",
+      "sha256": "8A73D2D4A956BC362C81D8B855542FD5A81D9914EE61464A9B40CFB5CEAC35A8",
+      "bytes": 38191,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/TRAIT_AUDIT.md",
+      "sha256": "E3DD7BF0FB6B6446135CEB48DDB10D3191EAB3F159F7CB10F33BDBB6DF8BD24A",
+      "bytes": 28980,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/README.md",
+      "sha256": "83BC277D63820EFD235005B55081F2F333C6D64F0710526788AC2C9B026AC73B",
+      "bytes": 1695,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/STATUS.md",
+      "sha256": "63E82A9DA58415197524A6A37842651F50715BAB1026080CC640CFFCDC493964",
+      "bytes": 9658,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/hypotheses/H001_speedhook_setX_kills_movement.md",
+      "sha256": "079EB8F373E775CB6E13EF8FA1C72BBC5B70D1252D217B496B077B55884D0779",
+      "bytes": 3078,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/hypotheses/H002_ut_natural_stale_speed.md",
+      "sha256": "A77F47EFD48984BDB1381B1E03C6C7EA3F4F34F34DF1E6AB7E8D885441902D13",
+      "bytes": 1613,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/hypotheses/H003_tchernolib_conflict.md",
+      "sha256": "5F78094B9473985DBC3E069FE0F8DC0FBC8C80D2BC9BCBDCF5682A75DE56FF27",
+      "bytes": 3135,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/hypotheses/H004_workspeedhook_monkeypatch_collateral.md",
+      "sha256": "44303B07CB0FC56B4550257996A9A81BF08B86C194548925346E4DB553AD66D7",
+      "bytes": 1658,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/instrumentation/I001_walkto_vs_keyboard_frame_trace_plan.md",
+      "sha256": "87518D8BD730FD514655C553A856D5A6392F20B10C247A7855387788060FFA9A",
+      "bytes": 5025,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/proof/P001_isolation_test.md",
+      "sha256": "D7222F4A32C8FFBB5DFE4F5625806C9927B3FB31D508265B5CC868C7A7229315",
+      "bytes": 802,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/proof/P002_symptom_split.md",
+      "sha256": "B0CA7973EC7975179827A8EBA3274D29EF64B3EF45A2E55068A21C885CCAB138",
+      "bytes": 565,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/proof/P003_setX_overwrites_nextX.md",
+      "sha256": "1F08BB3FD4B5B58CED0C51F46EE7D9321113618ED82AAD0549F1BDF03A61B8DE",
+      "bytes": 1885,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/proof/P004_speedhook_calls_setX.md",
+      "sha256": "C9678A07F3C240182F20CF956419403E5B1ACFB481E81B44CC83CD65F0DE24FE",
+      "bytes": 1871,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/proof/P005_onplayermove_fires_for_pathfinding.md",
+      "sha256": "D85B5649FACD6E850DDBD7E7F0F04575E346646C1F2780A68756D1AAEC5D7BB8",
+      "bytes": 1760,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/proof/P006_ut_natural_caches_derived_speed.md",
+      "sha256": "47D78ED60902BDEBBC2B273E760E3FF40B089937FCBF37F82A78E016D97182FD",
+      "bytes": 2320,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/proof/P007_event_registration_inventory.md",
+      "sha256": "15C646B595A661E8707C7970BAF0D5C4D0F0369F8806DE8F56BE1BB42710928E",
+      "bytes": 2785,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/proof/P008_no_lua_errors_in_log.md",
+      "sha256": "4C783A2A6DAAE10426CCBAF3404DA20F8A96942D82A90227878552EE753EF9DD",
+      "bytes": 905,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/proof/P009_speed_modifier_trait_inventory.md",
+      "sha256": "BBB6D38ADBE618DED3981379B3746DD806A1BEA52D33BE9CF2C89BD241E0A42E",
+      "bytes": 1189,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/proof/P010_character_has_ut_fast_speedmod_active.md",
+      "sha256": "EAC1DE8FAAEFCCF3E3669EE875BF70A4DF27847C44B190250ACAD16BF65ADE38",
+      "bytes": 1984,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/proof/P011_movement_pipeline_nextX_mechanism.md",
+      "sha256": "E560C9448425E1C0CD30D61D8F3FF306B20EF6ACA133B091572D2AA3C3A4B234",
+      "bytes": 5301,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/proof/P012_frame_order_proves_x_is_stale_during_onplayermove.md",
+      "sha256": "7D96489E943BE7B397419A7390CCCB8C680EB60C135FA08DEA378EC93DFC5EDF",
+      "bytes": 3726,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/proof/P013_broader_mod_ecosystem_shows_same_conflict_class.md",
+      "sha256": "0FFACD4AA257441285F028C44B000731B09AE9E012A6ED967532C80CB389E101",
+      "bytes": 5820,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/proof/P014_walkto_uses_persistent_pathfinding_mode_not_synthetic_keyboard_input.md",
+      "sha256": "8EAC978043853B38037291BC6C934DA1AD044CBC078AF33C60E5B3CBEF38F71B",
+      "bytes": 5466,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/research/movement-bug/reviews/R001_code_review_agent_2026-04-06.md",
+      "sha256": "A138A328D176D730164B4B7BF09D73A325E65804328B3CA4A83080CF01392248",
+      "bytes": 2370,
+      "lifecycle": "historical",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/trait-deep-audit/PLAN.md",
+      "sha256": "FD25DC6FC15A9BE2A52E22272CC804D71805A8931969FF613F81DE4E61A3F924",
+      "bytes": 5217,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": []
+    },
+    {
+      "path": "UTMods/trait-deep-audit/README.md",
+      "sha256": "DA6AA2CBC8B18D11005718CCEAC14E57D921E17C721D69F8F7437374E0DE05D8",
+      "bytes": 9870,
+      "lifecycle": "current",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "stale",
+      "stale_current_contract_reason": "Completion is not gated by source-closed membership and runtime proof.",
+      "finding_links": [
+        "F-DOC-003"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/00_batch_checklist.md",
+      "sha256": "212CFF2E217319233845DDD51FC3620E7340E84B30D88F2CAB7DD63DC7BC8F8F",
+      "bytes": 24297,
+      "lifecycle": "current",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "stale",
+      "stale_current_contract_reason": "The 121-document batch omits 77 registered traits.",
+      "finding_links": [
+        "F-DOC-002"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/plan_universaltraits_description_sync.md",
+      "sha256": "4DEFF2106C25EDC76B20FB6EEFA667B9B042C5B1F1428F372B7A2FFE06C34F88",
+      "bytes": 4564,
+      "lifecycle": "proposal",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_accmetabolism.md",
+      "sha256": "361E9A81427491B06A9840DDD82477B3484EF40D7CEB2992018FE90EECB96C1F",
+      "bytes": 17871,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_acrophobic.md",
+      "sha256": "3D599C0CF38CF13B519F1403F81929E3887147462EB22CF30EF508762D5DB052",
+      "bytes": 12840,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_actionhero.md",
+      "sha256": "6E6DE89318F6889057BD02E42DF3684E4F157D407EAFF92380786863B19DF377",
+      "bytes": 21173,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_adaptivemetabolism.md",
+      "sha256": "B8C95A24A9DF0042B983ACE688B8FD661E9DFFF67DB9E2F5EF0E7279C538043E",
+      "bytes": 17964,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_addictedtocaffeine.md",
+      "sha256": "F1307F15B706A4E67E7ECBF8325E4CF9DC240B52CEA6744048C9C25C6DDEAFFB",
+      "bytes": 13163,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_albino.md",
+      "sha256": "6FDF3DDD7DD9377E79F8358717FE5D0CF4A6E548279F82329E2AFCAC25CC7AA8",
+      "bytes": 14133,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_alcoholic_I.md",
+      "sha256": "D24FA507D0FCDE0064079F0FE59DA6E3089F662007F00F6096AEB82C142A9930",
+      "bytes": 15830,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_alcoholic_II.md",
+      "sha256": "99C268A6FEEBEAFC85DDFEA32DADBADB709F4D6964D802DE0E17FD156B620B23",
+      "bytes": 17500,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_alcoholic_III.md",
+      "sha256": "D0E77DA61B36B0ABDB13A16E289A0173BD936FFEB6308076EABE0B6C14FEFA20",
+      "bytes": 19869,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_allergic.md",
+      "sha256": "96074AC0BBC20D182397DFAD6666D0CB577492EBCF081665C6325702A30D8D37",
+      "bytes": 10366,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_analgesia.md",
+      "sha256": "82E96A9FA38595587D112A722BF173776FA05945853C72157FB0A1039069A90D",
+      "bytes": 9477,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_anemic.md",
+      "sha256": "D85C59D1D284C2ABA42670FB8B9D9D4FF516B978A28FA214B699BEABCAAD41B5",
+      "bytes": 17932,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_anorexy.md",
+      "sha256": "514372B8F4B9ECFB1BEA35E4A45655C3C5E1F2F364635A3BF8590B25BB586655",
+      "bytes": 16419,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_antigun.md",
+      "sha256": "759491082F62313BAA95C45720B127BDE06422E6E3577EA4E5C5AE278D8851AE",
+      "bytes": 11899,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_antivaxxer.md",
+      "sha256": "7ECA8BF43A02F0144534EE35EA429FAD6D0B21AA89E0D949F54032D69EA9EC74",
+      "bytes": 14084,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_ascetic.md",
+      "sha256": "13E606D0EB64A62280A829DA3204B7AB4DD79F0DE9B01A4D67B2FAA17201A725",
+      "bytes": 14275,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_backpacker.md",
+      "sha256": "386C4E07164396A0523B43DD4C0A46A50645AD38180348D624D2C651F317CFB4",
+      "bytes": 13476,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_badteeth.md",
+      "sha256": "4B04C936FD832695A5B9EB70E1B3EA6F306A4E7A3A823002B72241446534281E",
+      "bytes": 17977,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_batteringram.md",
+      "sha256": "38CB8297177A680AAA1F88DED4CC0EA7CD3F815362CF068AA3038076D89FEBED",
+      "bytes": 9237,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_bigorexia.md",
+      "sha256": "5B5FFC1ADB709E09B356FEFE65907F35A243B0101BAE53C8434211BDA872CCB2",
+      "bytes": 19503,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_bouncer_I.md",
+      "sha256": "46AE693A57B7AEC573532C22678723A78A98107AF80F7EA734CACC5ECAEEA1CB",
+      "bytes": 19281,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_brittle.md",
+      "sha256": "85251A9457759302F3EC607E5FA3513065B7DDB544A4EE8FA3F5A737F1C1426F",
+      "bytes": 6372,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_broke.md",
+      "sha256": "B0E64DFD27B0486CDA6D9CB47079D20C2DE686B5624C3DC09151FC95D7DC4558",
+      "bytes": 8721,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_burned.md",
+      "sha256": "A1007FEA7E8799F440231269EC181F44F0AE8BC3DCEC3B040DAAE47CEF74FC74",
+      "bytes": 10417,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_butterfingers.md",
+      "sha256": "B8B5F0A57D45AE4CD3867E91B5455170E679B76162F129F802A4378A02687D56",
+      "bytes": 12145,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_cangrabless.md",
+      "sha256": "AD24E6FA33A88A626E479587C67EDD05F1D1C5D6BC4A817F64E7E214CDA40639",
+      "bytes": 11907,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_cangrabmore.md",
+      "sha256": "8F95DE98991DD3ED7F512E72B9B7CE6068EBAAD684F6A9DF5F9F92CB23F4DF8A",
+      "bytes": 11496,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_coldsensitive.md",
+      "sha256": "26C271C7C12FA848AAE7EECB3E3B4EEEF5DE4CEC5129A66F1B43888D186E6DE2",
+      "bytes": 18574,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_competitiveeater.md",
+      "sha256": "F794723E05E612D1ACEC69532285C6F7A9F3F6EAE47065157638A21D72EB24CC",
+      "bytes": 9955,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_couchdweller.md",
+      "sha256": "4CEB694BF1CCB63FD0C85BE9F05B7941A8A8C463C9BC112D49947634BCE6F195",
+      "bytes": 13961,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_depressive.md",
+      "sha256": "1761B2EA232AC2FB98309EE67EB32BFE274FF8F609F877D012709981EA06F692",
+      "bytes": 14580,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_deprived.md",
+      "sha256": "7116209403F74CD993518C0187120728A57899D721288E2E42D2BEB0DC9AA0FE",
+      "bytes": 17183,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_driver.md",
+      "sha256": "D5F5D858239D47B08F686D20EDF36DB31B2AB11B1DB1B14577EC7C2B04E645AA",
+      "bytes": 16207,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_durability.md",
+      "sha256": "44072926F129CC5A685AA44856C8B42162A4E5A6331313555F63479FC2A848B9",
+      "bytes": 10003,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_expertdriver.md",
+      "sha256": "46DE171AF0059F818C3F2E089CC5E77E7E963C8CBE141E6623FEDF077A8BFEB7",
+      "bytes": 15557,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_fast.md",
+      "sha256": "9C22B7F7D5454A2204910232F9F19F72966B3CF34F133A8AC91553F40A02569B",
+      "bytes": 7827,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_fasthands.md",
+      "sha256": "8E1E38EB5FE519B53849076EBE6A3517D888A59E88381DE80275925CBCF6A3B0",
+      "bytes": 9584,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_fearful.md",
+      "sha256": "38E2B7721581FF89A7AB84C2F5D252BC75FFB4921023CA7E303C23274F826DBB",
+      "bytes": 15132,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_fearofthedark.md",
+      "sha256": "A5FE02FCC8084D5B2A16A8905DD126805CE5B9256C5C0BC9D3548E830800ECA9",
+      "bytes": 15103,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_fibromyalgia.md",
+      "sha256": "31A0172AD6DA67F40789AC7EF43B7C693B524EC0D1DC3F32F5B55A9B8D4F2DE8",
+      "bytes": 17911,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_fitted.md",
+      "sha256": "D1294E86CF433C1AC4106A44E624781C314194FE4C72267761664EEA2BAE3FA4",
+      "bytes": 7578,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_flailer.md",
+      "sha256": "D8E0D36CEDA50C098854E8950D1EFD67231712353EA3BD859C2AC7A9E351D383",
+      "bytes": 12396,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_flatearther.md",
+      "sha256": "22CF92BAC5D92A143325D7417F97EAD4DB060A95FA2BFC9113D87DDEC2B54026",
+      "bytes": 9304,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_flimsy.md",
+      "sha256": "3DD2FCEA7214BED7E131DE6C2A03FE34BB5CB3B8DA1A3E1381F1579375674360",
+      "bytes": 17859,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_gimp.md",
+      "sha256": "2F4DBB3B1E1C2BDCEBBDCCE37B743C88295DF9B1B64CF983BFC40CD84DAC5C54",
+      "bytes": 16147,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_glassbody.md",
+      "sha256": "908FD6AB1C53A9B9BF0C964DAF19544C40A0BADFDF9758E5A5212470CDC284C0",
+      "bytes": 7517,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_gourmand.md",
+      "sha256": "91A30A456798E108D2DE5CFE6202B7C5FA3ABD22D85AAD4279BC3A0D1D71921C",
+      "bytes": 13471,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_gunspecialist_III.md",
+      "sha256": "BA5768B1EF3F472ABF555AB2C933A69F4C4032603492E8F4115023B938EEB59A",
+      "bytes": 20788,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_hardy.md",
+      "sha256": "9C7A333B13A09CBDB469736351393BEF77E0EE7E96455BEE17E1A44F6B2B1253",
+      "bytes": 23717,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_heatsensitive.md",
+      "sha256": "8F3CF3D67AC5995D3568BD9830F00461AC3294FA03A073D08FAFC47ADB242D9F",
+      "bytes": 20401,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_heavilybleedingwounds.md",
+      "sha256": "FCEE32E7AEF106B6F24B7420653546DC088A16FB8DE565DB0FE24FCD132B744A",
+      "bytes": 12582,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_highsweaty.md",
+      "sha256": "EAD9E4F1E559B069F9DA8E07F3492343E38E0B11A158A06B9D04CA90ADDDEF9E",
+      "bytes": 26552,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_humanhamster.md",
+      "sha256": "CB471BBFD84E9E398C18AEDE354BAE4A00B7C8E717031B405DD54CECD2F3D6A4",
+      "bytes": 11272,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_idealweight.md",
+      "sha256": "F1B72E906D86A2582382AB84E6C94DC4EE2104207082DC826FBABE75EF3A48F7",
+      "bytes": 22471,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_immuneresponse.md",
+      "sha256": "B03AB1A0811D8D327DE34E9FD7AD4C04B29EE977C42B1EEFDDCA50F748595B5F",
+      "bytes": 14277,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_immunocompromised.md",
+      "sha256": "A99EFB627A1E849859243D0F037D8385399BA911E793E0DCB8366DF2735BC2C4",
+      "bytes": 23088,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_incomprehensive.md",
+      "sha256": "38B18C1628041F7B72F1266CC34C4A6DB7D3CEBBCCDD6878A76DE07AFC05FC46",
+      "bytes": 13616,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_indefatigable.md",
+      "sha256": "D1C9E811CAA963088ED7CAB2BFC167DF5B8F51E35DBA85D98440B3663092B89C",
+      "bytes": 16919,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_injured_I.md",
+      "sha256": "78F0832EFECF905F9208FEB68B7E01014CD4072C964C9AE25AF803E06B850DE0",
+      "bytes": 13823,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_injured_II.md",
+      "sha256": "E00B41E75601F9AB783DCD754F87AD1FE29E9AAF4D5E58442787B3BA744EB875",
+      "bytes": 19915,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_ironliver.md",
+      "sha256": "F35E2EFCAB20E1E4EFEDF2F4456BA69B6E024CDE1B9E778BBE53C1EA1C3C7B62",
+      "bytes": 10203,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_larkperson.md",
+      "sha256": "8DF4AAE6A67C73A9022AFE3460B805C15CE8BD24FE69B68084E1D73108D0A92C",
+      "bytes": 11238,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_leadfoot.md",
+      "sha256": "17DE065F9BCACA624A17EE306BEF8CA3253F58B0E253C4283D3D609EF9D5A080",
+      "bytes": 11410,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_lesssweaty.md",
+      "sha256": "EEEC3526F82C600BEE843C79E5F432540269033D765FB2855152FAD76F4B0225",
+      "bytes": 16874,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_luddite.md",
+      "sha256": "BF5D638026E8F83F615E8184197D38E45C7A7B24F878EF40A7B3FE26B9A04EE3",
+      "bytes": 8311,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_lurcher.md",
+      "sha256": "A44AD0776807EB61AFC00B577417402AA4858F6B32861FF1F2A26D8F4D9E7ECC",
+      "bytes": 8996,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_maniac.md",
+      "sha256": "618F8512ED56653EA10FAE1715700DE1E4BFBE546C88D96B6EEA52F4DB9B8865",
+      "bytes": 14759,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_martial.md",
+      "sha256": "C777E0420D1D2DE81F443563E8A53157A5553742E9D79E82CAFFA9BDA9CF7030",
+      "bytes": 17898,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_melancholic.md",
+      "sha256": "5715FB7F58A24B34B5935564977DE82BF72A12B779D6331E1C26374D2C4A0614",
+      "bytes": 13490,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_motionsickness.md",
+      "sha256": "D677EC52E5F2CF3507F9C551252B893A575E679FA40A1FEA33391ACB2D867264",
+      "bytes": 15635,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_mstoptimist.md",
+      "sha256": "92674730215CF439742D2862A06ED8635447115C971CE03A60C799E3FD6F0E1B",
+      "bytes": 19069,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_mundane.md",
+      "sha256": "884E8D1154E4BC318AFC7788B6FF4D2C5C753914504EEEB0210DF764BC9B53F6",
+      "bytes": 17870,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_nervouswreck.md",
+      "sha256": "180020AACCA275867A74D6CBE667520F1524563C7903DCEFB119EBD7002899DB",
+      "bytes": 17177,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_noodlelegs.md",
+      "sha256": "BD1403AD418CA8DA94EBDA891B7CB4224A1309B6EFE47010EEB92A8B6A4ED991",
+      "bytes": 7874,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_noxpaxe.md",
+      "sha256": "C8248AEA0929A1FD7D7DF44B4F26681B6FE2DC41D33FA2A4EB183A27E2DD8309",
+      "bytes": 12448,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_noxpfirstaid.md",
+      "sha256": "80137D4C2973ACD81FA68BD5F5B85FA0C51D1BD297A4ACF3CECC388C8E9A4A7B",
+      "bytes": 16510,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_noxpmaintenance.md",
+      "sha256": "6056987DA6189B5625CE33995F4AD7E0451FA1885B8D852462D158DB8E0564D5",
+      "bytes": 17015,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_noxpshooter.md",
+      "sha256": "03B6723F8A3D773AB8A00B030823C200A2D477FE9407EF88246B920A54F85A09",
+      "bytes": 16831,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_noxpsneaky.md",
+      "sha256": "0FC3D236385C82069368574591F63F8B62CB95DB096CBBA8CBD0DEA61C364A64",
+      "bytes": 10317,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_noxptechnician.md",
+      "sha256": "9A1DF0B23E20F59CB24E1D60E223F791E1D9082CE98ECEB1B4546CFAE679ACD6",
+      "bytes": 15545,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_onetrickpony.md",
+      "sha256": "746B5306D81F23E554559BA0D84FC84D82CB68C4A5236350CFB0324786FE56EC",
+      "bytes": 10103,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_optimist.md",
+      "sha256": "AFB59D85C35D978271E149C1C1CFE8761BB10F92796DF7E5570E245722AD8466",
+      "bytes": 15773,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_owlperson.md",
+      "sha256": "4CFB2CCDDFFCC72B9F2E0D5732B57B58CCD6122AE24C45478465115F88B911F5",
+      "bytes": 11431,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_pacer.md",
+      "sha256": "4191357AB7C70235002366411ED127756B6D5E065F6FB11A1ED4BA7B591775F0",
+      "bytes": 7677,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_packmouse.md",
+      "sha256": "46FBD5C74F2FD2F74D96DD71460E2A667BEEBB011036F3CA9E5A47CE01ED25EE",
+      "bytes": 19738,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_packmule.md",
+      "sha256": "FF294B4B4D673C0EE33FBF28A8BA864743E006A2BA03DC36E0B789FCEF1F79FC",
+      "bytes": 7705,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_panicattacks.md",
+      "sha256": "9A6605AC46798114985E361B47007C0CB1887AC97ECDB3699A6E3A133A2C18BE",
+      "bytes": 16277,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_paranoia.md",
+      "sha256": "FE1FC40411898EEC76EB4F081CFD657B0725A36487287C082EEEC97940AF329B",
+      "bytes": 9132,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_pessimist.md",
+      "sha256": "61F13F619F7CD38675692501B60BA7F282CB3A61E7B799583E6E20BB9AA362FE",
+      "bytes": 5953,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_photographicmemory.md",
+      "sha256": "6F4192960899D9ED4B4808DABD01F79A12B322F0D7E30E12FE27D99D6AC51588",
+      "bytes": 13184,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_physicallyactive.md",
+      "sha256": "9A32CCAC7FBB6ED7F86CD4EF358095C10D30DB341CA86FCECB7336346B236BCD",
+      "bytes": 15705,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_pillsallergy.md",
+      "sha256": "371CEB37826F6D2E32B9F9E20D6D24793E515AEB6CCEBD13F83513E0210B3328",
+      "bytes": 5782,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_poordriver.md",
+      "sha256": "BF576423A7A1EDEDC93C45E458829550374D527F4A26E1161BCB57BCA264E420",
+      "bytes": 11412,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_preparedpack.md",
+      "sha256": "45E6F0D9CF710039B47125A2176864C38FC776243EAFD18CE64F227A77C5D239",
+      "bytes": 8686,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_quickrest.md",
+      "sha256": "0B15DAE1605007782079303E2F9075074EAF281287CC1690FACCE475E53FB3DE",
+      "bytes": 15062,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_quickworker.md",
+      "sha256": "793F41FD731939E189136DB7EE99155862D23FFD8FFFB6EC4A82FF3623CCF72A",
+      "bytes": 8299,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_ravenous.md",
+      "sha256": "EF63CB5DEAC39EE7ACCBA2DD2D3E001748ECCFA9C01D9A1C977507D2276411A8",
+      "bytes": 9914,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_restfulsleeper.md",
+      "sha256": "9CD9F53CC6A9B05024219E5F00584A1B4B9A81B7D611F4A55F37B14B70AD6836",
+      "bytes": 13044,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_scardycat.md",
+      "sha256": "85313CCCB64D478CB13A53B0EB5BFD5FB4A4882732DE72615182019559F791F3",
+      "bytes": 17074,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_secondwind.md",
+      "sha256": "A8DB3FF98808D8442851B54C59841FDD4872D9C7E6C110F2C33C1C5F4B8B9DE4",
+      "bytes": 6731,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_sedentary.md",
+      "sha256": "EF9E0B0754ADE2ECE4FF7AE7599D072821F1C437FAF01D794DCF88E0AAD4C9CF",
+      "bytes": 13054,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_selfdestructive.md",
+      "sha256": "76D379395BFAA184CB9B6FC94DFC1BE4BCF4D94CDF0BCC957950F98762E4727A",
+      "bytes": 13106,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_sensitivestomach.md",
+      "sha256": "5A29B94F07D15CD6ACB5805893DDAD811087891D39D0E16B29AB68ACEF5970C7",
+      "bytes": 16354,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_slack.md",
+      "sha256": "282DCE39427451908A3F3AA14AE0BF302E12E5979B89246F1F3671DAEBFD1760",
+      "bytes": 6226,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_sloth.md",
+      "sha256": "559366DA5C1A9EBE4686818F76DD497565A31124A60594A0B57C105DD85B50E7",
+      "bytes": 8510,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_slowworker.md",
+      "sha256": "352D3F60B65F7E4AE520C72D86E732D39C8ADEB57FCCDD2F915F0DAD072889D2",
+      "bytes": 9205,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_snorer.md",
+      "sha256": "94323D681BED8B548ED0C1261D3F52D04FE864CA6AC9F90F35F4F07D8EBE9622",
+      "bytes": 8666,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_sore.md",
+      "sha256": "687BD1CC59C305B1A75DFD9C149863DDFD8C6C248765131E8D1D15425BBF6E91",
+      "bytes": 4849,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_sorelegs.md",
+      "sha256": "D501C2E3EDC4D237DCCFDB440F5AA2A7CD922B17E0225FC01FA51CF252ED54D6",
+      "bytes": 7134,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_squirrel.md",
+      "sha256": "ACEB954A829772A68E797966287EBF8F7445F459C436AF8EBD239B5885487C0A",
+      "bytes": 8974,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_staunch.md",
+      "sha256": "55197F54BD54DE3CC160AC6549F6807822EDBEDEF92D121C7A0BF4D69034DF0D",
+      "bytes": 7444,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_sundayrunner.md",
+      "sha256": "A9BABD6A4E74922F0B5D2399D51ED7C969292A64D1EB8973EABE2CDCDAC9650C",
+      "bytes": 10227,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_superimmune.md",
+      "sha256": "E2DCB8FE5200ACE8D0B765370D0868802B21CCCFACD38E561F9222FBE1994459",
+      "bytes": 14684,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_thickblood.md",
+      "sha256": "9AFBED963D05152C89F01F87099A2BAF83AE8F28046895BF41465E37B105E18D",
+      "bytes": 9163,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_topheavy.md",
+      "sha256": "39CBAC36CCE1CE335E38CA5D34D88C05DD54D6C3E5F9E76970E07A2B73928140",
+      "bytes": 8067,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_unwavering.md",
+      "sha256": "80FB4835DA65100F9D6880B06FA3B7D6B72F21A71F7CAC5E4A0451B578DBDA29",
+      "bytes": 5569,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_vagabond.md",
+      "sha256": "AC1182834889FBCEE8ADEE42F1B6A5684C8B12B4890298C7F79B8B902BA59D02",
+      "bytes": 9972,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_vehophobic.md",
+      "sha256": "67C7A76FE8C7883A7B75B80C259037BE5F6E69E58A2F593493824E05739E7C9F",
+      "bytes": 13882,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_weaklybleedingwounds.md",
+      "sha256": "B6F4FBC06B4EB0245F8C303DD506F6D71B628940FB8DA5E446E43F9800C975D6",
+      "bytes": 14007,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_weathersensitive.md",
+      "sha256": "3F2DA4D9AFFB62C95F94BAE1E368D895C232322059348E1B1EDD4228B8EA1591",
+      "bytes": 5680,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/active/batch/traits/UT_wildplantsallergy.md",
+      "sha256": "8BC494958C50ABC32F0A3CFBAA97D697BC5379918FAF28BEF229A8FE568DC74E",
+      "bytes": 7026,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "DLS-DOC-COUNT-001",
+        "F-DOC-002",
+        "F-DOC-003",
+        "F-DOC-005"
+      ]
+    },
+    {
+      "path": "UTMods/trait-deep-audit/plan-parallel-trait-audit.prompt.md",
+      "sha256": "8AF4429189D12E9151107343CE843737457EF68A9EC9071C0581124160E11F4F",
+      "bytes": 3356,
+      "lifecycle": "superseded",
+      "lifecycle_basis": "Current authority plus explicit active/proposal/archive/supersession relationships, reconciled to the canonical JDocMunch manifest.",
+      "stale_current_contract_status": "not_applicable_lifecycle",
+      "stale_current_contract_reason": "Non-current rows are retained for traceability, not operational authority.",
+      "finding_links": [
+        "F-DOC-004"
+      ]
+    }
+  ],
+  "document_lifecycle_counts": {
+    "current": 5,
+    "historical": 34,
+    "proposal": 1,
+    "superseded": 126
+  },
+  "campaign_artifact_inventory": {
+    "scope_rule": "The stable post-review campaign surface contains 29 inventoried files. This output is excluded for self-hash recursion, campaign_manifest.json is excluded as coordinator-owned post-review closure, and removed temporary generator/cache files are excluded.",
+    "self_reference_policy": "This output is externally hashed after serialization and is not a row in its own inventory.",
+    "expected_rows_excluding_self": 29,
+    "excluded_coordinator_owned_outputs": [
+      "UTMods/trait-deep-audit/campaign/campaign_manifest.json"
+    ],
+    "rows": [
+      {
+        "path": "UTMods/trait-deep-audit/campaign/MASTER_COVERAGE_LEDGER.md",
+        "sha256": "F30AD45E2A53C782EE13F5743F6AFFCCCCF88EF40DB1AE0B4D3ABFAF2EAC321A",
+        "bytes": 30463,
+        "artifact_type": "master-ledger",
+        "schema_version": null,
+        "record_count": null,
+        "validation_state": "confirmed-defect",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Latest ledger hashes/proof remediation/toolchain and UT_CORE results are current; F-UT-DOC-001 still records stale 186/114 counts."
+        ],
+        "finding_links": [
+          "DLS-DOC-COUNT-001"
+        ]
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/final_trait_ledger.json",
+        "sha256": "CF9E7883195407ABA182C958361AC6AA1CF60DB0027AFAB0AB5ADA88B92999C6",
+        "bytes": 2081847,
+        "artifact_type": "final-ledger",
+        "schema_version": "1.0",
+        "record_count": 198,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "198 traits/24 dimensions/118 independent findings; all 211 Batch 01 proof strings now preserved."
+        ],
+        "finding_links": [
+          "DLS-LEDGER-PROOF-001"
+        ]
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/final_trait_ledger_rows.jsonl",
+        "sha256": "829A08A7DD22AC22A59E93E41C99574D739ABE91CB79980F91BF3087FBDD0973",
+        "bytes": 1277642,
+        "artifact_type": "jdata-sidecar",
+        "schema_version": null,
+        "record_count": 198,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Authorized 198-row sidecar preserved and corrected; live JDataMunch index validation and exact aggregates now pass."
+        ],
+        "finding_links": [
+          "DLS-JDATA-INDEX-001",
+          "DLS-LEDGER-PROOF-001"
+        ]
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/independent_reviews/toolchain_semantic_impact.json",
+        "sha256": "DBBA83DA1A80A07F93387A60B2D8123D36BC70D010EAAD587438AEF497760CBA",
+        "bytes": 180835,
+        "artifact_type": "peer-independent-review",
+        "schema_version": "utmods-toolchain-semantic-impact-audit/v1",
+        "record_count": null,
+        "validation_state": "coverage-gap",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Parse/presence/hash only; semantic duplication intentionally excluded."
+        ],
+        "finding_links": [
+          "DLS-PEER-REVIEWS-001"
+        ]
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/independent_reviews/traits_01_04.json",
+        "sha256": "4F7338C65D9EC8C15B9D3E749A9A82ADB60F09D968265F4E0A09E65660E93326",
+        "bytes": 667700,
+        "artifact_type": "trait-independent-review",
+        "schema_version": "1.0.0",
+        "record_count": 68,
+        "validation_state": "coverage-gap",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Combined exact 198 membership and all first-pass dispositions; shape drift remains."
+        ],
+        "finding_links": [
+          "DLS-REVIEW-SCHEMA-001"
+        ]
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/independent_reviews/traits_05_08.json",
+        "sha256": "D042BBCD575D70897788E1598054972D118246E3CABF7F738072A71B8E955B82",
+        "bytes": 251531,
+        "artifact_type": "trait-independent-review",
+        "schema_version": "1.0.0",
+        "record_count": 66,
+        "validation_state": "coverage-gap",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Combined exact 198 membership and all first-pass dispositions; shape drift remains."
+        ],
+        "finding_links": [
+          "DLS-REVIEW-SCHEMA-001"
+        ]
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/independent_reviews/traits_09_12.json",
+        "sha256": "7FCBDB6750959B0137174F375BAFA81E7330736449EDAEC9B2600677FDFC9A8E",
+        "bytes": 112865,
+        "artifact_type": "trait-independent-review",
+        "schema_version": "1.0.0",
+        "record_count": 64,
+        "validation_state": "coverage-gap",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Combined exact 198 membership and all first-pass dispositions; shape drift remains."
+        ],
+        "finding_links": [
+          "DLS-REVIEW-SCHEMA-001"
+        ]
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/independent_reviews/ut_core_integration.json",
+        "sha256": "5BC6ED5BF08290BB21DF7EB84910B5C1A2B571B2FADE1DF960C06E5E011B14D1",
+        "bytes": 174180,
+        "artifact_type": "peer-independent-review",
+        "schema_version": "utmods.independent_ut_core_integration_review.v1",
+        "record_count": null,
+        "validation_state": "coverage-gap",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Parse/presence/hash only; semantic duplication intentionally excluded."
+        ],
+        "finding_links": [
+          "DLS-PEER-REVIEWS-001"
+        ]
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/recurring_pattern_findings.json",
+        "sha256": "D187FBCF3136C24119AF1CB6B73AFCD16E48C5B7622A6C0027F687AD48AB8619",
+        "bytes": 16297,
+        "artifact_type": "recurring-pattern-report",
+        "schema_version": "1.0",
+        "record_count": 15,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "15 unique deterministic recurring findings."
+        ],
+        "finding_links": []
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/source_inventory.json",
+        "sha256": "47781D8C6AE00795C0DD5CFF8F89E295F49826BB57B64DC9DCD6DE6A767941C9",
+        "bytes": 230054,
+        "artifact_type": "source-inventory",
+        "schema_version": "utmods.source_inventory.v2",
+        "record_count": 198,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Trait/product membership is exact; document membership is deliberately supplied by this review artifact instead."
+        ],
+        "finding_links": [
+          "DLS-DOC-INVENTORY-001"
+        ]
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/tests/test_campaign_tools.py",
+        "sha256": "446CDE457F239BAFD50EA9EE69725B711A6F1DBB07F8E99CCFF8E0BFC976AF49",
+        "bytes": 12732,
+        "artifact_type": "campaign-test",
+        "schema_version": null,
+        "record_count": null,
+        "validation_state": "coverage-gap",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "13 pass/1 fails only because the deliberately deferred campaign_manifest.json does not exist; legacy proof preservation also lacks a regression."
+        ],
+        "finding_links": [
+          "DLS-CLI-HELP-001",
+          "DLS-LEDGER-PROOF-001",
+          "DLS-MANIFEST-BOOTSTRAP-001"
+        ]
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/tools/build_campaign_manifest.py",
+        "sha256": "12706A2F77ED6EF0F38CC3467863ABAEF69951C800A941B3BA321C836970FA12",
+        "bytes": 4513,
+        "artifact_type": "campaign-tool",
+        "schema_version": null,
+        "record_count": null,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Closed-world/deterministic builder tests pass; final output is intentionally deferred until this review artifact is stable."
+        ],
+        "finding_links": [
+          "DLS-CLI-HELP-001",
+          "DLS-MANIFEST-BOOTSTRAP-001"
+        ]
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/tools/build_final_trait_ledger.py",
+        "sha256": "B96A6A1F16057B977E7B328A864F770EC4E23B945FFC1DEE1431D297BB040CE5",
+        "bytes": 19927,
+        "artifact_type": "campaign-tool",
+        "schema_version": null,
+        "record_count": null,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Current compatibility normalizer and legacy-spelling regression are proven."
+        ],
+        "finding_links": [
+          "DLS-CLI-HELP-001",
+          "DLS-LEDGER-PROOF-001"
+        ]
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/tools/campaign_cli.py",
+        "sha256": "CEF27239D1EED7381B8C6ED1A27CD1BA22376E9834245500EC154CD28F0CA7AD",
+        "bytes": 601,
+        "artifact_type": "campaign-tool",
+        "schema_version": null,
+        "record_count": null,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Current fail-closed command contract verified."
+        ],
+        "finding_links": [
+          "DLS-CLI-HELP-001"
+        ]
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/tools/check_recurring_patterns.py",
+        "sha256": "BA3F12BC45B5890F12224BC300B87CE36115F682652EA41D57203744D8EAEFD7",
+        "bytes": 12209,
+        "artifact_type": "campaign-tool",
+        "schema_version": null,
+        "record_count": null,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded."
+        ],
+        "finding_links": [
+          "DLS-CLI-HELP-001"
+        ]
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/tools/validate_campaign.py",
+        "sha256": "EAC629FFBAC39115C3C9D2D434827C9C4608160F403DD1E93AF6884CEBC65BF3",
+        "bytes": 4126,
+        "artifact_type": "campaign-tool",
+        "schema_version": null,
+        "record_count": null,
+        "validation_state": "coverage-gap",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Current exit 1 is solely the deliberately deferred campaign_manifest.json."
+        ],
+        "finding_links": [
+          "DLS-CLI-HELP-001",
+          "DLS-MANIFEST-BOOTSTRAP-001"
+        ]
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/trait_batches/batch_01.jsonl",
+        "sha256": "4FA9A60E8D86362B22C33D2BD2DC334565EB564071514576AAD0E90F7FF4BB81",
+        "bytes": 121393,
+        "artifact_type": "trait-batch",
+        "schema_version": null,
+        "record_count": 17,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Exact sorted disjoint source membership; combined total 198."
+        ],
+        "finding_links": [
+          "DLS-LEDGER-PROOF-001"
+        ]
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/trait_batches/batch_02.jsonl",
+        "sha256": "8B1EAD1B3C9B6C33F0A40B0A78455432E3604F5C5023ECF1585CCE5CC18AAE4D",
+        "bytes": 112243,
+        "artifact_type": "trait-batch",
+        "schema_version": null,
+        "record_count": 17,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Exact sorted disjoint source membership; combined total 198."
+        ],
+        "finding_links": []
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/trait_batches/batch_03.jsonl",
+        "sha256": "33481D2A1F6227C331C16BA8B5CCB006099D07A15649099B8EC0627887679337",
+        "bytes": 108726,
+        "artifact_type": "trait-batch",
+        "schema_version": null,
+        "record_count": 17,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Exact sorted disjoint source membership; combined total 198."
+        ],
+        "finding_links": []
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/trait_batches/batch_04.jsonl",
+        "sha256": "2A7857094C09D1CAD329C8DC2BDA2B96DE56FD6A6AF0866F323D7D6B3C377217",
+        "bytes": 109920,
+        "artifact_type": "trait-batch",
+        "schema_version": null,
+        "record_count": 17,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Exact sorted disjoint source membership; combined total 198."
+        ],
+        "finding_links": []
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/trait_batches/batch_05.jsonl",
+        "sha256": "2146BF05002A28EC9D01FD93F1DE4E0532F4769896EF382652E6A02167F3CF6A",
+        "bytes": 92013,
+        "artifact_type": "trait-batch",
+        "schema_version": null,
+        "record_count": 17,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Exact sorted disjoint source membership; combined total 198."
+        ],
+        "finding_links": []
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/trait_batches/batch_06.jsonl",
+        "sha256": "5B8992F62051687AEB85158F9D498E7AAF130443609881BC1DFE1C77C25BB3D3",
+        "bytes": 106365,
+        "artifact_type": "trait-batch",
+        "schema_version": null,
+        "record_count": 17,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Exact sorted disjoint source membership; combined total 198."
+        ],
+        "finding_links": []
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/trait_batches/batch_07.jsonl",
+        "sha256": "6BFC2D4966C29749BFF856067ABD0EB3B3F3E6E53E37E72A4A4FE271BE9E892C",
+        "bytes": 86251,
+        "artifact_type": "trait-batch",
+        "schema_version": null,
+        "record_count": 16,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Exact sorted disjoint source membership; combined total 198."
+        ],
+        "finding_links": []
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/trait_batches/batch_08.jsonl",
+        "sha256": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A",
+        "bytes": 163637,
+        "artifact_type": "trait-batch",
+        "schema_version": null,
+        "record_count": 16,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Exact sorted disjoint source membership; combined total 198."
+        ],
+        "finding_links": []
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/trait_batches/batch_09.jsonl",
+        "sha256": "FFB64ADB79BEDD95F4F340F169A2BEB7A1158BF4C1E1602538AC75BA65F7D759",
+        "bytes": 78499,
+        "artifact_type": "trait-batch",
+        "schema_version": null,
+        "record_count": 16,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Exact sorted disjoint source membership; combined total 198."
+        ],
+        "finding_links": []
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/trait_batches/batch_10.jsonl",
+        "sha256": "2FFE37D42F2DC928789EAE78A16880F4A283BAFB1D735113BB8D25ADE3A90F10",
+        "bytes": 111518,
+        "artifact_type": "trait-batch",
+        "schema_version": null,
+        "record_count": 16,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Exact sorted disjoint source membership; combined total 198."
+        ],
+        "finding_links": []
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/trait_batches/batch_11.jsonl",
+        "sha256": "46B75AB40DF0F1939D1B381E7AC16710C8F3C3A793A26B2F9249799150A43362",
+        "bytes": 72004,
+        "artifact_type": "trait-batch",
+        "schema_version": null,
+        "record_count": 16,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Exact sorted disjoint source membership; combined total 198."
+        ],
+        "finding_links": []
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/trait_batches/batch_12.jsonl",
+        "sha256": "807C099B09F2B4E23BBF3EEB6BF40C05F7AD0C81EA5A438CD7903AD463FEEC12",
+        "bytes": 83872,
+        "artifact_type": "trait-batch",
+        "schema_version": null,
+        "record_count": 16,
+        "validation_state": "proven-correct",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Exact sorted disjoint source membership; combined total 198."
+        ],
+        "finding_links": []
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/translation_audit.json",
+        "sha256": "BC16195EDEA83B435C2A005F01C2940F5EB25C4AF21F7E142AC501AC462DFD8B",
+        "bytes": 494519,
+        "artifact_type": "translation-audit",
+        "schema_version": "1.0.0",
+        "record_count": 198,
+        "validation_state": "confirmed-defect",
+        "validation_notes": [
+          "Current presence and SHA-256 recorded.",
+          "Core 198/396 sets reconcile; documentation count is stale."
+        ],
+        "finding_links": [
+          "DLS-DOC-COUNT-001"
+        ]
+      }
+    ],
+    "membership_validation": {
+      "state": "proven-correct",
+      "filesystem_files_in_scope_excluding_self_temp_and_coordinator_manifest": 29,
+      "inventory_rows": 29,
+      "missing": [],
+      "extra": [],
+      "sorted_unique": true,
+      "deliberately_excluded_coordinator_owned_output": "campaign_manifest.json"
+    },
+    "artifact_validation_state_counts": {
+      "proven-correct": 20,
+      "confirmed-defect": 2,
+      "coverage-gap": 7,
+      "runtime-unproven": 0
+    },
+    "trait_membership": {
+      "source": 198,
+      "batches": 198,
+      "translation": 198,
+      "independent_reviews": 198,
+      "final_ledger": 198,
+      "sidecar": 198,
+      "missing": [],
+      "extra": [],
+      "duplicates": []
+    },
+    "finding_id_reconciliation": {
+      "first_pass_unique": 163,
+      "independent_review_unique": 118,
+      "recurring_unique": 15,
+      "global_unique": 296,
+      "collisions": [],
+      "first_pass_dispositions_verified": 161,
+      "first_pass_dispositions_rejected": 2
+    },
+    "state_reconciliation": {
+      "batch_overall": {
+        "confirmed-defect": 81,
+        "runtime-unproven": 81,
+        "proven-correct": 25,
+        "coverage-gap": 11
+      },
+      "ledger_dimensions": {
+        "proven-correct": 2607,
+        "runtime-unproven": 998,
+        "confirmed-defect": 325,
+        "coverage-gap": 822
+      },
+      "independent_findings": {
+        "confirmed-defect": 109,
+        "coverage-gap": 7,
+        "runtime-unproven": 2,
+        "proven-correct": 0
+      }
+    },
+    "schema_and_vocabulary": {
+      "canonical_state_vocabulary": [
+        "confirmed-defect",
+        "coverage-gap",
+        "proven-correct",
+        "runtime-unproven"
+      ],
+      "canonical_severity_vocabulary": [
+        "critical",
+        "high",
+        "low",
+        "medium"
+      ],
+      "raw_batch_dimension_key_count": 83,
+      "raw_batch_legacy_states_observed": true,
+      "finding_links": [
+        "DLS-REVIEW-SCHEMA-001"
+      ]
+    }
+  },
+  "localization_reconciliation": {
+    "trait_sets": {
+      "registrations": 198,
+      "definitions": 198,
+      "UIName_keys": 198,
+      "UIDescription_keys": 198,
+      "required_translation_keys": 396,
+      "source_translation_entries": 396,
+      "missing_required": 0,
+      "orphan_required_namespace_entries": 0
+    },
+    "translator_semantics": {
+      "percent_affected_values": 56,
+      "unicode_guard_affected_values": 14,
+      "unicode_codepoints": [
+        "U+2014",
+        "U+2212"
+      ],
+      "state": "confirmed-defect",
+      "finding_links": [
+        "F-UT-TR-001",
+        "F-UT-TR-002"
+      ]
+    },
+    "source_release_ui_parity": {
+      "state": "proven-correct",
+      "semantic_differences": 0,
+      "source_sha256": "AF811A9FB0876B3A0481655639A96859089AFACBA2EA4EBEB38B5CC9A02DE60B0",
+      "release_sha256": "AF811A9FB0876B3A0481655639A96859089AFACBA2EA4EBEB38B5CC9A02DE60B0"
+    },
+    "source_release_definition_parity": {
+      "state": "confirmed-defect",
+      "different_traits": [
+        "UT_bouncer_I",
+        "UT_bouncer_II"
+      ],
+      "finding_links": [
+        "F-UT-PKG-001"
+      ]
+    },
+    "locale_coverage": {
+      "UT_locales": [
+        "EN"
+      ],
+      "baseline_locale_count": 27,
+      "absent_locale_count": 26,
+      "absent_locales": [
+        "AR",
+        "CA",
+        "CH",
+        "CN",
+        "CS",
+        "DA",
+        "DE",
+        "ES",
+        "FI",
+        "FR",
+        "HU",
+        "ID",
+        "IT",
+        "JP",
+        "KO",
+        "NL",
+        "NO",
+        "PH",
+        "PL",
+        "PT",
+        "PTBR",
+        "RO",
+        "RU",
+        "TH",
+        "TR",
+        "UA"
+      ],
+      "state": "confirmed-defect",
+      "finding_links": [
+        "F-UT-LOC-001",
+        "DLS-LOCALE-POLICY-001"
+      ]
+    },
+    "semantic_description_boundary": {
+      "description_dimension": {
+        "proven-correct": 85,
+        "confirmed-defect": 61,
+        "coverage-gap": 37,
+        "runtime-unproven": 15
+      },
+      "display_dimension": {
+        "proven-correct": 165,
+        "confirmed-defect": 9,
+        "coverage-gap": 24,
+        "runtime-unproven": 0
+      },
+      "localization_dimension": {
+        "proven-correct": 49,
+        "confirmed-defect": 9,
+        "coverage-gap": 140,
+        "runtime-unproven": 0
+      },
+      "structural_membership_does_not_prove_meaning": true
+    },
+    "runtime_fallback": {
+      "state": "runtime-unproven",
+      "static_translator_source_inspected": true,
+      "game_launch_performed": false,
+      "finding_links": [
+        "DLS-RUNTIME-FALLBACK-001"
+      ]
+    },
+    "provenance_hashes": {
+      "registry": "251DA5FB7265391783856E584234052B6C4614B8745E05E91C0098B223A6B745",
+      "trait_script": "E93D888ECE796746347B4EF090BC9E0539719CA31741FE536A1301352B73EE95",
+      "source_UI_EN": "AF811A9FB0876B3A0481655639A96859089AFACBA2EA4EBEB38B5CC9A02DE60B0",
+      "release_registry": "251DA5FB7265391783856E584234052B6C4614B8745E05E91C0098B223A6B745",
+      "release_UI_EN": "AF811A9FB0876B3A0481655639A96859089AFACBA2EA4EBEB38B5CC9A02DE60B0",
+      "release_trait_script": "BF51CA504B2491659270F34AFF957E8CE4673222E0261F1EC151F3A631A4605F",
+      "Translator.java": "94A2B2D1E6189DFE7007A77F68B4726C5AC661A3658CFF5F40F879947CF6B8E4",
+      "CharacterTraitDefinition.java": "5099590CF83398338649CB5A3D5C32B64F5B234E0D434200372162F2D24FE025"
+    }
+  },
+  "skill_review": [
+    {
+      "skill": "documentation-standards",
+      "canonical_path": "C:/Users/Admin/.agents/skills/documentation-standards/SKILL.md",
+      "sha256": "6BC3DF443B9908F5CBF120D421F382F3485EA3DFEE3C6753C5C166B536F90E8E",
+      "review_state": "proven-correct",
+      "severity": "low",
+      "assessment": "pass",
+      "narrow_primary_job": true,
+      "triggerable": true,
+      "source_backed": true,
+      "nonduplicative": true,
+      "representative_miss_prevention": "Source-derived lifecycle and completion gates prevent stale/self-referential documentation.",
+      "contract_check": "0 errors, 0 warnings",
+      "claude_mirror_status": "absent",
+      "finding_links": []
+    },
+    {
+      "skill": "pz-lua-runtime",
+      "canonical_path": "C:/Users/Admin/.agents/skills/pz-lua-runtime/SKILL.md",
+      "sha256": "90559A5608EB7F489002F488F0FB659DD7934487C7788B13AA9A5B61A26F1D57",
+      "review_state": "proven-correct",
+      "severity": "low",
+      "assessment": "pass",
+      "narrow_primary_job": true,
+      "triggerable": true,
+      "source_backed": true,
+      "nonduplicative": true,
+      "representative_miss_prevention": "Producer argument/domain/lifecycle and negative mocks prevent unsupported runtime claims.",
+      "contract_check": "0 errors, 0 warnings",
+      "claude_mirror_status": "different_older_non_authority",
+      "finding_links": []
+    },
+    {
+      "skill": "pz-mod-structure",
+      "canonical_path": "C:/Users/Admin/.agents/skills/pz-mod-structure/SKILL.md",
+      "sha256": "809306D5F0762740E0DF5B8B35CC831F9829576C861A70F98165D9404ECC3F41",
+      "review_state": "proven-correct",
+      "severity": "low",
+      "assessment": "pass",
+      "narrow_primary_job": true,
+      "triggerable": true,
+      "source_backed": true,
+      "nonduplicative": true,
+      "representative_miss_prevention": "Complete-set and hash parity prevent source/release/live omissions.",
+      "contract_check": "0 errors, 0 warnings",
+      "claude_mirror_status": "different_older_non_authority",
+      "finding_links": []
+    },
+    {
+      "skill": "pz-static-mod-analysis",
+      "canonical_path": "C:/Users/Admin/.agents/skills/pz-static-mod-analysis/SKILL.md",
+      "sha256": "047F71C278308A1051A1C515A49D3521F6DDE31C12394D81B3082A5CB129926D",
+      "review_state": "proven-correct",
+      "severity": "low",
+      "assessment": "pass",
+      "narrow_primary_job": true,
+      "triggerable": true,
+      "source_backed": true,
+      "nonduplicative": true,
+      "representative_miss_prevention": "Exact manifests and bounded static traces prevent incomplete analysis.",
+      "contract_check": "0 errors, 0 warnings",
+      "claude_mirror_status": "different_older_non_authority",
+      "finding_links": []
+    },
+    {
+      "skill": "pz-trait-mods",
+      "canonical_path": "C:/Users/Admin/.agents/skills/pz-trait-mods/SKILL.md",
+      "sha256": "F66B2D8CCAE21D01560DDF17DD8D0CBCA1B1CE21BA9C48B640DC01B9E5451543",
+      "reference_path": "C:/Users/Admin/.agents/skills/pz-trait-mods/references/trait-format-and-failures.md",
+      "reference_sha256": "83AC5917555E5738A7DCF2038F322E2209A7D09EEB63EC8E16B5B21FB4A43879",
+      "review_state": "proven-correct",
+      "severity": "low",
+      "assessment": "pass",
+      "narrow_primary_job": true,
+      "triggerable": true,
+      "source_backed": true,
+      "nonduplicative": true,
+      "representative_miss_prevention": "The core revision prevents trait misses, and the corrected localization reference now requires Build 42 UI.json, rejects unverified legacy UI_EN tables, and checks Translator percent/Unicode behavior.",
+      "contract_check": "0 errors, 0 warnings",
+      "claude_mirror_status": "different_older_non_authority",
+      "finding_links": [
+        "DLS-SKILL-LOC-001"
+      ]
+    },
+    {
+      "skill": "pz-workspace-orientation",
+      "canonical_path": "C:/Users/Admin/.agents/skills/pz-workspace-orientation/SKILL.md",
+      "sha256": "660D281A1C02B812590460E5A9F2611464D4E35A74B0073E0498A080159B9F94",
+      "review_state": "proven-correct",
+      "severity": "low",
+      "assessment": "pass",
+      "narrow_primary_job": true,
+      "triggerable": true,
+      "source_backed": true,
+      "nonduplicative": true,
+      "representative_miss_prevention": "Source-derived closed worlds prevent a batch becoming authority.",
+      "contract_check": "0 errors, 0 warnings",
+      "claude_mirror_status": "different_older_non_authority",
+      "finding_links": []
+    },
+    {
+      "skill": "qa-deep-review",
+      "canonical_path": "C:/Users/Admin/.agents/skills/qa-deep-review/SKILL.md",
+      "sha256": "9EEF8962A268310BFF3905560F14D3B158194305B3BD74D62B0FEC60995BE92B",
+      "review_state": "proven-correct",
+      "severity": "low",
+      "assessment": "pass",
+      "narrow_primary_job": true,
+      "triggerable": true,
+      "source_backed": true,
+      "nonduplicative": true,
+      "representative_miss_prevention": "Exact membership, negatives, deterministic reruns, and proof boundaries prevent audit skips.",
+      "contract_check": "0 errors, 0 warnings",
+      "claude_mirror_status": "absent",
+      "finding_links": []
+    }
+  ],
+  "verified_prior_findings": [
+    {
+      "id": "F-DOC-002",
+      "state": "confirmed-defect",
+      "severity": "critical",
+      "confidence": "high",
+      "title": "Active batch documentation omits 77 registered traits",
+      "anchors": [
+        {
+          "path": "UTMods/trait-deep-audit/active/batch/traits",
+          "detail": "121 files"
+        },
+        {
+          "path": "UTMods/trait-deep-audit/campaign/source_inventory.json",
+          "detail": "198 registrations"
+        }
+      ],
+      "affected_surfaces": [
+        "documentation",
+        "campaign-membership"
+      ],
+      "reproduction_evidence": "Exact subtraction is 198 - 121 = 77 omitted traits.",
+      "missing_proof": "None for this set result.",
+      "recommended_correction": "Retire the 121-file batch as authority or regenerate it from all 198 traits.",
+      "smallest_regression_test": "Assert bidirectional equality between document traits and registrations."
+    },
+    {
+      "id": "F-DOC-003",
+      "state": "confirmed-defect",
+      "severity": "critical",
+      "confidence": "high",
+      "title": "Completion labels coexist with explicit missing proof",
+      "anchors": [
+        {
+          "path": "UTMods/trait-deep-audit/active/batch/traits",
+          "detail": "112 COMPLETE-labelled documents"
+        }
+      ],
+      "affected_surfaces": [
+        "documentation",
+        "completion-gates"
+      ],
+      "reproduction_evidence": "All 112 completion-labelled documents also contain missing/no/zero test, proof, or runtime language; all 121 contain such language.",
+      "missing_proof": "Runtime and source-closed acceptance proof.",
+      "recommended_correction": "Gate completion on source membership and explicit proof disposition.",
+      "smallest_regression_test": "Reject COMPLETE when required proof is absent or unrun."
+    },
+    {
+      "id": "F-DOC-004",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Parallel audit completion is self-referential",
+      "anchors": [
+        {
+          "path": "UTMods/trait-deep-audit/plan-parallel-trait-audit.prompt.md",
+          "detail": "work-unit and completion clauses"
+        }
+      ],
+      "affected_surfaces": [
+        "documentation",
+        "campaign-governance"
+      ],
+      "reproduction_evidence": "The work unit and completion both depend on traits intended for the batch, not an external source set.",
+      "missing_proof": "A source-set equality gate.",
+      "recommended_correction": "Bind work membership and completion to source_inventory registrations.",
+      "smallest_regression_test": "Delete one source trait from the plan and require failure."
+    },
+    {
+      "id": "F-DOC-005",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Current documentation authority is not reconciled to campaign authority",
+      "anchors": [
+        {
+          "path": "UTMods/AGENTS.md"
+        },
+        {
+          "path": "UTMods/PRD.md"
+        },
+        {
+          "path": "UTMods/TRAIT_CHANGE_CHECKLIST.md"
+        },
+        {
+          "path": "UTMods/trait-deep-audit/README.md"
+        },
+        {
+          "path": "UTMods/trait-deep-audit/active/batch/00_batch_checklist.md"
+        }
+      ],
+      "affected_surfaces": [
+        "documentation",
+        "operational-authority"
+      ],
+      "reproduction_evidence": "All five lifecycle-current documents retain at least one stale contract.",
+      "missing_proof": "Corrected current docs and follow-up review.",
+      "recommended_correction": "Name the 198-row ledger and runtime-proof boundary in current contracts.",
+      "smallest_regression_test": "Fail current docs on superseded authority paths or unsupported completion claims."
+    },
+    {
+      "id": "F-UT-TR-001",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Translator percent substitution changes 56 required strings",
+      "anchors": [
+        {
+          "path": "UTMods/PZCodebase/Java/source/zombie/core/Translator.java"
+        },
+        {
+          "path": "UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI_EN.txt"
+        }
+      ],
+      "affected_surfaces": [
+        "localization",
+        "display"
+      ],
+      "reproduction_evidence": "Runtime-equivalent transform affects exactly 56 of 396 values.",
+      "missing_proof": "In-game rendering.",
+      "recommended_correction": "Encode literal percent content using the proven Translator contract.",
+      "smallest_regression_test": "Transform all 396 values and assert the expected 56-key set."
+    },
+    {
+      "id": "F-UT-TR-002",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Unicode guard changes 14 required strings",
+      "anchors": [
+        {
+          "path": "UTMods/PZCodebase/Java/source/zombie/core/Translator.java"
+        },
+        {
+          "path": "UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI_EN.txt"
+        }
+      ],
+      "affected_surfaces": [
+        "localization",
+        "display"
+      ],
+      "reproduction_evidence": "The U+2014/U+2212 guard affects exactly 14 of 396 values.",
+      "missing_proof": "Actual font glyph rendering.",
+      "recommended_correction": "Use engine-safe punctuation or prove runtime glyphs.",
+      "smallest_regression_test": "Assert the exact 14-key transform set."
+    },
+    {
+      "id": "F-UT-PKG-001",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Source and release definitions differ for two traits",
+      "anchors": [
+        {
+          "path": "UTMods/UniversalTraits/media/lua/shared/Definitions.lua"
+        },
+        {
+          "path": "UTMods/UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Definitions.lua"
+        }
+      ],
+      "affected_surfaces": [
+        "source-release-parity",
+        "traits"
+      ],
+      "reproduction_evidence": "Semantic drift is exact to UT_bouncer_I and UT_bouncer_II.",
+      "missing_proof": "Documented deployment intent.",
+      "recommended_correction": "Resolve intent and regenerate release from source.",
+      "smallest_regression_test": "Require parsed source/release definition equality."
+    },
+    {
+      "id": "F-UT-LOC-001",
+      "state": "confirmed-defect",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Twenty-six baseline locales have no UT translation file",
+      "anchors": [
+        {
+          "path": "UTMods/UniversalTraits/media/lua/shared/Translate",
+          "detail": "EN only"
+        },
+        {
+          "path": "UTMods/PZCodebase/Lua/shared/Translate",
+          "detail": "27 locales"
+        }
+      ],
+      "affected_surfaces": [
+        "localization",
+        "locale-coverage"
+      ],
+      "reproduction_evidence": "Exact directory subtraction produces 26 absent locales.",
+      "missing_proof": "Product fallback policy and runtime observation.",
+      "recommended_correction": "Declare English-only fallback or provide locales.",
+      "smallest_regression_test": "Assert actual locale coverage against declared policy."
+    },
+    {
+      "id": "F-UT-STRUCT-001",
+      "state": "confirmed-defect",
+      "severity": "low",
+      "confidence": "high",
+      "title": "Structural translation equality does not prove semantic meaning",
+      "anchors": [
+        {
+          "path": "UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI_EN.txt",
+          "detail": "198 names plus 198 descriptions"
+        }
+      ],
+      "affected_surfaces": [
+        "localization",
+        "semantic-review"
+      ],
+      "reproduction_evidence": "All four 198-member sets are exact with no missing/orphan required keys.",
+      "missing_proof": "Description meaning and runtime presentation.",
+      "recommended_correction": "Keep structural and semantic verdicts separate.",
+      "smallest_regression_test": "Mutate a description without changing its key and require semantic review."
+    }
+  ],
+  "rejected_prior_findings": [
+    {
+      "id": "R-F-UT-DOC-001",
+      "state": "confirmed-defect",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Prior exact UI_EN.txt documentation count is stale",
+      "anchors": [
+        {
+          "path": "UTMods/trait-deep-audit/campaign/translation_audit.json",
+          "detail": "186 sections/114 documents"
+        },
+        {
+          "tool": "JDocMunch",
+          "repo": "local/PZMods"
+        }
+      ],
+      "affected_surfaces": [
+        "documentation",
+        "localization-audit"
+      ],
+      "reproduction_evidence": "Complete byte-verified retrieval gives 256 sections, 121 documents, and 282 literal occurrences; the old quantitative claim is rejected while the stale-reference condition remains.",
+      "missing_proof": "Historical index timing was not reconstructed.",
+      "recommended_correction": "Aggregate the literal across every canonical section, not ranked search results.",
+      "smallest_regression_test": "Assert 256/121/282 for this snapshot.",
+      "original_id": "F-UT-DOC-001",
+      "disposition": "rejected_quantitative_claim_replaced"
+    },
+    {
+      "id": "R-F-UT-COV-001",
+      "state": "coverage-gap",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Prior global semantic-description gap is partially superseded",
+      "anchors": [
+        {
+          "path": "UTMods/trait-deep-audit/campaign/final_trait_ledger.json",
+          "detail": "198 description states"
+        }
+      ],
+      "affected_surfaces": [
+        "semantic-description",
+        "campaign-ledger"
+      ],
+      "reproduction_evidence": "Description states are now 85 proven-correct, 61 confirmed-defect, 37 coverage-gap, and 15 runtime-unproven.",
+      "missing_proof": "Runtime proof and 52 non-proven rows remain.",
+      "recommended_correction": "Replace the blanket gap with current per-trait states.",
+      "smallest_regression_test": "Assert description totals 85/61/37/15.",
+      "original_id": "F-UT-COV-001",
+      "disposition": "partially_rejected_reconciled"
+    }
+  ],
+  "omissions": [
+    {
+      "id": "DLS-DOC-INVENTORY-001",
+      "state": "coverage-gap",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "source_inventory.json does not carry document membership requested by this review contract",
+      "anchors": [
+        {
+          "path": "UTMods/trait-deep-audit/campaign/source_inventory.json",
+          "detail": "no Markdown/document set"
+        },
+        {
+          "path": "UTMods/trait-deep-audit/campaign/MASTER_COVERAGE_LEDGER.md",
+          "lines": "10-11",
+          "detail": "delegates exact document inventory to this independent review"
+        }
+      ],
+      "affected_surfaces": [
+        "source-inventory",
+        "documentation"
+      ],
+      "reproduction_evidence": "The source inventory is exact for trait/product membership but contains no document list. This review therefore reconciles 166 documents directly across filesystem, canonical manifest, and live JDocMunch and supplies the missing machine-readable rows itself.",
+      "missing_proof": "A pre-existing document set inside source_inventory.json; current three-way evidence is otherwise complete.",
+      "recommended_correction": "Optionally link or embed this 166-row set in the next source inventory revision.",
+      "smallest_regression_test": "Remove one canonical document and require three-way inventory validation failure."
+    },
+    {
+      "id": "DLS-LEDGER-PROOF-001",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Final-ledger normalization previously dropped Batch 01 exact missing-proof evidence",
+      "anchors": [
+        {
+          "path": "UTMods/trait-deep-audit/campaign/trait_batches/batch_01.jsonl",
+          "detail": "legacy key: exact missing proof"
+        },
+        {
+          "path": "UTMods/trait-deep-audit/campaign/tools/build_final_trait_ledger.py",
+          "lines": "154-160"
+        },
+        {
+          "path": "UTMods/trait-deep-audit/campaign/final_trait_ledger.json",
+          "sha256": "CF9E7883195407ABA182C958361AC6AA1CF60DB0027AFAB0AB5ADA88B92999C6"
+        }
+      ],
+      "affected_surfaces": [
+        "batch-normalization",
+        "final-ledger",
+        "validator"
+      ],
+      "reproduction_evidence": "The historical defect was confirmed. Current code accepts missing_proof, exact_missing_proof, and exact missing proof; independent reproduction finds all 211 unique non-empty Batch 01 proof pairs preserved (211/211, 0 missing) in the regenerated ledger.",
+      "missing_proof": "No proof remains missing for this remediation snapshot.",
+      "recommended_correction": "No further correction required; retain the compatibility normalizer and regression.",
+      "smallest_regression_test": "Fixture both legacy spellings and assert their text survives in JSON and JSONL.",
+      "remediation_status": "corrected-in-audit-tooling",
+      "current_remediation_state": "proven-correct"
+    },
+    {
+      "id": "DLS-SKILL-LOC-001",
+      "state": "confirmed-defect",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "pz-trait-mods previously taught prohibited legacy UI_EN table format",
+      "anchors": [
+        {
+          "path": "C:/Users/Admin/.agents/skills/pz-trait-mods/references/trait-format-and-failures.md",
+          "lines": "34-49",
+          "sha256": "83AC5917555E5738A7DCF2038F322E2209A7D09EEB63EC8E16B5B21FB4A43879"
+        },
+        {
+          "path": "UTMods/AGENTS.md",
+          "detail": "JSON-only authority"
+        }
+      ],
+      "affected_surfaces": [
+        "durable-skills",
+        "localization",
+        "UTMods-contract"
+      ],
+      "reproduction_evidence": "The historical conflict was confirmed. The current canonical reference uses Build 42 media/lua/shared/Translate/<locale>/UI.json valid JSON, rejects legacy UI_EN Lua-table guidance absent a current inspected override, and requires Translator-processed percent/Unicode validation. skill_contract_check reports 0 errors and 0 warnings.",
+      "missing_proof": "None for the current remediation snapshot.",
+      "recommended_correction": "No further correction required; retain the current Build 42 JSON and Translator validation guidance.",
+      "smallest_regression_test": "Scan the canonical reference for the UI.json path, valid JSON example, legacy UI_EN rejection, and percent/Unicode Translator checks, then run skill_contract_check.",
+      "remediation_status": "corrected-in-canonical-skill",
+      "current_remediation_state": "proven-correct"
+    },
+    {
+      "id": "DLS-REVIEW-SCHEMA-001",
+      "state": "coverage-gap",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Review artifacts share a version label but not a common declared schema",
+      "anchors": [
+        {
+          "path": "UTMods/trait-deep-audit/campaign/independent_reviews/traits_01_04.json"
+        },
+        {
+          "path": "UTMods/trait-deep-audit/campaign/independent_reviews/traits_05_08.json"
+        },
+        {
+          "path": "UTMods/trait-deep-audit/campaign/independent_reviews/traits_09_12.json"
+        }
+      ],
+      "affected_surfaces": [
+        "independent-reviews",
+        "schema",
+        "normalizer"
+      ],
+      "reproduction_evidence": "All three cover exact disjoint membership and all 163 dispositions, but top-level shapes differ under schema_version 1.0.0; raw batches expose 83 dimension keys and legacy states.",
+      "missing_proof": "A common JSON Schema or distinct shape versions.",
+      "recommended_correction": "Publish distinct schema IDs or normalize to one schema.",
+      "smallest_regression_test": "Reject any review that does not validate against its declared schema."
+    },
+    {
+      "id": "DLS-JDATA-INDEX-001",
+      "state": "coverage-gap",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "The authorized ledger sidecar was previously not indexed in live JDataMunch",
+      "anchors": [
+        {
+          "path": "UTMods/trait-deep-audit/campaign/final_trait_ledger_rows.jsonl",
+          "sha256": "829A08A7DD22AC22A59E93E41C99574D739ABE91CB79980F91BF3087FBDD0973"
+        },
+        {
+          "tool": "JDataMunch",
+          "dataset": "utmods-final-trait-ledger",
+          "operations": [
+            "validate_index",
+            "describe_dataset",
+            "aggregate"
+          ],
+          "overall_status": "ok"
+        }
+      ],
+      "affected_surfaces": [
+        "structured-data-query",
+        "campaign-ledger"
+      ],
+      "reproduction_evidence": "The historical NOT_INDEXED gap was confirmed. The live JDataMunch v1.13 guide is healthy; validate_index(utmods-final-trait-ledger) now returns ok with 198 rows and 8 columns, exact aggregates return count(*)=198 and count_distinct(trait_id)=198, and overall_state groups are 81 confirmed-defect, 11 coverage-gap, 25 proven-correct, and 81 runtime-unproven.",
+      "missing_proof": "None for the current indexed-data remediation snapshot.",
+      "recommended_correction": "No further correction required; retain the indexed sidecar and exact validation/aggregate checks.",
+      "smallest_regression_test": "Require validate_index=ok, 198 rows/8 columns, 198 distinct trait IDs, and exact 81/11/25/81 state groups.",
+      "remediation_status": "corrected-in-jdatamunch-index",
+      "current_remediation_state": "proven-correct"
+    }
+  ],
+  "cross_surface_findings": [
+    {
+      "id": "DLS-DOC-COUNT-001",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Campaign documentation-localization counts contradict canonical documents",
+      "anchors": [
+        {
+          "path": "UTMods/trait-deep-audit/campaign/translation_audit.json",
+          "detail": "186/114"
+        },
+        {
+          "path": "UTMods/trait-deep-audit/campaign/MASTER_COVERAGE_LEDGER.md"
+        },
+        {
+          "tool": "JDocMunch",
+          "detail": "256/121/282"
+        }
+      ],
+      "affected_surfaces": [
+        "documentation",
+        "translation-audit",
+        "master-ledger"
+      ],
+      "reproduction_evidence": "Complete byte-verified retrieval gives 256 sections/121 documents/282 occurrences; ranked search was rejected for exact counting.",
+      "missing_proof": "None for the current snapshot.",
+      "recommended_correction": "Replace stale counts and consume all canonical sections.",
+      "smallest_regression_test": "Fail on any mismatch from complete literal aggregation."
+    },
+    {
+      "id": "DLS-CLI-HELP-001",
+      "state": "confirmed-defect",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Writer help previously executed the write path",
+      "anchors": [
+        {
+          "path": "UTMods/trait-deep-audit/campaign/tools/campaign_cli.py",
+          "lines": "10-19"
+        },
+        {
+          "path": "UTMods/trait-deep-audit/campaign/tests/test_campaign_tools.py"
+        }
+      ],
+      "affected_surfaces": [
+        "audit-tooling",
+        "determinism",
+        "artifact-safety"
+      ],
+      "reproduction_evidence": "Current direct verification across all four commands gives help=0, unknown=2, preserves ledger/sidecar/recurring hashes, and does not create the deferred manifest.",
+      "missing_proof": "A historical pre-fix hash archive.",
+      "recommended_correction": "No further fix; retain fail-closed CLI and regression.",
+      "smallest_regression_test": "Assert exit codes and hash preservation for each command.",
+      "remediation_status": "corrected-in-audit-tooling"
+    },
+    {
+      "id": "DLS-MANIFEST-BOOTSTRAP-001",
+      "state": "coverage-gap",
+      "severity": "low",
+      "confidence": "high",
+      "title": "Campaign manifest is deliberately deferred until this review artifact is stable",
+      "anchors": [
+        {
+          "path": "UTMods/trait-deep-audit/campaign/tools/build_campaign_manifest.py"
+        },
+        {
+          "path": "UTMods/trait-deep-audit/campaign/tools/validate_campaign.py"
+        },
+        {
+          "path": "UTMods/trait-deep-audit/campaign/tests/test_campaign_tools.py"
+        }
+      ],
+      "affected_surfaces": [
+        "campaign-manifest",
+        "validator",
+        "tests"
+      ],
+      "reproduction_evidence": "Manifest-specific closed-world/determinism tests pass, and the new command obeys help=0/unknown=2 without creating output. The full suite is 14 pass/1 fail and the validator exits 1 solely because campaign_manifest.json is intentionally not generated until this artifact is stable.",
+      "missing_proof": "The final manifest and post-generation green suite/validator run.",
+      "recommended_correction": "Coordinator should generate the manifest after this artifact hash is final, then rerun tests and validation.",
+      "smallest_regression_test": "Generate once, assert byte-stable rebuild, 15/15 tests, and validator ok=true.",
+      "remediation_status": "pending-final-manifest-generation"
+    }
+  ],
+  "surface_gap_reconciliation": [
+    {
+      "id": "DLS-PEER-REVIEWS-001",
+      "state": "coverage-gap",
+      "severity": "low",
+      "confidence": "high",
+      "title": "Peer toolchain and UT_CORE semantics were intentionally not duplicated",
+      "anchors": [
+        {
+          "path": "UTMods/trait-deep-audit/campaign/independent_reviews/toolchain_semantic_impact.json"
+        },
+        {
+          "path": "UTMods/trait-deep-audit/campaign/independent_reviews/ut_core_integration.json"
+        }
+      ],
+      "affected_surfaces": [
+        "peer-independent-reviews"
+      ],
+      "reproduction_evidence": "Both are inventoried with parse and hash validation per the bounded delegation.",
+      "missing_proof": "Semantic re-review assigned to peer lanes.",
+      "recommended_correction": "Coordinator should reconcile peer conclusions.",
+      "smallest_regression_test": "Require both peer artifacts to parse and be referenced by coordination."
+    },
+    {
+      "id": "F-DOC-001",
+      "state": "runtime-unproven",
+      "severity": "high",
+      "confidence": "high",
+      "title": "UT_CORE documentation claims were not re-proven in this lane",
+      "anchors": [
+        {
+          "path": "UTMods/AGENTS.md"
+        },
+        {
+          "finding": "F-DOC-001"
+        }
+      ],
+      "affected_surfaces": [
+        "documentation",
+        "UT_CORE-runtime"
+      ],
+      "reproduction_evidence": "The stale link is visible, but code/runtime semantics belong to the UT_CORE peer review.",
+      "missing_proof": "Current code trace and runtime observation.",
+      "recommended_correction": "Use the UT_CORE peer artifact, then update current docs.",
+      "smallest_regression_test": "Cross-check each runtime claim against the accepted peer finding."
+    },
+    {
+      "id": "DLS-LOCALE-POLICY-001",
+      "state": "coverage-gap",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Absent-locale behavior has no explicit product policy",
+      "anchors": [
+        {
+          "path": "UTMods/UniversalTraits/media/lua/shared/Translate",
+          "detail": "EN only; 26 absent locales"
+        }
+      ],
+      "affected_surfaces": [
+        "localization",
+        "product-policy"
+      ],
+      "reproduction_evidence": "The exact absent set is known, but supported/fallback policy is not declared.",
+      "missing_proof": "A signed-off policy.",
+      "recommended_correction": "Document supported locales and fallback criteria.",
+      "smallest_regression_test": "Fail when actual locales diverge from declared policy."
+    }
+  ],
+  "unresolved_runtime_proofs": [
+    {
+      "id": "DLS-RUNTIME-UI-001",
+      "state": "runtime-unproven",
+      "severity": "high",
+      "confidence": "high",
+      "title": "All 396 required UI values lack an in-game render capture",
+      "anchors": [
+        {
+          "path": "UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI_EN.txt"
+        }
+      ],
+      "affected_surfaces": [
+        "display",
+        "runtime"
+      ],
+      "reproduction_evidence": "Static sets and transforms are exact; no launch was authorized.",
+      "missing_proof": "Rendering, clipping, substitution, and font behavior.",
+      "recommended_correction": "Run a bounded UI smoke matrix.",
+      "smallest_regression_test": "Capture percent, Unicode, long, and ordinary keys."
+    },
+    {
+      "id": "DLS-RUNTIME-FALLBACK-001",
+      "state": "runtime-unproven",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Fallback for 26 absent locales is not observed",
+      "anchors": [
+        {
+          "path": "UTMods/PZCodebase/Java/source/zombie/core/Translator.java"
+        },
+        {
+          "path": "UTMods/UniversalTraits/media/lua/shared/Translate"
+        }
+      ],
+      "affected_surfaces": [
+        "localization",
+        "runtime-fallback"
+      ],
+      "reproduction_evidence": "Translator source supports an inferred path; no language-switch run exists.",
+      "missing_proof": "Selected-language load order and resolved values.",
+      "recommended_correction": "Test one absent locale and record the loaded source.",
+      "smallest_regression_test": "Assert all 396 keys resolve to declared fallback."
+    },
+    {
+      "id": "DLS-RUNTIME-UNICODE-GLYPH-001",
+      "state": "runtime-unproven",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Post-normalization multiplication glyph is not proven",
+      "anchors": [
+        {
+          "path": "UTMods/PZCodebase/Java/source/zombie/core/Translator.java",
+          "detail": "may yield U+00D7"
+        }
+      ],
+      "affected_surfaces": [
+        "display",
+        "font-runtime"
+      ],
+      "reproduction_evidence": "The transform is reproducible, but the active font was not rendered.",
+      "missing_proof": "Glyph availability and fallback font.",
+      "recommended_correction": "Capture the normalized glyph in game.",
+      "smallest_regression_test": "Assert one affected key renders without tofu."
+    },
+    {
+      "id": "DLS-RUNTIME-LIVE-001",
+      "state": "runtime-unproven",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Live installed-mod parity was not inspected",
+      "anchors": [
+        {
+          "path": "UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI_EN.txt"
+        },
+        {
+          "path": "UTMods/UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI_EN.txt"
+        }
+      ],
+      "affected_surfaces": [
+        "source-release-live-parity"
+      ],
+      "reproduction_evidence": "Source and release UI are equal; live deployment was outside authority.",
+      "missing_proof": "Installed-copy hashes.",
+      "recommended_correction": "Hash source/release/live after authorized deployment.",
+      "smallest_regression_test": "Require three-way parity."
+    }
+  ],
+  "validation_run": {
+    "document_inventory": {
+      "filesystem_canonical_rows": 166,
+      "jdocmunch_canonical_rows": 166,
+      "manifest_rows": 166,
+      "sorted_unique": true,
+      "jdoc_sections_total_for_UTMods": 2103,
+      "jdoc_nonempty_sections_byte_verified": 1937,
+      "jdoc_index_verify": {
+        "clean": 2326,
+        "drift": 0,
+        "missing": 0,
+        "errors": 0,
+        "skipped_empty_root_sections": 200
+      }
+    },
+    "jdoc_exact_literal_UI_EN_txt": {
+      "sections": 256,
+      "documents": 121,
+      "occurrences": 282,
+      "method": "complete byte-verified canonical retrieval; ranked search rejected for exact counting"
+    },
+    "jdatamunch": {
+      "guide_healthy": true,
+      "guide_version": "1.13.0",
+      "dataset": "utmods-final-trait-ledger",
+      "indexed": true,
+      "validate_index": {
+        "overall_status": "ok",
+        "findings": [],
+        "row_count": 198,
+        "column_count": 8
+      },
+      "exact_aggregates": {
+        "count_all": 198,
+        "count_distinct_trait_id": 198,
+        "overall_state_groups": {
+          "confirmed-defect": 81,
+          "coverage-gap": 11,
+          "proven-correct": 25,
+          "runtime-unproven": 81
+        }
+      },
+      "prior_error": "NOT_INDEXED: dataset 'final_trait_ledger_rows' is not indexed. Call index_local first.",
+      "error": null,
+      "index_mutation_performed": false
+    },
+    "jdata_remediation_counts": {
+      "dataset_rows": 198,
+      "distinct_trait_ids": 198,
+      "historical_gap_findings_remediated": 1,
+      "historical_blockers_remediated": 1,
+      "active_jdata_blockers": 0
+    },
+    "blocker_reconciliation": {
+      "rows_preserved": 2,
+      "remediated_historical": 1,
+      "active": 1
+    },
+    "campaign_validator": {
+      "exit_code": 1,
+      "ok": false,
+      "expected_transitional_error": "campaign_manifest.json is missing",
+      "traits": 198,
+      "findings": 163,
+      "independent_review_findings": 118,
+      "recurring_pattern_findings": 15,
+      "global_unique_finding_ids": 296,
+      "ledger_sha256": "CF9E7883195407ABA182C958361AC6AA1CF60DB0027AFAB0AB5ADA88B92999C6",
+      "ledger_jsonl_sha256": "829A08A7DD22AC22A59E93E41C99574D739ABE91CB79980F91BF3087FBDD0973"
+    },
+    "campaign_tests": {
+      "command": "python -m pytest UTMods/trait-deep-audit/campaign/tests/test_campaign_tools.py -q -p no:cacheprovider",
+      "exit_code": 1,
+      "passed": 14,
+      "failed": 1,
+      "expected_transitional_failure": "help/hash test requires deliberately deferred campaign_manifest.json"
+    },
+    "batch_01_proof_remediation": {
+      "source_nonempty_unique_pairs": 211,
+      "preserved_in_final_ledger": 211,
+      "missing": 0,
+      "state": "proven-correct"
+    },
+    "cli_regression": {
+      "commands_checked": 4,
+      "help_exit_codes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown_exit_codes": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "protected_hashes_preserved": true,
+      "deferred_manifest_remained_absent": true,
+      "protected_hashes": {
+        "final_trait_ledger.json": "CF9E7883195407ABA182C958361AC6AA1CF60DB0027AFAB0AB5ADA88B92999C6",
+        "final_trait_ledger_rows.jsonl": "829A08A7DD22AC22A59E93E41C99574D739ABE91CB79980F91BF3087FBDD0973",
+        "recurring_pattern_findings.json": "D187FBCF3136C24119AF1CB6B73AFCD16E48C5B7622A6C0027F687AD48AB8619"
+      }
+    },
+    "skill_contract_checks": {
+      "skills_checked": 7,
+      "errors": 0,
+      "warnings": 0,
+      "review_state_counts": {
+        "proven-correct": 7,
+        "confirmed-defect": 0,
+        "coverage-gap": 0,
+        "runtime-unproven": 0
+      },
+      "pz_trait_mods_rechecked": true,
+      "pz_trait_mods_reference_sha256": "83AC5917555E5738A7DCF2038F322E2209A7D09EEB63EC8E16B5B21FB4A43879",
+      "corrected_historical_findings": 1,
+      "active_skill_guidance_defects": 0
+    },
+    "output_contract": {
+      "exact_top_level_fields": [
+        "schema_version",
+        "exact_document_inventory",
+        "document_lifecycle_counts",
+        "campaign_artifact_inventory",
+        "localization_reconciliation",
+        "skill_review",
+        "verified_prior_findings",
+        "rejected_prior_findings",
+        "omissions",
+        "cross_surface_findings",
+        "surface_gap_reconciliation",
+        "unresolved_runtime_proofs",
+        "validation_run",
+        "blockers"
+      ],
+      "finding_ids_unique": true,
+      "finding_schema_complete": true,
+      "state_vocabulary_valid": true,
+      "severity_vocabulary_valid": true,
+      "byte_stable_second_pass": true,
+      "sha256": null
+    }
+  },
+  "blockers": [
+    {
+      "id": "BLOCK-JDATA-001",
+      "state": "coverage-gap",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "JDataMunch index previously required coordinator-owned refresh",
+      "anchors": [
+        {
+          "tool": "JDataMunch",
+          "dataset": "utmods-final-trait-ledger",
+          "overall_status": "ok"
+        }
+      ],
+      "affected_surfaces": [
+        "structured-data-query"
+      ],
+      "reproduction_evidence": "The historical blocker was confirmed and is now remediated: validate_index is ok, the dataset has 198 rows/8 columns, trait_id is exactly unique across 198 rows, and state aggregates reconcile to 81/11/25/81.",
+      "missing_proof": "None for the current indexed-data remediation snapshot.",
+      "recommended_correction": "No further correction required; preserve coordinator ownership of index refreshes.",
+      "smallest_regression_test": "Validate the index and repeat the exact row, distinct-trait, and state-group aggregates.",
+      "remediation_status": "corrected-in-jdatamunch-index",
+      "current_remediation_state": "proven-correct"
+    },
+    {
+      "id": "BLOCK-RUNTIME-001",
+      "state": "runtime-unproven",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Game launch and live deployment were outside authorization",
+      "anchors": [
+        {
+          "path": "UTMods/UniversalTraits",
+          "detail": "source/release only"
+        }
+      ],
+      "affected_surfaces": [
+        "runtime",
+        "live-deployment"
+      ],
+      "reproduction_evidence": "No launch, deployment, or live mutation occurred.",
+      "missing_proof": "UI, fallback, glyph, and live parity observations.",
+      "recommended_correction": "Run coordinator-approved runtime/deployment evidence.",
+      "smallest_regression_test": "Capture a bounded smoke run and post-deploy hashes."
+    }
+  ]
+}

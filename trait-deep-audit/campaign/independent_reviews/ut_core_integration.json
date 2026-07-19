@@ -1,0 +1,4155 @@
+{
+  "schema_version": "utmods.independent_ut_core_integration_review.v1",
+  "audit_date": "2026-07-19",
+  "scope": {
+    "closed_world": "The 24 source Lua paths in trait-deep-audit/campaign/source_inventory.json under UT_CORE plus their UT_CORE 42.0 release counterparts, all 151 UniversalTraits source Lua callers, relevant UniversalTraits trait-definition exclusivity, current svn-964 PZ Java/Lua producer and receiver evidence, current tests/mocks, MASTER_COVERAGE_LEDGER.md, and recurring_pattern_findings.json.",
+    "write_boundary": "Only this artifact was authorized for modification; no source, release/live copy, PZCodebase, accepted artifact, tool/test, document, skill, Git, deployment, or game state was changed.",
+    "inventory_artifact": {
+      "path": "UTMods/trait-deep-audit/campaign/source_inventory.json",
+      "schema_version": "utmods.source_inventory.v2",
+      "bytes": 230054,
+      "sha256": "47781d8c6ae00795c0dd5cff8f89e295f49826bb57b64dc9dcd6de6a767941c9",
+      "declared_ut_core_count": 24
+    },
+    "current_tree_reconciliation": {
+      "inventory_count": 24,
+      "current_tree_count": 24,
+      "intersection_count": 24,
+      "missing_from_tree": [],
+      "unlisted_in_tree": [],
+      "unique": true,
+      "sorted": true
+    },
+    "engine_baseline": {
+      "path": "PZCodebase/VERSION.json",
+      "sha256": "3d6278e697ae3d08d5d44d32cd41a15f47563a7e06e6709467cf12d0bb7e7df7",
+      "game_build": "svn-964",
+      "java_layer_sha256": "57846aee98be92e3fa56b8891c884a941d56005459d9d7f26088652fc17fd054",
+      "lua_layer_sha256": "c199bf9514fdfd8884191bf94105db8fe4622dc22293384e61b2ba2918a1dda3",
+      "media_layer_sha256": "c4aa0009db10efd3353b4f84a67db22d6afd743b172c7c3acca3e5063136bace"
+    },
+    "live_munch_evidence": {
+      "jcodemunch_version": "1.108.141",
+      "utmods_repo": "local/UTMods-80cf9c1d",
+      "utmods_indexed_at": "2026-07-18T15:31:22.164067",
+      "pzcodebase_repo": "local/PZCodebase-61973d88",
+      "pzcodebase_indexed_at": "2026-07-17T01:36:53.506786",
+      "jdocmunch_version": "1.102.0",
+      "jdatamunch_version": "1.13.0",
+      "startup_preflight": "MUNCH_PREFLIGHT_PASS",
+      "freshness": "All 24 target source mtimes precede the UTMods index; current source hashes were independently read from disk."
+    },
+    "prior_artifacts": [
+      {
+        "path": "UTMods/trait-deep-audit/campaign/MASTER_COVERAGE_LEDGER.md",
+        "bytes": 26124,
+        "sha256": "6d0d4903497ab38b58a10003819353c16d98d41befe8383230b86d846237557c"
+      },
+      {
+        "path": "UTMods/trait-deep-audit/campaign/recurring_pattern_findings.json",
+        "bytes": 16297,
+        "sha256": "d187fbcf3136c24119af1cb6b73afcd16e48c5b7622a6c0027f687ad48ab8619"
+      }
+    ]
+  },
+  "inventory": [
+    {
+      "path": "UT_CORE/media/lua/client/UTCore/UTCore_CharacterCreationMETDebug.lua",
+      "sha256": "3dc51d754c321d7af019007199a14a1697903591ce51f5ca100be811190ad451",
+      "bytes": 4543,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/client/UTCore/UTCore_CharacterCreationMETDebug.lua",
+      "release_sha256": "3dc51d754c321d7af019007199a14a1697903591ce51f5ca100be811190ad451",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua",
+      "sha256": "dcd4fb67425910e9035fd1c1b1bae28b7be0df8131e41d1732f72e1d6ecfff81",
+      "bytes": 7633,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_API.lua",
+      "release_sha256": "dcd4fb67425910e9035fd1c1b1bae28b7be0df8131e41d1732f72e1d6ecfff81",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua",
+      "sha256": "a4d4ddfec516cd4fa4cc43d3775bbde99378252cd3f9567e1c1a28db2c3b0f83",
+      "bytes": 2724,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua",
+      "release_sha256": "a4d4ddfec516cd4fa4cc43d3775bbde99378252cd3f9567e1c1a28db2c3b0f83",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+      "sha256": "5926f200229ccaac1c1b91ae0c571ee27716e95f5baffb47aaabcdae6f1679ca",
+      "bytes": 3267,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+      "release_sha256": "5926f200229ccaac1c1b91ae0c571ee27716e95f5baffb47aaabcdae6f1679ca",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_BleedHook.lua",
+      "sha256": "2f8f4fd451e44ee36a0c647be90ae205d80670bcbe339abe4384a468b2a21b43",
+      "bytes": 4732,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_BleedHook.lua",
+      "release_sha256": "2f8f4fd451e44ee36a0c647be90ae205d80670bcbe339abe4384a468b2a21b43",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
+      "sha256": "180a259bf67775c433b63446a000bc5cbbb183cd2b4ee84b9b532c6ea2ceeb5e",
+      "bytes": 2397,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
+      "release_sha256": "180a259bf67775c433b63446a000bc5cbbb183cd2b4ee84b9b532c6ea2ceeb5e",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_Diagnostics.lua",
+      "sha256": "c45d0348cdf4f4af7ad502959e6a465797e303672c06dca3169773bb832f96c1",
+      "bytes": 11706,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_Diagnostics.lua",
+      "release_sha256": "c45d0348cdf4f4af7ad502959e6a465797e303672c06dca3169773bb832f96c1",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_Events.lua",
+      "sha256": "aab1788e27aeba8edcfa9c854f79b8d173c1850afe5d96abfd8a4a6932f64401",
+      "bytes": 2003,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_Events.lua",
+      "release_sha256": "aab1788e27aeba8edcfa9c854f79b8d173c1850afe5d96abfd8a4a6932f64401",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_FractureHook.lua",
+      "sha256": "4bed7dea7e7729899bd162f4a259ed31eed4faf5da1d26153bb2092f24e8fc62",
+      "bytes": 2401,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_FractureHook.lua",
+      "release_sha256": "4bed7dea7e7729899bd162f4a259ed31eed4faf5da1d26153bb2092f24e8fc62",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_FreezeLogger.lua",
+      "sha256": "5cfb72e52a142e411d8690c1dac59178cd3d967c7392b2d7aff722387c37c8c6",
+      "bytes": 15180,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_FreezeLogger.lua",
+      "release_sha256": "5cfb72e52a142e411d8690c1dac59178cd3d967c7392b2d7aff722387c37c8c6",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua",
+      "sha256": "b6de4d79b582c3a9d8fa0a1188fd5592ccf0bdbb0997ffd3a7f324cb8f632d47",
+      "bytes": 7179,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua",
+      "release_sha256": "b6de4d79b582c3a9d8fa0a1188fd5592ccf0bdbb0997ffd3a7f324cb8f632d47",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_NoiseHook.lua",
+      "sha256": "6ffcb45b84ff4f36f96254f1bb15a8c6f61a58d472bcc35744ae61128e122cd5",
+      "bytes": 1718,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_NoiseHook.lua",
+      "release_sha256": "6ffcb45b84ff4f36f96254f1bb15a8c6f61a58d472bcc35744ae61128e122cd5",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_PainHook.lua",
+      "sha256": "048ced5b4bec72da62861c748991166b050ce638be4879bc35b180d6664dd474",
+      "bytes": 1112,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_PainHook.lua",
+      "release_sha256": "048ced5b4bec72da62861c748991166b050ce638be4879bc35b180d6664dd474",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua",
+      "sha256": "e7ae01fe1ce5b220b909c8a4e31ccc5c1ad588c21d58dbefbcd4427e07b61951",
+      "bytes": 4892,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_ReadingHook.lua",
+      "release_sha256": "e7ae01fe1ce5b220b909c8a4e31ccc5c1ad588c21d58dbefbcd4427e07b61951",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_SleepQualityHook.lua",
+      "sha256": "17d2a5e3df4f576f716cb87c7c57b46bc4fb6c8cfa38c5711cc8cde0211d5ee0",
+      "bytes": 1762,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_SleepQualityHook.lua",
+      "release_sha256": "17d2a5e3df4f576f716cb87c7c57b46bc4fb6c8cfa38c5711cc8cde0211d5ee0",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua",
+      "sha256": "b4bf5ca23c4c9b0699f74a27ad7d6dad5cd834ee3e70f07776fcac8b192af90f",
+      "bytes": 3340,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_SpawnEffects.lua",
+      "release_sha256": "b4bf5ca23c4c9b0699f74a27ad7d6dad5cd834ee3e70f07776fcac8b192af90f",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_SpeedHook.lua",
+      "sha256": "b57bf0ffdfaf4772070bd3ab2b2343181e4ef57c29ec374600dcee2f2892b854",
+      "bytes": 5528,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_SpeedHook.lua",
+      "release_sha256": "b57bf0ffdfaf4772070bd3ab2b2343181e4ef57c29ec374600dcee2f2892b854",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua",
+      "sha256": "cf5f777b0080377364c65fd2cd7bdbb12ec62a2fed7e6c2897d9d50d01eead2d",
+      "bytes": 20634,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_StatModifiers.lua",
+      "release_sha256": "cf5f777b0080377364c65fd2cd7bdbb12ec62a2fed7e6c2897d9d50d01eead2d",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_ThermalRegulationHook.lua",
+      "sha256": "51c5766694db9b7b5ea34f7d4829b0012c1ddabb5c017f2d02faa014e2de27da",
+      "bytes": 2286,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_ThermalRegulationHook.lua",
+      "release_sha256": "51c5766694db9b7b5ea34f7d4829b0012c1ddabb5c017f2d02faa014e2de27da",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua",
+      "sha256": "fe61d63bb0fc220a8ee3dd1eb6d6cb7cb9627663dba4832e5df57d66db4a5998",
+      "bytes": 16979,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_TickDispatch.lua",
+      "release_sha256": "fe61d63bb0fc220a8ee3dd1eb6d6cb7cb9627663dba4832e5df57d66db4a5998",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_TraitChecks.lua",
+      "sha256": "96e3f4fec2e7510d7ef38c241c5f5fb2741a42cc30046ed57320bb713f9aa0f6",
+      "bytes": 1066,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_TraitChecks.lua",
+      "release_sha256": "96e3f4fec2e7510d7ef38c241c5f5fb2741a42cc30046ed57320bb713f9aa0f6",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua",
+      "sha256": "a682d914ae2598538d9cfd26faef4e91bcb22c72fe9a8733381f084d65afab07",
+      "bytes": 2558,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua",
+      "release_sha256": "a682d914ae2598538d9cfd26faef4e91bcb22c72fe9a8733381f084d65afab07",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_XPHook.lua",
+      "sha256": "22c6d65c43aa5c52faa55a11455d040480ef8cf6c4eee9123e592996ecc55dde",
+      "bytes": 2747,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_XPHook.lua",
+      "release_sha256": "22c6d65c43aa5c52faa55a11455d040480ef8cf6c4eee9123e592996ecc55dde",
+      "release_parity": "exact"
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua",
+      "sha256": "ba0d79b4981f9b61dae76e6af49c635646e03255baffef38c8c5a01198ef95b3",
+      "bytes": 11264,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua",
+      "release_sha256": "ba0d79b4981f9b61dae76e6af49c635646e03255baffef38c8c5a01198ef95b3",
+      "release_parity": "exact"
+    }
+  ],
+  "per_file_review": [
+    {
+      "path": "UT_CORE/media/lua/client/UTCore/UTCore_CharacterCreationMETDebug.lua",
+      "sha256": "3dc51d754c321d7af019007199a14a1697903591ce51f5ca100be811190ad451",
+      "bytes": 4543,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/client/UTCore/UTCore_CharacterCreationMETDebug.lua",
+      "release_sha256": "3dc51d754c321d7af019007199a14a1697903591ce51f5ca100be811190ad451",
+      "release_parity": "exact",
+      "source_role": "disabled-by-default client diagnostic wrapper",
+      "overall_state": "runtime-unproven",
+      "linked_finding_ids": [
+        "IC-RUN-005",
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "disabled-by-default client diagnostic wrapper",
+          "linked_finding_ids": [
+            "IC-RUN-005"
+          ]
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "runtime-unproven",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": [
+            "IC-RUN-005"
+          ]
+        },
+        "shared_state_and_moddata": {
+          "classification": "runtime-unproven",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": [
+            "IC-RUN-005"
+          ]
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": [
+            "IC-RUN-005"
+          ]
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "runtime-unproven",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": [
+            "IC-RUN-005"
+          ]
+        },
+        "numerical_behavior": {
+          "classification": "runtime-unproven",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": [
+            "IC-RUN-005"
+          ]
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": [
+            "IC-RUN-005"
+          ]
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": [
+            "IC-RUN-005"
+          ]
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": [
+            "IC-RUN-005"
+          ]
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": [
+            "IC-RUN-005"
+          ]
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": [
+            "IC-RUN-005"
+          ]
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 3dc51d754c321d7af019007199a14a1697903591ce51f5ca100be811190ad451",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua",
+      "sha256": "dcd4fb67425910e9035fd1c1b1bae28b7be0df8131e41d1732f72e1d6ecfff81",
+      "bytes": 7633,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_API.lua",
+      "release_sha256": "dcd4fb67425910e9035fd1c1b1bae28b7be0df8131e41d1732f72e1d6ecfff81",
+      "release_parity": "exact",
+      "source_role": "core registration, trait/category bridge, creation diagnostics",
+      "overall_state": "runtime-unproven",
+      "linked_finding_ids": [
+        "IC-RUN-005",
+        "IC-VPF-005",
+        "IC-XF-001",
+        "IC-XF-002"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "core registration, trait/category bridge, creation diagnostics",
+          "linked_finding_ids": [
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "runtime-unproven",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": [
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "shared_state_and_moddata": {
+          "classification": "runtime-unproven",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": [
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "registration_removal_idempotence": {
+          "classification": "runtime-unproven",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": [
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "runtime-unproven",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": [
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "numerical_behavior": {
+          "classification": "runtime-unproven",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": [
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": [
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": [
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": [
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": [
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": [
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 dcd4fb67425910e9035fd1c1b1bae28b7be0df8131e41d1732f72e1d6ecfff81",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua",
+      "sha256": "a4d4ddfec516cd4fa4cc43d3775bbde99378252cd3f9567e1c1a28db2c3b0f83",
+      "bytes": 2724,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua",
+      "release_sha256": "a4d4ddfec516cd4fa4cc43d3775bbde99378252cd3f9567e1c1a28db2c3b0f83",
+      "release_parity": "exact",
+      "source_role": "batched bleedingTime decay correction",
+      "overall_state": "confirmed-defect",
+      "linked_finding_ids": [
+        "IC-OM-007",
+        "IC-RUN-001",
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "batched bleedingTime decay correction",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "runtime-unproven",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "shared_state_and_moddata": {
+          "classification": "confirmed-defect",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "runtime-unproven",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "numerical_behavior": {
+          "classification": "confirmed-defect",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "stacking_and_composition": {
+          "classification": "confirmed-defect",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 a4d4ddfec516cd4fa4cc43d3775bbde99378252cd3f9567e1c1a28db2c3b0f83",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+      "sha256": "5926f200229ccaac1c1b91ae0c571ee27716e95f5baffb47aaabcdae6f1679ca",
+      "bytes": 3267,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+      "release_sha256": "5926f200229ccaac1c1b91ae0c571ee27716e95f5baffb47aaabcdae6f1679ca",
+      "release_parity": "exact",
+      "source_role": "batched bleeding health-drain correction",
+      "overall_state": "confirmed-defect",
+      "linked_finding_ids": [
+        "IC-OM-007",
+        "IC-RUN-001",
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "batched bleeding health-drain correction",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "runtime-unproven",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "shared_state_and_moddata": {
+          "classification": "confirmed-defect",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "runtime-unproven",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "numerical_behavior": {
+          "classification": "confirmed-defect",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "stacking_and_composition": {
+          "classification": "confirmed-defect",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": [
+            "IC-OM-007",
+            "IC-RUN-001"
+          ]
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 5926f200229ccaac1c1b91ae0c571ee27716e95f5baffb47aaabcdae6f1679ca",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_BleedHook.lua",
+      "sha256": "2f8f4fd451e44ee36a0c647be90ae205d80670bcbe339abe4384a468b2a21b43",
+      "bytes": 4732,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_BleedHook.lua",
+      "release_sha256": "2f8f4fd451e44ee36a0c647be90ae205d80670bcbe339abe4384a468b2a21b43",
+      "release_parity": "exact",
+      "source_role": "legacy wound-bleed multiplier hook",
+      "overall_state": "runtime-unproven",
+      "linked_finding_ids": [
+        "IC-RUN-001",
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "legacy wound-bleed multiplier hook",
+          "linked_finding_ids": [
+            "IC-RUN-001"
+          ]
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "runtime-unproven",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": [
+            "IC-RUN-001"
+          ]
+        },
+        "shared_state_and_moddata": {
+          "classification": "proven-correct",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": [
+            "IC-RUN-001"
+          ]
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": [
+            "IC-RUN-001"
+          ]
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "runtime-unproven",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": [
+            "IC-RUN-001"
+          ]
+        },
+        "numerical_behavior": {
+          "classification": "runtime-unproven",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": [
+            "IC-RUN-001"
+          ]
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": [
+            "IC-RUN-001"
+          ]
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": [
+            "IC-RUN-001"
+          ]
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": [
+            "IC-RUN-001"
+          ]
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": [
+            "IC-RUN-001"
+          ]
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": [
+            "IC-RUN-001"
+          ]
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 2f8f4fd451e44ee36a0c647be90ae205d80670bcbe339abe4384a468b2a21b43",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
+      "sha256": "180a259bf67775c433b63446a000bc5cbbb183cd2b4ee84b9b532c6ea2ceeb5e",
+      "bytes": 2397,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
+      "release_sha256": "180a259bf67775c433b63446a000bc5cbbb183cd2b4ee84b9b532c6ea2ceeb5e",
+      "release_parity": "exact",
+      "source_role": "weapon-hit damage multiplier consumer",
+      "overall_state": "confirmed-defect",
+      "linked_finding_ids": [
+        "IC-OM-001",
+        "IC-RPF-001",
+        "IC-VPF-001",
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "weapon-hit damage multiplier consumer",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-RPF-001",
+            "IC-OM-001"
+          ]
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "confirmed-defect",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-RPF-001",
+            "IC-OM-001"
+          ]
+        },
+        "shared_state_and_moddata": {
+          "classification": "proven-correct",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-RPF-001",
+            "IC-OM-001"
+          ]
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-RPF-001",
+            "IC-OM-001"
+          ]
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "proven-correct",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-RPF-001",
+            "IC-OM-001"
+          ]
+        },
+        "numerical_behavior": {
+          "classification": "confirmed-defect",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-RPF-001",
+            "IC-OM-001"
+          ]
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-RPF-001",
+            "IC-OM-001"
+          ]
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-RPF-001",
+            "IC-OM-001"
+          ]
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-RPF-001",
+            "IC-OM-001"
+          ]
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-RPF-001",
+            "IC-OM-001"
+          ]
+        },
+        "tests_and_mocks": {
+          "classification": "coverage-gap",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-RPF-001",
+            "IC-OM-001"
+          ]
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 180a259bf67775c433b63446a000bc5cbbb183cd2b4ee84b9b532c6ea2ceeb5e",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_Diagnostics.lua",
+      "sha256": "c45d0348cdf4f4af7ad502959e6a465797e303672c06dca3169773bb832f96c1",
+      "bytes": 11706,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_Diagnostics.lua",
+      "release_sha256": "c45d0348cdf4f4af7ad502959e6a465797e303672c06dca3169773bb832f96c1",
+      "release_parity": "exact",
+      "source_role": "bounded diagnostic ring and performance helpers",
+      "overall_state": "proven-correct",
+      "linked_finding_ids": [
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "bounded diagnostic ring and performance helpers",
+          "linked_finding_ids": []
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "proven-correct",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": []
+        },
+        "shared_state_and_moddata": {
+          "classification": "proven-correct",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": []
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": []
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "proven-correct",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": []
+        },
+        "numerical_behavior": {
+          "classification": "proven-correct",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": []
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": []
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": []
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": []
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": []
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": []
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 c45d0348cdf4f4af7ad502959e6a465797e303672c06dca3169773bb832f96c1",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_Events.lua",
+      "sha256": "aab1788e27aeba8edcfa9c854f79b8d173c1850afe5d96abfd8a4a6932f64401",
+      "bytes": 2003,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_Events.lua",
+      "release_sha256": "aab1788e27aeba8edcfa9c854f79b8d173c1850afe5d96abfd8a4a6932f64401",
+      "release_parity": "exact",
+      "source_role": "periodic event registration/removal API",
+      "overall_state": "runtime-unproven",
+      "linked_finding_ids": [
+        "IC-VPF-005",
+        "IC-XF-003"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "periodic event registration/removal API",
+          "linked_finding_ids": [
+            "IC-XF-003"
+          ]
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "proven-correct",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": [
+            "IC-XF-003"
+          ]
+        },
+        "shared_state_and_moddata": {
+          "classification": "proven-correct",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": [
+            "IC-XF-003"
+          ]
+        },
+        "registration_removal_idempotence": {
+          "classification": "coverage-gap",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": [
+            "IC-XF-003"
+          ]
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "proven-correct",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": [
+            "IC-XF-003"
+          ]
+        },
+        "numerical_behavior": {
+          "classification": "proven-correct",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": [
+            "IC-XF-003"
+          ]
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": [
+            "IC-XF-003"
+          ]
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": [
+            "IC-XF-003"
+          ]
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": [
+            "IC-XF-003"
+          ]
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": [
+            "IC-XF-003"
+          ]
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": [
+            "IC-XF-003"
+          ]
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 aab1788e27aeba8edcfa9c854f79b8d173c1850afe5d96abfd8a4a6932f64401",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_FractureHook.lua",
+      "sha256": "4bed7dea7e7729899bd162f4a259ed31eed4faf5da1d26153bb2092f24e8fc62",
+      "bytes": 2401,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_FractureHook.lua",
+      "release_sha256": "4bed7dea7e7729899bd162f4a259ed31eed4faf5da1d26153bb2092f24e8fc62",
+      "release_parity": "exact",
+      "source_role": "weapon-hit fracture chance consumer",
+      "overall_state": "confirmed-defect",
+      "linked_finding_ids": [
+        "IC-VPF-001",
+        "IC-VPF-002",
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "weapon-hit fracture chance consumer",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-VPF-002"
+          ]
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "confirmed-defect",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-VPF-002"
+          ]
+        },
+        "shared_state_and_moddata": {
+          "classification": "proven-correct",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-VPF-002"
+          ]
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-VPF-002"
+          ]
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "confirmed-defect",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-VPF-002"
+          ]
+        },
+        "numerical_behavior": {
+          "classification": "proven-correct",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-VPF-002"
+          ]
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-VPF-002"
+          ]
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-VPF-002"
+          ]
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-VPF-002"
+          ]
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-VPF-002"
+          ]
+        },
+        "tests_and_mocks": {
+          "classification": "coverage-gap",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": [
+            "IC-VPF-001",
+            "IC-VPF-002"
+          ]
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 4bed7dea7e7729899bd162f4a259ed31eed4faf5da1d26153bb2092f24e8fc62",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_FreezeLogger.lua",
+      "sha256": "5cfb72e52a142e411d8690c1dac59178cd3d967c7392b2d7aff722387c37c8c6",
+      "bytes": 15180,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_FreezeLogger.lua",
+      "release_sha256": "5cfb72e52a142e411d8690c1dac59178cd3d967c7392b2d7aff722387c37c8c6",
+      "release_parity": "exact",
+      "source_role": "disabled-by-default freeze/watchdog diagnostic",
+      "overall_state": "proven-correct",
+      "linked_finding_ids": [
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "disabled-by-default freeze/watchdog diagnostic",
+          "linked_finding_ids": []
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "proven-correct",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": []
+        },
+        "shared_state_and_moddata": {
+          "classification": "proven-correct",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": []
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": []
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "proven-correct",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": []
+        },
+        "numerical_behavior": {
+          "classification": "proven-correct",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": []
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": []
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": []
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": []
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": []
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": []
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 5cfb72e52a142e411d8690c1dac59178cd3d967c7392b2d7aff722387c37c8c6",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua",
+      "sha256": "b6de4d79b582c3a9d8fa0a1188fd5592ccf0bdbb0997ffd3a7f324cb8f632d47",
+      "bytes": 7179,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua",
+      "release_sha256": "b6de4d79b582c3a9d8fa0a1188fd5592ccf0bdbb0997ffd3a7f324cb8f632d47",
+      "release_parity": "exact",
+      "source_role": "per-frame recoil-delay modifier",
+      "overall_state": "confirmed-defect",
+      "linked_finding_ids": [
+        "IC-OM-004",
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "per-frame recoil-delay modifier",
+          "linked_finding_ids": [
+            "IC-OM-004"
+          ]
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "proven-correct",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": [
+            "IC-OM-004"
+          ]
+        },
+        "shared_state_and_moddata": {
+          "classification": "proven-correct",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-004"
+          ]
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": [
+            "IC-OM-004"
+          ]
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "proven-correct",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": [
+            "IC-OM-004"
+          ]
+        },
+        "numerical_behavior": {
+          "classification": "proven-correct",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-004"
+          ]
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": [
+            "IC-OM-004"
+          ]
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": [
+            "IC-OM-004"
+          ]
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-004"
+          ]
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-004"
+          ]
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": [
+            "IC-OM-004"
+          ]
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 b6de4d79b582c3a9d8fa0a1188fd5592ccf0bdbb0997ffd3a7f324cb8f632d47",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_NoiseHook.lua",
+      "sha256": "6ffcb45b84ff4f36f96254f1bb15a8c6f61a58d472bcc35744ae61128e122cd5",
+      "bytes": 1718,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_NoiseHook.lua",
+      "release_sha256": "6ffcb45b84ff4f36f96254f1bb15a8c6f61a58d472bcc35744ae61128e122cd5",
+      "release_parity": "exact",
+      "source_role": "sleep-noise periodic producer",
+      "overall_state": "proven-correct",
+      "linked_finding_ids": [
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "sleep-noise periodic producer",
+          "linked_finding_ids": []
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "proven-correct",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": []
+        },
+        "shared_state_and_moddata": {
+          "classification": "proven-correct",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": []
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": []
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "proven-correct",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": []
+        },
+        "numerical_behavior": {
+          "classification": "proven-correct",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": []
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": []
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": []
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": []
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": []
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": []
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 6ffcb45b84ff4f36f96254f1bb15a8c6f61a58d472bcc35744ae61128e122cd5",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_PainHook.lua",
+      "sha256": "048ced5b4bec72da62861c748991166b050ce638be4879bc35b180d6664dd474",
+      "bytes": 1112,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_PainHook.lua",
+      "release_sha256": "048ced5b4bec72da62861c748991166b050ce638be4879bc35b180d6664dd474",
+      "release_parity": "exact",
+      "source_role": "per-frame pain immunity enforcement",
+      "overall_state": "proven-correct",
+      "linked_finding_ids": [
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "per-frame pain immunity enforcement",
+          "linked_finding_ids": []
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "proven-correct",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": []
+        },
+        "shared_state_and_moddata": {
+          "classification": "proven-correct",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": []
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": []
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "proven-correct",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": []
+        },
+        "numerical_behavior": {
+          "classification": "proven-correct",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": []
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": []
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": []
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": []
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": []
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": []
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 048ced5b4bec72da62861c748991166b050ce638be4879bc35b180d6664dd474",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua",
+      "sha256": "e7ae01fe1ce5b220b909c8a4e31ccc5c1ad588c21d58dbefbcd4427e07b61951",
+      "bytes": 4892,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_ReadingHook.lua",
+      "release_sha256": "e7ae01fe1ce5b220b909c8a4e31ccc5c1ad588c21d58dbefbcd4427e07b61951",
+      "release_parity": "exact",
+      "source_role": "ISReadABook wrapper and completion XP producer",
+      "overall_state": "confirmed-defect",
+      "linked_finding_ids": [
+        "IC-OM-002",
+        "IC-RUN-003",
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "ISReadABook wrapper and completion XP producer",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-RUN-003"
+          ]
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "confirmed-defect",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-RUN-003"
+          ]
+        },
+        "shared_state_and_moddata": {
+          "classification": "proven-correct",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-RUN-003"
+          ]
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-RUN-003"
+          ]
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "proven-correct",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-RUN-003"
+          ]
+        },
+        "numerical_behavior": {
+          "classification": "confirmed-defect",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-RUN-003"
+          ]
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "runtime-unproven",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-RUN-003"
+          ]
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-RUN-003"
+          ]
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-RUN-003"
+          ]
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-RUN-003"
+          ]
+        },
+        "tests_and_mocks": {
+          "classification": "coverage-gap",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-RUN-003"
+          ]
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 e7ae01fe1ce5b220b909c8a4e31ccc5c1ad588c21d58dbefbcd4427e07b61951",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_SleepQualityHook.lua",
+      "sha256": "17d2a5e3df4f576f716cb87c7c57b46bc4fb6c8cfa38c5711cc8cde0211d5ee0",
+      "bytes": 1762,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_SleepQualityHook.lua",
+      "release_sha256": "17d2a5e3df4f576f716cb87c7c57b46bc4fb6c8cfa38c5711cc8cde0211d5ee0",
+      "release_parity": "exact",
+      "source_role": "sleep-fatigue periodic correction",
+      "overall_state": "proven-correct",
+      "linked_finding_ids": [
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "sleep-fatigue periodic correction",
+          "linked_finding_ids": []
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "proven-correct",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": []
+        },
+        "shared_state_and_moddata": {
+          "classification": "proven-correct",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": []
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": []
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "proven-correct",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": []
+        },
+        "numerical_behavior": {
+          "classification": "proven-correct",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": []
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": []
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": []
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": []
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": []
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": []
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 17d2a5e3df4f576f716cb87c7c57b46bc4fb6c8cfa38c5711cc8cde0211d5ee0",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua",
+      "sha256": "b4bf5ca23c4c9b0699f74a27ad7d6dad5cd834ee3e70f07776fcac8b192af90f",
+      "bytes": 3340,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_SpawnEffects.lua",
+      "release_sha256": "b4bf5ca23c4c9b0699f74a27ad7d6dad5cd834ee3e70f07776fcac8b192af90f",
+      "release_parity": "exact",
+      "source_role": "spawn stat/body/inventory helper API",
+      "overall_state": "confirmed-defect",
+      "linked_finding_ids": [
+        "IC-OM-003",
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "spawn stat/body/inventory helper API",
+          "linked_finding_ids": [
+            "IC-OM-003"
+          ]
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "proven-correct",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": [
+            "IC-OM-003"
+          ]
+        },
+        "shared_state_and_moddata": {
+          "classification": "proven-correct",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-003"
+          ]
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": [
+            "IC-OM-003"
+          ]
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "proven-correct",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": [
+            "IC-OM-003"
+          ]
+        },
+        "numerical_behavior": {
+          "classification": "proven-correct",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-003"
+          ]
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "confirmed-defect",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": [
+            "IC-OM-003"
+          ]
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": [
+            "IC-OM-003"
+          ]
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-003"
+          ]
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-003"
+          ]
+        },
+        "tests_and_mocks": {
+          "classification": "coverage-gap",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": [
+            "IC-OM-003"
+          ]
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 b4bf5ca23c4c9b0699f74a27ad7d6dad5cd834ee3e70f07776fcac8b192af90f",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_SpeedHook.lua",
+      "sha256": "b57bf0ffdfaf4772070bd3ab2b2343181e4ef57c29ec374600dcee2f2892b854",
+      "bytes": 5528,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_SpeedHook.lua",
+      "release_sha256": "b57bf0ffdfaf4772070bd3ab2b2343181e4ef57c29ec374600dcee2f2892b854",
+      "release_parity": "exact",
+      "source_role": "OnPlayerMove displacement modifier",
+      "overall_state": "confirmed-defect",
+      "linked_finding_ids": [
+        "IC-OM-009",
+        "IC-RUN-002",
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "OnPlayerMove displacement modifier",
+          "linked_finding_ids": [
+            "IC-OM-009",
+            "IC-RUN-002"
+          ]
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "runtime-unproven",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": [
+            "IC-OM-009",
+            "IC-RUN-002"
+          ]
+        },
+        "shared_state_and_moddata": {
+          "classification": "proven-correct",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-009",
+            "IC-RUN-002"
+          ]
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": [
+            "IC-OM-009",
+            "IC-RUN-002"
+          ]
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "proven-correct",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": [
+            "IC-OM-009",
+            "IC-RUN-002"
+          ]
+        },
+        "numerical_behavior": {
+          "classification": "runtime-unproven",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-009",
+            "IC-RUN-002"
+          ]
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "runtime-unproven",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": [
+            "IC-OM-009",
+            "IC-RUN-002"
+          ]
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": [
+            "IC-OM-009",
+            "IC-RUN-002"
+          ]
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-009",
+            "IC-RUN-002"
+          ]
+        },
+        "performance": {
+          "classification": "confirmed-defect",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-009",
+            "IC-RUN-002"
+          ]
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": [
+            "IC-OM-009",
+            "IC-RUN-002"
+          ]
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 b57bf0ffdfaf4772070bd3ab2b2343181e4ef57c29ec374600dcee2f2892b854",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua",
+      "sha256": "cf5f777b0080377364c65fd2cd7bdbb12ec62a2fed7e6c2897d9d50d01eead2d",
+      "bytes": 20634,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_StatModifiers.lua",
+      "release_sha256": "cf5f777b0080377364c65fd2cd7bdbb12ec62a2fed7e6c2897d9d50d01eead2d",
+      "release_parity": "exact",
+      "source_role": "modifier storage/aggregation and vehicle integration",
+      "overall_state": "confirmed-defect",
+      "linked_finding_ids": [
+        "IC-OM-007",
+        "IC-OM-008",
+        "IC-OM-010",
+        "IC-RPF-002",
+        "IC-RUN-005",
+        "IC-VPF-004",
+        "IC-VPF-005",
+        "IC-XF-004",
+        "IC-XF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "modifier storage/aggregation and vehicle integration",
+          "linked_finding_ids": [
+            "IC-VPF-004",
+            "IC-RPF-002",
+            "IC-OM-007",
+            "IC-OM-008",
+            "IC-OM-010",
+            "IC-XF-004",
+            "IC-XF-005",
+            "IC-RUN-005"
+          ]
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "confirmed-defect",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": [
+            "IC-VPF-004",
+            "IC-RPF-002",
+            "IC-OM-007",
+            "IC-OM-008",
+            "IC-OM-010",
+            "IC-XF-004",
+            "IC-XF-005",
+            "IC-RUN-005"
+          ]
+        },
+        "shared_state_and_moddata": {
+          "classification": "confirmed-defect",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": [
+            "IC-VPF-004",
+            "IC-RPF-002",
+            "IC-OM-007",
+            "IC-OM-008",
+            "IC-OM-010",
+            "IC-XF-004",
+            "IC-XF-005",
+            "IC-RUN-005"
+          ]
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": [
+            "IC-VPF-004",
+            "IC-RPF-002",
+            "IC-OM-007",
+            "IC-OM-008",
+            "IC-OM-010",
+            "IC-XF-004",
+            "IC-XF-005",
+            "IC-RUN-005"
+          ]
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "runtime-unproven",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": [
+            "IC-VPF-004",
+            "IC-RPF-002",
+            "IC-OM-007",
+            "IC-OM-008",
+            "IC-OM-010",
+            "IC-XF-004",
+            "IC-XF-005",
+            "IC-RUN-005"
+          ]
+        },
+        "numerical_behavior": {
+          "classification": "confirmed-defect",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": [
+            "IC-VPF-004",
+            "IC-RPF-002",
+            "IC-OM-007",
+            "IC-OM-008",
+            "IC-OM-010",
+            "IC-XF-004",
+            "IC-XF-005",
+            "IC-RUN-005"
+          ]
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": [
+            "IC-VPF-004",
+            "IC-RPF-002",
+            "IC-OM-007",
+            "IC-OM-008",
+            "IC-OM-010",
+            "IC-XF-004",
+            "IC-XF-005",
+            "IC-RUN-005"
+          ]
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": [
+            "IC-VPF-004",
+            "IC-RPF-002",
+            "IC-OM-007",
+            "IC-OM-008",
+            "IC-OM-010",
+            "IC-XF-004",
+            "IC-XF-005",
+            "IC-RUN-005"
+          ]
+        },
+        "stacking_and_composition": {
+          "classification": "confirmed-defect",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": [
+            "IC-VPF-004",
+            "IC-RPF-002",
+            "IC-OM-007",
+            "IC-OM-008",
+            "IC-OM-010",
+            "IC-XF-004",
+            "IC-XF-005",
+            "IC-RUN-005"
+          ]
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": [
+            "IC-VPF-004",
+            "IC-RPF-002",
+            "IC-OM-007",
+            "IC-OM-008",
+            "IC-OM-010",
+            "IC-XF-004",
+            "IC-XF-005",
+            "IC-RUN-005"
+          ]
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": [
+            "IC-VPF-004",
+            "IC-RPF-002",
+            "IC-OM-007",
+            "IC-OM-008",
+            "IC-OM-010",
+            "IC-XF-004",
+            "IC-XF-005",
+            "IC-RUN-005"
+          ]
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 cf5f777b0080377364c65fd2cd7bdbb12ec62a2fed7e6c2897d9d50d01eead2d",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_ThermalRegulationHook.lua",
+      "sha256": "51c5766694db9b7b5ea34f7d4829b0012c1ddabb5c017f2d02faa014e2de27da",
+      "bytes": 2286,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_ThermalRegulationHook.lua",
+      "release_sha256": "51c5766694db9b7b5ea34f7d4829b0012c1ddabb5c017f2d02faa014e2de27da",
+      "release_parity": "exact",
+      "source_role": "minute wetness/temperature correction",
+      "overall_state": "proven-correct",
+      "linked_finding_ids": [
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "minute wetness/temperature correction",
+          "linked_finding_ids": []
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "proven-correct",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": []
+        },
+        "shared_state_and_moddata": {
+          "classification": "proven-correct",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": []
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": []
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "proven-correct",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": []
+        },
+        "numerical_behavior": {
+          "classification": "proven-correct",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": []
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": []
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": []
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": []
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": []
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": []
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 51c5766694db9b7b5ea34f7d4829b0012c1ddabb5c017f2d02faa014e2de27da",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua",
+      "sha256": "fe61d63bb0fc220a8ee3dd1eb6d6cb7cb9627663dba4832e5df57d66db4a5998",
+      "bytes": 16979,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_TickDispatch.lua",
+      "release_sha256": "fe61d63bb0fc220a8ee3dd1eb6d6cb7cb9627663dba4832e5df57d66db4a5998",
+      "release_parity": "exact",
+      "source_role": "central OnPlayerUpdate dispatcher and shared tick context",
+      "overall_state": "confirmed-defect",
+      "linked_finding_ids": [
+        "IC-RUN-005",
+        "IC-VPF-003",
+        "IC-VPF-005",
+        "IC-XF-001",
+        "IC-XF-002"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "central OnPlayerUpdate dispatcher and shared tick context",
+          "linked_finding_ids": [
+            "IC-VPF-003",
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "runtime-unproven",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": [
+            "IC-VPF-003",
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "shared_state_and_moddata": {
+          "classification": "runtime-unproven",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": [
+            "IC-VPF-003",
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "registration_removal_idempotence": {
+          "classification": "runtime-unproven",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": [
+            "IC-VPF-003",
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "confirmed-defect",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": [
+            "IC-VPF-003",
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "numerical_behavior": {
+          "classification": "runtime-unproven",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": [
+            "IC-VPF-003",
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": [
+            "IC-VPF-003",
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": [
+            "IC-VPF-003",
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": [
+            "IC-VPF-003",
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "performance": {
+          "classification": "confirmed-defect",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": [
+            "IC-VPF-003",
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": [
+            "IC-VPF-003",
+            "IC-XF-001",
+            "IC-XF-002",
+            "IC-RUN-005"
+          ]
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 fe61d63bb0fc220a8ee3dd1eb6d6cb7cb9627663dba4832e5df57d66db4a5998",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_TraitChecks.lua",
+      "sha256": "96e3f4fec2e7510d7ef38c241c5f5fb2741a42cc30046ed57320bb713f9aa0f6",
+      "bytes": 1066,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_TraitChecks.lua",
+      "release_sha256": "96e3f4fec2e7510d7ef38c241c5f5fb2741a42cc30046ed57320bb713f9aa0f6",
+      "release_parity": "exact",
+      "source_role": "trait/moddata convenience API",
+      "overall_state": "proven-correct",
+      "linked_finding_ids": [
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "trait/moddata convenience API",
+          "linked_finding_ids": []
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "proven-correct",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": []
+        },
+        "shared_state_and_moddata": {
+          "classification": "proven-correct",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": []
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": []
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "proven-correct",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": []
+        },
+        "numerical_behavior": {
+          "classification": "proven-correct",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": []
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": []
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": []
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": []
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": []
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": []
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 96e3f4fec2e7510d7ef38c241c5f5fb2741a42cc30046ed57320bb713f9aa0f6",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua",
+      "sha256": "a682d914ae2598538d9cfd26faef4e91bcb22c72fe9a8733381f084d65afab07",
+      "bytes": 2558,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua",
+      "release_sha256": "a682d914ae2598538d9cfd26faef4e91bcb22c72fe9a8733381f084d65afab07",
+      "release_parity": "exact",
+      "source_role": "timed-action duration wrapper",
+      "overall_state": "runtime-unproven",
+      "linked_finding_ids": [
+        "IC-RUN-003",
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "timed-action duration wrapper",
+          "linked_finding_ids": [
+            "IC-RUN-003"
+          ]
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "runtime-unproven",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": [
+            "IC-RUN-003"
+          ]
+        },
+        "shared_state_and_moddata": {
+          "classification": "proven-correct",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": [
+            "IC-RUN-003"
+          ]
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": [
+            "IC-RUN-003"
+          ]
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "proven-correct",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": [
+            "IC-RUN-003"
+          ]
+        },
+        "numerical_behavior": {
+          "classification": "runtime-unproven",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": [
+            "IC-RUN-003"
+          ]
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "runtime-unproven",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": [
+            "IC-RUN-003"
+          ]
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": [
+            "IC-RUN-003"
+          ]
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": [
+            "IC-RUN-003"
+          ]
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": [
+            "IC-RUN-003"
+          ]
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": [
+            "IC-RUN-003"
+          ]
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 a682d914ae2598538d9cfd26faef4e91bcb22c72fe9a8733381f084d65afab07",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_XPHook.lua",
+      "sha256": "22c6d65c43aa5c52faa55a11455d040480ef8cf6c4eee9123e592996ecc55dde",
+      "bytes": 2747,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_XPHook.lua",
+      "release_sha256": "22c6d65c43aa5c52faa55a11455d040480ef8cf6c4eee9123e592996ecc55dde",
+      "release_parity": "exact",
+      "source_role": "AddXP correction consumer",
+      "overall_state": "confirmed-defect",
+      "linked_finding_ids": [
+        "IC-OM-002",
+        "IC-OM-006",
+        "IC-OM-007",
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "AddXP correction consumer",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-OM-006",
+            "IC-OM-007"
+          ]
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "confirmed-defect",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-OM-006",
+            "IC-OM-007"
+          ]
+        },
+        "shared_state_and_moddata": {
+          "classification": "confirmed-defect",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-OM-006",
+            "IC-OM-007"
+          ]
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-OM-006",
+            "IC-OM-007"
+          ]
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "proven-correct",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-OM-006",
+            "IC-OM-007"
+          ]
+        },
+        "numerical_behavior": {
+          "classification": "confirmed-defect",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-OM-006",
+            "IC-OM-007"
+          ]
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "proven-correct",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-OM-006",
+            "IC-OM-007"
+          ]
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-OM-006",
+            "IC-OM-007"
+          ]
+        },
+        "stacking_and_composition": {
+          "classification": "confirmed-defect",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-OM-006",
+            "IC-OM-007"
+          ]
+        },
+        "performance": {
+          "classification": "proven-correct",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-OM-006",
+            "IC-OM-007"
+          ]
+        },
+        "tests_and_mocks": {
+          "classification": "coverage-gap",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": [
+            "IC-OM-002",
+            "IC-OM-006",
+            "IC-OM-007"
+          ]
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 22c6d65c43aa5c52faa55a11455d040480ef8cf6c4eee9123e592996ecc55dde",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua",
+      "sha256": "ba0d79b4981f9b61dae76e6af49c635646e03255baffef38c8c5a01198ef95b3",
+      "bytes": 11264,
+      "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua",
+      "release_sha256": "ba0d79b4981f9b61dae76e6af49c635646e03255baffef38c8c5a01198ef95b3",
+      "release_parity": "exact",
+      "source_role": "proximity collision dispatcher",
+      "overall_state": "confirmed-defect",
+      "linked_finding_ids": [
+        "IC-OM-005",
+        "IC-RUN-004",
+        "IC-RUN-005",
+        "IC-VPF-005"
+      ],
+      "dimensions": {
+        "public_helpers_and_handlers": {
+          "classification": "proven-correct",
+          "evidence": "proximity collision dispatcher",
+          "linked_finding_ids": [
+            "IC-OM-005",
+            "IC-RUN-004",
+            "IC-RUN-005"
+          ]
+        },
+        "event_producer_consumer_contracts": {
+          "classification": "runtime-unproven",
+          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "linked_finding_ids": [
+            "IC-OM-005",
+            "IC-RUN-004",
+            "IC-RUN-005"
+          ]
+        },
+        "shared_state_and_moddata": {
+          "classification": "confirmed-defect",
+          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-005",
+            "IC-RUN-004",
+            "IC-RUN-005"
+          ]
+        },
+        "registration_removal_idempotence": {
+          "classification": "proven-correct",
+          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "linked_finding_ids": [
+            "IC-OM-005",
+            "IC-RUN-004",
+            "IC-RUN-005"
+          ]
+        },
+        "cadence_throttle_reset_save_load": {
+          "classification": "confirmed-defect",
+          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "linked_finding_ids": [
+            "IC-OM-005",
+            "IC-RUN-004",
+            "IC-RUN-005"
+          ]
+        },
+        "numerical_behavior": {
+          "classification": "runtime-unproven",
+          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-005",
+            "IC-RUN-004",
+            "IC-RUN-005"
+          ]
+        },
+        "java_lua_kahlua_receiver_methods": {
+          "classification": "runtime-unproven",
+          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "linked_finding_ids": [
+            "IC-OM-005",
+            "IC-RUN-004",
+            "IC-RUN-005"
+          ]
+        },
+        "single_player_restriction_assumptions": {
+          "classification": "proven-correct",
+          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "linked_finding_ids": [
+            "IC-OM-005",
+            "IC-RUN-004",
+            "IC-RUN-005"
+          ]
+        },
+        "stacking_and_composition": {
+          "classification": "proven-correct",
+          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-005",
+            "IC-RUN-004",
+            "IC-RUN-005"
+          ]
+        },
+        "performance": {
+          "classification": "runtime-unproven",
+          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "linked_finding_ids": [
+            "IC-OM-005",
+            "IC-RUN-004",
+            "IC-RUN-005"
+          ]
+        },
+        "tests_and_mocks": {
+          "classification": "proven-correct",
+          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "linked_finding_ids": [
+            "IC-OM-005",
+            "IC-RUN-004",
+            "IC-RUN-005"
+          ]
+        },
+        "source_release_parity": {
+          "classification": "proven-correct",
+          "evidence": "Source and 42.0 release bytes share SHA-256 ba0d79b4981f9b61dae76e6af49c635646e03255baffef38c8c5a01198ef95b3",
+          "linked_finding_ids": [
+            "IC-VPF-005"
+          ]
+        }
+      },
+      "unexamined_static_surfaces": []
+    }
+  ],
+  "public_api_and_caller_reconciliation": {
+    "ut_core_export_definition_count": 71,
+    "ut_core_exports": [
+      "_getFreezeLoggerStuckCount",
+      "_resetFreezeLogger",
+      "applyBleedDecayMult",
+      "applyBleedDrainMult",
+      "applyBleedRate",
+      "applyCarryWeight",
+      "applyMoodModifier",
+      "applyNoiseMod",
+      "applyPanicResistance",
+      "applyReadingMoodEffects",
+      "applySleepQuality",
+      "applySpawnCondition",
+      "applySpawnStats",
+      "applySpeedModifier",
+      "applyStatFloor",
+      "applyStrengthCarryWeight",
+      "applyThermalRegulationProfile",
+      "applyTransferSpeedMultiplier",
+      "applyVehicleMod",
+      "applyWetnessReductionProfile",
+      "applyWorkDuration",
+      "applyWorkSpeed",
+      "applyXPMultiplier",
+      "declareZombieCollisionHandler",
+      "diagLog",
+      "diagResetRing",
+      "diagRingCount",
+      "diagRingGet",
+      "disableXP",
+      "dumpDiagnostics",
+      "dumpPerfReport",
+      "getActiveHandlerCount",
+      "getActiveHeavyCount",
+      "getCharacterTraitId",
+      "getCoreHandlerCount",
+      "getFrameBudgetState",
+      "getInjuries",
+      "getLivingEnemies",
+      "getModData",
+      "getPerfStats",
+      "getSkillBookCompletionXP",
+      "getTickHandlerCount",
+      "getTraitDefinitionId",
+      "hasAnyTrait",
+      "hasTrait",
+      "invalidateTraitCache",
+      "logCharacterCreationMetNull",
+      "perfEnter",
+      "perfExit",
+      "profiledHandler",
+      "profiledHandlerV",
+      "rebuildActiveHandlers",
+      "reconcileAggregatedModifiers",
+      "refreshAggregatedModifierCache",
+      "registerCoreHandler",
+      "registerPeriodicHandler",
+      "registerTickHandler",
+      "registerVehicleTrait",
+      "registerZombieCollisionHandler",
+      "resetPerfStats",
+      "restoreVehicleMod",
+      "setCollisionDebug",
+      "setDebugDispatch",
+      "setModData",
+      "shouldSkipTick",
+      "stripSpawnItems",
+      "syncVehicleTrait",
+      "tryAwardSkillBookCompletionXP",
+      "unregisterPeriodicHandler",
+      "unregisterZombieCollisionHandler",
+      "weaponHasCategory"
+    ],
+    "universaltraits_scan": {
+      "source_lua_file_count": 151,
+      "sorted_file_manifest_sha256": "ad5237f6ef73fa1a12ea67f9e6b08a5b758ff396b7260e5a0196e17c8743649d",
+      "parse_errors": 0,
+      "comment_text_excluded": true
+    },
+    "caller_families": [
+      {
+        "family": "applyBleedDecayMult",
+        "executable_calls": 3,
+        "caller_file_count": 3,
+        "caller_files": [
+          "UT_anemic.lua",
+          "UT_staunch.lua",
+          "UT_thickblood.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "applyBleedDrainMult",
+        "executable_calls": 3,
+        "caller_file_count": 3,
+        "caller_files": [
+          "UT_heavilybleedingwounds.lua",
+          "UT_thickblood.lua",
+          "UT_weaklybleedingwounds.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "applyCarryWeight",
+        "executable_calls": 7,
+        "caller_file_count": 7,
+        "caller_files": [
+          "UT_cangrabless.lua",
+          "UT_cangrabmore.lua",
+          "UT_humanhamster.lua",
+          "UT_packmouse.lua",
+          "UT_packmule.lua",
+          "UT_preparedpack.lua",
+          "UT_sorelegs.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "applyMechanicsSpeed",
+        "executable_calls": 1,
+        "caller_file_count": 1,
+        "caller_files": [
+          "UT_pitcrew.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "missing_guarded_api"
+      },
+      {
+        "family": "applyMedicalSpeed",
+        "executable_calls": 1,
+        "caller_file_count": 1,
+        "caller_files": [
+          "UT_paramedic.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "missing_guarded_api"
+      },
+      {
+        "family": "applyNoiseMod",
+        "executable_calls": 1,
+        "caller_file_count": 1,
+        "caller_files": [
+          "UT_snorer.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "applySleepQuality",
+        "executable_calls": 2,
+        "caller_file_count": 2,
+        "caller_files": [
+          "UT_quickrest.lua",
+          "UT_restfulsleeper.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "applySpawnCondition",
+        "executable_calls": 4,
+        "caller_file_count": 4,
+        "caller_files": [
+          "UT_broke.lua",
+          "UT_burned.lua",
+          "UT_injured_I.lua",
+          "UT_injured_II.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "applySpawnStats",
+        "executable_calls": 4,
+        "caller_file_count": 4,
+        "caller_files": [
+          "UT_broke.lua",
+          "UT_burned.lua",
+          "UT_injured_I.lua",
+          "UT_injured_II.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "applySpeedModifier",
+        "executable_calls": 7,
+        "caller_file_count": 7,
+        "caller_files": [
+          "UT_fast.lua",
+          "UT_gimp.lua",
+          "UT_lurcher.lua",
+          "UT_natural.lua",
+          "UT_noodlelegs.lua",
+          "UT_pacer.lua",
+          "UT_sorelegs.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "applyStatFloor",
+        "executable_calls": 1,
+        "caller_file_count": 1,
+        "caller_files": [
+          "UT_sore.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "applyStrengthCarryWeight",
+        "executable_calls": 2,
+        "caller_file_count": 2,
+        "caller_files": [
+          "UT_backpacker.lua",
+          "UT_topheavy.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "applyThermalRegulationProfile",
+        "executable_calls": 1,
+        "caller_file_count": 1,
+        "caller_files": [
+          "UT_lesssweaty.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "applyTransferSpeedMultiplier",
+        "executable_calls": 1,
+        "caller_file_count": 1,
+        "caller_files": [
+          "UT_fasthands.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "applyWetnessReductionProfile",
+        "executable_calls": 1,
+        "caller_file_count": 1,
+        "caller_files": [
+          "UT_lesssweaty.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "applyWorkSpeed",
+        "executable_calls": 4,
+        "caller_file_count": 4,
+        "caller_files": [
+          "UT_lurcher.lua",
+          "UT_quickworker.lua",
+          "UT_slack.lua",
+          "UT_slowworker.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "applyXPMultiplier",
+        "executable_calls": 11,
+        "caller_file_count": 4,
+        "caller_files": [
+          "UT_antigun.lua",
+          "UT_flatearther.lua",
+          "UT_luddite.lua",
+          "UT_mundane.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "declareZombieCollisionHandler",
+        "executable_calls": 1,
+        "caller_file_count": 1,
+        "caller_files": [
+          "UT_batteringram.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "diagLog",
+        "executable_calls": 2,
+        "caller_file_count": 1,
+        "caller_files": [
+          "UT_bouncer_I.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "disableXP",
+        "executable_calls": 9,
+        "caller_file_count": 6,
+        "caller_files": [
+          "UT_noxpaxe.lua",
+          "UT_noxpfirstaid.lua",
+          "UT_noxpmaintenance.lua",
+          "UT_noxpshooter.lua",
+          "UT_noxpsneaky.lua",
+          "UT_noxptechnician.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "getInjuries",
+        "executable_calls": 3,
+        "caller_file_count": 1,
+        "caller_files": [
+          "UT_bouncer_I.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "getLivingEnemies",
+        "executable_calls": 2,
+        "caller_file_count": 2,
+        "caller_files": [
+          "UT_actionhero.lua",
+          "UT_scardycat.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "getModData",
+        "executable_calls": 3,
+        "caller_file_count": 2,
+        "caller_files": [
+          "UT_badteeth.lua",
+          "UT_idealweight.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "hasTrait",
+        "executable_calls": 128,
+        "caller_file_count": 112,
+        "caller_files": null,
+        "sorted_caller_file_manifest_sha256": "5bf9769a3363878a0663b537e63f804d38bf80436aeca006d0375c26034e5562",
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "registerPeriodicHandler",
+        "executable_calls": 12,
+        "caller_file_count": 11,
+        "caller_files": null,
+        "sorted_caller_file_manifest_sha256": "b2dfe807bb3aeedc330e3296370990b9eb0d8f5d9089be4355c730d320832fa3",
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "registerTickHandler",
+        "executable_calls": 42,
+        "caller_file_count": 42,
+        "caller_files": null,
+        "sorted_caller_file_manifest_sha256": "378674bd4d2bdc92890c11347d6fbc0e0f8f098dac1a299c234546c47f123458",
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "registerVehicleTrait",
+        "executable_calls": 4,
+        "caller_file_count": 4,
+        "caller_files": [
+          "UT_driver.lua",
+          "UT_expertdriver.lua",
+          "UT_leadfoot.lua",
+          "UT_poordriver.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "setModData",
+        "executable_calls": 6,
+        "caller_file_count": 2,
+        "caller_files": [
+          "UT_badteeth.lua",
+          "UT_idealweight.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "stripSpawnItems",
+        "executable_calls": 1,
+        "caller_file_count": 1,
+        "caller_files": [
+          "UT_deprived.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      },
+      {
+        "family": "weaponHasCategory",
+        "executable_calls": 4,
+        "caller_file_count": 4,
+        "caller_files": [
+          "UT_axes.lua",
+          "UT_onehanded_axes.lua",
+          "UT_prospear.lua",
+          "UT_twohanded_axes.lua"
+        ],
+        "sorted_caller_file_manifest_sha256": null,
+        "resolution": "resolved_to_ut_core_export"
+      }
+    ],
+    "family_count": 30,
+    "resolved_family_count": 28,
+    "missing_guarded_family_count": 2,
+    "caller_accounting_notes": [
+      "Caller paths shown without prefix are under UniversalTraits/media/lua/shared/UniversalTraits/traits.",
+      "hasTrait/registerTickHandler/registerPeriodicHandler large caller sets are accounted by count plus SHA-256 of newline-joined sorted relative caller paths.",
+      "All other executable UTCore call families have explicit sorted caller basenames.",
+      "Internal-only UTCore exports and test/diagnostic hooks have no required UniversalTraits caller."
+    ],
+    "event_family_reconciliation": {
+      "registerTickHandler": {
+        "calls": 42,
+        "files": 42,
+        "heavy_callers": [
+          "UT_fitted.lua throttle=30",
+          "UT_gordanite.lua throttle=60",
+          "UT_gourmand.lua throttle=30",
+          "UT_trackman.lua throttle=60"
+        ]
+      },
+      "registerPeriodicHandler": {
+        "calls": 12,
+        "files": 11,
+        "on_player_update_callers": [
+          "UT_backpacker.lua",
+          "UT_badteeth.lua",
+          "UT_idealweight.lua",
+          "UT_sore.lua",
+          "UT_topheavy.lua"
+        ]
+      },
+      "vehicle": {
+        "calls": 4,
+        "files": 4,
+        "status": "engine_event_contract_defective"
+      },
+      "weapon_hit": {
+        "ut_core_consumers": 2,
+        "status": "producer_signature_defective"
+      },
+      "xp": {
+        "ut_core_consumer": 1,
+        "status": "recursive_producer_defective"
+      }
+    }
+  },
+  "verified_prior_findings": [
+    {
+      "id": "IC-VPF-001",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Weapon-hit consumers bind target and weapon in the wrong positions",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua:29",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_FractureHook.lua:32",
+        "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6768"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_FractureHook.lua"
+      ],
+      "affected_callers": [
+        "Events.OnWeaponHitCharacter"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_glassbody",
+        "UniversalTraits:UT_brittle"
+      ],
+      "reproduction_or_source_evidence": "Current producer emits (wielder,target,weapon,damageSplit), while both handlers declare (attacker,weapon,target); the player target is misbound and the guards return.",
+      "missing_proof": "An in-game corrected-order run remains prohibited by the write-only/game-state boundary.",
+      "recommended_correction": "Bind (attacker,target,weapon,damageSplit) and update mocks from the producer contract.",
+      "smallest_regression_test": "Fire the real four-argument order and assert both consumers reach the player branch.",
+      "prior_ids": [
+        "F-CORE-001",
+        "RP-EVENT-ARGS-DAMAGEMULT",
+        "RP-EVENT-ARGS-FRACTURE"
+      ],
+      "disposition": "verified"
+    },
+    {
+      "id": "IC-VPF-002",
+      "state": "confirmed-defect",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Fracture cooldown counts later hits instead of elapsed time",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_FractureHook.lua:41-44"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_FractureHook.lua"
+      ],
+      "affected_callers": [
+        "Events.OnWeaponHitCharacter"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_brittle"
+      ],
+      "reproduction_or_source_evidence": "UT_fractureCooldown is decremented only inside the weapon-hit callback; 300 therefore means 300 subsequent hits.",
+      "missing_proof": "Trait-design intent for the nominal duration is not machine-authenticated.",
+      "recommended_correction": "Store a world-age expiry or decrement from a time/tick producer.",
+      "smallest_regression_test": "Set the cooldown, advance the intended duration without hits, then assert the next eligible hit may roll.",
+      "prior_ids": [
+        "F-CORE-002"
+      ],
+      "disposition": "verified"
+    },
+    {
+      "id": "IC-VPF-003",
+      "state": "confirmed-defect",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Heavy-handler staggering does not enforce its one-per-tick guarantee",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua:125-135",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua:369-379"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua"
+      ],
+      "affected_callers": [
+        "UT_fitted throttle=30 heavy",
+        "UT_gordanite throttle=60 heavy",
+        "UT_gourmand throttle=30 heavy",
+        "UT_trackman throttle=60 heavy"
+      ],
+      "affected_traits": [],
+      "reproduction_or_source_evidence": "Offsets are derived from the minimum throttle, but each handler is tested against its own throttle; mixed 30/60 schedules can coincide and throttle 0 would run every tick.",
+      "missing_proof": "No live performance trace was authorized.",
+      "recommended_correction": "Use a single heavy work queue/token or weaken the stated guarantee and budget for collisions.",
+      "smallest_regression_test": "Simulate the LCM window for the current four heavy handlers and assert at most one execution per tick.",
+      "prior_ids": [
+        "F-CORE-003"
+      ],
+      "disposition": "verified"
+    },
+    {
+      "id": "IC-VPF-004",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Vehicle traits subscribe to two nonexistent engine events",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua:522-527",
+        "PZCodebase/Java/source/zombie/Lua/LuaEventManager.java:789",
+        "PZCodebase/Java/source/zombie/vehicles/BaseVehicle.java:2581",
+        "PZCodebase/Java/source/zombie/vehicles/BaseVehicle.java:2595-2620"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "affected_callers": [
+        "UniversalTraits/traits/UT_driver.lua",
+        "UniversalTraits/traits/UT_expertdriver.lua",
+        "UniversalTraits/traits/UT_leadfoot.lua",
+        "UniversalTraits/traits/UT_poordriver.lua"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_driver",
+        "UniversalTraits:UT_expertdriver",
+        "UniversalTraits:UT_leadfoot",
+        "UniversalTraits:UT_poordriver"
+      ],
+      "reproduction_or_source_evidence": "The registry contains OnEnterVehicle, not OnVehicleEnter; BaseVehicle triggers it with only player and only in its client branch. No OnVehicleExit/OnExitVehicle producer exists in the current registry or BaseVehicle.exit path.",
+      "missing_proof": "A supported exit lifecycle must be selected and proven in game.",
+      "recommended_correction": "Use OnEnterVehicle(player) for entry and a verified poll/lifecycle hook for exit restoration; test load-while-driving too.",
+      "smallest_regression_test": "Build Events from the engine registry, enter then exit a vehicle, and assert apply once plus exact restore.",
+      "prior_ids": [
+        "RP-EVENT-UNKNOWN-ONVEHICLEENTER",
+        "RP-EVENT-UNKNOWN-ONVEHICLEEXIT"
+      ],
+      "disposition": "verified_and_refined"
+    },
+    {
+      "id": "IC-VPF-005",
+      "state": "proven-correct",
+      "severity": "low",
+      "confidence": "high",
+      "title": "All 24 UT_CORE source Lua files match their 42.0 release copies byte-for-byte",
+      "precise_anchors": [
+        "UT_CORE/media/lua/**",
+        "UT_CORE/release/UT_CORE/42.0/media/lua/**"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/client/UTCore/UTCore_CharacterCreationMETDebug.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_Diagnostics.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_Events.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_FractureHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_FreezeLogger.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_NoiseHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_PainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SleepQualityHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpeedHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ThermalRegulationHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_TraitChecks.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_XPHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua"
+      ],
+      "affected_callers": [],
+      "affected_traits": [],
+      "reproduction_or_source_evidence": "Each source SHA-256 equals the corresponding release SHA-256; there are no missing or extra scoped release Lua files.",
+      "missing_proof": "Live deployment parity was outside scope and was not inferred.",
+      "recommended_correction": "Keep package parity as a deterministic read-only gate.",
+      "smallest_regression_test": "Recompute the 24 source/release hashes and require exact set and byte equality.",
+      "prior_ids": [
+        "RP-PACKAGE-PARITY-UT_CORE"
+      ],
+      "disposition": "verified"
+    }
+  ],
+  "rejected_prior_findings": [
+    {
+      "id": "IC-RPF-001",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "F-CORE-001's proposed argument-order correction is insufficient for DamageMultHook",
+      "precise_anchors": [
+        "MASTER_COVERAGE_LEDGER.md:94-107",
+        "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6768-6789",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua:37-46"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua"
+      ],
+      "affected_callers": [
+        "Events.OnWeaponHitCharacter"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_glassbody"
+      ],
+      "reproduction_or_source_evidence": "The producer fires before processHitDamage. Even with target bound correctly, current health has not fallen, so curHealth >= prevHealth and the hook returns.",
+      "missing_proof": "A replacement post-damage observation strategy still needs live proof.",
+      "recommended_correction": "Retain the signature fix but defer measurement until after native damage, carrying a bounded pending-hit record.",
+      "smallest_regression_test": "With correct event order, fire pre-damage event, apply native loss, run the deferred hook, and assert exactly multiplier-adjusted total loss.",
+      "prior_ids": [
+        "F-CORE-001"
+      ],
+      "disposition": "partially_rejected_and_refined"
+    },
+    {
+      "id": "IC-RPF-002",
+      "state": "coverage-gap",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "The recurring vehicle recommendation cannot be satisfied by simply renaming both events",
+      "precise_anchors": [
+        "recurring_pattern_findings.json:180-211",
+        "PZCodebase/Java/source/zombie/Lua/LuaEventManager.java:789",
+        "PZCodebase/Java/source/zombie/vehicles/BaseVehicle.java:2595-2620"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "affected_callers": [
+        "registerVehicleTrait callers"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_driver",
+        "UniversalTraits:UT_expertdriver",
+        "UniversalTraits:UT_leadfoot",
+        "UniversalTraits:UT_poordriver"
+      ],
+      "reproduction_or_source_evidence": "OnEnterVehicle exists, but the current registry and exit implementation expose no paired vehicle-exit Lua event.",
+      "missing_proof": "The correct supported exit/reset observation point remains unproven.",
+      "recommended_correction": "Use the real entry event plus an explicitly verified exit detector; do not invent OnExitVehicle.",
+      "smallest_regression_test": "Exercise ordinary entry, seat change, exit, load in vehicle, and vehicle removal with baseline restoration assertions.",
+      "prior_ids": [
+        "RP-EVENT-UNKNOWN-ONVEHICLEENTER",
+        "RP-EVENT-UNKNOWN-ONVEHICLEEXIT"
+      ],
+      "disposition": "partially_rejected_and_refined"
+    }
+  ],
+  "omissions": [
+    {
+      "id": "IC-OM-001",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Damage multiplier observes health before native weapon damage",
+      "precise_anchors": [
+        "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6768-6789",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua:37-46"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua"
+      ],
+      "affected_callers": [
+        "Events.OnWeaponHitCharacter"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_glassbody"
+      ],
+      "reproduction_or_source_evidence": "OnWeaponHitCharacter precedes processHitDamage; current handler requires curHealth < prevHealth during that callback.",
+      "missing_proof": "No in-game post-damage scheduling proof.",
+      "recommended_correction": "Capture a pending hit at the producer and reconcile after native damage on the next verified update.",
+      "smallest_regression_test": "Start at 100 health, fire the event before native 10 damage, then reconcile once and assert the configured total loss."
+    },
+    {
+      "id": "IC-OM-002",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Positive XP corrections recursively re-enter AddXP",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_XPHook.lua:20-80",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua:73",
+        "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:18102-18106",
+        "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:18268-18270",
+        "UT_CORE/test/UTCoreMocks.lua:146-152"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_XPHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua"
+      ],
+      "affected_callers": [
+        "applyXPMultiplier callers",
+        "UT_photographicmemory completion XP"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_antigun",
+        "UniversalTraits:UT_flatearther",
+        "UniversalTraits:UT_luddite",
+        "UniversalTraits:UT_mundane",
+        "UniversalTraits:UT_photographicmemory"
+      ],
+      "reproduction_or_source_evidence": "The five-argument AddXP overload ignores callLua and always emits AddXP after mutation. The mocks only log nested AddXP, so they suppress the recursive producer. A 1.5 multiplier geometrically adds further positive corrections.",
+      "missing_proof": "Exact engine behavior at XP maximum and stack-depth failure was not executed.",
+      "recommended_correction": "Add an explicit re-entry guard scoped by player/perk/correction, or use a non-emitting verified XP mutation path.",
+      "smallest_regression_test": "Make mock AddXP emit Events.AddXP; original +100 at 1.5 must finish at exactly +150 with one correction."
+    },
+    {
+      "id": "IC-OM-003",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Spawn helpers call three nonexistent or case-wrong BodyPart methods",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua:41",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua:68",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua:75",
+        "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyPart.java:509",
+        "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyPart.java:909-934",
+        "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyPart.java:1216-1221",
+        "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyPart.java:1318-1328"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua"
+      ],
+      "affected_callers": [
+        "UniversalTraits/traits/UT_broke.lua",
+        "UniversalTraits/traits/UT_burned.lua",
+        "UniversalTraits/traits/UT_injured_I.lua",
+        "UniversalTraits/traits/UT_injured_II.lua"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_broke",
+        "UniversalTraits:UT_burned",
+        "UniversalTraits:UT_injured_I",
+        "UniversalTraits:UT_injured_II"
+      ],
+      "reproduction_or_source_evidence": "Current BodyPart exposes SetHealth (capital S), generateFracture/setFractureTime, and setBurned/setBurnTime; it does not expose setHealth, setFractured, or setBurnDamage. Permissive mocks hide all three. UT_burned also requests three injury parts but the burn loop targets every body part.",
+      "missing_proof": "The corrected severity/time mapping requires design confirmation and in-game proof.",
+      "recommended_correction": "Use exact current receiver methods and explicit health/fracture/burn units; scope burns to the caller's intended parts.",
+      "smallest_regression_test": "Run strict receiver mocks derived from current Java; each of the four traits must complete OnNewGame and affect only declared body parts."
+    },
+    {
+      "id": "IC-OM-004",
+      "state": "confirmed-defect",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Generic one-handed and two-handed traits miss recognized weapon families",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua:17-31",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua:109-124",
+        "UniversalTraits/media/scripts/UT_character_traits.txt:451-472"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua"
+      ],
+      "affected_callers": [
+        "UniversalTraits:UT_twohanded",
+        "UniversalTraits:UT_onehanded"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_twohanded",
+        "UniversalTraits:UT_onehanded"
+      ],
+      "reproduction_or_source_evidence": "classifyWeapon returns axe/spear/blade/blunt before testing isTwoHandWeapon; generic handedness entries are keyed as twohanded/onehanded and therefore never match recognized family weapons.",
+      "missing_proof": "Representative live weapon metadata was not executed.",
+      "recommended_correction": "Evaluate handedness entries independently from family entries, or permit multiple categories per weapon.",
+      "smallest_regression_test": "Give UT_twohanded a two-handed axe and UT_onehanded a one-handed blade; both must apply their delay rule."
+    },
+    {
+      "id": "IC-OM-005",
+      "state": "confirmed-defect",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Zombie collision callback membership survives a player or trait change",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua:40-45",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua:210-222",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua:236-252"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua"
+      ],
+      "affected_callers": [
+        "UniversalTraits/traits/UT_batteringram.lua"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_batteringram"
+      ],
+      "reproduction_or_source_evidence": "OnCreatePlayer only adds declared callbacks for traits present; it never removes callbacks for traits absent. The dispatch loop does not recheck trait ownership.",
+      "missing_proof": "Cross-character process reuse was not executed in game.",
+      "recommended_correction": "Rebuild callback membership exactly on player creation and recheck ownership before dispatch.",
+      "smallest_regression_test": "Create player A with batteringram, then player B without it in the same Lua state; B must not invoke the callback."
+    },
+    {
+      "id": "IC-OM-006",
+      "state": "confirmed-defect",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "XP cap enforcement permits a below-cap award to cross the cap",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_XPHook.lua:38-45"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_XPHook.lua"
+      ],
+      "affected_callers": [
+        "UT_incomprehensive skill-cap path"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_incomprehensive"
+      ],
+      "reproduction_or_source_evidence": "The hook cancels only when currentLevel >= hardCap; it does not clamp an award that begins below the cap but crosses one or more levels.",
+      "missing_proof": "Exact XP thresholds per affected perk were not scenario-tested.",
+      "recommended_correction": "Compare old/new XP against the hard-cap threshold and reverse only the excess.",
+      "smallest_regression_test": "Place the player one XP below the cap, award enough for two levels, and assert final XP equals the cap threshold."
+    },
+    {
+      "id": "IC-OM-007",
+      "state": "confirmed-defect",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Direct scalar modifier APIs overwrite legal coexisting trait effects",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua:251-355",
+        "UniversalTraits/media/scripts/UT_character_traits.txt: scoped MET rows"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "affected_callers": [
+        "applyBleedDecayMult",
+        "applyBleedDrainMult",
+        "applyXPMultiplier"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_staunch",
+        "UniversalTraits:UT_anemic",
+        "UniversalTraits:UT_heavilybleedingwounds",
+        "UniversalTraits:UT_weaklybleedingwounds",
+        "UniversalTraits:UT_antigun",
+        "UniversalTraits:UT_luddite",
+        "UniversalTraits:UT_mundane"
+      ],
+      "reproduction_or_source_evidence": "These APIs store one scalar per effect/perk without source buckets. Script MET permits staunch with every bleed trait, anemic with heavy/weak bleed, and antigun/luddite with mundane; load order decides the surviving value.",
+      "missing_proof": "Desired additive versus multiplicative composition is not documented.",
+      "recommended_correction": "Accept sourceId and aggregate deterministically, or make every overlapping trait pair mutually exclusive.",
+      "smallest_regression_test": "Apply each legal pair in both orders and assert identical intended aggregate values."
+    },
+    {
+      "id": "IC-OM-008",
+      "state": "coverage-gap",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Two UniversalTraits caller families target UTCore APIs that do not exist",
+      "precise_anchors": [
+        "UniversalTraits/traits/UT_paramedic.lua:23-24",
+        "UniversalTraits/traits/UT_pitcrew.lua:23-24",
+        "UT_CORE/media/lua/** public export inventory"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/client/UTCore/UTCore_CharacterCreationMETDebug.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_Diagnostics.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_Events.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_FractureHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_FreezeLogger.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_NoiseHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_PainHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SleepQualityHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpawnEffects.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpeedHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ThermalRegulationHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_TraitChecks.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_XPHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua"
+      ],
+      "affected_callers": [
+        "UTCore.applyMedicalSpeed",
+        "UTCore.applyMechanicsSpeed"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_paramedic",
+        "UniversalTraits:UT_pitcrew"
+      ],
+      "reproduction_or_source_evidence": "All 71 UTCore function exports were enumerated; neither helper exists. Both callers guard the call, so the intended effect silently disappears rather than failing.",
+      "missing_proof": "The intended timed-action family coverage for medical/mechanics actions is unspecified.",
+      "recommended_correction": "Implement verified helper families or remove/rewrite the guarded calls and descriptions.",
+      "smallest_regression_test": "Load each trait with representative current timed actions and assert an observable duration change."
+    },
+    {
+      "id": "IC-OM-009",
+      "state": "confirmed-defect",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "SpeedHook prints an unconditional diagnostic on every movement event during actions",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpeedHook.lua:109-118"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpeedHook.lua"
+      ],
+      "affected_callers": [
+        "applySpeedModifier callers"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_fast",
+        "UniversalTraits:UT_gimp",
+        "UniversalTraits:UT_lurcher",
+        "UniversalTraits:UT_natural",
+        "UniversalTraits:UT_noodlelegs",
+        "UniversalTraits:UT_pacer",
+        "UniversalTraits:UT_sorelegs"
+      ],
+      "reproduction_or_source_evidence": "When a nonzero speed modifier and any character action are present, OnPlayerMove prints [UT_ADIAG] for every event without a debug gate or throttle.",
+      "missing_proof": "Log volume and frame impact were not profiled in game.",
+      "recommended_correction": "Remove the print or route it through a disabled-by-default bounded diagnostic.",
+      "smallest_regression_test": "Simulate 600 movement events during one action and assert zero output with diagnostics disabled."
+    },
+    {
+      "id": "IC-OM-010",
+      "state": "confirmed-defect",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Inventory capacity increases are never restored when carry targets fall",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua:173-203"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "affected_callers": [
+        "applyCarryWeight",
+        "applyStrengthCarryWeight"
+      ],
+      "affected_traits": [
+        "carry-modifying UniversalTraits"
+      ],
+      "reproduction_or_source_evidence": "reconcileAggregatedModifiers writes inventory capacity only when targetCap > current; a later lower target updates maxWeightBase but leaves inventory capacity elevated.",
+      "missing_proof": "Dynamic modifier removal was not exercised in game.",
+      "recommended_correction": "Cache a trustworthy baseline and reconcile both upward and downward without clobbering external owners.",
+      "smallest_regression_test": "Raise capacity with a source bucket, remove/lower that bucket, reconcile, and assert both player base and inventory capacity return."
+    }
+  ],
+  "cross_file_findings": [
+    {
+      "id": "IC-XF-001",
+      "state": "runtime-unproven",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Trait cache and active tick arrays assume traits never change after OnCreatePlayer",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:73-82",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:109-134",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua:61-139",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua:430-435"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua"
+      ],
+      "affected_callers": [
+        "hasTrait callers",
+        "registerTickHandler callers"
+      ],
+      "affected_traits": [
+        "all dynamically added/removed traits"
+      ],
+      "reproduction_or_source_evidence": "The cache invalidates and active handlers rebuild on player creation; no current producer handles later CharacterTrait mutation.",
+      "missing_proof": "Whether this mod permits runtime trait mutation in supported play is not established.",
+      "recommended_correction": "Either document immutability as a hard contract or subscribe to a verified mutation signal and rebuild exactly.",
+      "smallest_regression_test": "Add and remove a trait after creation, then assert hasTrait and active handler membership change immediately."
+    },
+    {
+      "id": "IC-XF-002",
+      "state": "runtime-unproven",
+      "severity": "low",
+      "confidence": "medium",
+      "title": "Core and tick handler registration is not reload-idempotent",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:29-39",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua:39-51",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua:426"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua"
+      ],
+      "affected_callers": [
+        "all core/tick registrants"
+      ],
+      "affected_traits": [],
+      "reproduction_or_source_evidence": "Both registration functions append without identity replacement; the central event is also added unconditionally. A partial Lua reload could duplicate work.",
+      "missing_proof": "Current ResetLua global/event lifecycle was not reproduced.",
+      "recommended_correction": "Make registrations keyed/idempotent and fence central event attachment with a reload-safe owner token.",
+      "smallest_regression_test": "Load the module twice into one event table and assert one central event plus one entry per identity."
+    },
+    {
+      "id": "IC-XF-003",
+      "state": "coverage-gap",
+      "severity": "low",
+      "confidence": "high",
+      "title": "registerPeriodicHandler does not reject an unavailable event name",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_Events.lua:16-40"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_Events.lua"
+      ],
+      "affected_callers": [
+        "registerPeriodicHandler callers"
+      ],
+      "affected_traits": [],
+      "reproduction_or_source_evidence": "The function dereferences Events[intervalEvent].Add when Events exists; a misspelled or removed event produces a nil receiver. Current 12 callers use known names, so this is a public-surface gap rather than a current failure.",
+      "missing_proof": "No negative contract test exists.",
+      "recommended_correction": "Validate event membership and return a deterministic error before mutation.",
+      "smallest_regression_test": "Register with a nonexistent event and assert no handler state or event table changes."
+    },
+    {
+      "id": "IC-XF-004",
+      "state": "runtime-unproven",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Vehicle baseline restore may clobber modifications applied after UTCore's snapshot",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua:391-434"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "affected_callers": [
+        "registerVehicleTrait callers"
+      ],
+      "affected_traits": [
+        "vehicle traits"
+      ],
+      "reproduction_or_source_evidence": "UTCore snapshots vehicle values once, writes absolute values, then restores that snapshot. A later external modifier has no ownership/composition channel and can be overwritten on restore.",
+      "missing_proof": "Cross-mod ordering and integer coercion of setEngineFeature were not tested in Kahlua.",
+      "recommended_correction": "Define ownership/composition or resnapshot only under a verified invariant; round/validate integer engine features explicitly.",
+      "smallest_regression_test": "Apply external changes after UTCore entry, exit, and assert the external changes survive."
+    },
+    {
+      "id": "IC-XF-005",
+      "state": "proven-correct",
+      "severity": "low",
+      "confidence": "high",
+      "title": "Additive source buckets compose speed, carry, work, and transfer modifiers deterministically",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua:101-173",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua:211-249"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "affected_callers": [
+        "applySpeedModifier",
+        "applyCarryWeight",
+        "applyStrengthCarryWeight",
+        "applyWorkSpeed",
+        "applyTransferSpeedMultiplier"
+      ],
+      "affected_traits": [],
+      "reproduction_or_source_evidence": "All executable UniversalTraits callers in these families pass stable source IDs; aggregation sorts/combines bucket values and clamps movement/work/capacity paths.",
+      "missing_proof": "Engine-side feel and external-mod composition remain runtime concerns, not static composition gaps.",
+      "recommended_correction": "Retain the bucket contract and add explicit removal/baseline semantics.",
+      "smallest_regression_test": "Apply the same bucket set in every order and assert byte-identical moddata aggregates and final values."
+    }
+  ],
+  "surface_gap_reconciliation": {
+    "required_dimensions": [
+      "public_helpers_and_handlers",
+      "event_producer_consumer_contracts",
+      "shared_state_and_moddata",
+      "registration_removal_idempotence",
+      "cadence_throttle_reset_save_load",
+      "numerical_behavior",
+      "java_lua_kahlua_receiver_methods",
+      "single_player_restriction_assumptions",
+      "stacking_and_composition",
+      "performance",
+      "tests_and_mocks",
+      "source_release_parity"
+    ],
+    "source_files_examined": 24,
+    "source_files_required": 24,
+    "universaltraits_source_lua_files_examined": 151,
+    "universaltraits_source_lua_files_required": 151,
+    "ut_core_exports_examined": 71,
+    "caller_families_examined": 30,
+    "caller_families_required": 30,
+    "prior_scoped_findings_examined": [
+      "F-CORE-001",
+      "F-CORE-002",
+      "F-CORE-003",
+      "F-DOC-001",
+      "RP weapon-hit argument findings",
+      "RP OnVehicleEnter",
+      "RP OnVehicleExit",
+      "RP UT_CORE package parity"
+    ],
+    "non_ut_core_recurring_findings_disposition": "Not re-adjudicated except where a UniversalTraits caller touched UTCore; they are outside this closed-world integration scope.",
+    "any_required_static_surface_unexamined": false,
+    "runtime_proofs_outstanding": true,
+    "runtime_proof_count": 5,
+    "silent_inheritance_used": false
+  },
+  "unresolved_runtime_proofs": [
+    {
+      "id": "IC-RUN-001",
+      "state": "runtime-unproven",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Bleed correction fidelity under changing engine multiplier and bandage state",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua:26-58",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua:25-69",
+        "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyPart.java:166-224"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua"
+      ],
+      "affected_callers": [
+        "bleed modifier callers"
+      ],
+      "affected_traits": [
+        "bleed traits"
+      ],
+      "reproduction_or_source_evidence": "Base constants match current BodyPart source, but 10/30-tick correction batches use current bleedingTime and GameTime multiplier as proxies for the preceding window.",
+      "missing_proof": "No engine run across time-speed and mid-window bandage changes.",
+      "recommended_correction": "Measure native and corrected deltas across each transition; replace approximations if error exceeds design tolerance.",
+      "smallest_regression_test": "Command: & 'C:\\Steam\\steamapps\\common\\ProjectZomboid\\ProjectZomboid64.exe' -debug. Scenario: fixed wound, 1x/3x speed, bandage/unbandage at ticks 5 and 15, record per-tick bleedingTime and overall health."
+    },
+    {
+      "id": "IC-RUN-002",
+      "state": "runtime-unproven",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Movement multiplier timing and receiver behavior in the live Kahlua loop",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpeedHook.lua:58-123",
+        "PZCodebase/Java/source/zombie/characters/IsoPlayer.java:2185",
+        "PZCodebase/Java/source/zombie/characters/IsoPlayer.java:6700"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_SpeedHook.lua"
+      ],
+      "affected_callers": [
+        "applySpeedModifier callers"
+      ],
+      "affected_traits": [
+        "movement traits"
+      ],
+      "reproduction_or_source_evidence": "Static engine tests establish OnPlayerMove and next-position methods, but not every action/vehicle/collision interaction.",
+      "missing_proof": "No authorized game execution or profiler capture.",
+      "recommended_correction": "Run a deterministic movement matrix and record displacement, action state, vehicle state, and log volume.",
+      "smallest_regression_test": "Command: & 'C:\\Steam\\steamapps\\common\\ProjectZomboid\\ProjectZomboid64.exe' -debug. Scenario: walk/run/sprint with +/- modifiers, timed action active, collision, vehicle enter, save/reload."
+    },
+    {
+      "id": "IC-RUN-003",
+      "state": "runtime-unproven",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Timed-action and reading monkey patches across all current action tables",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua:14-67",
+        "PZCodebase/Lua/shared/TimedActions/ISBaseTimedAction.lua:74-76",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua:76-146"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ReadingHook.lua"
+      ],
+      "affected_callers": [
+        "work-speed callers",
+        "photographic-memory reading"
+      ],
+      "affected_traits": [
+        "work and reading traits"
+      ],
+      "reproduction_or_source_evidence": "getDuration exists and wrapper guards are present, but broad _G patch coverage, load order, third-party wrapper composition, and completion XP behavior are not live-proven.",
+      "missing_proof": "No full action matrix or Kahlua wrapper-chain execution.",
+      "recommended_correction": "Instrument representative action families and wrapper order; assert one application and exact restoration/completion.",
+      "smallest_regression_test": "Command: & 'C:\\Steam\\steamapps\\common\\ProjectZomboid\\ProjectZomboid64.exe' -debug. Scenario: crafting, transfer, medical, mechanics, and skill-book completion with each trait and a second wrapper mod."
+    },
+    {
+      "id": "IC-RUN-004",
+      "state": "runtime-unproven",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Zombie collision timing, scan cost, and save/load dedupe",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua:101-191"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua"
+      ],
+      "affected_callers": [
+        "UT_batteringram"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_batteringram"
+      ],
+      "reproduction_or_source_evidence": "The hook scans a 3x3 square neighborhood per active update and persists per-zombie dedupe in player moddata; mock tests do not establish live identity serialization or crowded-frame cost.",
+      "missing_proof": "No live profiler or save/load collision scenario.",
+      "recommended_correction": "Profile crowded cells and verify dedupe reset/serialization and ownership transitions.",
+      "smallest_regression_test": "Command: & 'C:\\Steam\\steamapps\\common\\ProjectZomboid\\ProjectZomboid64.exe' -debug. Scenario: 1/25/100 nearby zombies, stop/restart sprint, save/reload, then switch to a character without the trait."
+    },
+    {
+      "id": "IC-RUN-005",
+      "state": "runtime-unproven",
+      "severity": "medium",
+      "confidence": "high",
+      "title": "Save/load, Lua reset, and dynamic-trait lifecycle invariants",
+      "precise_anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "affected_files": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+      ],
+      "affected_callers": [
+        "all caller families"
+      ],
+      "affected_traits": [
+        "all traits"
+      ],
+      "reproduction_or_source_evidence": "Static review identified caches, persistent moddata, local declaration tables, and event fences with different reset lifetimes.",
+      "missing_proof": "No authorized multi-save/reset run.",
+      "recommended_correction": "Define supported lifecycle invariants, then test exact handler counts, cache ownership, and baselines after each transition.",
+      "smallest_regression_test": "Command: & 'C:\\Steam\\steamapps\\common\\ProjectZomboid\\ProjectZomboid64.exe' -debug. Scenario: new game, save, reload, return to menu, load second character, ResetLua in debug, compare handler counts and moddata."
+    }
+  ],
+  "validation_run": {
+    "commands": [
+      "& 'C:\\Users\\Admin\\AppData\\Local\\Programs\\Lua\\bin\\lua.exe' 'test/run_tests.lua' (cwd UTMods\\UT_CORE)",
+      "& 'C:\\Users\\Admin\\AppData\\Local\\Programs\\Lua\\bin\\lua.exe' 'test/run_tests.lua' (cwd UTMods\\UniversalTraits)",
+      "Live JCodeMunch get_file_tree/get_file_content/search_text on local/UTMods-80cf9c1d and local/PZCodebase-61973d88",
+      "C:\\Users\\Admin\\.codex\\scripts\\assert-munch-mcp-startup.ps1",
+      "Post-write in-memory Python JSON/schema/membership/sortedness/ID/vocabulary/caller/parity/canonical-byte validation"
+    ],
+    "results": {
+      "ut_core_suite": {
+        "passed": 218,
+        "failed": 0,
+        "exit_code": 0
+      },
+      "universaltraits_suite": {
+        "passed": 374,
+        "failed": 0,
+        "exit_code": 0
+      },
+      "munch_preflight": "pass_with_duplicate_stdio_process_warnings",
+      "source_release_parity": {
+        "matched": 24,
+        "mismatched": 0,
+        "missing": 0
+      }
+    },
+    "post_write_assertions": [
+      "JSON parses",
+      "top-level required keys present",
+      "per_file_review count=24",
+      "inventory and file-review membership exact and sorted",
+      "unique finding IDs across all finding collections",
+      "state and severity vocabularies valid",
+      "all per-file linked IDs resolve",
+      "12 required dimension keys on every file row",
+      "30 caller families sorted and unique",
+      "2 missing guarded APIs exactly identified",
+      "24 release hashes equal source hashes",
+      "canonical indentation/newline byte-stable on second serialization"
+    ],
+    "post_write_status": {
+      "status": "pass",
+      "files": 24,
+      "findings": 27,
+      "caller_families": 30,
+      "canonical_second_pass_byte_stable": true
+    },
+    "artifact_sha256": "computed after final byte write and reported in the task handoff to avoid self-referential hashing"
+  },
+  "blockers": [
+    {
+      "kind": "runtime-proof",
+      "scope": "Five exact in-game scenarios",
+      "reason": "The task authorized a read-only audit artifact and explicitly prohibited game-state changes; current source and mocks cannot prove live Kahlua ordering, performance, save/load, or cross-mod composition.",
+      "resolution": "Run the commands/scenarios in unresolved_runtime_proofs under separate explicit game-test authorization."
+    },
+    {
+      "kind": "design-intent",
+      "scope": "fracture cooldown duration, bleed composition, spawn burn/fracture severity",
+      "reason": "Current code/comments and engine behavior establish defects but do not uniquely establish intended tuning.",
+      "resolution": "Obtain authoritative trait-design intent before selecting corrected numeric values."
+    }
+  ]
+}

@@ -611,7 +611,58 @@ UTCore.buildMockTickContext = function(player)
         livingEnemies     = livingEnemies,
         livingEnemyCount  = livingEnemyCount,
         totalSpotted      = totalSpotted,
+        -- Lazy injury accessor state (mirrors real buildTickContext)
+        injuries          = nil,
+        _injuriesBuilt    = false,
     }
+end
+
+-- Lazy injury accessor (mirrors UTCore.getInjuries in UTCore_TickDispatch.lua)
+UTCore._EMPTY_INJURIES = UTCore._EMPTY_INJURIES or { count = 0 }
+UTCore._CLEAN_PART = UTCore._CLEAN_PART or {
+    bitten       = false,
+    deepWounded  = false,
+    fractureTime = 0,
+    infected     = false,
+}
+
+function UTCore.getInjuries(tick)
+    if tick._injuriesBuilt then return tick.injuries end
+    tick._injuriesBuilt = true
+
+    local bd = tick.bodyDamage
+    if not bd then
+        tick.injuries = UTCore._EMPTY_INJURIES
+        return tick.injuries
+    end
+
+    local health = 100
+    if bd.getOverallBodyHealth then
+        pcall(function() health = bd:getOverallBodyHealth() end)
+    end
+    if health >= 99.99 then
+        tick.injuries = UTCore._EMPTY_INJURIES
+        return tick.injuries
+    end
+
+    local parts = bd:getBodyParts()
+    local count = parts:size()
+    local out = { count = count }
+    for i = 0, count - 1 do
+        local p = parts:get(i)
+        if p.HasInjury and p:HasInjury() then
+            out[i] = {
+                bitten       = p:bitten(),
+                deepWounded  = p:isDeepWounded(),
+                fractureTime = p:getFractureTime(),
+                infected     = p:IsInfected(),
+            }
+        else
+            out[i] = UTCore._CLEAN_PART
+        end
+    end
+    tick.injuries = out
+    return out
 end
 
 -- Convenience: fire a single registered tick handler for a player.

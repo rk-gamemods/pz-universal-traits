@@ -51,6 +51,15 @@ test("UTTraitsRegistries table exists", function()
     assert_true(type(UTTraitsRegistries) == "table", "UTTraitsRegistries should be a table")
 end)
 
+-- ===== Java API validation =====
+-- Asserts every declared Java method call in our Lua code actually
+-- exists in the decompiled PZ Java source. Catches typos that mocks
+-- would silently accept (e.g. isInfected vs IsInfected).
+do
+    local javaApi = dofile(base .. "java_api_validation.lua")
+    javaApi.run(base, test, assert_true)
+end
+
 test("UT_preparedfood registered", function()
     assert_trait_registered(UTTraitsRegistries.UT_preparedfood, "UniversalTraits:UT_preparedfood")
 end)
@@ -427,6 +436,19 @@ test("script costs match the current balance decisions", function()
     assert_eq(costs["UniversalTraits:UT_preparedpack"], 1, "preparedpack cost")
     assert_eq(costs["UniversalTraits:UT_quickworker"], 9, "quickworker cost")
     assert_eq(costs["UniversalTraits:UT_slowworker"], -6, "slowworker cost")
+end)
+
+test("script XP boosts use current 42.19 perk identifiers", function()
+    local file = io.open(base .. "../media/scripts/UT_character_traits.txt", "r")
+    assert_true(file ~= nil, "failed to open UT_character_traits.txt")
+    local script_text = file:read("*a")
+    file:close()
+
+    assert_true(not script_text:find("FirstAid", 1, true), "legacy FirstAid perk identifier remains")
+    assert_true(script_text:find("XPBoosts = Strength=1;Doctor=1", 1, true) ~= nil,
+        "bouncer I should boost the current Doctor perk")
+    assert_true(script_text:find("XPBoosts = Strength=2;Doctor=2", 1, true) ~= nil,
+        "bouncer II should boost the current Doctor perk")
 end)
 
 test("total registration count is 198", function()
@@ -834,6 +856,13 @@ end)
 -- Load the trait file so its UTCore.registerTickHandler() fires.
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_bouncer_I.lua")
 
+-- Helper: check whether a mock part has any injury (drives HasInjury gate)
+local function _partHasInjury(p)
+    return p._bitten or p._deepWounded or p._scratched
+        or (p._fractureTime and p._fractureTime > 0)
+        or p._isInfected
+end
+
 -- Helper: create a mock body part with full injury state
 local function MockInjuryPart(partType, injuries)
     injuries = injuries or {}
@@ -854,8 +883,10 @@ local function MockInjuryPart(partType, injuries)
     p.SetBitten         = function(self, v) self._bitten = v end
     p.setBiteTime       = function(self, v) self._biteTime = v end
     p.isInfected        = function(self) return self._isInfected end
+    p.IsInfected        = function(self) return self._isInfected end
     p.SetInfected       = function(self, v) self._isInfected = v end
     p.isFakeInfected    = function(self) return self._isFakeInfected end
+    p.IsFakeInfected    = function(self) return self._isFakeInfected end
     p.SetFakeInfected   = function(self, v) self._isFakeInfected = v end
     p.isDeepWounded     = function(self) return self._deepWounded end
     p.setDeepWounded    = function(self, v) self._deepWounded = v end
@@ -863,16 +894,33 @@ local function MockInjuryPart(partType, injuries)
     p.setScratched      = function(self, v, noInfect) self._scratched = v; self._scratchNoInfect = noInfect end
     p.getFractureTime   = function(self) return self._fractureTime end
     p.setFractureTime   = function(self, v) self._fractureTime = v end
+    p.HasInjury         = function(self) return _partHasInjury(self) end
     return p
 end
 
--- Helper: create a mock body damage with a part list
+-- Helper: create a mock body damage with a part list.
+-- Gates (getOverallBodyHealth, HasInjury) are derived from current parts
+-- state so mutation between ticks flows through correctly.
 local function MockInjuryBodyDamage(parts)
     local list = {
         size = function(self) return #parts end,
         get  = function(self, i) return parts[i + 1] end,
     }
-    return { getBodyParts = function(self) return list end }
+    return {
+        getBodyParts = function(self) return list end,
+        getOverallBodyHealth = function(self)
+            for _, p in ipairs(parts) do
+                if _partHasInjury(p) then return 50 end
+            end
+            return 100
+        end,
+        HasInjury = function(self)
+            for _, p in ipairs(parts) do
+                if _partHasInjury(p) then return true end
+            end
+            return false
+        end,
+    }
 end
 
 -- Helper: create a mock player with bouncer trait and custom body damage
@@ -913,8 +961,15 @@ test("bouncer downgrades bite to deep wound (STR 5)", function()
 end)
 
 test("bouncer downgrades deep wound to scratch (STR 5)", function()
-    local part = MockInjuryPart("UpperArm_L", { deepWounded = true, deepWoundTime = 30 })
+    local part = MockInjuryPart("UpperArm_L", {})
     local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 5)
+
+    -- Init tick: clean snapshot
+    Events.OnPlayerUpdate:fire(player)
+
+    -- New deep wound lands
+    part._deepWounded = true
+    part._deepWoundTime = 30
 
     Events.OnPlayerUpdate:fire(player)
 
@@ -926,8 +981,14 @@ test("bouncer downgrades deep wound to scratch (STR 5)", function()
 end)
 
 test("bouncer halves fracture time (STR 5)", function()
-    local part = MockInjuryPart("LowerLeg_R", { fractureTime = 40 })
+    local part = MockInjuryPart("LowerLeg_R", {})
     local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 5)
+
+    -- Init tick: clean snapshot
+    Events.OnPlayerUpdate:fire(player)
+
+    -- New fracture lands
+    part._fractureTime = 40
 
     Events.OnPlayerUpdate:fire(player)
 
@@ -997,8 +1058,14 @@ test("bouncer does nothing when no injuries present", function()
 end)
 
 test("bouncer ignores fracture time <= 1", function()
-    local part = MockInjuryPart("LowerLeg_L", { fractureTime = 0.5 })
+    local part = MockInjuryPart("LowerLeg_L", {})
     local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 5)
+
+    -- Init tick: clean snapshot
+    Events.OnPlayerUpdate:fire(player)
+
+    -- Apply a sub-threshold fracture
+    part._fractureTime = 0.5
 
     Events.OnPlayerUpdate:fire(player)
 
@@ -1045,8 +1112,15 @@ test("bouncer STR 10 produces minimum tier I cooldown", function()
 end)
 
 test("bouncer tier II STR 10 cooldown", function()
-    local part = MockInjuryPart("Torso_Upper", { deepWounded = true, deepWoundTime = 30 })
+    local part = MockInjuryPart("Torso_Upper", {})
     local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_II" }, { part }, 10)
+
+    -- Init tick: clean snapshot
+    Events.OnPlayerUpdate:fire(player)
+
+    -- New deep wound
+    part._deepWounded = true
+    part._deepWoundTime = 30
 
     Events.OnPlayerUpdate:fire(player)
 
@@ -1230,6 +1304,84 @@ test("bouncer clears infection on both parts when bitten simultaneously", functi
     assert_true(not partB:bitten(), "B bite should be cleared")
     assert_eq(partB._isInfected, false, "B infection should be cleared (not pre-existing)")
     assert_true(partB:isDeepWounded(), "B should get deep wound")
+end)
+
+-- Edge case: an injury that exists when the cooldown expires is captured
+-- in the refreshed baseline snapshot and must NOT be downgraded.
+test("bouncer ignores injury present at cooldown expiry", function()
+    local part = MockInjuryPart("Torso_Upper", {})
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 5)
+
+    -- Init tick: clean snapshot, cooldown=0
+    Events.OnPlayerUpdate:fire(player)
+
+    -- Put a bite on the part AND set cooldown=1 so the next tick is
+    -- the expiry tick (decrements 1→0, re-baselines snapshot including
+    -- this bite as pre-existing).
+    part._bitten = true
+    part._biteTime = 60
+    player:getModData()["UT_bouncer_cooldown"] = 1
+
+    -- Expiry tick: decrements to 0, re-baselines snapshot.
+    Events.OnPlayerUpdate:fire(player)
+    assert_true(part:bitten(), "expiry tick must NOT downgrade (injury is baseline)")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 0, "cooldown now 0")
+
+    -- Next tick: READY, scan delta. Bite is in snapshot → no delta → no action.
+    Events.OnPlayerUpdate:fire(player)
+    assert_true(part:bitten(), "pre-existing injury should remain untouched after ready")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 0, "cooldown should stay 0")
+end)
+
+-- Edge case: two new injuries arriving on the same tick. Lowest-index
+-- part wins deterministically; MULTI_NEW is logged for observability.
+test("bouncer picks lowest-index part on simultaneous new injuries", function()
+    local p0 = MockInjuryPart("Head", {})
+    local p1 = MockInjuryPart("Torso_Upper", {})
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { p0, p1 }, 5)
+
+    -- Init clean
+    Events.OnPlayerUpdate:fire(player)
+
+    -- Both get NEW deep wounds at once
+    p0._deepWounded = true; p0._deepWoundTime = 30
+    p1._deepWounded = true; p1._deepWoundTime = 30
+
+    Events.OnPlayerUpdate:fire(player)
+
+    assert_true(not p0:isDeepWounded(), "index-0 part should be downgraded")
+    assert_true(p1:isDeepWounded(), "index-1 part should remain (one per cooldown)")
+end)
+
+-- ===== UTCore.getInjuries lazy accessor tests =====
+test("getInjuries returns EMPTY sentinel when body fully healthy", function()
+    local p = MockInjuryPart("Torso_Upper", {})
+    local player = MockBouncerPlayer({}, { p }, 5)
+    local tick = UTCore.buildMockTickContext(player)
+    local injuries = UTCore.getInjuries(tick)
+    assert_true(injuries == UTCore._EMPTY_INJURIES, "should return shared EMPTY sentinel")
+    assert_eq(injuries.count, 0, "EMPTY sentinel count is 0")
+end)
+
+test("getInjuries is cached on repeat call", function()
+    local p = MockInjuryPart("Torso_Upper", {})
+    local player = MockBouncerPlayer({}, { p }, 5)
+    local tick = UTCore.buildMockTickContext(player)
+    local a = UTCore.getInjuries(tick)
+    local b = UTCore.getInjuries(tick)
+    assert_true(a == b, "second call must return cached table")
+    assert_true(tick._injuriesBuilt == true, "cache flag must be set")
+end)
+
+test("getInjuries populates only dirty parts; clean parts reuse sentinel", function()
+    local clean = MockInjuryPart("Head", {})
+    local dirty = MockInjuryPart("Torso_Upper", { bitten = true, biteTime = 60 })
+    local player = MockBouncerPlayer({}, { clean, dirty }, 5)
+    local tick = UTCore.buildMockTickContext(player)
+    local injuries = UTCore.getInjuries(tick)
+    assert_eq(injuries.count, 2, "two parts")
+    assert_true(injuries[0] == UTCore._CLEAN_PART, "clean part is shared sentinel")
+    assert_true(injuries[1].bitten == true, "dirty part has own entry with bitten=true")
 end)
 
 -- ===== UT_vagabond loot mechanic tests =====
@@ -3144,6 +3296,22 @@ test("selfdestructive does NOT fire when roll fails", function()
     resetMockZombRand()
 end)
 
+test("adaptivemetabolism clamps hunger at 0.01 when calories > 0", function()
+    local p = MockPlayer({ "UniversalTraits:UT_adaptivemetabolism" }, { hunger = 1.0, calories = 2000.0 })
+    withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
+    assert_eq(p:getStats():get(CharacterStat.HUNGER), 0.01, "hunger should be clamped to 0.01")
+end)
+test("adaptivemetabolism does nothing when hunger is at or below 0.01 and calories > 0", function()
+    local p = MockPlayer({ "UniversalTraits:UT_adaptivemetabolism" }, { hunger = 0.005, calories = 2000.0 })
+    withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
+    assert_eq(p:getStats():get(CharacterStat.HUNGER), 0.005, "hunger unchanged when already below cap")
+end)
+test("adaptivemetabolism does nothing when calories <= 0", function()
+    local p = MockPlayer({ "UniversalTraits:UT_adaptivemetabolism" }, { hunger = 1.0, calories = 0.0 })
+    withActivePlayer(p, function() Events.EveryTenMinutes:fire() end)
+    assert_eq(p:getStats():get(CharacterStat.HUNGER), 1.0, "hunger unmodified when no calories remain")
+end)
+
 -- ─── Group 6: EveryOneMinute ──────────────────────────────────────────────────
 
 test("acrophobic raises panic when z > 0", function()
@@ -3308,21 +3476,6 @@ end)
 
 -- ─── Group 7: EveryHours ─────────────────────────────────────────────────────
 
-test("adaptivemetabolism reduces hunger when hunger > 0.7", function()
-    local p = MockPlayer({ "UniversalTraits:UT_adaptivemetabolism" }, { hunger = 0.8 })
-    withActivePlayer(p, function() Events.EveryHours:fire() end)
-    assert_true(p:getStats():get(CharacterStat.HUNGER) < 0.8, "hunger should decrease when high")
-end)
-test("adaptivemetabolism increases hunger when hunger < 0.1", function()
-    local p = MockPlayer({ "UniversalTraits:UT_adaptivemetabolism" }, { hunger = 0.05 })
-    withActivePlayer(p, function() Events.EveryHours:fire() end)
-    assert_true(p:getStats():get(CharacterStat.HUNGER) > 0.05, "hunger should increase when very low")
-end)
-test("adaptivemetabolism does nothing when hunger is mid-range", function()
-    local p = MockPlayer({ "UniversalTraits:UT_adaptivemetabolism" }, { hunger = 0.5 })
-    withActivePlayer(p, function() Events.EveryHours:fire() end)
-    assert_eq(p:getStats():get(CharacterStat.HUNGER), 0.5, "hunger unchanged at mid-range")
-end)
 
 test("sedentary reduces endurance each in-game hour", function()
     local p = MockPlayer({ "UniversalTraits:UT_sedentary" }, { endurance = 0.9 })
@@ -4240,4 +4393,3 @@ end)
 
 print(string.format("\n%d passed, %d failed", passed, failed))
 if failed > 0 then os.exit(1) end
-

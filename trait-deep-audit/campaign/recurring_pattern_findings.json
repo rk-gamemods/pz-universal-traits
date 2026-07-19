@@ -1,0 +1,328 @@
+{
+  "schema_version": "1.0",
+  "artifact_type": "recurring-pattern-audit",
+  "engine_event_registry": {
+    "source": "PZCodebase/Java/source/zombie/Lua/LuaEventManager.java",
+    "event_count": 270
+  },
+  "checks": {
+    "engine_event_membership": true,
+    "OnWeaponHitCharacter_argument_order": true,
+    "getTimeOfDay_scale": true,
+    "literal_percent_translation_risk": true,
+    "source_release_media_parity": true
+  },
+  "summary": {
+    "findings": 15,
+    "unknown_event_names": 7,
+    "literal_percent_keys": 56,
+    "source_release_drift_files": 4
+  },
+  "findings": [
+    {
+      "id": "RP-EVENT-ARGS-UTCORE_DAMAGEMULTHOOK",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "OnWeaponHitCharacter handler swaps target and weapon positions",
+      "anchors": [
+        "UTMods/UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua:29"
+      ],
+      "affected_surfaces": [
+        "event-contract",
+        "runtime",
+        "tests"
+      ],
+      "reproduction_evidence": "PZ triggers OnWeaponHitCharacter as (wielder, target, weapon, damage); onWeaponHitCharacter declares (attacker, weapon, target).",
+      "missing_proof": "",
+      "recommended_correction": "Declare and consume the callback as (attacker, target, weapon, damage).",
+      "smallest_regression_test": "Invoke the handler through an event mock using the engine argument order and assert the target and weapon operations hit the correct objects."
+    },
+    {
+      "id": "RP-EVENT-ARGS-UTCORE_FRACTUREHOOK",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "OnWeaponHitCharacter handler swaps target and weapon positions",
+      "anchors": [
+        "UTMods/UT_CORE/media/lua/shared/UTCore/UTCore_FractureHook.lua:32"
+      ],
+      "affected_surfaces": [
+        "event-contract",
+        "runtime",
+        "tests"
+      ],
+      "reproduction_evidence": "PZ triggers OnWeaponHitCharacter as (wielder, target, weapon, damage); onWeaponHitCharacter declares (attacker, weapon, target).",
+      "missing_proof": "",
+      "recommended_correction": "Declare and consume the callback as (attacker, target, weapon, damage).",
+      "smallest_regression_test": "Invoke the handler through an event mock using the engine argument order and assert the target and weapon operations hit the correct objects."
+    },
+    {
+      "id": "RP-EVENT-ARGS-UT_MARTIAL",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "OnWeaponHitCharacter handler swaps target and weapon positions",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_martial.lua:74"
+      ],
+      "affected_surfaces": [
+        "event-contract",
+        "runtime",
+        "tests"
+      ],
+      "reproduction_evidence": "PZ triggers OnWeaponHitCharacter as (wielder, target, weapon, damage); onWeaponHitCharacter declares (player, weapon, target).",
+      "missing_proof": "",
+      "recommended_correction": "Declare and consume the callback as (attacker, target, weapon, damage).",
+      "smallest_regression_test": "Invoke the handler through an event mock using the engine argument order and assert the target and weapon operations hit the correct objects."
+    },
+    {
+      "id": "RP-EVENT-UNKNOWN-ONACTIONADDED",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Runtime registers event OnActionAdded absent from the current engine event registry",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_paramedic.lua:58",
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_pitcrew.lua:58"
+      ],
+      "affected_surfaces": [
+        "event-lifecycle",
+        "runtime",
+        "tests"
+      ],
+      "reproduction_evidence": "The current PZCodebase event registry contains 270 names but not OnActionAdded; UTMods registers it at 2 call site(s).",
+      "missing_proof": "",
+      "recommended_correction": "Use the current engine event name and contract, or implement an explicit project-owned event producer.",
+      "smallest_regression_test": "Build the engine event set and assert OnActionAdded is registered before any Events.OnActionAdded.Add call is accepted."
+    },
+    {
+      "id": "RP-EVENT-UNKNOWN-ONCLIMBFENCE",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Runtime registers event OnClimbFence absent from the current engine event registry",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_strongnimble.lua:46"
+      ],
+      "affected_surfaces": [
+        "event-lifecycle",
+        "runtime",
+        "tests"
+      ],
+      "reproduction_evidence": "The current PZCodebase event registry contains 270 names but not OnClimbFence; UTMods registers it at 1 call site(s).",
+      "missing_proof": "",
+      "recommended_correction": "Use the current engine event name and contract, or implement an explicit project-owned event producer.",
+      "smallest_regression_test": "Build the engine event set and assert OnClimbFence is registered before any Events.OnClimbFence.Add call is accepted."
+    },
+    {
+      "id": "RP-EVENT-UNKNOWN-ONFENCECLIMB",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Runtime registers event OnFenceClimb absent from the current engine event registry",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_strongnimble.lua:45"
+      ],
+      "affected_surfaces": [
+        "event-lifecycle",
+        "runtime",
+        "tests"
+      ],
+      "reproduction_evidence": "The current PZCodebase event registry contains 270 names but not OnFenceClimb; UTMods registers it at 1 call site(s).",
+      "missing_proof": "",
+      "recommended_correction": "Use the current engine event name and contract, or implement an explicit project-owned event producer.",
+      "smallest_regression_test": "Build the engine event set and assert OnFenceClimb is registered before any Events.OnFenceClimb.Add call is accepted."
+    },
+    {
+      "id": "RP-EVENT-UNKNOWN-ONFISHCAUGHT",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Runtime registers event OnFishCaught absent from the current engine event registry",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_wildsman.lua:25"
+      ],
+      "affected_surfaces": [
+        "event-lifecycle",
+        "runtime",
+        "tests"
+      ],
+      "reproduction_evidence": "The current PZCodebase event registry contains 270 names but not OnFishCaught; UTMods registers it at 1 call site(s).",
+      "missing_proof": "",
+      "recommended_correction": "Use the current engine event name and contract, or implement an explicit project-owned event producer.",
+      "smallest_regression_test": "Build the engine event set and assert OnFishCaught is registered before any Events.OnFishCaught.Add call is accepted."
+    },
+    {
+      "id": "RP-EVENT-UNKNOWN-ONTREECHOPPED",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Runtime registers event OnTreeChopped absent from the current engine event registry",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_woodsplitter.lua:32"
+      ],
+      "affected_surfaces": [
+        "event-lifecycle",
+        "runtime",
+        "tests"
+      ],
+      "reproduction_evidence": "The current PZCodebase event registry contains 270 names but not OnTreeChopped; UTMods registers it at 1 call site(s).",
+      "missing_proof": "",
+      "recommended_correction": "Use the current engine event name and contract, or implement an explicit project-owned event producer.",
+      "smallest_regression_test": "Build the engine event set and assert OnTreeChopped is registered before any Events.OnTreeChopped.Add call is accepted."
+    },
+    {
+      "id": "RP-EVENT-UNKNOWN-ONVEHICLEENTER",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Runtime registers event OnVehicleEnter absent from the current engine event registry",
+      "anchors": [
+        "UTMods/UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua:523"
+      ],
+      "affected_surfaces": [
+        "event-lifecycle",
+        "runtime",
+        "tests"
+      ],
+      "reproduction_evidence": "The current PZCodebase event registry contains 270 names but not OnVehicleEnter; UTMods registers it at 1 call site(s).",
+      "missing_proof": "",
+      "recommended_correction": "Use the current engine event name and contract, or implement an explicit project-owned event producer.",
+      "smallest_regression_test": "Build the engine event set and assert OnVehicleEnter is registered before any Events.OnVehicleEnter.Add call is accepted."
+    },
+    {
+      "id": "RP-EVENT-UNKNOWN-ONVEHICLEEXIT",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Runtime registers event OnVehicleExit absent from the current engine event registry",
+      "anchors": [
+        "UTMods/UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua:527"
+      ],
+      "affected_surfaces": [
+        "event-lifecycle",
+        "runtime",
+        "tests"
+      ],
+      "reproduction_evidence": "The current PZCodebase event registry contains 270 names but not OnVehicleExit; UTMods registers it at 1 call site(s).",
+      "missing_proof": "",
+      "recommended_correction": "Use the current engine event name and contract, or implement an explicit project-owned event producer.",
+      "smallest_regression_test": "Build the engine event set and assert OnVehicleExit is registered before any Events.OnVehicleExit.Add call is accepted."
+    },
+    {
+      "id": "RP-PACKAGE-PARITY-UniversalTraits",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "UniversalTraits source and 42.0 release media trees differ",
+      "anchors": [
+        "UTMods/UniversalTraits/media",
+        "UTMods/UniversalTraits/release/UniversalTraits/42.0/media"
+      ],
+      "affected_surfaces": [
+        "packaging",
+        "release-parity"
+      ],
+      "reproduction_evidence": "content_mismatch=['lua/shared/UniversalTraits/UT_SmokePings.lua', 'lua/shared/UniversalTraits/traits/UT_antique.lua', 'lua/shared/UniversalTraits/traits/UT_scrounger.lua', 'scripts/UT_character_traits.txt']",
+      "missing_proof": "",
+      "recommended_correction": "Regenerate the release tree only through the authorized deployment workflow after product fixes and passing tests.",
+      "smallest_regression_test": "Hash every relative source/release media file and require empty missing, extra, and content-mismatch sets."
+    },
+    {
+      "id": "RP-TIME-RANGE-UT_ALBINO",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "getTimeOfDay result is compared to fractional-day thresholds",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua:12"
+      ],
+      "affected_surfaces": [
+        "numerical-behavior",
+        "runtime",
+        "tests"
+      ],
+      "reproduction_evidence": "Current PZ getTimeOfDay returns an hour on a 0..24 scale; the file compares it to 0.25/0.75.",
+      "missing_proof": "",
+      "recommended_correction": "Use hour thresholds such as 6 and 18, with explicit boundary behavior.",
+      "smallest_regression_test": "Run boundary cases at 0, 5.99, 6, 17.99, 18, and 23.99 on a 0..24 mock clock."
+    },
+    {
+      "id": "RP-TIME-RANGE-UT_LARKPERSON",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "getTimeOfDay result is compared to fractional-day thresholds",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_larkperson.lua:15",
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_larkperson.lua:16"
+      ],
+      "affected_surfaces": [
+        "numerical-behavior",
+        "runtime",
+        "tests"
+      ],
+      "reproduction_evidence": "Current PZ getTimeOfDay returns an hour on a 0..24 scale; the file compares it to 0.25/0.75.",
+      "missing_proof": "",
+      "recommended_correction": "Use hour thresholds such as 6 and 18, with explicit boundary behavior.",
+      "smallest_regression_test": "Run boundary cases at 0, 5.99, 6, 17.99, 18, and 23.99 on a 0..24 mock clock."
+    },
+    {
+      "id": "RP-TIME-RANGE-UT_OWLPERSON",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "getTimeOfDay result is compared to fractional-day thresholds",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_owlperson.lua:15",
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_owlperson.lua:16"
+      ],
+      "affected_surfaces": [
+        "numerical-behavior",
+        "runtime",
+        "tests"
+      ],
+      "reproduction_evidence": "Current PZ getTimeOfDay returns an hour on a 0..24 scale; the file compares it to 0.25/0.75.",
+      "missing_proof": "",
+      "recommended_correction": "Use hour thresholds such as 6 and 18, with explicit boundary behavior.",
+      "smallest_regression_test": "Run boundary cases at 0, 5.99, 6, 17.99, 18, and 23.99 on a 0..24 mock clock."
+    },
+    {
+      "id": "RP-TRANSLATION-LITERAL-PERCENT",
+      "state": "confirmed-defect",
+      "severity": "high",
+      "confidence": "high",
+      "title": "Translator preprocessing mutates literal percent signs in English descriptions",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI.json (keys: UI_UT_actionheroDesc, UI_UT_adaptivemetabolismDesc, UI_UT_antigunDesc, UI_UT_antiqueDesc, UI_UT_asceticDesc, UI_UT_axesDesc, UI_UT_burnedDesc, UI_UT_cleaverDesc, UI_UT_driverDesc, UI_UT_durabilityDesc, UI_UT_evasiveDesc, UI_UT_fastDesc, UI_UT_fasthandsDesc, UI_UT_flateartherDesc, UI_UT_gimpDesc, UI_UT_glassbodyDesc, UI_UT_gordaniteDesc, UI_UT_gourmandDesc, UI_UT_heavilybleedingwoundsDesc, UI_UT_idealweightDesc, UI_UT_improviserDesc, UI_UT_indefatigableDesc, UI_UT_ironliverDesc, UI_UT_leadfootDesc, UI_UT_long_bladesDesc, UI_UT_long_bluntsDesc, UI_UT_ludditeDesc, UI_UT_lurcherDesc, UI_UT_martialDesc, UI_UT_mundaneDesc, UI_UT_naturalDesc, UI_UT_noodlelegsDesc, UI_UT_onehanded_axesDesc, UI_UT_onehanded_bladesDesc, UI_UT_onehanded_bluntsDesc, UI_UT_pacerDesc, UI_UT_paramedicDesc, UI_UT_photographicmemoryDesc, UI_UT_pitcrewDesc, UI_UT_prospearDesc, UI_UT_quickworkerDesc, UI_UT_restfulsleeperDesc, UI_UT_scroungerDesc, UI_UT_sharpshooterDesc, UI_UT_short_bladesDesc, UI_UT_short_bluntsDesc, UI_UT_slackDesc, UI_UT_slowworkerDesc, UI_UT_sorelegsDesc, UI_UT_thickbloodDesc, UI_UT_twohanded_axesDesc, UI_UT_twohanded_bladesDesc, UI_UT_twohanded_bluntsDesc, UI_UT_unwaveringDesc, UI_UT_weaklybleedingwoundsDesc, UI_UT_wildsmanDesc)"
+      ],
+      "affected_surfaces": [
+        "description",
+        "localization",
+        "runtime"
+      ],
+      "reproduction_evidence": "Applying the current two-step Translator replacement changes 56 no-argument descriptions.",
+      "missing_proof": "",
+      "recommended_correction": "Encode literal percent signs using the Translator-safe representation verified for this game build.",
+      "smallest_regression_test": "Load every flagged key through the current Translator path without format arguments and compare the rendered text byte-for-byte with intended copy."
+    }
+  ],
+  "parity": {
+    "UT_CORE": {
+      "missing_in_release": [],
+      "extra_in_release": [],
+      "content_mismatch": []
+    },
+    "UniversalTraits": {
+      "missing_in_release": [],
+      "extra_in_release": [],
+      "content_mismatch": [
+        "lua/shared/UniversalTraits/UT_SmokePings.lua",
+        "lua/shared/UniversalTraits/traits/UT_antique.lua",
+        "lua/shared/UniversalTraits/traits/UT_scrounger.lua",
+        "scripts/UT_character_traits.txt"
+      ]
+    }
+  }
+}

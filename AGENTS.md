@@ -1,30 +1,33 @@
 # UniversalTraits — Agent Instructions
 
-This file is the single source of truth for AI agents working in this project.
-Update it after completing any non-trivial task with lessons learned, API discoveries,
-and decisions made. This prevents repeat research and research drift across sessions.
+This file provides the closest project guidance for `UTMods` and is inherited alongside
+the parent `../AGENTS.md`. Current user instructions and parent authorization boundaries
+remain controlling; this file supplies narrower project-specific rules within them.
 
 Before changing any trait, read `TRAIT_CHANGE_CHECKLIST.md` first. Keep the checklist short and operational; keep AGENTS for durable project knowledge.
 
 ---
 
-## Standing Instruction: Update This File After Every Session
+## Maintaining This Guidance
 
-After completing all tasks in a session, evaluate whether any of the following were learned:
+Update this file only when documentation changes are authorized and the lesson is durable
+project guidance, such as:
 
 - New PZ B42 API calls discovered or confirmed working
 - Mod structure decisions that differ from initial assumptions
 - Gotchas, quirks, or bugs encountered
 - Decisions about trait design (costs, effects, MET groupings)
-- Test or tooling patterns that proved useful
+- Test or tooling patterns that should control future work
 
-If yes, add them to the relevant section below before closing the session.
+Keep dated investigations, transient status, test counts, and session notes in the owning
+`planning/`, `research/`, or audit document instead of growing this always-on instruction file.
 
 ---
 
 ## Project Overview
 
-Two-mod layout targeting Project Zomboid Build 42 (Kahlua/Lua 5.x):
+Two-mod layout targeting Project Zomboid Build 42. The game runs Lua through Kahlua;
+the off-game test suites run under standard Lua 5.x with mocked PZ APIs.
 
 | Mod | Purpose | Dependency |
 |-----|---------|-----------|
@@ -33,24 +36,21 @@ Two-mod layout targeting Project Zomboid Build 42 (Kahlua/Lua 5.x):
 
 **Goal:** ~200 traits, all `UT_`-prefixed, no vanilla overrides, single-player only (`DisabledInMultiplayer = true`).
 
-## Current Investigation Note (2026-04-06)
+## Historical Movement Investigation
 
-- **ROOT CAUSE CONFIRMED AND FIXED:** `UTCore_SpeedHook.lua` used `setX()`/`setY()` during `OnPlayerMove`, which clobbered `nextX`/`scriptNextX` and destroyed pending movement deltas. This created a position-pinning feedback loop where the player couldn't move via keyboard.
-- **Fix applied:** SpeedHook now uses `setNextX()`/`setNextY()` to scale the pending animation delta without touching `x` or `scriptNextX`. This preserves the engine's frame pipeline.
-- **Secondary fix:** `UT_natural.lua` was caching derived `getMoveSpeed()` (which includes injury speed) and replaying it into raw `setMoveSpeed()`. Now delegates to `UTCore.applySpeedModifier()` unified API.
-- **Engine contract tests added:** 22 tests parse the PZ Java source to verify the exact engine patterns our fix depends on. If a PZ update changes `setX()`, `setNextX()`, `preupdate()`, `moveUnmoddedInternal()`, or the frame pipeline order, these tests will fail and flag it immediately.
-- Conflict note: TchernoLib remains a structural risk because it uses the same fragile setX/setY rewriting pattern, but there is still no proof that its speed framework is active in the failing run.
+The dated movement failure, proof chain, compatibility risks, and fix history are preserved in
+[research/movement-bug/STATUS.md](research/movement-bug/STATUS.md). Durable speed-modification
+rules remain under [Key Architecture Decisions](#key-architecture-decisions).
 
-## Update-Safe Test Gate (2026-04-07)
+## Update-Safe Test Gate
 
 - `tools/verify_pz_api.py` builds a machine-readable PZ API inventory and compares the current surface against `tools/pz_api_baseline.json`. No smoke manifest — coverage is now handled by `UT_SmokePings.lua`.
 - `tools/generate_smoke_pings.py` reads `tools/pz_api_inventory.json` and auto-generates `UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua` — unguarded API pings that fire at OnGameStart. If any method is missing, PZ's error handler reports it immediately.
-- Smoke ping generation rules (2026-04-08): derive `nutrition` from `player:getNutrition()` (NOT `BodyDamage`), only emit methods that have a real non-SmokePings call site with `arg_count == 0`, and only emit read-only method names (`get*`, `is*`, `has*`, `num*`, `size*`). This avoids startup crashes from wrong receiver chains, setters that require arguments, and destructive zero-arg calls like `removeAllItems()`.
+- Smoke ping generation rules: derive `nutrition` from `player:getNutrition()` (NOT `BodyDamage`), only emit methods that have a real non-SmokePings call site with `arg_count == 0`, and only emit read-only method names (`get*`, `is*`, `has*`, `num*`, `size*`). This avoids startup crashes from wrong receiver chains, setters that require arguments, and destructive zero-arg calls like `removeAllItems()`.
 - `tools/check_smoke_log.py` scans the PZ DebugLog for UT-related runtime errors (informational only, always exits 0).
 - `tools/run_update_safe_gate.py` is the one-command local gate: UT_CORE tests, UniversalTraits tests, PZ API verification + baseline comparison, smoke ping generation, and DebugLog health check. Gate pass/fail is based only on tests + verifier.
-- Current verified baseline: `tools/pz_api_baseline.json` is green against `PZCodebase` build `svn-964`, and the verifier is now `0 FAIL / 0 WARN` after the smoke ping generator was restricted to real zero-arg read-only calls.
-- The verifier still has a smaller triage set of explicit skips/unknown receivers (for example generic timed-action variables and a tree object path). Those are not yet part of the authoritative tracked surface and should be reduced over time rather than ignored.
-- Battering ram collision safety now has a dedicated engine-stack suite in `UniversalTraits/test/test_batteringram_engine_stack.lua`. It adds 21 tests that parse decompiled Java contracts for `IsoMovingObject.separate()`, `BumpedState`, and bump API methods, plus behavioral/regression coverage for suppression timing, cluster bumps, and the freeze-loop scenario.
+- Treat the current verifier output and `tools/pz_api_baseline.json` as the status evidence; do not copy transient pass counts or triage totals into this file.
+- Battering ram collision safety has a dedicated engine-stack suite in `UniversalTraits/test/test_batteringram_engine_stack.lua`, covering decompiled Java contracts plus behavioral and freeze-loop regressions.
 
 ---
 
@@ -60,8 +60,8 @@ Two-mod layout targeting Project Zomboid Build 42 (Kahlua/Lua 5.x):
 UniversalTraits/                          ← repo root
   UT_CORE/
     media/lua/shared/UTCore/              ← source infrastructure files
-    release/UT_CORE/42/media/           ← deployed copy (must be kept in sync)
-    test/run_tests.lua                    ← 52 tests (standard Lua 5.x)
+    release/UT_CORE/42.0/media/         ← derived deployable copy
+    test/run_tests.lua                    ← standard-Lua test suite
     test/UTCoreMocks.lua                  ← mock IsoPlayer, Stats, BodyDamage
   UniversalTraits/
     media/registries.lua                  ← CharacterTrait.register() for all traits
@@ -69,9 +69,9 @@ UniversalTraits/                          ← repo root
     media/lua/shared/Translate/EN/UI.json  ← translation source text used by the game
     media/lua/shared/UniversalTraits/
       UT_MET.lua                          ← runtime mutual exclusivity table
-      traits/UT_<id>.lua                  ← per-trait Lua effect files (121 files)
-    release/UniversalTraits/42/media/   ← deployed copy (must be kept in sync)
-    test/run_tests.lua                    ← 70 tests (standard Lua 5.x)
+      traits/UT_<id>.lua                  ← per-trait Lua effect files
+    release/UniversalTraits/42.0/media/ ← derived deployable copy
+    test/run_tests.lua                    ← standard-Lua test suite
     test/UTTestMocks.lua                  ← mock CharacterTrait
   planning/                               ← implementation plans
   research/                               ← source mod research
@@ -97,7 +97,7 @@ Run from repo root (`C:\Users\Admin\Documents\GIT\GameMods\PZMods\UTMods`):
 "C:\Users\Admin\AppData\Local\Programs\Lua\bin\lua.exe" UniversalTraits/test/run_tests.lua
 ```
 
-**Current passing counts:** 193 (UT_CORE) + 285 (UniversalTraits) = 478 passing.
+Passing totals are determined by the current suite output; do not preserve transient counts here.
 
 Additional local update-safety commands:
 
@@ -127,7 +127,8 @@ The UniversalTraits suite now includes a cross-file consistency audit that fails
 
 ## In-Game Testing (Deploy to Live Mods)
 
-Run from repo root after ANY code change before in-game testing:
+Deployment is not implied by a code change. When the user explicitly authorizes deployment,
+run the appropriate command from the repo root after the required tests pass:
 
 ```bash
 python deploy.py
@@ -152,33 +153,26 @@ python deploy.py UT_CORE
 
 ## Release Folder Policy
 
-`UniversalTraits/release/` and `UT_CORE/release/` must be kept in sync with source after every code change. `deploy.py` handles this automatically — it mirrors source `media/` into `release/<ModName>/42/media/` and copies `mod.info` before deploying to live.
+`UniversalTraits/release/` and `UT_CORE/release/` are derived deployable copies. During an explicitly authorized deployment, `deploy.py` mirrors source `media/` into `release/<ModName>/42.0/media/`, copies `mod.info`, and then updates the live mods.
 
-Required workflow after implementation work:
+Required authorization-aware workflow:
 
 1. Run tests.
-2. Run `python deploy.py --verify`.
-3. Commit the changes.
+2. If deployment is explicitly authorized, run `python deploy.py --verify`.
+3. If a commit is separately authorized, review the scoped diff and commit only task-owned changes.
+
+Do not infer deployment or commit authorization from implementation work alone.
 
 The `release/` folders hold only the minimal deployable mod package — no docs, no tests, no planning files.
 
 ---
 
-## Trait Count (as of 2026-03-28)
+## Trait Inventory And Consistency
 
-| Phase | Count | Status |
-|-------|-------|--------|
-| Phase 1 — XP Boost / script-only stat modifiers | 98 | Complete |
-| Phase 2 — Stat modifier + hasTrait Lua effects | 46 | Complete |
-| Phase 3a — Spawn-with-condition | 4 | Complete |
-| Phase 3b — Periodic-check (timer-based) | 25 | Complete |
-| Phase 3c — Event-driven | 22 | Complete |
-| Phase 3d — Complex state machines | 3 | Complete |
-| **Total registered** | **198** | — |
-| Deferred: UT_amputee | 1 | Deferred indefinitely |
-
-Registration count test in `UniversalTraits/test/run_tests.lua` asserts **198**.
-When adding new traits, update this count and the test.
+The intended catalog belongs in [PRD.md](PRD.md), and active audit status belongs in
+[trait-deep-audit/README.md](trait-deep-audit/README.md). Determine current counts from source
+and tests instead of copying a dated total into this instruction file. When adding a trait,
+update the source inventory and its count assertion together.
 
 The test suite also audits these relationships automatically:
 
@@ -301,7 +295,7 @@ end
 Events.EveryOneMinute.Add(onEveryMinute)
 ```
 
-Trekker-specific note: vanilla B42 splits hunger stat and calorie burn. In decompiled [IsoGameCharacter.java](c:/Users/Admin/Documents/GIT/GameMods/PZMods/PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java), walking still uses the normal hunger-stat path; only running or `SwipeStatePlayer` switch to `hungerIncreaseWhenExercise`. In [Nutrition.java](c:/Users/Admin/Documents/GIT/GameMods/PZMods/PZCodebase/Java/source/zombie/characters/BodyDamage/Nutrition.java), walking calorie burn is `0.13 * 0.6 = 0.078` versus idle `0.016`, so Trekker should leave `CharacterStat.HUNGER` alone but refund `62/78 ~= 79.49%` of walking calorie loss to bring it back to the idle-rate equivalent, while still refunding walking endurance loss.
+Trekker-specific note: vanilla B42 splits hunger stat and calorie burn. In decompiled [IsoGameCharacter.java](../PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java), walking still uses the normal hunger-stat path; only running or `SwipeStatePlayer` switch to `hungerIncreaseWhenExercise`. In [Nutrition.java](../PZCodebase/Java/source/zombie/characters/BodyDamage/Nutrition.java), walking calorie burn is `0.13 * 0.6 = 0.078` versus idle `0.016`, so Trekker should leave `CharacterStat.HUNGER` alone but refund `62/78 ~= 79.49%` of walking calorie loss to bring it back to the idle-rate equivalent, while still refunding walking endurance loss.
 
 Translation copy note: `UT_couchdweller` is a positive indoor-comfort trait in runtime (`EveryOneMinute` boredom and unhappiness reduction while indoors), so its display name/description must be framed positively. `UT_cangrabmore` and `UT_cangrabless` are the MoreSimpleTraits carry-capacity ports (`setMaxWeightBase(9)` / `setMaxWeightBase(7)`), not zombie-grab-chance traits, so their descriptions must explicitly mention base carry weight.
 
@@ -624,28 +618,12 @@ Key groups:
 
 ---
 
-## Deferred Work
+## Status And Historical Work
 
-- **UT_amputee** — complex limb system, deferred indefinitely (plan says "defer to Phase 3b")
-- **In-game verification** — all traits need visual/functional confirmation in PZ character creation
-- **poster.png** — cosmetic, not required for function (both mods missing)
----
-
-## Known Gaps / TODOs
-
-All 6 previously documented gaps are now resolved. See new UTCore hook modules:
-
-- **UTCore_XPHook.lua** — handles AddXP interception (XP mult, XP disable, onetrickpony multi-skill penalty)
-- **UTCore_SpeedHook.lua** — handles OnPlayerMove speed delta (fast, noodlelegs, lurcher, pacer, sorelegs)
-- **UTCore_WorkSpeedHook.lua** — handles getDuration override (quickworker, slowworker, slack, flatearther, photographicmemory)
-- **UTCore_BleedHook.lua** — handles bleed rate via BodyPart health adjustment (thickblood, weaklybleeding, heavilybleeding)
-- **UTCore_ThermalRegulationHook.lua** — handles generic wetness reduction and thermal relief through shared moddata profiles (Less Sweaty is the reference caller)
-
-### Remaining deferred work
-
-- **UT_amputee** — complex limb system, deferred indefinitely
-- **poster.png** — cosmetic, not required for function
-- **In-game verification** — all traits need visual/functional confirmation in PZ character creation
+Implementation progress and deferred items are preserved in
+[planning/2026-03-27-universaltraits-implementation-plan.md](planning/2026-03-27-universaltraits-implementation-plan.md).
+Use [research/movement-bug/STATUS.md](research/movement-bug/STATUS.md) for the dated movement investigation and
+[trait-deep-audit/README.md](trait-deep-audit/README.md) for the active trait-audit workflow.
 
 ## Normal-operation blockers
 

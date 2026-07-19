@@ -291,7 +291,12 @@ def show_profiler():
         r"(?:\s+spikes=(\d+)\s+worst=(\d+)ms@(\S+))?"
         r"\s*\|\s*(.*)"
     )
-    interval_re = re.compile(r"INTERVAL \((\d+) ticks, (\d+)ms total\)")
+    interval_re = re.compile(r"INTERVAL \((\d+) ticks, (\d+)ms total\)(?:\s*\[idx=(\d+)\])?")
+    self_cost_re = re.compile(
+        r"\[MODPROFILER\]\s+SELF\s+(\S+)\s+n=(\d+)\s+"
+        r"p50=([\d.]+)ms\s+p95=([\d.]+)ms\s+p99=([\d.]+)ms\s+max=([\d.]+)ms"
+        r"(?:\s+mean=([\d.]+)ms)?(?:\s+total=(\d+)ms)?(?:\s+calls=(\d+))?"
+    )
     # Per-callback interval line:  Event | Mod | avg=X.XXXms pk=Xms n=N tot=Xms | source
     callback_re = re.compile(
         r"\[MODPROFILER\]\s*!?\s*(\S+)\s+\|\s+(\S+)\s+\|\s+avg=([\d.]+)ms\s+pk=(\d+)ms\s+n=(\d+)\s+tot=(\d+)ms\s+\|\s+(.*)"
@@ -371,6 +376,31 @@ def show_profiler():
                 "event": m.group(2), "mod": m.group(3),
                 "source": m.group(4).strip(),
             })
+
+    # 4b. Self-cost lines (one block emitted per session summary)
+    self_cost_by_summary = []   # list of dicts keyed by component name
+    current_self_block = None
+    for line_num, raw in rows:
+        if "----- SELF-COST -----" in raw:
+            current_self_block = {}
+            self_cost_by_summary.append(current_self_block)
+            continue
+        if current_self_block is not None and "END SESSION SUMMARY" in raw:
+            current_self_block = None
+            continue
+        if current_self_block is not None:
+            m = self_cost_re.search(raw)
+            if m:
+                current_self_block[m.group(1)] = {
+                    "n": int(m.group(2)),
+                    "p50": float(m.group(3)),
+                    "p95": float(m.group(4)),
+                    "p99": float(m.group(5)),
+                    "max": float(m.group(6)),
+                    "mean": float(m.group(7)) if m.group(7) else None,
+                    "total": int(m.group(8)) if m.group(8) else None,
+                    "calls": int(m.group(9)) if m.group(9) else None,
+                }
 
     # 5. Freeze events
     freeze_frames = []
@@ -662,6 +692,86 @@ def show_profiler():
             print(f"    {off['mod']:<20} {off['src']:<36}  Q1avg={q1_avg:.1f}ms Q4avg={q4_avg:.1f}ms ({arrow}{abs(change):.0f}%)  Q1max={q1_max}ms Q4max={q4_max}ms")
 
     # =====================================================================
+    # SECTION 4b: PER-MOD INTERVAL PERCENTILES
+    # Aggregates per-interval tot_ms per mod from the parsed callback data,
+    # then shows the full distribution (p25/p50/p95/p99/max/mean) per mod.
+    # This is the "who spikes badly vs who is consistently heavy" view.
+    # =====================================================================
+    if intervals and intervals[0].get("callbacks"):
+        section("PER-MOD INTERVAL PERCENTILES")
+
+        # Build {mod: [tot_ms per interval]}
+        mod_per_interval = {}
+        for iv in intervals:
+            iv_totals = {}
+            for cb in iv["callbacks"]:
+                iv_totals[cb["mod"]] = iv_totals.get(cb["mod"], 0) + cb["tot_ms"]
+            for mod, tot in iv_totals.items():
+                mod_per_interval.setdefault(mod, []).append(tot)
+
+        # Rank by p95 (the metric that matters for perceived performance)
+        rows_stats = []
+        for mod, tots in mod_per_interval.items():
+            if len(tots) < 5:
+                continue  # not enough samples for percentile to be meaningful
+            sorted_tots = sorted(tots)
+            rows_stats.append({
+                "mod": mod,
+                "n": len(tots),
+                "p25": percentile(sorted_tots, 25),
+                "p50": percentile(sorted_tots, 50),
+                "p95": percentile(sorted_tots, 95),
+                "p99": percentile(sorted_tots, 99),
+                "max": sorted_tots[-1],
+                "mean": sum(tots) / len(tots),
+            })
+        rows_stats.sort(key=lambda r: -r["p95"])
+
+        print(f"    {'Mod':<26} {'#Intv':>5}  {'P25':>6}  {'P50':>6}  {'P95':>6}  {'P99':>6}  {'Max':>7}  {'Mean':>6}")
+        print(f"    {'-'*26} {'-'*5}  {'-'*6}  {'-'*6}  {'-'*6}  {'-'*6}  {'-'*7}  {'-'*6}")
+        for r in rows_stats[:20]:
+            flag = ""
+            if r["p95"] >= 50:
+                flag = " !!"
+            elif r["p95"] >= 20:
+                flag = " !"
+            print(f"    {r['mod']:<26} {r['n']:>5}  {r['p25']:>5.0f}ms {r['p50']:>5.0f}ms {r['p95']:>5.0f}ms {r['p99']:>5.0f}ms {r['max']:>6.0f}ms {r['mean']:>5.0f}ms{flag}")
+        if len(rows_stats) > 20:
+            print(f"    ... +{len(rows_stats) - 20} more mods (ranked by P95)")
+
+    # =====================================================================
+    # SECTION 4c: PER-CALLBACK AVG_MS PERCENTILES
+    # Same idea but for per-callback avg timing, answering "which specific
+    # handler is consistently expensive" rather than "which spikes".
+    # =====================================================================
+    if intervals and intervals[0].get("callbacks"):
+        section("PER-CALLBACK AVG_MS PERCENTILES")
+
+        cb_avg_samples = {}  # (mod, source_short) -> [avg_ms per interval]
+        for iv in intervals:
+            for cb in iv["callbacks"]:
+                src = cb["source"].split("/")[-1] if "/" in cb["source"] else cb["source"]
+                cb_avg_samples.setdefault((cb["mod"], src), []).append(cb["avg_ms"])
+
+        ranked = []
+        for (mod, src), avgs in cb_avg_samples.items():
+            if len(avgs) < 5:
+                continue
+            s = sorted(avgs)
+            ranked.append({
+                "mod": mod, "src": src, "n": len(avgs),
+                "p25": percentile(s, 25), "p50": percentile(s, 50),
+                "p95": percentile(s, 95), "p99": percentile(s, 99),
+                "max": s[-1], "mean": sum(avgs) / len(avgs),
+            })
+        ranked.sort(key=lambda r: -r["p95"])
+
+        print(f"    {'Mod':<20} {'Source':<32} {'#Intv':>5}  {'P25':>6}  {'P50':>6}  {'P95':>6}  {'P99':>6}  {'Max':>6}")
+        print(f"    {'-'*20} {'-'*32} {'-'*5}  {'-'*6}  {'-'*6}  {'-'*6}  {'-'*6}  {'-'*6}")
+        for r in ranked[:15]:
+            print(f"    {r['mod']:<20} {r['src']:<32} {r['n']:>5}  {r['p25']:>4.2f}ms {r['p50']:>4.2f}ms {r['p95']:>4.2f}ms {r['p99']:>4.2f}ms {r['max']:>4.1f}ms")
+
+    # =====================================================================
     # SECTION 5: FREEZE ANALYSIS
     # =====================================================================
     if freeze_frames:
@@ -766,6 +876,57 @@ def show_profiler():
             for m in s["mods"]:
                 spike_str = f"spk={m['spikes']}" if m["spikes"] > 0 else ""
                 print(f"      {m['rank']:<3} {m['mod']:<26} {m['pct']:>5.1f}%  {m['tot_ms']:>8,}ms  {spike_str}")
+
+    # =====================================================================
+    # SECTION 6b: PROFILER SELF-COST
+    # Breaks out the profiler engine's own cost (wrapper overhead, dump I/O,
+    # summary I/O, spike-log I/O) so the user can distinguish profiler overhead
+    # from user-mod overhead. Only present if the Lua side emitted SELF lines.
+    # =====================================================================
+    if self_cost_by_summary:
+        # Use the most recent self-cost block
+        sc = self_cost_by_summary[-1]
+        section("PROFILER SELF-COST")
+
+        print(f"    {'Component':<22} {'#Samp':>5}  {'P50':>9}  {'P95':>9}  {'P99':>9}  {'Max':>9}  {'Total/Calls':>12}")
+        print(f"    {'-'*22} {'-'*5}  {'-'*9}  {'-'*9}  {'-'*9}  {'-'*9}  {'-'*12}")
+
+        # Wrapper: p50/p95/p99 are per-call ms; total = p50 × calls
+        if "wrapper_per_call" in sc:
+            w = sc["wrapper_per_call"]
+            calls = w["calls"] or 0
+            est_total = w["p50"] * calls if calls else 0
+            print(f"    {'wrapper':<22} {w['n']:>5}  "
+                  f"{w['p50']:>7.4f}ms  {w['p95']:>7.4f}ms  {w['p99']:>7.4f}ms  {w['max']:>7.4f}ms  "
+                  f"~{est_total:>8.0f}ms")
+
+        for label, key in [("interval dumps", "interval_dumps"),
+                           ("summary dumps",  "summary_dumps"),
+                           ("spike logs",     "spike_logs")]:
+            if key in sc:
+                d = sc[key]
+                total = d["total"] if d["total"] is not None else 0
+                print(f"    {label:<22} {d['n']:>5}  "
+                      f"{d['p50']:>7.0f}ms  {d['p95']:>7.0f}ms  {d['p99']:>7.0f}ms  {d['max']:>7.0f}ms  "
+                      f"{total:>9}ms")
+
+        # Estimated total self-cost
+        est_total = 0
+        if "wrapper_per_call" in sc and sc["wrapper_per_call"]["calls"]:
+            est_total += sc["wrapper_per_call"]["p50"] * sc["wrapper_per_call"]["calls"]
+        for key in ("interval_dumps", "summary_dumps", "spike_logs"):
+            if key in sc and sc[key]["total"] is not None:
+                est_total += sc[key]["total"]
+        if est_total > 0:
+            if intervals:
+                frame_span = intervals[-1]["frame"] - intervals[0]["frame"]
+                if frame_span > 0:
+                    per_1kf = est_total / frame_span * 1000
+                    print(f"\n    Estimated total self-cost: ~{est_total:.0f}ms over {frame_span:,} frames = {per_1kf:.1f} ms/1000f")
+                else:
+                    print(f"\n    Estimated total self-cost: ~{est_total:.0f}ms")
+            else:
+                print(f"\n    Estimated total self-cost: ~{est_total:.0f}ms")
 
     # =====================================================================
     # SECTION 7: KEY INSIGHTS (auto-generated)

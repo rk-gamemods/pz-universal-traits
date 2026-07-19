@@ -218,9 +218,12 @@ end)
 -- =====================================================================
 
 test("ENGINE CONTRACT: doDeferredMovement() calls MoveUnmodded", function()
-    -- Search for MoveUnmodded called on self in any IsoGameCharacter method
-    assertContains(isoGameCharSrc, "this.MoveUnmodded(",
-        "doDeferredMovement must call MoveUnmodded to write animation delta into nextX")
+    -- PZ svn-964 (2026-05) decompiles this as lowercase moveUnmodded; older builds emit MoveUnmodded.
+    -- Either spelling is fine as long as the call chain into moveUnmoddedInternal is preserved.
+    local hasCall = isoGameCharSrc:find("this.MoveUnmodded(", 1, true)
+        or isoGameCharSrc:find("this.moveUnmodded(", 1, true)
+    assert(hasCall,
+        "doDeferredMovement must call moveUnmodded/MoveUnmodded to write animation delta into nextX")
 end)
 
 -- =====================================================================

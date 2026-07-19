@@ -1,0 +1,3099 @@
+{
+  "blockers": [],
+  "cross_trait_findings": [
+    {
+      "affected_surfaces": [
+        "evidence anchors"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_preparedfood",
+        "UniversalTraits:UT_preparedmedical",
+        "UniversalTraits:UT_preparedpack",
+        "UniversalTraits:UT_preparedweapons",
+        "UniversalTraits:UT_problade",
+        "UniversalTraits:UT_problunt",
+        "UniversalTraits:UT_prodigy",
+        "UniversalTraits:UT_progun",
+        "UniversalTraits:UT_prospear",
+        "UniversalTraits:UT_quickrest",
+        "UniversalTraits:UT_quickworker",
+        "UniversalTraits:UT_quiet",
+        "UniversalTraits:UT_ravenous",
+        "UniversalTraits:UT_restfulsleeper",
+        "UniversalTraits:UT_scardycat",
+        "UniversalTraits:UT_scrapper"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:1-16"
+        },
+        {
+          "path_or_symbol": "UniversalTraits/media/scripts/UT_character_traits.txt actual lines 5,27,60,106,306,318,330,342,677,818,1114,1181,1323,1334,1714,1948"
+        }
+      ],
+      "confidence": "high",
+      "id": "IR09-ANCHOR-001",
+      "missing_proof": "Nearby symbols remain identifiable.",
+      "recommended_correction": "Anchor exact definition line or symbol.",
+      "reproduction_or_source_evidence": "All claimed anchors are one or two lines early.",
+      "severity": "low",
+      "smallest_regression_test": "Assert anchored line contains full ID.",
+      "state": "coverage-gap",
+      "title": "Every batch-09 script anchor precedes its definition"
+    },
+    {
+      "affected_surfaces": [
+        "balance"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_preparedfood",
+        "UniversalTraits:UT_preparedmedical",
+        "UniversalTraits:UT_preparedpack",
+        "UniversalTraits:UT_preparedweapons",
+        "UniversalTraits:UT_problade",
+        "UniversalTraits:UT_problunt",
+        "UniversalTraits:UT_progun",
+        "UniversalTraits:UT_quiet",
+        "UniversalTraits:UT_scrapper"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:1-16"
+        }
+      ],
+      "confidence": "high",
+      "id": "IR09-BALANCE-001",
+      "missing_proof": "No approved baseline.",
+      "recommended_correction": "Retain coverage gaps until measured.",
+      "reproduction_or_source_evidence": "No benchmark, telemetry, or comparative playtest supports the states.",
+      "severity": "medium",
+      "smallest_regression_test": "Evaluate against an approved cost/effect matrix.",
+      "state": "coverage-gap",
+      "title": "Nine batch-09 traits mark balance proven without evidence"
+    },
+    {
+      "affected_surfaces": [
+        "cadence",
+        "description",
+        "numbers",
+        "runtime"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_quickrest",
+        "UniversalTraits:UT_restfulsleeper"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "UT_CORE/media/lua/shared/UTCore/UTCore_SleepQualityHook.lua:9-16,23-43"
+        },
+        {
+          "path_or_symbol": "PZCodebase/Java/source/zombie/characters/IsoPlayer.java:3036-3080"
+        }
+      ],
+      "confidence": "high",
+      "id": "IR09-SLEEP-001",
+      "missing_proof": "No live full-night trace.",
+      "recommended_correction": "Implement proportional recovery or describe fixed drain.",
+      "reproduction_or_source_evidence": "Fixed minute drains ignore vanilla recovery inputs and delay.",
+      "severity": "medium",
+      "smallest_regression_test": "Measure fatigue bands, beds, and pre-delay.",
+      "state": "confirmed-defect",
+      "title": "Quick Rest and Restful Sleeper use fixed pre-delay drain, not proportional quality multipliers"
+    },
+    {
+      "affected_surfaces": [
+        "provenance",
+        "source intent"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_preparedpack",
+        "UniversalTraits:UT_quickrest",
+        "UniversalTraits:UT_ravenous",
+        "UniversalTraits:UT_restfulsleeper",
+        "UniversalTraits:UT_scardycat"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "trait-deep-audit/active/batch/traits/{UT_preparedpack,UT_quickrest,UT_ravenous,UT_restfulsleeper,UT_scardycat}.md Source Evidence"
+        }
+      ],
+      "confidence": "high",
+      "id": "IR09-SOURCEINTENT-001",
+      "missing_proof": "Raw symbols/revisions unavailable.",
+      "recommended_correction": "Index canonical source or retain gaps.",
+      "reproduction_or_source_evidence": "Secondary sections record material differences; canonical research Lua is outside JCode.",
+      "severity": "high",
+      "smallest_regression_test": "Require indexed path/symbol/revision.",
+      "state": "coverage-gap",
+      "title": "Five source-intent claims lack canonical indexed source evidence"
+    },
+    {
+      "affected_surfaces": [
+        "completion gate",
+        "terminal classification"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_spears",
+        "UniversalTraits:UT_speccrafting",
+        "UniversalTraits:UT_specfood",
+        "UniversalTraits:UT_specguns",
+        "UniversalTraits:UT_specmove",
+        "UniversalTraits:UT_specweapons",
+        "UniversalTraits:UT_sprintdemon",
+        "UniversalTraits:UT_swift",
+        "UniversalTraits:UT_taut",
+        "UniversalTraits:UT_terminator",
+        "UniversalTraits:UT_tinkerer",
+        "UniversalTraits:UT_twohanded"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:15"
+        },
+        {
+          "path_or_symbol": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:1-6,12-13,15"
+        },
+        {
+          "path_or_symbol": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:1,5"
+        }
+      ],
+      "confidence": "high",
+      "id": "IR0912-FALSE-TERMINAL-001",
+      "missing_proof": "No approved masking rule exists.",
+      "recommended_correction": "Derive overall state conservatively.",
+      "reproduction_or_source_evidence": "Their dimensions retain localization, balance, tests, stacking, or runtime gaps.",
+      "severity": "high",
+      "smallest_regression_test": "Require all required dimensions proven-correct.",
+      "state": "confirmed-defect",
+      "title": "Twelve proven-correct records retain nonterminal dimensions"
+    },
+    {
+      "accepted_finding_count": 47,
+      "affected_surfaces": [
+        "audit schema",
+        "finding contract"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_preparedpack",
+        "UniversalTraits:UT_prodigy",
+        "UniversalTraits:UT_prospear",
+        "UniversalTraits:UT_quickrest",
+        "UniversalTraits:UT_quickworker",
+        "UniversalTraits:UT_ravenous",
+        "UniversalTraits:UT_restfulsleeper",
+        "UniversalTraits:UT_scardycat",
+        "UniversalTraits:UT_scrounger",
+        "UniversalTraits:UT_sedentary",
+        "UniversalTraits:UT_selfdestructive",
+        "UniversalTraits:UT_sensitivestomach",
+        "UniversalTraits:UT_sharpshooter",
+        "UniversalTraits:UT_short_blades",
+        "UniversalTraits:UT_short_blunts",
+        "UniversalTraits:UT_slack",
+        "UniversalTraits:UT_sloth",
+        "UniversalTraits:UT_slowworker",
+        "UniversalTraits:UT_sore",
+        "UniversalTraits:UT_specaid",
+        "UniversalTraits:UT_squirrel",
+        "UniversalTraits:UT_staunch",
+        "UniversalTraits:UT_strongnimble",
+        "UniversalTraits:UT_sundayrunner",
+        "UniversalTraits:UT_superimmune",
+        "UniversalTraits:UT_tavernbrawler",
+        "UniversalTraits:UT_thickblood",
+        "UniversalTraits:UT_topheavy",
+        "UniversalTraits:UT_trackman",
+        "UniversalTraits:UT_twohanded_axes",
+        "UniversalTraits:UT_twohanded_blades",
+        "UniversalTraits:UT_twohanded_blunts",
+        "UniversalTraits:UT_unwavering",
+        "UniversalTraits:UT_vagabond",
+        "UniversalTraits:UT_vehophobic",
+        "UniversalTraits:UT_wildplantsallergy",
+        "UniversalTraits:UT_wildsman",
+        "UniversalTraits:UT_woodsplitter"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:1-16"
+        },
+        {
+          "path_or_symbol": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:1-16"
+        },
+        {
+          "path_or_symbol": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:1-16"
+        },
+        {
+          "path_or_symbol": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:1-16"
+        }
+      ],
+      "confidence": "high",
+      "id": "IR0912-FINDING-STATE-001",
+      "missing_proof": "No unambiguous derivation exists.",
+      "missing_state_count": 47,
+      "recommended_correction": "Add and validate explicit four-state values.",
+      "reproduction_or_source_evidence": "All 47 finding objects have no state key.",
+      "severity": "high",
+      "smallest_regression_test": "Fail any finding missing state.",
+      "state": "confirmed-defect",
+      "title": "All 47 accepted findings omit required state"
+    },
+    {
+      "absent_locale_count": 26,
+      "affected_surfaces": [
+        "fallback policy",
+        "localization"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_preparedfood",
+        "UniversalTraits:UT_preparedmedical",
+        "UniversalTraits:UT_preparedpack",
+        "UniversalTraits:UT_preparedweapons",
+        "UniversalTraits:UT_problade",
+        "UniversalTraits:UT_problunt",
+        "UniversalTraits:UT_prodigy",
+        "UniversalTraits:UT_progun",
+        "UniversalTraits:UT_prospear",
+        "UniversalTraits:UT_quickrest",
+        "UniversalTraits:UT_quickworker",
+        "UniversalTraits:UT_quiet",
+        "UniversalTraits:UT_ravenous",
+        "UniversalTraits:UT_restfulsleeper",
+        "UniversalTraits:UT_scardycat",
+        "UniversalTraits:UT_scrapper",
+        "UniversalTraits:UT_scrounger",
+        "UniversalTraits:UT_secondwind",
+        "UniversalTraits:UT_sedentary",
+        "UniversalTraits:UT_selfdestructive",
+        "UniversalTraits:UT_sensitivestomach",
+        "UniversalTraits:UT_sharpshooter",
+        "UniversalTraits:UT_short_blades",
+        "UniversalTraits:UT_short_blunts",
+        "UniversalTraits:UT_slack",
+        "UniversalTraits:UT_sloth",
+        "UniversalTraits:UT_slowworker",
+        "UniversalTraits:UT_snorer",
+        "UniversalTraits:UT_sore",
+        "UniversalTraits:UT_sorelegs",
+        "UniversalTraits:UT_spears",
+        "UniversalTraits:UT_specaid",
+        "UniversalTraits:UT_speccrafting",
+        "UniversalTraits:UT_specfood",
+        "UniversalTraits:UT_specguns",
+        "UniversalTraits:UT_specmove",
+        "UniversalTraits:UT_specweapons",
+        "UniversalTraits:UT_sprintdemon",
+        "UniversalTraits:UT_squirrel",
+        "UniversalTraits:UT_staunch",
+        "UniversalTraits:UT_strongnimble",
+        "UniversalTraits:UT_sundayrunner",
+        "UniversalTraits:UT_superimmune",
+        "UniversalTraits:UT_swift",
+        "UniversalTraits:UT_taut",
+        "UniversalTraits:UT_tavernbrawler",
+        "UniversalTraits:UT_terminator",
+        "UniversalTraits:UT_thickblood",
+        "UniversalTraits:UT_tinkerer",
+        "UniversalTraits:UT_topheavy",
+        "UniversalTraits:UT_trackman",
+        "UniversalTraits:UT_trekker",
+        "UniversalTraits:UT_twohanded",
+        "UniversalTraits:UT_twohanded_axes",
+        "UniversalTraits:UT_twohanded_blades",
+        "UniversalTraits:UT_twohanded_blunts",
+        "UniversalTraits:UT_unwavering",
+        "UniversalTraits:UT_vagabond",
+        "UniversalTraits:UT_vehophobic",
+        "UniversalTraits:UT_weaklybleedingwounds",
+        "UniversalTraits:UT_weathersensitive",
+        "UniversalTraits:UT_wildplantsallergy",
+        "UniversalTraits:UT_wildsman",
+        "UniversalTraits:UT_woodsplitter"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "trait-deep-audit/campaign/source_inventory.json:48,834-837"
+        },
+        {
+          "path_or_symbol": "trait-deep-audit/campaign/translation_audit.json:F-UT-LOC-001"
+        },
+        {
+          "path_or_symbol": "UniversalTraits/media/lua/shared/Translate/EN/UI.json"
+        }
+      ],
+      "confidence": "high",
+      "id": "IR0912-LOCALIZATION-001",
+      "misclassified_traits": [
+        "UniversalTraits:UT_preparedfood",
+        "UniversalTraits:UT_preparedmedical",
+        "UniversalTraits:UT_preparedpack",
+        "UniversalTraits:UT_preparedweapons",
+        "UniversalTraits:UT_problade",
+        "UniversalTraits:UT_problunt",
+        "UniversalTraits:UT_prodigy",
+        "UniversalTraits:UT_progun",
+        "UniversalTraits:UT_prospear",
+        "UniversalTraits:UT_quickrest",
+        "UniversalTraits:UT_quickworker",
+        "UniversalTraits:UT_quiet",
+        "UniversalTraits:UT_ravenous",
+        "UniversalTraits:UT_restfulsleeper",
+        "UniversalTraits:UT_scardycat",
+        "UniversalTraits:UT_scrapper",
+        "UniversalTraits:UT_tinkerer",
+        "UniversalTraits:UT_topheavy",
+        "UniversalTraits:UT_trackman",
+        "UniversalTraits:UT_trekker",
+        "UniversalTraits:UT_twohanded",
+        "UniversalTraits:UT_twohanded_axes",
+        "UniversalTraits:UT_twohanded_blades",
+        "UniversalTraits:UT_twohanded_blunts",
+        "UniversalTraits:UT_unwavering",
+        "UniversalTraits:UT_vagabond",
+        "UniversalTraits:UT_vehophobic",
+        "UniversalTraits:UT_weaklybleedingwounds",
+        "UniversalTraits:UT_weathersensitive",
+        "UniversalTraits:UT_wildplantsallergy",
+        "UniversalTraits:UT_wildsman",
+        "UniversalTraits:UT_woodsplitter"
+      ],
+      "missing_proof": "No approved policy or selected-language runtime proof.",
+      "recommended_correction": "Approve supported locales and validate keys/fallback.",
+      "reproduction_or_source_evidence": "UT locales={EN}; batch 09/12 incorrectly call absence proven coverage.",
+      "severity": "medium",
+      "smallest_regression_test": "Launch each approved language and resolve all 64 keys.",
+      "state": "coverage-gap",
+      "title": "Only EN is packaged; 26 PZ locales are absent without an approved non-goal"
+    },
+    {
+      "affected_surfaces": [
+        "EN descriptions",
+        "runtime display"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_prospear",
+        "UniversalTraits:UT_quickworker",
+        "UniversalTraits:UT_restfulsleeper",
+        "UniversalTraits:UT_scrounger",
+        "UniversalTraits:UT_sharpshooter",
+        "UniversalTraits:UT_short_blades",
+        "UniversalTraits:UT_short_blunts",
+        "UniversalTraits:UT_slack",
+        "UniversalTraits:UT_slowworker",
+        "UniversalTraits:UT_sorelegs",
+        "UniversalTraits:UT_thickblood",
+        "UniversalTraits:UT_twohanded_axes",
+        "UniversalTraits:UT_twohanded_blades",
+        "UniversalTraits:UT_twohanded_blunts",
+        "UniversalTraits:UT_unwavering",
+        "UniversalTraits:UT_weaklybleedingwounds",
+        "UniversalTraits:UT_wildsman"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "PZCodebase/Java/source/zombie/core/Translator.java:252 loadJSONObject"
+        },
+        {
+          "path_or_symbol": "PZCodebase/Java/source/zombie/characters/traits/CharacterTraitDefinition.java:37"
+        },
+        {
+          "path_or_symbol": "trait-deep-audit/campaign/translation_audit.json:F-UT-TR-001"
+        }
+      ],
+      "confidence": "high",
+      "id": "IR0912-PERCENT-001",
+      "missing_proof": "No screenshot; source implication is deterministic.",
+      "recommended_correction": "Encode literal percentages compatibly.",
+      "reproduction_or_source_evidence": "Translator doubles literal percent signs; trait descriptions resolve with no format args, changing 17 assigned strings.",
+      "severity": "high",
+      "smallest_regression_test": "Resolve affected keys and assert one percent.",
+      "state": "confirmed-defect",
+      "title": "Literal percent signs mutate in current Translator resolution"
+    },
+    {
+      "affected_surfaces": [
+        "audit schema",
+        "dimension states"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_preparedfood",
+        "UniversalTraits:UT_preparedmedical",
+        "UniversalTraits:UT_preparedpack",
+        "UniversalTraits:UT_preparedweapons",
+        "UniversalTraits:UT_problade",
+        "UniversalTraits:UT_problunt",
+        "UniversalTraits:UT_prodigy",
+        "UniversalTraits:UT_progun",
+        "UniversalTraits:UT_prospear",
+        "UniversalTraits:UT_quickrest",
+        "UniversalTraits:UT_quickworker",
+        "UniversalTraits:UT_quiet",
+        "UniversalTraits:UT_ravenous",
+        "UniversalTraits:UT_restfulsleeper",
+        "UniversalTraits:UT_scardycat",
+        "UniversalTraits:UT_scrapper"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:1-16"
+        }
+      ],
+      "confidence": "high",
+      "id": "IR0912-SCHEMA-VOCAB-001",
+      "missing_proof": "No schema authorizes the alias.",
+      "recommended_correction": "Normalize values and enforce the four-state enum.",
+      "reproduction_or_source_evidence": "385 values are 'proven'; the required value is proven-correct.",
+      "severity": "high",
+      "smallest_regression_test": "Reject a state='proven' fixture.",
+      "state": "confirmed-defect",
+      "title": "Batch 09 uses unsupported state 'proven' in 385 dimensions"
+    },
+    {
+      "affected_surfaces": [
+        "EN load",
+        "development startup"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_unwavering"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "UniversalTraits/media/lua/shared/Translate/EN/UI.json:243"
+        },
+        {
+          "path_or_symbol": "PZCodebase/Java/source/zombie/core/Translator.java:36-50,257,762-775"
+        }
+      ],
+      "confidence": "high",
+      "id": "IR0912-UNICODE-001",
+      "missing_proof": "No development launch.",
+      "recommended_correction": "Use approved punctuation.",
+      "reproduction_or_source_evidence": "U+2014 is in LOOKALIKE_CHARS.",
+      "severity": "high",
+      "smallest_regression_test": "Load real EN JSON through the guard.",
+      "state": "confirmed-defect",
+      "title": "Unwavering contains U+2014 rejected by the development Translator guard"
+    },
+    {
+      "affected_surfaces": [
+        "description",
+        "runtime",
+        "weapon classification"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_short_blades",
+        "UniversalTraits:UT_short_blunts",
+        "UniversalTraits:UT_spears"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua:14-31,50-60,118-123"
+        },
+        {
+          "path_or_symbol": "UniversalTraits/media/lua/shared/Translate/EN/UI.json:91,103,111"
+        }
+      ],
+      "confidence": "high",
+      "id": "IR10-MELEE-SHARED-001",
+      "missing_proof": "No live timing matrix.",
+      "recommended_correction": "Scope by category/handedness and disclose, or remove.",
+      "reproduction_or_source_evidence": "All three receive undisclosed 50% delay; coarse blade/blunt categories affect long weapons.",
+      "severity": "high",
+      "smallest_regression_test": "Test short/long weapon matrix and controls.",
+      "state": "confirmed-defect",
+      "title": "Hidden shared melee-delay behavior is overbroad"
+    },
+    {
+      "affected_surfaces": [
+        "index coverage",
+        "source intent"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_selfdestructive",
+        "UniversalTraits:UT_sensitivestomach",
+        "UniversalTraits:UT_sloth",
+        "UniversalTraits:UT_snorer",
+        "UniversalTraits:UT_sore"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "trait-deep-audit/active/batch/traits Source Evidence"
+        }
+      ],
+      "confidence": "high",
+      "id": "IR10-SOURCE-INDEX-GAP-001",
+      "missing_proof": "Raw source symbols/revisions unavailable.",
+      "recommended_correction": "Add bounded research selection or retain gaps.",
+      "reproduction_or_source_evidence": "Only secondary sections were available.",
+      "severity": "medium",
+      "smallest_regression_test": "Resolve every upstream claim canonically.",
+      "state": "coverage-gap",
+      "title": "Canonical installed source-mod Lua is outside the code index"
+    },
+    {
+      "affected_surfaces": [
+        "balance",
+        "description",
+        "runtime"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_slack",
+        "UniversalTraits:UT_slowworker"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "UT_CORE/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua:14-51,54-65"
+        },
+        {
+          "path_or_symbol": "UniversalTraits/media/lua/shared/Translate/EN/UI.json:213-215"
+        }
+      ],
+      "confidence": "high",
+      "id": "IR10-WORK-SCOPE-001",
+      "missing_proof": "Live class census absent.",
+      "recommended_correction": "Allowlist intended actions or broaden contract.",
+      "reproduction_or_source_evidence": "workMod applies before Type restriction and every global getDuration table is wrapped.",
+      "severity": "high",
+      "smallest_regression_test": "Test craft/build/eat/heal/transfer/reload/read.",
+      "state": "confirmed-defect",
+      "title": "Slack and Slow Worker affect all wrapped timed actions"
+    },
+    {
+      "affected_surfaces": [
+        "Kahlua",
+        "numbers",
+        "runtime",
+        "tests"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_slack",
+        "UniversalTraits:UT_slowworker"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "UT_CORE/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua:54-65"
+        },
+        {
+          "path_or_symbol": "UT_CORE/test/run_tests.lua:611-613"
+        }
+      ],
+      "confidence": "high",
+      "id": "IR10-WORK-WRAP-002",
+      "missing_proof": "Live class graph/order absent.",
+      "recommended_correction": "Patch each defining function once.",
+      "reproduction_or_source_evidence": "Derived tables can capture already wrapped inherited methods; pairs order is not contractual.",
+      "severity": "high",
+      "smallest_regression_test": "Test base/derived orders; 100 becomes 150, never 225.",
+      "state": "confirmed-defect",
+      "title": "Inherited getDuration methods can be wrapped repeatedly"
+    },
+    {
+      "affected_surfaces": [
+        "death state",
+        "runtime",
+        "shared hook",
+        "tests"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_thickblood",
+        "UniversalTraits:UT_weaklybleedingwounds"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua:60-76"
+        },
+        {
+          "path_or_symbol": "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyDamage.java:1060-1072"
+        },
+        {
+          "path_or_symbol": "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:3572-3584,5607"
+        }
+      ],
+      "confidence": "high",
+      "id": "IR11-BLEED-POOL-001",
+      "missing_proof": "No live trace; pool separation is source-proven.",
+      "recommended_correction": "Use verified BodyDamage path/event.",
+      "reproduction_or_source_evidence": "Distinct pools mean player:setHealth does not reduce native BodyDamage loss.",
+      "severity": "high",
+      "smallest_regression_test": "Model distinct pools; assert 0.5x/0.6x loss.",
+      "state": "confirmed-defect",
+      "title": "BleedDrainHook compensates actor health while native bleed damages BodyDamage health"
+    }
+  ],
+  "per_trait_review": [
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:1",
+      "cross_finding_ids": [
+        "IR09-ANCHOR-001",
+        "IR09-BALANCE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-SCHEMA-VOCAB-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_09",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_preparedfood",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:2",
+      "cross_finding_ids": [
+        "IR09-ANCHOR-001",
+        "IR09-BALANCE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-SCHEMA-VOCAB-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_09",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_preparedmedical",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:3",
+      "cross_finding_ids": [
+        "IR09-ANCHOR-001",
+        "IR09-BALANCE-001",
+        "IR09-SOURCEINTENT-001",
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-SCHEMA-VOCAB-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_09",
+      "supported_accepted_finding_ids": [
+        "B09-PREPAREDPACK-001"
+      ],
+      "trait_id": "UniversalTraits:UT_preparedpack",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:4",
+      "cross_finding_ids": [
+        "IR09-ANCHOR-001",
+        "IR09-BALANCE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-SCHEMA-VOCAB-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_09",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_preparedweapons",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:5",
+      "cross_finding_ids": [
+        "IR09-ANCHOR-001",
+        "IR09-BALANCE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-SCHEMA-VOCAB-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_09",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_problade",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:6",
+      "cross_finding_ids": [
+        "IR09-ANCHOR-001",
+        "IR09-BALANCE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-SCHEMA-VOCAB-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_09",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_problunt",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:7",
+      "cross_finding_ids": [
+        "IR09-ANCHOR-001",
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-SCHEMA-VOCAB-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_09",
+      "supported_accepted_finding_ids": [
+        "B09-PRODIGY-001"
+      ],
+      "trait_id": "UniversalTraits:UT_prodigy",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:8",
+      "cross_finding_ids": [
+        "IR09-ANCHOR-001",
+        "IR09-BALANCE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-SCHEMA-VOCAB-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_09",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_progun",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "runtime-unproven",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:9",
+      "cross_finding_ids": [
+        "IR09-ANCHOR-001",
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-PERCENT-001",
+        "IR0912-SCHEMA-VOCAB-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "new omissions listed",
+      "omissions": [
+        {
+          "affected_surfaces": [
+            "Java-Lua",
+            "mocks",
+            "runtime",
+            "tests"
+          ],
+          "affected_traits": [
+            "UniversalTraits:UT_prospear"
+          ],
+          "anchors": [
+            {
+              "path_or_symbol": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_prospear.lua:20-28"
+            },
+            {
+              "path_or_symbol": "PZCodebase/Java/source/zombie/inventory/types/HandWeapon.java:1495-1500"
+            },
+            {
+              "path_or_symbol": "UniversalTraits/test/UTTestMocks.lua:1193-1197"
+            },
+            {
+              "path_or_symbol": "UniversalTraits/test/run_tests.lua:4283"
+            }
+          ],
+          "confidence": "high",
+          "id": "IR09-PROSPEAR-001",
+          "missing_proof": "Sharp spear items and live lifecycle unobserved.",
+          "recommended_correction": "Use non-mutating crit calculation or explicit raw/effective conversion.",
+          "reproduction_or_source_evidence": "getCriticalChance scales raw crit by sharpness; setCriticalChance assigns raw, so getter+10 can reduce/drift effective crit.",
+          "severity": "high",
+          "smallest_regression_test": "Raw 30, sharpness .5 must gain exactly 10.",
+          "state": "confirmed-defect",
+          "title": "Pro Spear mixes sharpness-scaled getter with raw crit setter"
+        }
+      ],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_09",
+      "supported_accepted_finding_ids": [
+        "B09-PROSPEAR-COV-001"
+      ],
+      "trait_id": "UniversalTraits:UT_prospear",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "runtime-unproven",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:10",
+      "cross_finding_ids": [
+        "IR09-ANCHOR-001",
+        "IR09-SLEEP-001",
+        "IR09-SOURCEINTENT-001",
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-SCHEMA-VOCAB-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "new omissions listed",
+      "omissions": [
+        {
+          "affected_surfaces": [
+            "description",
+            "numbers",
+            "runtime"
+          ],
+          "affected_traits": [
+            "UniversalTraits:UT_quickrest"
+          ],
+          "anchors": [
+            {
+              "path_or_symbol": "UT_CORE/media/lua/shared/UTCore/UTCore_SleepQualityHook.lua:9-16,23-43"
+            },
+            {
+              "path_or_symbol": "PZCodebase/Java/source/zombie/characters/IsoPlayer.java:3036-3080"
+            },
+            {
+              "path_or_symbol": "UniversalTraits/media/lua/shared/Translate/EN/UI.json:239"
+            }
+          ],
+          "confidence": "high",
+          "id": "IR09-QUICKREST-SLEEP-001",
+          "missing_proof": "No live full-night trace.",
+          "recommended_correction": "Implement proportional recovery or describe fixed drain.",
+          "reproduction_or_source_evidence": "Fixed drain ignores vanilla delay, fatigue band, bed, traits.",
+          "severity": "medium",
+          "smallest_regression_test": "Compare beds/bands/pre-delay.",
+          "state": "confirmed-defect",
+          "title": "Quick Rest is fixed additive drain, not proportional recovery"
+        }
+      ],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_09",
+      "supported_accepted_finding_ids": [
+        "B09-QUICKREST-COV-001"
+      ],
+      "trait_id": "UniversalTraits:UT_quickrest",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:11",
+      "cross_finding_ids": [
+        "IR09-ANCHOR-001",
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-PERCENT-001",
+        "IR0912-SCHEMA-VOCAB-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "new omissions listed",
+      "omissions": [
+        {
+          "affected_surfaces": [
+            "balance",
+            "description",
+            "numbers"
+          ],
+          "affected_traits": [
+            "UniversalTraits:UT_quickworker"
+          ],
+          "anchors": [
+            {
+              "path_or_symbol": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_quickworker.lua:6-8"
+            },
+            {
+              "path_or_symbol": "UT_CORE/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua:12-50"
+            },
+            {
+              "path_or_symbol": "UniversalTraits/media/lua/shared/Translate/EN/UI.json:211"
+            }
+          ],
+          "confidence": "high",
+          "id": "IR09-QUICKWORKER-002",
+          "missing_proof": "Meaning of speed undocumented.",
+          "recommended_correction": "Say 30% shorter or divide by 1.3.",
+          "reproduction_or_source_evidence": "0.7 duration means 1/0.7 rate.",
+          "severity": "medium",
+          "smallest_regression_test": "100 becomes 77 for +30% rate.",
+          "state": "confirmed-defect",
+          "title": "30% duration cut is 42.9% more throughput"
+        }
+      ],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_09",
+      "supported_accepted_finding_ids": [
+        "B09-QUICKWORKER-001"
+      ],
+      "trait_id": "UniversalTraits:UT_quickworker",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:12",
+      "cross_finding_ids": [
+        "IR09-ANCHOR-001",
+        "IR09-BALANCE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-SCHEMA-VOCAB-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_09",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_quiet",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "runtime-unproven",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:13",
+      "cross_finding_ids": [
+        "IR09-ANCHOR-001",
+        "IR09-SOURCEINTENT-001",
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-SCHEMA-VOCAB-001"
+      ],
+      "independent_state": "runtime-unproven",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_09",
+      "supported_accepted_finding_ids": [
+        "B09-RAVENOUS-COV-001"
+      ],
+      "trait_id": "UniversalTraits:UT_ravenous",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "runtime-unproven",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:14",
+      "cross_finding_ids": [
+        "IR09-ANCHOR-001",
+        "IR09-SLEEP-001",
+        "IR09-SOURCEINTENT-001",
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-PERCENT-001",
+        "IR0912-SCHEMA-VOCAB-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "new omissions listed",
+      "omissions": [
+        {
+          "affected_surfaces": [
+            "description",
+            "numbers",
+            "runtime"
+          ],
+          "affected_traits": [
+            "UniversalTraits:UT_restfulsleeper"
+          ],
+          "anchors": [
+            {
+              "path_or_symbol": "UT_CORE/media/lua/shared/UTCore/UTCore_SleepQualityHook.lua:9-16,23-43"
+            },
+            {
+              "path_or_symbol": "PZCodebase/Java/source/zombie/characters/IsoPlayer.java:3036-3080"
+            },
+            {
+              "path_or_symbol": "UniversalTraits/media/lua/shared/Translate/EN/UI.json:237"
+            }
+          ],
+          "confidence": "high",
+          "id": "IR09-RESTFULSLEEPER-SLEEP-001",
+          "missing_proof": "No live full-night trace.",
+          "recommended_correction": "Implement proportional recovery or describe fixed drain.",
+          "reproduction_or_source_evidence": "Fixed drain ignores vanilla delay, fatigue band, bed, traits.",
+          "severity": "medium",
+          "smallest_regression_test": "Compare beds/bands/pre-delay.",
+          "state": "confirmed-defect",
+          "title": "Restful Sleeper is fixed additive drain, not proportional recovery"
+        }
+      ],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_09",
+      "supported_accepted_finding_ids": [
+        "B09-RESTFULSLEEPER-COV-001"
+      ],
+      "trait_id": "UniversalTraits:UT_restfulsleeper",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:15",
+      "cross_finding_ids": [
+        "IR09-ANCHOR-001",
+        "IR09-SOURCEINTENT-001",
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-SCHEMA-VOCAB-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_09",
+      "supported_accepted_finding_ids": [
+        "B09-SCARDYCAT-001",
+        "B09-SCARDYCAT-002",
+        "B09-SCARDYCAT-003"
+      ],
+      "trait_id": "UniversalTraits:UT_scardycat",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_09.jsonl:16",
+      "cross_finding_ids": [
+        "IR09-ANCHOR-001",
+        "IR09-BALANCE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-SCHEMA-VOCAB-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_09",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_scrapper",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:1",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-PERCENT-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_10",
+      "supported_accepted_finding_ids": [
+        "B10-SCROUNGER-001",
+        "B10-SCROUNGER-002",
+        "B10-SCROUNGER-003"
+      ],
+      "trait_id": "UniversalTraits:UT_scrounger",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "runtime-unproven",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:2",
+      "cross_finding_ids": [
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "runtime-unproven",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_10",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_secondwind",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:3",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_10",
+      "supported_accepted_finding_ids": [
+        "B10-SEDENTARY-001"
+      ],
+      "trait_id": "UniversalTraits:UT_sedentary",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:4",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR10-SOURCE-INDEX-GAP-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_10",
+      "supported_accepted_finding_ids": [
+        "B10-SELFDESTRUCTIVE-001"
+      ],
+      "trait_id": "UniversalTraits:UT_selfdestructive",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:5",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR10-SOURCE-INDEX-GAP-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "new omissions listed",
+      "omissions": [
+        {
+          "affected_surfaces": [
+            "runtime state",
+            "save/load",
+            "tests"
+          ],
+          "affected_traits": [
+            "UniversalTraits:UT_sensitivestomach"
+          ],
+          "anchors": [
+            {
+              "path_or_symbol": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sensitivestomach.lua:11-25"
+            },
+            {
+              "path_or_symbol": "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyDamage.java:2202-2204"
+            }
+          ],
+          "confidence": "high",
+          "id": "IR10-SENSITIVE-RESET-001",
+          "missing_proof": "Food peaks/live two-meal run absent.",
+          "recommended_correction": "Reset on decay or detect positive jumps.",
+          "reproduction_or_source_evidence": "Stored high-water mark never lowers as engine timer decays.",
+          "severity": "high",
+          "smallest_regression_test": "High first meal, decay, lower second: both trigger.",
+          "state": "confirmed-defect",
+          "title": "Persistent previous food timer suppresses later meals"
+        },
+        {
+          "affected_surfaces": [
+            "description",
+            "runtime",
+            "source intent"
+          ],
+          "affected_traits": [
+            "UniversalTraits:UT_sensitivestomach"
+          ],
+          "anchors": [
+            {
+              "path_or_symbol": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sensitivestomach.lua:2,17-23"
+            },
+            {
+              "path_or_symbol": "trait-deep-audit/active/batch/traits/UT_sensitivestomach.md Source Evidence"
+            }
+          ],
+          "confidence": "high",
+          "id": "IR10-SENSITIVE-SOURCE-002",
+          "missing_proof": "Raw source not indexed.",
+          "recommended_correction": "Implement nausea or document redesign.",
+          "reproduction_or_source_evidence": "Comment claims pain+nausea; code only raises torso pain; recorded source includes poison.",
+          "severity": "medium",
+          "smallest_regression_test": "Meal affects both states or approved single effect.",
+          "state": "confirmed-defect",
+          "title": "Sensitive Stomach claims nausea but implements only pain"
+        }
+      ],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_10",
+      "supported_accepted_finding_ids": [
+        "B10-SENSITIVESTOMACH-001"
+      ],
+      "trait_id": "UniversalTraits:UT_sensitivestomach",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:6",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-PERCENT-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_10",
+      "supported_accepted_finding_ids": [
+        "B10-SHARPSHOOTER-001"
+      ],
+      "trait_id": "UniversalTraits:UT_sharpshooter",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:7",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-PERCENT-001",
+        "IR10-MELEE-SHARED-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_10",
+      "supported_accepted_finding_ids": [
+        "B10-SHORT_BLADES-001"
+      ],
+      "trait_id": "UniversalTraits:UT_short_blades",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:8",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-PERCENT-001",
+        "IR10-MELEE-SHARED-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_10",
+      "supported_accepted_finding_ids": [
+        "B10-SHORT_BLUNTS-001"
+      ],
+      "trait_id": "UniversalTraits:UT_short_blunts",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:9",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-PERCENT-001",
+        "IR10-WORK-SCOPE-001",
+        "IR10-WORK-WRAP-002"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_10",
+      "supported_accepted_finding_ids": [
+        "B10-SLACK-001"
+      ],
+      "trait_id": "UniversalTraits:UT_slack",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:10",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR10-SOURCE-INDEX-GAP-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_10",
+      "supported_accepted_finding_ids": [
+        "B10-SLOTH-001",
+        "B10-SLOTH-002"
+      ],
+      "trait_id": "UniversalTraits:UT_sloth",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:11",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-PERCENT-001",
+        "IR10-WORK-SCOPE-001",
+        "IR10-WORK-WRAP-002"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_10",
+      "supported_accepted_finding_ids": [
+        "B10-SLOWWORKER-001"
+      ],
+      "trait_id": "UniversalTraits:UT_slowworker",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "runtime-unproven",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:12",
+      "cross_finding_ids": [
+        "IR0912-LOCALIZATION-001",
+        "IR10-SOURCE-INDEX-GAP-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "new omissions listed",
+      "omissions": [
+        {
+          "affected_surfaces": [
+            "description",
+            "runtime",
+            "source intent"
+          ],
+          "affected_traits": [
+            "UniversalTraits:UT_snorer"
+          ],
+          "anchors": [
+            {
+              "path_or_symbol": "UniversalTraits/media/lua/shared/Translate/EN/UI.json:240-241"
+            },
+            {
+              "path_or_symbol": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_snorer.lua:6-10"
+            },
+            {
+              "path_or_symbol": "UT_CORE/media/lua/shared/UTCore/UTCore_NoiseHook.lua:7-13,23-40"
+            }
+          ],
+          "confidence": "high",
+          "id": "IR10-SNORER-001",
+          "missing_proof": "No attraction measurement/raw source reread.",
+          "recommended_correction": "Specify measurable cadence/radius/volume.",
+          "reproduction_or_source_evidence": "Code invents radius-5 baseline; engine source establishes no vanilla sleeping-noise baseline.",
+          "severity": "medium",
+          "smallest_regression_test": "Assert world sounds and attraction.",
+          "state": "confirmed-defect",
+          "title": "Snorer double-noise claim has no verified baseline"
+        }
+      ],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_10",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_snorer",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:13",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR10-SOURCE-INDEX-GAP-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_10",
+      "supported_accepted_finding_ids": [
+        "B10-SORE-001",
+        "B10-SORE-002"
+      ],
+      "trait_id": "UniversalTraits:UT_sore",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "runtime-unproven",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:14",
+      "cross_finding_ids": [
+        "IR0912-LOCALIZATION-001",
+        "IR0912-PERCENT-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_10",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_sorelegs",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:15",
+      "cross_finding_ids": [
+        "IR0912-FALSE-TERMINAL-001",
+        "IR0912-LOCALIZATION-001",
+        "IR10-MELEE-SHARED-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_10",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_spears",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:16",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_10",
+      "supported_accepted_finding_ids": [
+        "B10-SPECAID-001"
+      ],
+      "trait_id": "UniversalTraits:UT_specaid",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:1",
+      "cross_finding_ids": [
+        "IR0912-FALSE-TERMINAL-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_11",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_speccrafting",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:2",
+      "cross_finding_ids": [
+        "IR0912-FALSE-TERMINAL-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_11",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_specfood",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:3",
+      "cross_finding_ids": [
+        "IR0912-FALSE-TERMINAL-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_11",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_specguns",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:4",
+      "cross_finding_ids": [
+        "IR0912-FALSE-TERMINAL-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_11",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_specmove",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:5",
+      "cross_finding_ids": [
+        "IR0912-FALSE-TERMINAL-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_11",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_specweapons",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:6",
+      "cross_finding_ids": [
+        "IR0912-FALSE-TERMINAL-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_11",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_sprintdemon",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:7",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_11",
+      "supported_accepted_finding_ids": [
+        "B11-SQUIRREL-001",
+        "B11-SQUIRREL-002"
+      ],
+      "trait_id": "UniversalTraits:UT_squirrel",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:8",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_11",
+      "supported_accepted_finding_ids": [
+        "B11-STAUNCH-BLEED-STACK-001"
+      ],
+      "trait_id": "UniversalTraits:UT_staunch",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:9",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "runtime-unproven",
+      "omission_disposition": "new omissions listed",
+      "omissions": [
+        {
+          "affected_surfaces": [
+            "Java-Lua exposure",
+            "accepted audit",
+            "classification"
+          ],
+          "affected_traits": [
+            "UniversalTraits:UT_strongnimble"
+          ],
+          "anchors": [
+            {
+              "path_or_symbol": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:9 B11-STRONGNIMBLE-001"
+            },
+            {
+              "path_or_symbol": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_strongnimble.lua:9-15,18-46"
+            },
+            {
+              "path_or_symbol": "PZCodebase/Java/source/zombie/Lua/LuaManager.java:1780,2668"
+            },
+            {
+              "path_or_symbol": "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:1100-1102,4799-4801"
+            }
+          ],
+          "confidence": "high",
+          "id": "IR11-STRONGNIMBLE-001",
+          "missing_proof": "Actual fall ordering/outcome unobserved.",
+          "recommended_correction": "Reject defect; classify runtime-unproven.",
+          "reproduction_or_source_evidence": "IsoGameCharacter is recursively exposed and public setbFalling exists.",
+          "severity": "high",
+          "smallest_regression_test": "Static exposure plus forced in-game fall.",
+          "state": "confirmed-defect",
+          "title": "Accepted Strong & Nimble defect contradicts Lua exposure"
+        }
+      ],
+      "rejected_accepted_finding_ids": [
+        "B11-STRONGNIMBLE-001"
+      ],
+      "source_batch": "batch_11",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_strongnimble",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:10",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_11",
+      "supported_accepted_finding_ids": [
+        "B11-SUNDAY-001"
+      ],
+      "trait_id": "UniversalTraits:UT_sundayrunner",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:11",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_11",
+      "supported_accepted_finding_ids": [
+        "B11-SUPERIMMUNE-001"
+      ],
+      "trait_id": "UniversalTraits:UT_superimmune",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:12",
+      "cross_finding_ids": [
+        "IR0912-FALSE-TERMINAL-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_11",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_swift",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:13",
+      "cross_finding_ids": [
+        "IR0912-FALSE-TERMINAL-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_11",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_taut",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:14",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_11",
+      "supported_accepted_finding_ids": [
+        "B11-TAVERN-001"
+      ],
+      "trait_id": "UniversalTraits:UT_tavernbrawler",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:15",
+      "cross_finding_ids": [
+        "IR0912-FALSE-TERMINAL-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_11",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_terminator",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:16",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-PERCENT-001",
+        "IR11-BLEED-POOL-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "new omissions listed",
+      "omissions": [
+        {
+          "affected_surfaces": [
+            "runtime",
+            "shared hook",
+            "tests"
+          ],
+          "affected_traits": [
+            "UniversalTraits:UT_thickblood"
+          ],
+          "anchors": [
+            {
+              "path_or_symbol": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_thickblood.lua:3-13"
+            },
+            {
+              "path_or_symbol": "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua:60-76"
+            },
+            {
+              "path_or_symbol": "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyDamage.java:1060-1072"
+            },
+            {
+              "path_or_symbol": "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:3572-3584,5607"
+            }
+          ],
+          "confidence": "high",
+          "id": "IR11-THICKBLOOD-001",
+          "missing_proof": "No live trace.",
+          "recommended_correction": "Compensate through verified BodyDamage path.",
+          "reproduction_or_source_evidence": "Native bleed reduces BodyDamage; compensation writes actor health.",
+          "severity": "high",
+          "smallest_regression_test": "Separate pools; assert 0.5x BodyDamage loss.",
+          "state": "confirmed-defect",
+          "title": "Thick Blood offsets wrong bleed health pool"
+        }
+      ],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_11",
+      "supported_accepted_finding_ids": [
+        "B11-THICKBLOOD-BLEED-STACK-001"
+      ],
+      "trait_id": "UniversalTraits:UT_thickblood",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:1",
+      "cross_finding_ids": [
+        "IR0912-FALSE-TERMINAL-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_12",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_tinkerer",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:2",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_12",
+      "supported_accepted_finding_ids": [
+        "B12-TOPHEAVY-001"
+      ],
+      "trait_id": "UniversalTraits:UT_topheavy",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:3",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_12",
+      "supported_accepted_finding_ids": [
+        "B12-TRACKMAN-001"
+      ],
+      "trait_id": "UniversalTraits:UT_trackman",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "runtime-unproven",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:4",
+      "cross_finding_ids": [
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "runtime-unproven",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_12",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_trekker",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "proven-correct",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:5",
+      "cross_finding_ids": [
+        "IR0912-FALSE-TERMINAL-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "coverage-gap",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_12",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_twohanded",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:6",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-PERCENT-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_12",
+      "supported_accepted_finding_ids": [
+        "B12-TWOHANDED-AXES-001"
+      ],
+      "trait_id": "UniversalTraits:UT_twohanded_axes",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:7",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-PERCENT-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_12",
+      "supported_accepted_finding_ids": [
+        "B12-TWOHANDED-BLADES-001"
+      ],
+      "trait_id": "UniversalTraits:UT_twohanded_blades",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:8",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-PERCENT-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_12",
+      "supported_accepted_finding_ids": [
+        "B12-TWOHANDED-BLUNTS-001",
+        "B12-TWOHANDED-BLUNTS-002"
+      ],
+      "trait_id": "UniversalTraits:UT_twohanded_blunts",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:9",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-PERCENT-001",
+        "IR0912-UNICODE-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_12",
+      "supported_accepted_finding_ids": [
+        "B12-UNWAVERING-001"
+      ],
+      "trait_id": "UniversalTraits:UT_unwavering",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:10",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_12",
+      "supported_accepted_finding_ids": [
+        "B12-VAGABOND-001",
+        "B12-VAGABOND-002"
+      ],
+      "trait_id": "UniversalTraits:UT_vagabond",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:11",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_12",
+      "supported_accepted_finding_ids": [
+        "B12-VEHOPHOBIC-001"
+      ],
+      "trait_id": "UniversalTraits:UT_vehophobic",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "runtime-unproven",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:12",
+      "cross_finding_ids": [
+        "IR0912-LOCALIZATION-001",
+        "IR0912-PERCENT-001",
+        "IR11-BLEED-POOL-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "new omissions listed",
+      "omissions": [
+        {
+          "affected_surfaces": [
+            "description",
+            "healing semantics"
+          ],
+          "affected_traits": [
+            "UniversalTraits:UT_weaklybleedingwounds"
+          ],
+          "anchors": [
+            {
+              "path_or_symbol": "UniversalTraits/media/lua/shared/Translate/EN/UI.json:234-235"
+            },
+            {
+              "path_or_symbol": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_weaklybleedingwounds.lua:2-4"
+            },
+            {
+              "path_or_symbol": "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua:1-22"
+            }
+          ],
+          "confidence": "high",
+          "id": "IR12-WEAKBLEED-DESC-001",
+          "missing_proof": "No live display/bleed run.",
+          "recommended_correction": "Remove implication or implement wound decay.",
+          "reproduction_or_source_evidence": "EN implies sealing; source explicitly says no wound-healing effect.",
+          "severity": "medium",
+          "smallest_regression_test": "Assert bleedingTime unchanged.",
+          "state": "confirmed-defect",
+          "title": "Description implies faster sealing though healing is unchanged"
+        },
+        {
+          "affected_surfaces": [
+            "runtime",
+            "shared hook",
+            "tests"
+          ],
+          "affected_traits": [
+            "UniversalTraits:UT_weaklybleedingwounds"
+          ],
+          "anchors": [
+            {
+              "path_or_symbol": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_weaklybleedingwounds.lua:7-13"
+            },
+            {
+              "path_or_symbol": "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua:60-76"
+            },
+            {
+              "path_or_symbol": "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyDamage.java:1060-1072"
+            }
+          ],
+          "confidence": "high",
+          "id": "IR12-WEAKBLEED-POOL-002",
+          "missing_proof": "No live trace.",
+          "recommended_correction": "Use verified BodyDamage path.",
+          "reproduction_or_source_evidence": "0.6x compensation writes actor health while bleed damages BodyDamage.",
+          "severity": "high",
+          "smallest_regression_test": "Separate pools; assert 0.6x loss.",
+          "state": "confirmed-defect",
+          "title": "Weakly Bleeding Wounds offsets wrong health pool"
+        }
+      ],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_12",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_weaklybleedingwounds",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "runtime-unproven",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:13",
+      "cross_finding_ids": [
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "new omissions listed",
+      "omissions": [
+        {
+          "affected_surfaces": [
+            "description",
+            "eligibility",
+            "tests"
+          ],
+          "affected_traits": [
+            "UniversalTraits:UT_weathersensitive"
+          ],
+          "anchors": [
+            {
+              "path_or_symbol": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_weathersensitive.lua:10-19"
+            },
+            {
+              "path_or_symbol": "UniversalTraits/media/lua/shared/Translate/EN/UI.json:326-327"
+            },
+            {
+              "path_or_symbol": "UniversalTraits/test/run_tests.lua:2709-2718"
+            }
+          ],
+          "confidence": "high",
+          "id": "IR12-WEATHER-001",
+          "missing_proof": "No live climate run.",
+          "recommended_correction": "Gate verified daylight/location or revise text.",
+          "reproduction_or_source_evidence": "Only precipitation/clouds checked; no daylight/outdoors.",
+          "severity": "medium",
+          "smallest_regression_test": "Test noon outdoor, midnight outdoor, noon indoor.",
+          "state": "confirmed-defect",
+          "title": "Clear-day relief applies at night and indoors"
+        }
+      ],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_12",
+      "supported_accepted_finding_ids": [],
+      "trait_id": "UniversalTraits:UT_weathersensitive",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:14",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_12",
+      "supported_accepted_finding_ids": [
+        "B12-WILDPLANTSALLERGY-001"
+      ],
+      "trait_id": "UniversalTraits:UT_wildplantsallergy",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:15",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001",
+        "IR0912-PERCENT-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_12",
+      "supported_accepted_finding_ids": [
+        "B12-WILDSMAN-001"
+      ],
+      "trait_id": "UniversalTraits:UT_wildsman",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    },
+    {
+      "accepted_overall_state": "confirmed-defect",
+      "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:16",
+      "cross_finding_ids": [
+        "IR0912-FINDING-STATE-001",
+        "IR0912-LOCALIZATION-001"
+      ],
+      "independent_state": "confirmed-defect",
+      "omission_disposition": "none beyond referenced cross-trait findings",
+      "omissions": [],
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_12",
+      "supported_accepted_finding_ids": [
+        "B12-WOODSPLITTER-001"
+      ],
+      "trait_id": "UniversalTraits:UT_woodsplitter",
+      "unresolved_runtime_proof_ids": [
+        "RP0912-KAHLUA-001",
+        "RP0912-SAVELOAD-001",
+        "RP0912-BALANCE-PERF-001",
+        "RP0912-LOCALE-001"
+      ]
+    }
+  ],
+  "schema_version": "1.0.0",
+  "scope": {
+    "assigned_batches": [
+      "batch_09",
+      "batch_10",
+      "batch_11",
+      "batch_12"
+    ],
+    "assigned_count": 64,
+    "assigned_ids": [
+      "UniversalTraits:UT_preparedfood",
+      "UniversalTraits:UT_preparedmedical",
+      "UniversalTraits:UT_preparedpack",
+      "UniversalTraits:UT_preparedweapons",
+      "UniversalTraits:UT_problade",
+      "UniversalTraits:UT_problunt",
+      "UniversalTraits:UT_prodigy",
+      "UniversalTraits:UT_progun",
+      "UniversalTraits:UT_prospear",
+      "UniversalTraits:UT_quickrest",
+      "UniversalTraits:UT_quickworker",
+      "UniversalTraits:UT_quiet",
+      "UniversalTraits:UT_ravenous",
+      "UniversalTraits:UT_restfulsleeper",
+      "UniversalTraits:UT_scardycat",
+      "UniversalTraits:UT_scrapper",
+      "UniversalTraits:UT_scrounger",
+      "UniversalTraits:UT_secondwind",
+      "UniversalTraits:UT_sedentary",
+      "UniversalTraits:UT_selfdestructive",
+      "UniversalTraits:UT_sensitivestomach",
+      "UniversalTraits:UT_sharpshooter",
+      "UniversalTraits:UT_short_blades",
+      "UniversalTraits:UT_short_blunts",
+      "UniversalTraits:UT_slack",
+      "UniversalTraits:UT_sloth",
+      "UniversalTraits:UT_slowworker",
+      "UniversalTraits:UT_snorer",
+      "UniversalTraits:UT_sore",
+      "UniversalTraits:UT_sorelegs",
+      "UniversalTraits:UT_spears",
+      "UniversalTraits:UT_specaid",
+      "UniversalTraits:UT_speccrafting",
+      "UniversalTraits:UT_specfood",
+      "UniversalTraits:UT_specguns",
+      "UniversalTraits:UT_specmove",
+      "UniversalTraits:UT_specweapons",
+      "UniversalTraits:UT_sprintdemon",
+      "UniversalTraits:UT_squirrel",
+      "UniversalTraits:UT_staunch",
+      "UniversalTraits:UT_strongnimble",
+      "UniversalTraits:UT_sundayrunner",
+      "UniversalTraits:UT_superimmune",
+      "UniversalTraits:UT_swift",
+      "UniversalTraits:UT_taut",
+      "UniversalTraits:UT_tavernbrawler",
+      "UniversalTraits:UT_terminator",
+      "UniversalTraits:UT_thickblood",
+      "UniversalTraits:UT_tinkerer",
+      "UniversalTraits:UT_topheavy",
+      "UniversalTraits:UT_trackman",
+      "UniversalTraits:UT_trekker",
+      "UniversalTraits:UT_twohanded",
+      "UniversalTraits:UT_twohanded_axes",
+      "UniversalTraits:UT_twohanded_blades",
+      "UniversalTraits:UT_twohanded_blunts",
+      "UniversalTraits:UT_unwavering",
+      "UniversalTraits:UT_vagabond",
+      "UniversalTraits:UT_vehophobic",
+      "UniversalTraits:UT_weaklybleedingwounds",
+      "UniversalTraits:UT_weathersensitive",
+      "UniversalTraits:UT_wildplantsallergy",
+      "UniversalTraits:UT_wildsman",
+      "UniversalTraits:UT_woodsplitter"
+    ],
+    "membership_reconciliation": {
+      "duplicates": [],
+      "foreign": [],
+      "missing": [],
+      "per_batch_counts": {
+        "batch_09": 16,
+        "batch_10": 16,
+        "batch_11": 16,
+        "batch_12": 16
+      },
+      "source_inventory_registration_count": 198,
+      "unique": 64
+    },
+    "observed_count": 64,
+    "observed_ids": [
+      "UniversalTraits:UT_preparedfood",
+      "UniversalTraits:UT_preparedmedical",
+      "UniversalTraits:UT_preparedpack",
+      "UniversalTraits:UT_preparedweapons",
+      "UniversalTraits:UT_problade",
+      "UniversalTraits:UT_problunt",
+      "UniversalTraits:UT_prodigy",
+      "UniversalTraits:UT_progun",
+      "UniversalTraits:UT_prospear",
+      "UniversalTraits:UT_quickrest",
+      "UniversalTraits:UT_quickworker",
+      "UniversalTraits:UT_quiet",
+      "UniversalTraits:UT_ravenous",
+      "UniversalTraits:UT_restfulsleeper",
+      "UniversalTraits:UT_scardycat",
+      "UniversalTraits:UT_scrapper",
+      "UniversalTraits:UT_scrounger",
+      "UniversalTraits:UT_secondwind",
+      "UniversalTraits:UT_sedentary",
+      "UniversalTraits:UT_selfdestructive",
+      "UniversalTraits:UT_sensitivestomach",
+      "UniversalTraits:UT_sharpshooter",
+      "UniversalTraits:UT_short_blades",
+      "UniversalTraits:UT_short_blunts",
+      "UniversalTraits:UT_slack",
+      "UniversalTraits:UT_sloth",
+      "UniversalTraits:UT_slowworker",
+      "UniversalTraits:UT_snorer",
+      "UniversalTraits:UT_sore",
+      "UniversalTraits:UT_sorelegs",
+      "UniversalTraits:UT_spears",
+      "UniversalTraits:UT_specaid",
+      "UniversalTraits:UT_speccrafting",
+      "UniversalTraits:UT_specfood",
+      "UniversalTraits:UT_specguns",
+      "UniversalTraits:UT_specmove",
+      "UniversalTraits:UT_specweapons",
+      "UniversalTraits:UT_sprintdemon",
+      "UniversalTraits:UT_squirrel",
+      "UniversalTraits:UT_staunch",
+      "UniversalTraits:UT_strongnimble",
+      "UniversalTraits:UT_sundayrunner",
+      "UniversalTraits:UT_superimmune",
+      "UniversalTraits:UT_swift",
+      "UniversalTraits:UT_taut",
+      "UniversalTraits:UT_tavernbrawler",
+      "UniversalTraits:UT_terminator",
+      "UniversalTraits:UT_thickblood",
+      "UniversalTraits:UT_tinkerer",
+      "UniversalTraits:UT_topheavy",
+      "UniversalTraits:UT_trackman",
+      "UniversalTraits:UT_trekker",
+      "UniversalTraits:UT_twohanded",
+      "UniversalTraits:UT_twohanded_axes",
+      "UniversalTraits:UT_twohanded_blades",
+      "UniversalTraits:UT_twohanded_blunts",
+      "UniversalTraits:UT_unwavering",
+      "UniversalTraits:UT_vagabond",
+      "UniversalTraits:UT_vehophobic",
+      "UniversalTraits:UT_weaklybleedingwounds",
+      "UniversalTraits:UT_weathersensitive",
+      "UniversalTraits:UT_wildplantsallergy",
+      "UniversalTraits:UT_wildsman",
+      "UniversalTraits:UT_woodsplitter"
+    ],
+    "review_kind": "independent no-gap review of accepted batches 09-12",
+    "state_vocabulary": [
+      "confirmed-defect",
+      "coverage-gap",
+      "proven-correct",
+      "runtime-unproven"
+    ]
+  },
+  "source_evidence_provenance": {
+    "dirty_worktree_preserved": true,
+    "git_head": "a32f251e7cebdc27b533907b6b16c7aa135eb882",
+    "input_sha256": {
+      "batch_09": "ffb64adb79bedd95f4f340f169a2beb7a1158bf4c1e1602538ac75ba65f7d759",
+      "batch_10": "2ffe37d42f2dc928789eae78a16880f4a283bafb1d735113bb8d25ade3a90f10",
+      "batch_11": "46b75ab40df0f1939d1b381e7ac16710c8f3c3a793a26b2f9249799150a43362",
+      "batch_12": "807c099b09f2b4e23bbf3eeb6bf40c05f7ad0c81ea5a438cd7903ad463feec12",
+      "definitions": "e93d5184281dcc7d969a8a576ce22418d4e1a98e959525e4f691a7df2f34a3fe",
+      "english_ui": "af811a29ab94d9d66cc0d20a5998f60fc3e5e8c252d0ae1821d3edf2ba55be42",
+      "registries": "251da2a8293dd602deaab47fe03dd435f06c1ae8ecaa03c59307cfae5acc4531",
+      "source_inventory": "47781d8c6ae00795c0dd5cff8f89e295f49826bb57b64dc9dcd6de6a767941c9"
+    },
+    "munch": {
+      "guide_healthy": true,
+      "guide_version": "1.108.141",
+      "pzcodebase_repo": "local/PZCodebase-61973d88",
+      "utmods_repo": "local/UTMods-80cf9c1d"
+    },
+    "pz_snapshot": {
+      "machine_verified_game_build": "svn-964",
+      "operator_label": "42.19",
+      "operator_label_machine_verified": false,
+      "steam_build_id_from_goal_evidence": "23504596",
+      "steam_build_id_in_version_file": false
+    },
+    "review_date": "2026-07-19"
+  },
+  "surface_gap_reconciliation": [
+    {
+      "evidence": "64 unique sorted IDs; 16/batch; all in 198 registrations.",
+      "examined": true,
+      "state": "proven-correct",
+      "surface": "membership/catalog"
+    },
+    {
+      "evidence": "All assigned paths reviewed; new hook/state defects recorded.",
+      "examined": true,
+      "state": "confirmed-defect",
+      "surface": "canonical trait and reachable shared runtime"
+    },
+    {
+      "evidence": "Targeted current snapshot evidence retrieved through live JCodeMunch.",
+      "examined": true,
+      "state": "proven-correct",
+      "surface": "PZ Java/Lua evidence"
+    },
+    {
+      "evidence": "UT_CORE 24/24 match; UniversalTraits 294/294 with 4 drifts: assigned scrounger already accepted, shared SmokePings, out-of-scope antique, Bouncer-only definition lines; mod.info pairs match.",
+      "examined": true,
+      "state": "confirmed-defect",
+      "surface": "source/release packaging"
+    },
+    {
+      "evidence": "64 rows reconciled; 17 percent mutations, Unwavering Unicode, 26 absent locales.",
+      "examined": true,
+      "state": "confirmed-defect",
+      "surface": "translations/descriptions"
+    },
+    {
+      "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; material mock gaps remain.",
+      "examined": true,
+      "state": "coverage-gap",
+      "surface": "tests/mocks"
+    },
+    {
+      "evidence": "Canonical research Lua unavailable in current JCode selection.",
+      "examined": true,
+      "state": "coverage-gap",
+      "surface": "source-mod intent"
+    },
+    {
+      "evidence": "No deployment/game authority or traces; exact proofs listed.",
+      "examined": false,
+      "state": "runtime-unproven",
+      "surface": "in-game Kahlua/save-load/multiplayer/profiler/balance"
+    }
+  ],
+  "unresolved_runtime_proofs": [
+    {
+      "affected_surfaces": [
+        "balance",
+        "profiler"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_preparedfood",
+        "UniversalTraits:UT_preparedmedical",
+        "UniversalTraits:UT_preparedpack",
+        "UniversalTraits:UT_preparedweapons",
+        "UniversalTraits:UT_problade",
+        "UniversalTraits:UT_problunt",
+        "UniversalTraits:UT_prodigy",
+        "UniversalTraits:UT_progun",
+        "UniversalTraits:UT_prospear",
+        "UniversalTraits:UT_quickrest",
+        "UniversalTraits:UT_quickworker",
+        "UniversalTraits:UT_quiet",
+        "UniversalTraits:UT_ravenous",
+        "UniversalTraits:UT_restfulsleeper",
+        "UniversalTraits:UT_scardycat",
+        "UniversalTraits:UT_scrapper",
+        "UniversalTraits:UT_scrounger",
+        "UniversalTraits:UT_secondwind",
+        "UniversalTraits:UT_sedentary",
+        "UniversalTraits:UT_selfdestructive",
+        "UniversalTraits:UT_sensitivestomach",
+        "UniversalTraits:UT_sharpshooter",
+        "UniversalTraits:UT_short_blades",
+        "UniversalTraits:UT_short_blunts",
+        "UniversalTraits:UT_slack",
+        "UniversalTraits:UT_sloth",
+        "UniversalTraits:UT_slowworker",
+        "UniversalTraits:UT_snorer",
+        "UniversalTraits:UT_sore",
+        "UniversalTraits:UT_sorelegs",
+        "UniversalTraits:UT_spears",
+        "UniversalTraits:UT_specaid",
+        "UniversalTraits:UT_speccrafting",
+        "UniversalTraits:UT_specfood",
+        "UniversalTraits:UT_specguns",
+        "UniversalTraits:UT_specmove",
+        "UniversalTraits:UT_specweapons",
+        "UniversalTraits:UT_sprintdemon",
+        "UniversalTraits:UT_squirrel",
+        "UniversalTraits:UT_staunch",
+        "UniversalTraits:UT_strongnimble",
+        "UniversalTraits:UT_sundayrunner",
+        "UniversalTraits:UT_superimmune",
+        "UniversalTraits:UT_swift",
+        "UniversalTraits:UT_taut",
+        "UniversalTraits:UT_tavernbrawler",
+        "UniversalTraits:UT_terminator",
+        "UniversalTraits:UT_thickblood",
+        "UniversalTraits:UT_tinkerer",
+        "UniversalTraits:UT_topheavy",
+        "UniversalTraits:UT_trackman",
+        "UniversalTraits:UT_trekker",
+        "UniversalTraits:UT_twohanded",
+        "UniversalTraits:UT_twohanded_axes",
+        "UniversalTraits:UT_twohanded_blades",
+        "UniversalTraits:UT_twohanded_blunts",
+        "UniversalTraits:UT_unwavering",
+        "UniversalTraits:UT_vagabond",
+        "UniversalTraits:UT_vehophobic",
+        "UniversalTraits:UT_weaklybleedingwounds",
+        "UniversalTraits:UT_weathersensitive",
+        "UniversalTraits:UT_wildplantsallergy",
+        "UniversalTraits:UT_wildsman",
+        "UniversalTraits:UT_woodsplitter"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "UniversalTraits/media/scripts/UT_character_traits.txt"
+        },
+        {
+          "path_or_symbol": "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua"
+        }
+      ],
+      "confidence": "high",
+      "id": "RP0912-BALANCE-PERF-001",
+      "missing_proof": "No telemetry/playtest/profiler budget.",
+      "recommended_correction": "Define and measure budgets.",
+      "reproduction_or_source_evidence": "Costs/constants/frequencies inspected only.",
+      "severity": "medium",
+      "smallest_regression_test": "Record control/trait outcomes and profiler cost.",
+      "state": "coverage-gap",
+      "title": "Balance and performance lack thresholds and measurements"
+    },
+    {
+      "affected_surfaces": [
+        "Java-Lua",
+        "Kahlua",
+        "events"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_preparedpack",
+        "UniversalTraits:UT_prospear",
+        "UniversalTraits:UT_quickrest",
+        "UniversalTraits:UT_quickworker",
+        "UniversalTraits:UT_ravenous",
+        "UniversalTraits:UT_restfulsleeper",
+        "UniversalTraits:UT_scardycat",
+        "UniversalTraits:UT_scrounger",
+        "UniversalTraits:UT_secondwind",
+        "UniversalTraits:UT_sedentary",
+        "UniversalTraits:UT_selfdestructive",
+        "UniversalTraits:UT_sensitivestomach",
+        "UniversalTraits:UT_sharpshooter",
+        "UniversalTraits:UT_slack",
+        "UniversalTraits:UT_sloth",
+        "UniversalTraits:UT_slowworker",
+        "UniversalTraits:UT_snorer",
+        "UniversalTraits:UT_sore",
+        "UniversalTraits:UT_sorelegs",
+        "UniversalTraits:UT_squirrel",
+        "UniversalTraits:UT_staunch",
+        "UniversalTraits:UT_strongnimble",
+        "UniversalTraits:UT_sundayrunner",
+        "UniversalTraits:UT_superimmune",
+        "UniversalTraits:UT_tavernbrawler",
+        "UniversalTraits:UT_thickblood",
+        "UniversalTraits:UT_topheavy",
+        "UniversalTraits:UT_trackman",
+        "UniversalTraits:UT_trekker",
+        "UniversalTraits:UT_twohanded_axes",
+        "UniversalTraits:UT_twohanded_blades",
+        "UniversalTraits:UT_twohanded_blunts",
+        "UniversalTraits:UT_unwavering",
+        "UniversalTraits:UT_vagabond",
+        "UniversalTraits:UT_vehophobic",
+        "UniversalTraits:UT_weaklybleedingwounds",
+        "UniversalTraits:UT_weathersensitive",
+        "UniversalTraits:UT_wildplantsallergy",
+        "UniversalTraits:UT_wildsman",
+        "UniversalTraits:UT_woodsplitter"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "UniversalTraits/media/lua/shared/UniversalTraits/traits (assigned runtime set)"
+        },
+        {
+          "path_or_symbol": "UT_CORE/media/lua/shared/UTCore (reachable shared set)"
+        },
+        {
+          "path_or_symbol": "PZCodebase/VERSION.json:2"
+        }
+      ],
+      "confidence": "high",
+      "id": "RP0912-KAHLUA-001",
+      "missing_proof": "Full restart, creation/load, event trace absent.",
+      "recommended_correction": "Run bounded scenarios under separate deployment authority.",
+      "reproduction_or_source_evidence": "Static evidence and both suites reviewed; no game run.",
+      "severity": "high",
+      "smallest_regression_test": "Record registration,args,before/after,logs,control.",
+      "state": "runtime-unproven",
+      "title": "Current-game Kahlua/event execution is unobserved"
+    },
+    {
+      "affected_surfaces": [
+        "fallback",
+        "localization"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_preparedfood",
+        "UniversalTraits:UT_preparedmedical",
+        "UniversalTraits:UT_preparedpack",
+        "UniversalTraits:UT_preparedweapons",
+        "UniversalTraits:UT_problade",
+        "UniversalTraits:UT_problunt",
+        "UniversalTraits:UT_prodigy",
+        "UniversalTraits:UT_progun",
+        "UniversalTraits:UT_prospear",
+        "UniversalTraits:UT_quickrest",
+        "UniversalTraits:UT_quickworker",
+        "UniversalTraits:UT_quiet",
+        "UniversalTraits:UT_ravenous",
+        "UniversalTraits:UT_restfulsleeper",
+        "UniversalTraits:UT_scardycat",
+        "UniversalTraits:UT_scrapper",
+        "UniversalTraits:UT_scrounger",
+        "UniversalTraits:UT_secondwind",
+        "UniversalTraits:UT_sedentary",
+        "UniversalTraits:UT_selfdestructive",
+        "UniversalTraits:UT_sensitivestomach",
+        "UniversalTraits:UT_sharpshooter",
+        "UniversalTraits:UT_short_blades",
+        "UniversalTraits:UT_short_blunts",
+        "UniversalTraits:UT_slack",
+        "UniversalTraits:UT_sloth",
+        "UniversalTraits:UT_slowworker",
+        "UniversalTraits:UT_snorer",
+        "UniversalTraits:UT_sore",
+        "UniversalTraits:UT_sorelegs",
+        "UniversalTraits:UT_spears",
+        "UniversalTraits:UT_specaid",
+        "UniversalTraits:UT_speccrafting",
+        "UniversalTraits:UT_specfood",
+        "UniversalTraits:UT_specguns",
+        "UniversalTraits:UT_specmove",
+        "UniversalTraits:UT_specweapons",
+        "UniversalTraits:UT_sprintdemon",
+        "UniversalTraits:UT_squirrel",
+        "UniversalTraits:UT_staunch",
+        "UniversalTraits:UT_strongnimble",
+        "UniversalTraits:UT_sundayrunner",
+        "UniversalTraits:UT_superimmune",
+        "UniversalTraits:UT_swift",
+        "UniversalTraits:UT_taut",
+        "UniversalTraits:UT_tavernbrawler",
+        "UniversalTraits:UT_terminator",
+        "UniversalTraits:UT_thickblood",
+        "UniversalTraits:UT_tinkerer",
+        "UniversalTraits:UT_topheavy",
+        "UniversalTraits:UT_trackman",
+        "UniversalTraits:UT_trekker",
+        "UniversalTraits:UT_twohanded",
+        "UniversalTraits:UT_twohanded_axes",
+        "UniversalTraits:UT_twohanded_blades",
+        "UniversalTraits:UT_twohanded_blunts",
+        "UniversalTraits:UT_unwavering",
+        "UniversalTraits:UT_vagabond",
+        "UniversalTraits:UT_vehophobic",
+        "UniversalTraits:UT_weaklybleedingwounds",
+        "UniversalTraits:UT_weathersensitive",
+        "UniversalTraits:UT_wildplantsallergy",
+        "UniversalTraits:UT_wildsman",
+        "UniversalTraits:UT_woodsplitter"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "UniversalTraits/media/lua/shared/Translate/EN/UI.json"
+        },
+        {
+          "path_or_symbol": "PZCodebase/Lua/shared/Translate"
+        }
+      ],
+      "confidence": "high",
+      "id": "RP0912-LOCALE-001",
+      "missing_proof": "No approved non-goal/runtime fallback.",
+      "recommended_correction": "Approve scope and validate locales.",
+      "reproduction_or_source_evidence": "Only EN; 26 PZ locales absent.",
+      "severity": "medium",
+      "smallest_regression_test": "Launch approved languages; resolve all 64 keys.",
+      "state": "coverage-gap",
+      "title": "Non-EN policy and fallback are unresolved"
+    },
+    {
+      "affected_surfaces": [
+        "modData",
+        "ownership",
+        "save/load"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_preparedpack",
+        "UniversalTraits:UT_prospear",
+        "UniversalTraits:UT_quickrest",
+        "UniversalTraits:UT_quickworker",
+        "UniversalTraits:UT_ravenous",
+        "UniversalTraits:UT_restfulsleeper",
+        "UniversalTraits:UT_scardycat",
+        "UniversalTraits:UT_scrounger",
+        "UniversalTraits:UT_secondwind",
+        "UniversalTraits:UT_sedentary",
+        "UniversalTraits:UT_selfdestructive",
+        "UniversalTraits:UT_sensitivestomach",
+        "UniversalTraits:UT_sharpshooter",
+        "UniversalTraits:UT_slack",
+        "UniversalTraits:UT_sloth",
+        "UniversalTraits:UT_slowworker",
+        "UniversalTraits:UT_snorer",
+        "UniversalTraits:UT_sore",
+        "UniversalTraits:UT_sorelegs",
+        "UniversalTraits:UT_squirrel",
+        "UniversalTraits:UT_staunch",
+        "UniversalTraits:UT_strongnimble",
+        "UniversalTraits:UT_sundayrunner",
+        "UniversalTraits:UT_superimmune",
+        "UniversalTraits:UT_tavernbrawler",
+        "UniversalTraits:UT_thickblood",
+        "UniversalTraits:UT_topheavy",
+        "UniversalTraits:UT_trackman",
+        "UniversalTraits:UT_trekker",
+        "UniversalTraits:UT_twohanded_axes",
+        "UniversalTraits:UT_twohanded_blades",
+        "UniversalTraits:UT_twohanded_blunts",
+        "UniversalTraits:UT_unwavering",
+        "UniversalTraits:UT_vagabond",
+        "UniversalTraits:UT_vehophobic",
+        "UniversalTraits:UT_weaklybleedingwounds",
+        "UniversalTraits:UT_weathersensitive",
+        "UniversalTraits:UT_wildplantsallergy",
+        "UniversalTraits:UT_wildsman",
+        "UniversalTraits:UT_woodsplitter"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "UniversalTraits/media/lua/shared/UniversalTraits/traits (assigned runtime set)"
+        },
+        {
+          "path_or_symbol": "UT_CORE/media/lua/shared/UTCore (reachable shared set)"
+        }
+      ],
+      "confidence": "high",
+      "id": "RP0912-SAVELOAD-001",
+      "missing_proof": "Save/reload/death/switch/transfer absent.",
+      "recommended_correction": "Run lifecycle matrices.",
+      "reproduction_or_source_evidence": "Persistent/mutable state found; no lifecycle run.",
+      "severity": "high",
+      "smallest_regression_test": "Apply, reload, transfer/remove, assert baseline/no duplicates.",
+      "state": "runtime-unproven",
+      "title": "Lifecycle restoration remains unproved"
+    },
+    {
+      "affected_surfaces": [
+        "index coverage",
+        "source intent"
+      ],
+      "affected_traits": [
+        "UniversalTraits:UT_preparedpack",
+        "UniversalTraits:UT_quickrest",
+        "UniversalTraits:UT_ravenous",
+        "UniversalTraits:UT_restfulsleeper",
+        "UniversalTraits:UT_scardycat",
+        "UniversalTraits:UT_selfdestructive",
+        "UniversalTraits:UT_sensitivestomach",
+        "UniversalTraits:UT_sloth",
+        "UniversalTraits:UT_snorer",
+        "UniversalTraits:UT_sore"
+      ],
+      "anchors": [
+        {
+          "path_or_symbol": "trait-deep-audit/active/batch/traits Source Evidence"
+        }
+      ],
+      "confidence": "high",
+      "id": "RP0912-SOURCE-INTENT-001",
+      "missing_proof": "Upstream revisions/symbols unavailable.",
+      "recommended_correction": "Index bounded canonical sources.",
+      "reproduction_or_source_evidence": "Secondary sections exist; canonical research Lua outside JCode.",
+      "severity": "medium",
+      "smallest_regression_test": "Require indexed path/symbol/revision.",
+      "state": "coverage-gap",
+      "title": "Raw source-mod intent unavailable for redesign-sensitive traits"
+    }
+  ],
+  "validation_run": {
+    "accepted_artifact_checks": {
+      "accepted_findings": 47,
+      "batch09_invalid_state_values": 385,
+      "false_terminal_records": 12,
+      "missing_state": 47
+    },
+    "byte_stable_second_normalization_expected": true,
+    "byte_stable_second_normalization_verified": true,
+    "canonical_key_order": true,
+    "membership": {
+      "assigned": 64,
+      "duplicates": 0,
+      "foreign": 0,
+      "observed": 64,
+      "sorted": true,
+      "unique": 64
+    },
+    "normalization_passes": 3,
+    "parity": {
+      "mod_info_pairs_equal": true,
+      "universaltraits_media": {
+        "diffs": 4,
+        "release": 294,
+        "source": 294
+      },
+      "ut_core_media": {
+        "diffs": 0,
+        "release": 24,
+        "source": 24
+      }
+    },
+    "per_trait_review": {
+      "count": 64,
+      "sorted": true,
+      "unique": 64
+    },
+    "review_state_counts": [
+      {
+        "count": 41,
+        "state": "confirmed-defect"
+      },
+      {
+        "count": 19,
+        "state": "coverage-gap"
+      },
+      {
+        "count": 4,
+        "state": "runtime-unproven"
+      }
+    ],
+    "tests": [
+      {
+        "command": "Lua UT_CORE/test/run_tests.lua",
+        "exit_code": 0,
+        "failed": 0,
+        "passed": 218
+      },
+      {
+        "command": "Lua UniversalTraits/test/run_tests.lua",
+        "exit_code": 0,
+        "failed": 0,
+        "passed": 374
+      }
+    ]
+  }
+}

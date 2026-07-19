@@ -170,11 +170,6 @@ local function buildTickContext(player)
     t.stats      = player:getStats()
     t.bodyDamage = player:getBodyDamage()
 
-    -- Position (used by FreezeLogger, ZombieCollision)
-    t.x = player:getX()
-    t.y = player:getY()
-    t.z = player:getZ()
-
     -- Movement state
     t.isMoving    = player:isMoving()
     t.isSprinting = player:isSprinting()
@@ -184,8 +179,9 @@ local function buildTickContext(player)
     t.primaryWeapon   = player:getPrimaryHandItem()
     t.secondaryWeapon = player:getSecondaryHandItem()
 
-    -- Animation state (bouncer freeze guard)
-    t.isHostileAnim = player:isPerformingHostileAnimation()
+    -- Position (t.x/y/z) intentionally NOT pre-fetched: the only two readers
+    -- (FreezeLogger, ZombieCollisionHook) use the `tick and tick.x or player:getX()`
+    -- fallback, so leaving them nil makes the reads on-demand.
 
     -- Spotted list: LAZY — built on first access via getLivingEnemies().
     -- Only 3 traits (bouncer, actionhero, scardycat) use enemy data;
@@ -197,7 +193,73 @@ local function buildTickContext(player)
     t._player          = player
     t._enemiesBuilt    = false
 
+    -- Injury table: LAZY — built on first access via UTCore.getInjuries(tick).
+    -- Medical traits (bouncer, superimmune, etc.) share this table so 17+
+    -- BodyPart reads happen at most once per tick, and only when at least
+    -- one trait actually asks.
+    t.injuries        = nil
+    t._injuriesBuilt  = false
+
     return t
+end
+
+---------------------------------------------------------------------
+-- Lazy injury accessor (shared across all medical traits)
+--
+-- Two-tier gate:
+--   Tier 0: cache — return built table
+--   Tier 1: getOverallBodyHealth() O(1) field read — if fully healed,
+--           return shared EMPTY_INJURIES sentinel. 99% path.
+--   Tier 2: per-part sweep — allocate per-part entries only for dirty
+--           parts; clean parts reuse shared CLEAN_PART sentinel.
+--           BodyPart.HasInjury() early-exits inside the loop.
+---------------------------------------------------------------------
+local EMPTY_INJURIES = { count = 0 }
+local CLEAN_PART = {
+    bitten       = false,
+    deepWounded  = false,
+    fractureTime = 0,
+    infected     = false,
+}
+UTCore._EMPTY_INJURIES = EMPTY_INJURIES
+UTCore._CLEAN_PART     = CLEAN_PART
+
+function UTCore.getInjuries(tick)
+    if tick._injuriesBuilt then return tick.injuries end
+    tick._injuriesBuilt = true
+
+    local bd = tick.bodyDamage
+    if not bd then
+        tick.injuries = EMPTY_INJURIES
+        return tick.injuries
+    end
+
+    -- Tier 1: overall health gate (O(1) field read, primitive float getter)
+    local health = bd:getOverallBodyHealth()
+    if health >= 99.99 then
+        tick.injuries = EMPTY_INJURIES
+        return tick.injuries
+    end
+
+    -- Tier 2: per-part sweep (BodyPart.HasInjury early-exits per part)
+    local parts = bd:getBodyParts()
+    local count = parts:size()
+    local out = { count = count }
+    for i = 0, count - 1 do
+        local p = parts:get(i)
+        if p:HasInjury() then
+            out[i] = {
+                bitten       = p:bitten(),
+                deepWounded  = p:isDeepWounded(),
+                fractureTime = p:getFractureTime(),
+                infected     = p:IsInfected(),
+            }
+        else
+            out[i] = CLEAN_PART
+        end
+    end
+    tick.injuries = out
+    return out
 end
 
 --- Build the enemy list on demand. Call from trait handlers that need it.
@@ -236,62 +298,11 @@ function UTCore.getLivingEnemies(tick)
 end
 
 ---------------------------------------------------------------------
--- Movement-state snapshot for action-kill diagnosis
--- Captures everything Java uses to decide StopAllActionQueueWalking
----------------------------------------------------------------------
-local _diagActive = true   -- flip false to disable per-tick logging noise
-local _diagActionActive = false  -- only log when an action is in progress
-
-local function snapMovementState(player)
-    local ok, jm, hp, mv, rn, sp, x, y = pcall(function()
-        return player:isJustMoved(),
-               player:getPath2() ~= nil,
-               player:isMoving(),
-               player:isRunning(),
-               player:isSprinting(),
-               player:getX(),
-               player:getY()
-    end)
-    if ok then
-        return { jm = jm, hp = hp, mv = mv, rn = rn, sp = sp, x = x, y = y }
-    end
-    return nil
-end
-
-local function movementChanged(a, b)
-    if not a or not b then return true end
-    return a.jm ~= b.jm or a.hp ~= b.hp or a.mv ~= b.mv
-        or a.rn ~= b.rn or a.sp ~= b.sp
-        or a.x ~= b.x or a.y ~= b.y
-end
-
-local function fmtSnap(s)
-    if not s then return "nil" end
-    return "jm=" .. tostring(s.jm) .. " hp=" .. tostring(s.hp)
-        .. " mv=" .. tostring(s.mv) .. " rn=" .. tostring(s.rn)
-        .. " sp=" .. tostring(s.sp)
-        .. " xy=" .. tostring(s.x) .. "," .. tostring(s.y)
-end
-
----------------------------------------------------------------------
 -- Central dispatch (ONE OnPlayerUpdate handler for ALL of UTCore)
 ---------------------------------------------------------------------
 local function centralDispatch(player)
     if not player then return end
 
-    -- Check if player has an active action (only log movement when they do)
-    local hasAction = false
-    if _diagActive then
-        pcall(function()
-            hasAction = player:getCharacterActions():size() > 0
-        end)
-        _diagActionActive = hasAction
-    end
-
-    -- Snapshot movement BEFORE our handlers run
-    local presnap = _diagActionActive and snapMovementState(player) or nil
-
-    -- Sort core handlers by priority once (highest first)
     -- Sort core handlers by priority once (highest first)
     if not _coreHandlersSorted and UTCore._coreHandlerCount > 1 then
         table.sort(UTCore._coreHandlers, function(a, b)
@@ -410,13 +421,6 @@ local function centralDispatch(player)
         end
     end
 
-    -- Snapshot movement AFTER our handlers ran — if anything changed, log it
-    if _diagActionActive and presnap then
-        local postsnap = snapMovementState(player)
-        if movementChanged(presnap, postsnap) then
-            print("[UT_ADIAG] DISPATCH_MOVED pre={" .. fmtSnap(presnap) .. "} post={" .. fmtSnap(postsnap) .. "}")
-        end
-    end
 end
 
 Events.OnPlayerUpdate.Add(centralDispatch)
