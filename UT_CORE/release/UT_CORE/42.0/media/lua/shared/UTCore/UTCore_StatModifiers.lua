@@ -498,7 +498,7 @@ end
 
 if not UTCore._modifierAggregationEventsRegistered then
     local function onCreatePlayer(_playerIndex, player)
-        -- Clear session-level hasTrait result cache so it rebuilds for this player.
+        -- Preserve the compatibility invalidation boundary before reconciliation.
         if UTCore.invalidateTraitCache then UTCore.invalidateTraitCache() end
         UTCore.reconcileAggregatedModifiers(player)
     end

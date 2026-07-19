@@ -77,13 +77,10 @@ local function recordSmoke(scenarioId, detail)
     end
 end
 
---- Compatibility hook retained for callers from the former result-cache contract.
--- CharacterTrait registry objects remain stable, while hasTrait results are no
--- longer cached because current-version traits can change during a session.
-function UTCore.invalidateTraitCache(traitId)
-    if not isValidTraitId(traitId) then return false end
-    -- No mutation-dependent result cache remains to invalidate.
-    return true
+--- Compatibility invalidation boundary for the former per-player result cache.
+-- Membership results are read from the player on every hasTrait call, so no
+-- stale per-player result remains to clear.
+function UTCore.invalidateTraitCache()
 end
 
 --- Context guard for OnPlayerUpdate handlers.

@@ -77,6 +77,26 @@ test("hasTrait returns false for nil player", function()
     assert_eq(UTCore.hasTrait(nil, "UniversalTraits:UT_swift"), false)
 end)
 
+test("invalidateTraitCache is a no-argument compatibility boundary", function()
+    assert_eq(UTCore.invalidateTraitCache(), nil)
+end)
+
+test("OnCreatePlayer invokes invalidateTraitCache without arguments", function()
+    local original = UTCore.invalidateTraitCache
+    local callCount, argumentCount = 0, nil
+    UTCore.invalidateTraitCache = function(...)
+        callCount = callCount + 1
+        argumentCount = select("#", ...)
+    end
+
+    local ok, err = pcall(Events.OnCreatePlayer.fire, 0, MockPlayer({}))
+    UTCore.invalidateTraitCache = original
+    if not ok then error(err, 0) end
+
+    assert_eq(callCount, 1)
+    assert_eq(argumentCount, 0)
+end)
+
 test("weaponHasCategory uses isOfWeaponCategory when available", function()
     local axe = MockWeapon("HandAxe", 10, false, true, { categories = { WeaponCategory.AXE } })
     assert_eq(UTCore.weaponHasCategory(axe, WeaponCategory.AXE), true)
