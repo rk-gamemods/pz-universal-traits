@@ -83,22 +83,42 @@ test("weaponHasCategory uses isOfWeaponCategory when available", function()
     assert_eq(UTCore.weaponHasCategory(axe, WeaponCategory.SPEAR), false)
 end)
 
-test("getCharacterTraitId uses getName when available", function()
-    local trait = {
-        getName = function(self) return "UniversalTraits:UT_specmove" end
+test("getCharacterTraitId preserves the full namespaced trait identity", function()
+    local trait = setmetatable({
+        getName = function(self) return "ut_specmove" end
+    }, {
+        __tostring = function() return "universaltraits:ut_specmove" end
+    })
+    assert_eq(UTCore.getCharacterTraitId(trait), "universaltraits:ut_specmove")
+end)
+
+test("getCharacterTraitId retains getName and printable fallbacks", function()
+    local namedTrait = {
+        getName = function(self) return "UT_specmove" end
     }
-    assert_eq(UTCore.getCharacterTraitId(trait), "UniversalTraits:UT_specmove")
+    local printableTrait = setmetatable({}, {
+        __tostring = function() return "diagnostic trait" end
+    })
+    local nameOnlyTrait = setmetatable({
+        getName = function(self) return "UT_specmove" end
+    }, {
+        __tostring = function() error("not printable") end
+    })
+    assert_eq(UTCore.getCharacterTraitId(namedTrait), "UT_specmove")
+    assert_eq(UTCore.getCharacterTraitId(printableTrait), "diagnostic trait")
+    assert_eq(UTCore.getCharacterTraitId(nameOnlyTrait), "UT_specmove")
+    assert_eq(UTCore.getCharacterTraitId(nil), "<nil>")
 end)
 
 test("getTraitDefinitionId resolves through getType", function()
     local def = {
         getType = function(self)
             return {
-                getName = function(innerSelf) return "UniversalTraits:UT_specaid" end
+                getName = function(innerSelf) return "UT_specaid" end
             }
         end
     }
-    assert_eq(UTCore.getTraitDefinitionId(def), "UniversalTraits:UT_specaid")
+    assert_eq(UTCore.getTraitDefinitionId(def), "UT_specaid")
 end)
 
 -- hasAnyTrait

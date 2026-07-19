@@ -164,18 +164,28 @@ function UTCore.getCharacterTraitId(trait)
     if trait == nil then return "<nil>" end
     if type(trait) == "string" then return trait end
 
-    local name = safeCall(trait, "getName")
-    if name and name ~= "" then
-        return tostring(name)
-    end
-
-    local ok, value = pcall(function()
+    local printable
+    local printableOk, printableValue = pcall(function()
         return tostring(trait)
     end)
-    if ok and value then
-        return value
+    if printableOk and printableValue then
+        printable = printableValue
+        if printable:match("^[%w_.%-]+:[%w_./%-]+$") then
+            return printable
+        end
     end
 
+    local name = safeCall(trait, "getName")
+    if name and name ~= "" then
+        local nameOk, nameValue = pcall(function()
+            return tostring(name)
+        end)
+        if nameOk and nameValue then
+            return nameValue
+        end
+    end
+
+    if printable then return printable end
     return "<unprintable>"
 end
 
