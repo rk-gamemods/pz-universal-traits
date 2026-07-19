@@ -1194,6 +1194,7 @@ test("FractureHook fractures eligible part on successful roll", function()
     _G.getPlayer = function() return p end
     Events.OnWeaponHitCharacter.fire(nil, p, nil, 20)
     _G.getPlayer = function() return nil end
+    assert_eq(legPart:getFractureTime(), 21, "expected fracture duration of 21")
     assert_eq(legPart:isFractured(), true, "expected Leg_L to be fractured on successful roll")
     assert(
         p:getModData()["UT_fractureCooldownUntil"] > 100,
@@ -1222,12 +1223,14 @@ test("FractureHook cooldown expires from elapsed world time without extra hits",
     p:setBodyDamage(MockBodyDamage({ legPart }))
     _G.getPlayer = function() return p end
     Events.OnWeaponHitCharacter.fire(nil, p, nil, 20)
+    assert_eq(legPart:getFractureTime(), 0, "expected zero fracture duration before cooldown expiry")
     assert_eq(legPart:isFractured(), false, "expected no fracture before cooldown expiry")
     assert_eq(p:getModData()["UT_fractureCooldown"], nil, "expected legacy cooldown removed")
 
     setMockGameTime(100 + (11 / 3600), 0)
     Events.OnWeaponHitCharacter.fire(nil, p, nil, 20)
     _G.getPlayer = function() return nil end
+    assert_eq(legPart:getFractureTime(), 21, "expected fracture duration of 21 after cooldown expiry")
     assert_eq(legPart:isFractured(), true, "expected fracture after elapsed-time cooldown")
 end)
 
