@@ -14,6 +14,7 @@ function MockPlayer(traits, opts)
     local moddata = {}
     local maxWeight = 8
     local primaryHandItem = opts.primaryHandItem or nil
+    local meleeDelay = opts.meleeDelay or 0
     local perkLevels = opts.perkLevels or {}
     -- B42.16: pre-register traits so CharacterTrait.get() resolves them
     local traitSet = {}
@@ -176,14 +177,11 @@ function MockPlayer(traits, opts)
         setPrimaryHandItem   = function(self, item) primaryHandItem = item end,
         getSecondaryHandItem = function(self) return opts.secondaryHandItem or nil end,
         getPerkLevel         = function(self, perk) return perkLevels[perk] or 0 end,
-        setMeleeDelay        = function(self, v) moddata["_lastMeleeDelay"] = v end,
-        getMeleeDelay        = function(self)
-            -- B42.16: delay is on the character; delegate to weapon mock for test setup compatibility
-            if primaryHandItem and primaryHandItem.getMeleeDelay then
-                return primaryHandItem:getMeleeDelay()
-            end
-            return opts.meleeDelay or 0
+        setMeleeDelay        = function(self, v)
+            meleeDelay = math.max(0, v)
+            moddata["_lastMeleeDelay"] = meleeDelay
         end,
+        getMeleeDelay        = function(self) return meleeDelay end,
         isSprinting          = function(self) return _sprinting end,
         isRunning            = function(self) return _running end,
         setSprinting         = function(self, v) _sprinting = v end,

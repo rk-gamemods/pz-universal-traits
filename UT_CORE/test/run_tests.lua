@@ -859,6 +859,16 @@ test("BleedHook calls ReduceHealth for bleedMult > 1.0", function()
 end)
 
 -- MeleeDelayHook: 50% reduction for axe category with UT_axes trait
+test("MockPlayer owns mutable melee delay and clamps writes at zero", function()
+    local p = MockPlayer({}, { meleeDelay = 20 })
+    assert_eq(p:getMeleeDelay(), 20, "expected initial character melee delay")
+    p:setMeleeDelay(7)
+    assert_eq(p:getMeleeDelay(), 7, "expected melee delay read-after-write")
+    p:setMeleeDelay(-3)
+    assert_eq(p:getMeleeDelay(), 0, "expected negative melee delay clamped to zero")
+    assert_eq(p:getModData()["_lastMeleeDelay"], 0, "expected observation surface to record clamped write")
+end)
+
 test("MeleeDelayHook reduces delay 50% for axe weapon with UT_axes", function()
     local weapon = MockWeapon("HandAxe", 20)
     local p = MockPlayer({"UniversalTraits:UT_axes"}, { primaryHandItem = weapon })
