@@ -102,6 +102,7 @@ end
 ---------------------------------------------------------------------------
 local _perfStats = {}      -- { name => { totalMs, count, peakMs } }
 local _perfActive = {}     -- { name => startMs } (current enter without exit)
+local _currentTickMs = 0
 
 local PERF_WARN_AVG_MS     = 0.5  -- warn if per-call average > 0.5ms
 local PERF_WARN_PEAK_MS    = 3.0  -- warn if any single call > 3ms
@@ -128,6 +129,7 @@ function UTCore.perfExit(name)
     stats.totalMs = stats.totalMs + dt
     stats.count = stats.count + 1
     if dt > stats.peakMs then stats.peakMs = dt end
+    _currentTickMs = _currentTickMs + dt
 
 end
 
@@ -140,6 +142,7 @@ end
 function UTCore.resetPerfStats()
     _perfStats = {}
     _perfActive = {}
+    _currentTickMs = 0
 end
 
 --- Force an immediate performance report to console.
@@ -249,7 +252,7 @@ function UTCore.getFrameBudgetState()
     return {
         heavyFrames = 0,
         peakFrameMs = 0,
-        currentTickMs = 0,
+        currentTickMs = _currentTickMs,
         frameCount = 0,
     }
 end
