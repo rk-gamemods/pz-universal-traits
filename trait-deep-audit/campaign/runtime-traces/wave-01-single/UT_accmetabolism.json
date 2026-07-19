@@ -1,0 +1,285 @@
+{
+  "schema_version": "1.0.0",
+  "trait_id": "UniversalTraits:UT_accmetabolism",
+  "source_snapshot": {
+    "svn_revision": 964,
+    "build_id": 23504596,
+    "label": "SVN 964 / BuildID 23504596"
+  },
+  "selected_ids": [
+    "registration",
+    "definition_parser",
+    "namespace",
+    "cost_xp_grants_exclusions",
+    "source_intent",
+    "runtime_path",
+    "numbers",
+    "cadence",
+    "cooldown",
+    "reset_save_load",
+    "java_lua",
+    "kahlua",
+    "events",
+    "stacking_interactions",
+    "multiplayer",
+    "display",
+    "description",
+    "localization",
+    "balance",
+    "performance",
+    "tests",
+    "mocks",
+    "source_release_parity",
+    "packaging"
+  ],
+  "dimension_proofs": {
+    "registration": {
+      "classification": "proven-correct",
+      "proof": "UniversalTraits/media/registries.lua:256 assigns UTTraitsRegistries.UT_accmetabolism from CharacterTrait.register(\"UniversalTraits:UT_accmetabolism\"); CharacterTrait.java:122-131 exposes register(String) and registers the parsed ResourceLocation in Registries.CHARACTER_TRAIT.",
+      "positive_path": "Evaluate registries.lua and pass the fully qualified string; CharacterTrait.register(String) constructs and registers the CharacterTrait used by the runtime gate.",
+      "negative_path": "An absent registration or a different namespace leaves CharacterTrait.get(ResourceLocation.of(\"UniversalTraits:UT_accmetabolism\")) nil, and UTCore.hasTrait returns false at UTCore_API.lua:129-131."
+    },
+    "definition_parser": {
+      "classification": "runtime-unproven",
+      "proof": "UniversalTraits/media/scripts/UT_character_traits.txt:1769-1777 contains one complete definition with IsProfessionTrait=false, DisabledInMultiplayer=true, matching CharacterTrait, Cost=-3, UIName, and UIDescription; the selected ledger row records deterministic parser acceptance but no live ScriptManager observation.",
+      "positive_path": "Load the exact block and resolve CharacterTrait UniversalTraits:UT_accmetabolism, Cost -3, UI_UT_accmetabolism, UI_UT_accmetabolismDesc, and DisabledInMultiplayer=true.",
+      "negative_path": "Remove or misspell CharacterTrait, UIName, or UIDescription in an isolated copy and require the parser/completeness gate to reject it.",
+      "exact_proof_needed": "A current-build ScriptManager load or startup-log trace showing this exact definition materialized without parser warnings."
+    },
+    "namespace": {
+      "classification": "proven-correct",
+      "proof": "The registration at registries.lua:256, definition at UT_character_traits.txt:1769/1773, runtime TRAIT_ID at UT_accmetabolism.lua:4, and English keys at UI.json:318-319 consistently use the UniversalTraits namespace and UT_accmetabolism stem; ResourceLocation.of at ResourceLocation.java:27-32 splits the qualified ID at the first colon.",
+      "positive_path": "ResourceLocation.of separates UniversalTraits and UT_accmetabolism, CharacterTrait.get resolves it, and the definition/runtime/UI references retain the same stem.",
+      "negative_path": "ResourceLocation.of(\"UT_accmetabolism\") selects the base namespace, so it cannot resolve the registered UniversalTraits resource and the trait gate remains false."
+    },
+    "cost_xp_grants_exclusions": {
+      "classification": "proven-correct",
+      "proof": "The complete definition at UT_character_traits.txt:1769-1777 sets Cost=-3 and contains no XPBoosts, GrantedTraits, or MutuallyExclusiveTraits field; therefore there are no perk tokens, grants, profession grants, or forward/reverse exclusion edges owned by this trait.",
+      "positive_path": "Parse the exact definition and assert cost -3 while all optional XP, grant, and exclusion collections are absent or empty.",
+      "negative_path": "Require any XP boost, granted trait, profession grant, or reciprocal exclusion for this ID and the assertion fails because no such field exists in the complete block."
+    },
+    "source_intent": {
+      "classification": "runtime-unproven",
+      "proof": "UT_accmetabolism.lua:2 states the current source intent as faster food and water burn, and lines 11-12 implement hunger and thirst increases; the selected ledger has no upstream source-mod commit or tag to establish historical port equivalence.",
+      "positive_path": "Dispatch the handler for a carrier and observe both consumption-pressure stats increase, matching the current source comment.",
+      "negative_path": "Treat the English weight-shift sentence as source intent and inspect the exact handler: it contains no nutrition, calorie, macronutrient, or body-weight receiver, so that broader interpretation is unsupported.",
+      "exact_proof_needed": "The exact upstream source-mod commit/tag and corresponding accelerated-metabolism implementation if historical equivalence is required."
+    },
+    "runtime_path": {
+      "classification": "proven-correct",
+      "proof": "Current direct bytes in UT_accmetabolism.lua:6-24 guard nil player, absent trait, and nil Stats; apply H'=min(1,H+0.05) and T'=min(1,T+0.03); and replace any prior trait-owned EveryTenMinutes callback through UTTraitRuntimeHandlers before Add.",
+      "positive_path": "For a current player carrying UniversalTraits:UT_accmetabolism with Stats, one callback applies exactly +0.05 HUNGER and +0.03 THIRST, capped independently at 1.",
+      "negative_path": "Nil player, absent trait, or nil Stats returns without a write; reevaluating this file removes the prior trait-owned callback before registering the replacement."
+    },
+    "numbers": {
+      "classification": "runtime-unproven",
+      "proof": "The exact source transformations are H'=min(1,H+0.05) and T'=min(1,T+0.03). CharacterStat.java:19 and :31 define both domains as 0.0..1.0, while Stats.set at Stats.java:78-82 performs an additional CharacterStat clamp.",
+      "positive_path": "From H=0.20 and T=0.40, one handler call calculates 0.25 and 0.43 before Stats.set confirms the values remain within the enum domains.",
+      "negative_path": "From H=0.98 and T=0.99, math.min yields 1.0 for each; inputs or intermediate results above 1 are also clamped by Stats.set.",
+      "exact_proof_needed": "A current-build in-game observation asserting exact +0.05/+0.03 deltas and both cap cases through the live Stats bridge."
+    },
+    "cadence": {
+      "classification": "proven-correct",
+      "proof": "UT_accmetabolism.lua:15 registers only Events.EveryTenMinutes.Add(handler). GameTime.java:729-734 invokes Erosion/Climate/room-light updates, then LuaEventManager.triggerEvent(\"EveryTenMinutes\") with zero arguments, then updates minutesMod; the handler is therefore ordered after those three engine updates and before minutesMod assignment/radio update on each ten-minute boundary.",
+      "positive_path": "When GameTime reaches a new ten-minute bucket, triggerEvent dispatches the registered zero-argument handler once in the event listener sequence.",
+      "negative_path": "A one-minute boundary that is not also a ten-minute boundary only triggers EveryOneMinute at GameTime.java:737-739 and has no registration in this trait module."
+    },
+    "cooldown": {
+      "classification": "proven-correct",
+      "proof": "UT_accmetabolism.lua:4-15 defines only TRAIT_ID and the handler closure; it has no timestamp, counter, modData key, elapsed-time read, or conditional cooldown. EveryTenMinutes is the sole limiter.",
+      "positive_path": "Two producer dispatches cause two independent handler attempts and, for an eligible non-capped player, two increments.",
+      "negative_path": "Without an EveryTenMinutes dispatch, elapsed wall time, ticks, or world age cannot invoke this module because none is read or subscribed."
+    },
+    "reset_save_load": {
+      "classification": "runtime-unproven",
+      "proof": "The trait owns no persisted counter or modData. Current source keeps exactly one trait-owned handler reference and replaces it on reevaluation. Engine-owned HUNGER/THIRST persistence and live loader lifecycle were not executed under this task's command/runtime prohibition.",
+      "positive_path": "A deterministic standard-Lua model should create a new player from saved HUNGER/THIRST values, dispatch once, and observe one exact +0.05/+0.03 capped transformation.",
+      "negative_path": "Reevaluate the trait module before the modeled reload dispatch and assert the EveryTenMinutes handler count is unchanged and only one delta occurs.",
+      "exact_proof_needed": "BuildID 23504596 full-exit/relaunch save/load evidence showing preserved engine Stats, one registered callback, and one exact post-load delta. Mocks must not be described as live proof."
+    },
+    "java_lua": {
+      "classification": "runtime-unproven",
+      "proof": "Actual bridge surfaces are global LuaManager.GlobalObject.getPlayer():IsoPlayer at LuaManager.java:3558-3561; instanceof(player,\"IsoGameCharacter\"); ResourceLocation.of(String) at ResourceLocation.java:27-32; CharacterTrait.get(ResourceLocation) at CharacterTrait.java:109-110; IsoGameCharacter.hasTrait(CharacterTrait):boolean at IsoGameCharacter.java:6236-6238; IsoGameCharacter.getStats():Stats at :4338-4340; Stats.get(CharacterStat):float and Stats.set(CharacterStat,float):boolean at Stats.java:74-82; CharacterStat.HUNGER and THIRST at CharacterStat.java:19/31. The generated API inventory independently marks getStats and all four Stats calls exact-match OK.",
+      "positive_path": "Each receiver is the type returned by the preceding call: getPlayer returns IsoPlayer/IsoGameCharacter, getStats returns Stats, enum constants supply CharacterStat, and get/set receive the recorded argument counts.",
+      "negative_path": "A missing ResourceLocation/CharacterTrait exposure, wrong receiver, wrong enum object, or wrong overload prevents the exact call chain; nil getPlayer exits before any receiver method.",
+      "exact_proof_needed": "A live Kahlua call trace on BuildID 23504596 proving global/class exposure and overload binding for every listed receiver and method."
+    },
+    "kahlua": {
+      "classification": "runtime-unproven",
+      "proof": "The trait uses local string/function/variables, a no-argument closure, early return, unary not, colon calls, global table/member lookup, arithmetic, and math.min. UTCore.hasTrait additionally uses table lookup/assignment, ~=, nil checks, and Java static/method calls. Neither file uses goto, bit operators, vararg dependence, or Java collection indexing.",
+      "positive_path": "Load both files in Kahlua with getPlayer, instanceof, UTCore, CharacterTrait, ResourceLocation, CharacterStat, math, and Events exposed, then dispatch the stored closure.",
+      "negative_path": "Remove CharacterStat, ResourceLocation, or an exact Java method exposure: the module may parse but the dispatched bridge lookup fails, separating syntax compatibility from live runtime compatibility.",
+      "exact_proof_needed": "A full desktop relaunch followed by successful Kahlua module load and one live dispatch without an error dialog or log exception."
+    },
+    "events": {
+      "classification": "runtime-unproven",
+      "proof": "GameTime.java:729-734 produces EveryTenMinutes without payload arguments. Current UT_accmetabolism.lua stores its callback under UTTraitRuntimeHandlers[TRAIT_ID], removes the prior stored callback when present, replaces the reference, and then adds exactly the replacement callback.",
+      "positive_path": "On first evaluation there is no prior trait callback and one handler is added; on reevaluation the stored handler is removed before one replacement is added.",
+      "negative_path": "A focused standard-Lua callback-count model should fail if reevaluation increases the handler count or one producer dispatch applies more than one +0.05/+0.03 delta.",
+      "exact_proof_needed": "BuildID 23504596 full-exit/relaunch and repeated world-entry trace confirming the live loader/event surface honors Remove/Add as modeled and retains one callback."
+    },
+    "stacking_interactions": {
+      "classification": "runtime-unproven",
+      "proof": "This definition has no exclusions and the handler performs read-modify-write on shared HUNGER/THIRST state. Consequently it composes in Lua event-listener order with any other writer and saturates at 1.0; this audit intentionally did not read any other trait implementation.",
+      "positive_path": "With an external writer scheduled before this listener, this handler reads that writer's resulting Stats values and adds 0.05/0.03 up to each cap.",
+      "negative_path": "At either stat's 1.0 cap, this trait contributes no further value; reversing listener order can change which writer observes remaining headroom even when the final cap is unchanged.",
+      "exact_proof_needed": "A targeted current-build interaction matrix against every actual non-trait and trait writer selected by the owning campaign, with listener order and exact outcomes; other-trait analysis is outside this single-trait artifact."
+    },
+    "multiplayer": {
+      "classification": "explicit-user-approved-non-goal",
+      "proof": "UT_character_traits.txt:1772 sets DisabledInMultiplayer=true. The user and pz-trait-mods contract define multiplayer support, synchronization, migration, proof, tests, and documentation as non-goals; the flag is only a selection exclusion guard.",
+      "positive_path": "Parse and expose DisabledInMultiplayer=true so the supported trait-selection path excludes this trait in multiplayer.",
+      "negative_path": "No client/server synchronization or multiplayer handler proof is inferred from the flag, and the absence of MP implementation is not classified as a defect."
+    },
+    "display": {
+      "classification": "proven-correct",
+      "proof": "The definition points UIName to UI_UT_accmetabolism at UT_character_traits.txt:1775, and UI.json:318 maps that exact key to \"Accelerated Metabolism\".",
+      "positive_path": "Resolve UIName through the English translation JSON and obtain the intended display label.",
+      "negative_path": "Resolve UI_UT_accmetabolismDesc instead and obtain the description, proving the display and description keys are distinct."
+    },
+    "description": {
+      "classification": "proven-correct",
+      "proof": "Current direct UI.json bytes at lines 318-319 name Accelerated Metabolism and state only the exact ten-minute hunger +0.05 and thirst +0.03 effects. Current runtime implements those effects and contains no weight, Nutrition, calorie, or macronutrient behavior.",
+      "positive_path": "The displayed description matches both source transformations and cadence.",
+      "negative_path": "No weight or nutrition consequence is claimed or inferred from the hunger/thirst implementation."
+    },
+    "localization": {
+      "classification": "coverage-gap",
+      "proof": "English UI.json:318-319 contains both exact keys. The selected closed-world ledger and remediation rows record that no non-English Translate locale files exist; no non-English text or owned locale fallback was available for direct verification.",
+      "positive_path": "English lookup resolves both the name and description keys.",
+      "negative_path": "Request an owned non-English entry for either key and none exists in the selected closed-world inventory.",
+      "exact_proof_needed": "Provide localized UI_UT_accmetabolism and UI_UT_accmetabolismDesc entries for each supported locale and verify Translator resolution, or explicitly approve English-only localization as a product non-goal."
+    },
+    "balance": {
+      "classification": "runtime-unproven",
+      "proof": "At six EveryTenMinutes events per game hour, the uncapped source rate is +0.30 HUNGER and +0.18 THIRST per game hour for a Cost=-3 trait. From zero, hunger reaches 1 after 20 dispatches (3h20m) and thirst first reaches the cap on dispatch 34 (5h40m); clamping reduces marginal effect near the cap.",
+      "positive_path": "Simulate six source transformations from zero to obtain H=0.30 and T=0.18, then compare the burden against the three points granted.",
+      "negative_path": "Start at H=0.98/T=0.99 and observe only 0.02/0.01 realized change, disproving a constant realized hourly penalty near saturation.",
+      "exact_proof_needed": "Current-build gameplay telemetry or a comparative playtest defining the intended -3-point burden and measuring consumption/health/weight consequences over representative game-time settings."
+    },
+    "performance": {
+      "classification": "runtime-unproven",
+      "proof": "Each producer dispatch is O(1): one player lookup; one trait check; then, only for a carrier with Stats, two reads, two math.min calls, and two writes. The trait retains one callback reference keyed by its ID and replaces rather than multiplies it on reevaluation.",
+      "positive_path": "Repeated dispatches keep constant receiver-call count; repeated module evaluation replaces the single trait-owned callback reference.",
+      "negative_path": "No world, inventory, population, or collection loop exists; live callback multiplicity still requires BuildID proof.",
+      "exact_proof_needed": "An in-game profiler capture on BuildID 23504596 measuring handler and UTCore.hasTrait cost and confirming no unexpected allocation or callback multiplication across reloads."
+    },
+    "tests": {
+      "classification": "coverage-gap",
+      "proof": "Current direct run_tests.lua bytes at lines 3333-3338 still assert only positive hunger/thirst movement. Shared test ownership belongs to Action Hero, so this task did not write the file.",
+      "positive_path": "The existing test detects a total failure to increase either stat.",
+      "negative_path": "It still accepts wrong positive deltas and does not cover caps, nil player, absent trait, nil Stats, callback replacement, or the deterministic current-version reload model.",
+      "exact_proof_needed": "Action Hero owner should add the exact focused assertions proposed in this task handoff; a standard-Lua model remains distinct from BuildID runtime proof."
+    },
+    "mocks": {
+      "classification": "coverage-gap",
+      "proof": "Current direct UTTestMocks.lua bytes still provide generic Stats get/set and an EveryTenMinutes Add/Remove/fire surface, but no handler-count accessor or nil-Stats player option. Shared mock ownership belongs to Action Hero, so this task did not write the file.",
+      "positive_path": "Existing withActivePlayer and Stats storage support the current positive-path assertion.",
+      "negative_path": "Without trait-focused nil-Stats and handler-count surfaces, the missing guard and duplicate callback contract cannot be asserted deterministically.",
+      "exact_proof_needed": "Action Hero owner should add only the proposed nilStats player option, no-payload EveryTenMinutes fire contract, and handlerCount accessor; mock results must not be claimed as live proof."
+    },
+    "source_release_parity": {
+      "classification": "proven-correct",
+      "proof": "Current direct SHA-256 pairs match: UT_accmetabolism.lua F5B4BF4DD96E206144C2126B5D0C89E0FBC2FFD1FEF0055F01AF308325949BB3; registries.lua 251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531; UT_character_traits.txt 834BF4BF3D7B350C79C23D8C1F9CD2B68A22BE05AFD9C3EA1F7C3FA5C8F30FC3; EN/UI.json 0A96C1FA7937D3E741CE18CC96541A7760DFD7CA6B7A3DDCB5403AEE4F3D8E70; UTCore_API.lua E22524BA74B3687E142EF9CBD2C21EE3547737A558A954A99F5E7CAC15955C16.",
+      "positive_path": "Read and hash each canonical source/release pair and obtain identical SHA-256 values.",
+      "negative_path": "Any byte change in a release member changes its digest and breaks the pairwise equality instead of inheriting source evidence."
+    },
+    "packaging": {
+      "classification": "confirmed-defect",
+      "proof": "The trait Lua, shared registration, definition, English UI, and UTCore dependency code exist in their 42.0 release locations, and mod.info is identical at source, release root, and release/42.0 with SHA-256 6DC0F672FE0BFBE25B56DCD72A921B0C89EEF92977F94272E829D23C1305FCA7. However poster.png is absent from UniversalTraits source root, release/UniversalTraits root, and release/UniversalTraits/42.0, contrary to the project package contract requiring poster.png at both package levels.",
+      "positive_path": "Load the 42.0 media tree and resolve the exact registration, definition, translation, runtime trait module, and UTCore helper dependency.",
+      "negative_path": "Validate required package-root artifacts and all three poster.png checks fail, so package integrity is not complete despite executable-media parity."
+    }
+  },
+  "findings": [
+    {
+      "finding_id": "UT-ACC-TEST-FIDELITY",
+      "classification": "coverage-gap",
+      "dimension_ids": [
+        "tests",
+        "mocks"
+      ],
+      "summary": "Shared focused tests still lack exact values, caps, negative guards, callback replacement, and deterministic reload modeling; proposed assertions are deferred to the Action Hero owner.",
+      "anchors": [
+        "UniversalTraits/test/run_tests.lua:3333-3338",
+        "UniversalTraits/test/UTTestMocks.lua:85-112",
+        "UniversalTraits/test/UTTestMocks.lua:1274-1284",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_accmetabolism.lua:6-24"
+      ]
+    },
+    {
+      "finding_id": "UT-ACC-LOCALIZATION",
+      "classification": "coverage-gap",
+      "dimension_ids": [
+        "localization"
+      ],
+      "summary": "Both English keys exist, but the selected closed-world inventory contains no owned non-English locale entries.",
+      "anchors": [
+        "UniversalTraits/media/lua/shared/Translate/EN/UI.json:318-319",
+        "trait-deep-audit/campaign/final_trait_ledger.json:2938-2949"
+      ]
+    },
+    {
+      "finding_id": "UT-ACC-PACKAGE-POSTER",
+      "classification": "confirmed-defect",
+      "dimension_ids": [
+        "packaging"
+      ],
+      "summary": "poster.png is missing from the source root and both required UniversalTraits package levels.",
+      "anchors": [
+        "UniversalTraits/poster.png (missing)",
+        "UniversalTraits/release/UniversalTraits/poster.png (missing)",
+        "UniversalTraits/release/UniversalTraits/42.0/poster.png (missing)",
+        "UTMods/AGENTS.md: Release Folder Policy"
+      ]
+    }
+  ],
+  "validation": {
+    "selected_id_reconciliation": {
+      "ledger_count": 24,
+      "artifact_count": 24,
+      "missing_from_artifact": [],
+      "extra_in_artifact": [],
+      "duplicate_ids": []
+    },
+    "classification_counts": {
+      "proven-correct": 9,
+      "confirmed-defect": 1,
+      "coverage-gap": 3,
+      "runtime-unproven": 10,
+      "explicit-user-approved-non-goal": 1
+    },
+    "proof_shape": {
+      "dimension_count": 24,
+      "dimensions_with_positive_path": 24,
+      "dimensions_with_negative_path": 24,
+      "placeholders": 0,
+      "trait_wide_reused_paragraphs": 0
+    },
+    "direct_read_hashes_sha256": {
+      "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_accmetabolism.lua": "F5B4BF4DD96E206144C2126B5D0C89E0FBC2FFD1FEF0055F01AF308325949BB3",
+      "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_accmetabolism.lua": "F5B4BF4DD96E206144C2126B5D0C89E0FBC2FFD1FEF0055F01AF308325949BB3",
+      "UniversalTraits/media/registries.lua": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+      "UniversalTraits/release/UniversalTraits/42.0/media/registries.lua": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+      "UniversalTraits/media/scripts/UT_character_traits.txt": "834BF4BF3D7B350C79C23D8C1F9CD2B68A22BE05AFD9C3EA1F7C3FA5C8F30FC3",
+      "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt": "834BF4BF3D7B350C79C23D8C1F9CD2B68A22BE05AFD9C3EA1F7C3FA5C8F30FC3",
+      "UniversalTraits/media/lua/shared/Translate/EN/UI.json": "0A96C1FA7937D3E741CE18CC96541A7760DFD7CA6B7A3DDCB5403AEE4F3D8E70",
+      "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json": "0A96C1FA7937D3E741CE18CC96541A7760DFD7CA6B7A3DDCB5403AEE4F3D8E70",
+      "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua": "E22524BA74B3687E142EF9CBD2C21EE3547737A558A954A99F5E7CAC15955C16",
+      "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_API.lua": "E22524BA74B3687E142EF9CBD2C21EE3547737A558A954A99F5E7CAC15955C16",
+      "UniversalTraits/mod.info": "6DC0F672FE0BFBE25B56DCD72A921B0C89EEF92977F94272E829D23C1305FCA7",
+      "UniversalTraits/release/UniversalTraits/mod.info": "6DC0F672FE0BFBE25B56DCD72A921B0C89EEF92977F94272E829D23C1305FCA7",
+      "UniversalTraits/release/UniversalTraits/42.0/mod.info": "6DC0F672FE0BFBE25B56DCD72A921B0C89EEF92977F94272E829D23C1305FCA7"
+    },
+    "package_missing_paths": [
+      "UniversalTraits/poster.png",
+      "UniversalTraits/release/UniversalTraits/poster.png",
+      "UniversalTraits/release/UniversalTraits/42.0/poster.png"
+    ],
+    "commands_tests_git_deploy_runtime": "not performed by instruction; shared tests/mocks not written due Action Hero ownership",
+    "index_mutation": "not performed",
+    "other_trait_evidence": "not read or analyzed",
+    "backward_save_migration": "explicit-user-approved-non-goal",
+    "current_version_save_reload": "deterministic standard-Lua model proposed for shared owner; BuildID 23504596 save/reload remains runtime-unproven"
+  }
+}

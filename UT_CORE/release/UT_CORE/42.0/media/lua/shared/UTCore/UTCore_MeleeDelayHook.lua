@@ -11,56 +11,49 @@ UTCore = UTCore or {}
 -- Weapon category detection
 -- ---------------------------------------------------------------------------
 
-local function getWeaponCategory(weapon)
-    if not weapon or not weapon.getType then return "other" end
-    local wtype = weapon:getType() or ""
-
-    if wtype:find("Axe") or wtype:find("axe") then return "axe" end
-    if wtype:find("Spear") or wtype:find("spear") or wtype:find("Pitchfork") then return "spear" end
-    if wtype:find("Blade") or wtype:find("blade") or wtype:find("Sword") or wtype:find("sword")
-       or wtype:find("Knife") or wtype:find("knife") or wtype:find("Machete") or wtype:find("machete") then
-        return "blade"
-    end
-    if wtype:find("Blunt") or wtype:find("blunt") or wtype:find("Bat") or wtype:find("bat")
-       or wtype:find("Hammer") or wtype:find("hammer") or wtype:find("Pipe") or wtype:find("pipe") then
-        return "blunt"
+local function getWeaponCategories(weapon)
+    local categories = {}
+    if not weapon or not weapon.isOfWeaponCategory or not WeaponCategory then
+        return categories
     end
 
-    -- Two-handed / one-handed fallback via API
-    if weapon.isTwoHandWeapon and weapon:isTwoHandWeapon() then return "twohanded" end
-    if weapon.isRanged and not weapon:isRanged() then return "onehanded" end
-
-    return "other"
+    categories.axe = weapon:isOfWeaponCategory(WeaponCategory.AXE)
+    categories.longBlunt = weapon:isOfWeaponCategory(WeaponCategory.BLUNT)
+    categories.shortBlunt = weapon:isOfWeaponCategory(WeaponCategory.SMALL_BLUNT)
+    categories.longBlade = weapon:isOfWeaponCategory(WeaponCategory.LONG_BLADE)
+    categories.shortBlade = weapon:isOfWeaponCategory(WeaponCategory.SMALL_BLADE)
+    categories.spear = weapon:isOfWeaponCategory(WeaponCategory.SPEAR)
+    categories.melee = categories.axe or categories.longBlunt or categories.shortBlunt
+        or categories.longBlade or categories.shortBlade or categories.spear
+    categories.twoHanded = categories.melee and weapon.isTwoHandWeapon
+        and weapon:isTwoHandWeapon() or false
+    categories.oneHanded = categories.melee and not categories.twoHanded
+    return categories
 end
 
 -- ---------------------------------------------------------------------------
 -- Trait-to-category mapping
 -- ---------------------------------------------------------------------------
 
--- Each entry: { traitId, weaponCategory, formula }
--- formula = "half" | "heavyswing"
+-- Each entry: { traitId, category predicate }. Broad traits explicitly combine
+-- the exact engine categories they own; handed traits also require handedness.
 local MELEE_TRAITS = {
-    -- Axe traits
-    { "UniversalTraits:UT_axes",             "axe",       "half" },
-    { "UniversalTraits:UT_twohanded_axes",   "axe",       "half" },
-    { "UniversalTraits:UT_onehanded_axes",   "axe",       "half" },
-    -- Blunt traits
-    { "UniversalTraits:UT_blunts",           "blunt",     "half" },
-    { "UniversalTraits:UT_twohanded_blunts", "blunt",     "half" },
-    { "UniversalTraits:UT_onehanded_blunts", "blunt",     "half" },
-    { "UniversalTraits:UT_long_blunts",      "blunt",     "half" },
-    { "UniversalTraits:UT_short_blunts",     "blunt",     "half" },
-    -- Blade traits
-    { "UniversalTraits:UT_blades",           "blade",     "half" },
-    { "UniversalTraits:UT_twohanded_blades", "blade",     "half" },
-    { "UniversalTraits:UT_onehanded_blades", "blade",     "half" },
-    { "UniversalTraits:UT_long_blades",      "blade",     "half" },
-    { "UniversalTraits:UT_short_blades",     "blade",     "half" },
-    -- Spear traits
-    { "UniversalTraits:UT_spears",           "spear",     "half" },
-    -- Generic handedness traits
-    { "UniversalTraits:UT_twohanded",        "twohanded", "half" },
-    { "UniversalTraits:UT_onehanded",        "onehanded", "half" },
+    { "UniversalTraits:UT_axes",             function(c) return c.axe end },
+    { "UniversalTraits:UT_twohanded_axes",   function(c) return c.axe and c.twoHanded end },
+    { "UniversalTraits:UT_onehanded_axes",   function(c) return c.axe and c.oneHanded end },
+    { "UniversalTraits:UT_blunts",           function(c) return c.longBlunt or c.shortBlunt end },
+    { "UniversalTraits:UT_twohanded_blunts", function(c) return c.longBlunt and c.twoHanded end },
+    { "UniversalTraits:UT_onehanded_blunts", function(c) return c.shortBlunt and c.oneHanded end },
+    { "UniversalTraits:UT_long_blunts",      function(c) return c.longBlunt end },
+    { "UniversalTraits:UT_short_blunts",     function(c) return c.shortBlunt end },
+    { "UniversalTraits:UT_blades",           function(c) return c.longBlade or c.shortBlade end },
+    { "UniversalTraits:UT_twohanded_blades", function(c) return c.longBlade and c.twoHanded end },
+    { "UniversalTraits:UT_onehanded_blades", function(c) return c.shortBlade and c.oneHanded end },
+    { "UniversalTraits:UT_long_blades",      function(c) return c.longBlade end },
+    { "UniversalTraits:UT_short_blades",     function(c) return c.shortBlade end },
+    { "UniversalTraits:UT_spears",           function(c) return c.spear end },
+    { "UniversalTraits:UT_twohanded",        function(c) return c.twoHanded end },
+    { "UniversalTraits:UT_onehanded",        function(c) return c.oneHanded and (c.shortBlade or c.shortBlunt) end },
 }
 
 -- ---------------------------------------------------------------------------
@@ -69,7 +62,7 @@ local MELEE_TRAITS = {
 
 -- Exposed as UTCore._meleeDelayOnPlayerUpdate so tests can call it directly.
 local _lastWeapon = nil
-local _lastCategory = nil
+local _lastCategories = nil
 
 local function onPlayerUpdate(player, tick)
     if not player or not player.isLocalPlayer or not player:isLocalPlayer() then return end
@@ -77,7 +70,7 @@ local function onPlayerUpdate(player, tick)
     local weapon = tick and tick.primaryWeapon or (player.getPrimaryHandItem and player:getPrimaryHandItem())
     if not weapon then
         _lastWeapon = nil
-        _lastCategory = nil
+        _lastCategories = nil
         return
     end
 
@@ -95,24 +88,24 @@ local function onPlayerUpdate(player, tick)
     if md["UT_meleeDelaySet"] then return end
 
     -- Cache weapon category: string.find is expensive per-tick for the same weapon.
-    local category
-    if weapon == _lastWeapon and _lastCategory then
-        category = _lastCategory
+    local categories
+    if weapon == _lastWeapon and _lastCategories then
+        categories = _lastCategories
     else
-        category = getWeaponCategory(weapon)
+        categories = getWeaponCategories(weapon)
         _lastWeapon = weapon
-        _lastCategory = category
+        _lastCategories = categories
     end
     local newDelay = nil
 
-    if category ~= "other" and UTSmoke and UTSmoke.record then
-        UTSmoke.record("combat.weapon-runtime", category)
+    if categories.melee and UTSmoke and UTSmoke.record then
+        UTSmoke.record("combat.weapon-runtime", "melee")
     end
 
     -- Check standard 50% reduction traits
     for _, entry in ipairs(MELEE_TRAITS) do
-        local traitId, reqCategory = entry[1], entry[2]
-        if category == reqCategory and UTCore.hasTrait(player, traitId) then
+        local traitId, matchesCategory = entry[1], entry[2]
+        if matchesCategory(categories) and UTCore.hasTrait(player, traitId) then
             local candidate = meleeDelay * 0.5
             if newDelay == nil or candidate < newDelay then
                 newDelay = candidate
@@ -120,11 +113,8 @@ local function onPlayerUpdate(player, tick)
         end
     end
 
-    -- UT_twohanded also matches two-handed weapons; UT_onehanded matches one-handed
-    -- (already covered by MELEE_TRAITS above via category == "twohanded" / "onehanded")
-
     -- Check UT_heavyswing (strength-scaled, any melee weapon)
-    if category ~= "other" and UTCore.hasTrait(player, "UniversalTraits:UT_heavyswing") then
+    if categories.melee and UTCore.hasTrait(player, "UniversalTraits:UT_heavyswing") then
         local strength = 5
         if player.getPerkLevel then
             local perksStrength = Perks and Perks.Strength or "Strength"
@@ -154,8 +144,13 @@ UTCore._meleeDelayOnPlayerUpdate = onPlayerUpdate
 local function onCreatePlayer(_playerIndex, player)
     if not player then return end
     local md = player:getModData()
+    if not md["UT_meleeDelaySet"] then return end
+
+    local meleeDelay = player:getMeleeDelay()
     md["UT_meleeDelaySet"] = false
-    pcall(function() player:setMeleeDelay(0) end)
+    if meleeDelay and meleeDelay > 0 then
+        player:setMeleeDelay(0)
+    end
 end
 
 -- ---------------------------------------------------------------------------
@@ -166,10 +161,18 @@ if UTCore.registerCoreHandler then
     UTCore.registerCoreHandler("MeleeDelayHook", onPlayerUpdate, { priority = 0 })
 else
     if Events and Events.OnPlayerUpdate then
+        if UTCore._meleeDelayRegisteredOnPlayerUpdate and Events.OnPlayerUpdate.Remove then
+            Events.OnPlayerUpdate.Remove(UTCore._meleeDelayRegisteredOnPlayerUpdate)
+        end
         Events.OnPlayerUpdate.Add(onPlayerUpdate)
+        UTCore._meleeDelayRegisteredOnPlayerUpdate = onPlayerUpdate
     end
 end
 
 if Events and Events.OnCreatePlayer then
+    if UTCore._meleeDelayOnCreatePlayer and Events.OnCreatePlayer.Remove then
+        Events.OnCreatePlayer.Remove(UTCore._meleeDelayOnCreatePlayer)
+    end
+    UTCore._meleeDelayOnCreatePlayer = onCreatePlayer
     Events.OnCreatePlayer.Add(onCreatePlayer)
 end

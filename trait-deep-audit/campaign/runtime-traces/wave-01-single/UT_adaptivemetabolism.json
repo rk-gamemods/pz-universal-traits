@@ -1,0 +1,390 @@
+{
+  "schema_version": "ut-trait-deep-trace-v1",
+  "trait_id": "UniversalTraits:UT_adaptivemetabolism",
+  "source_snapshot": {
+    "svn_revision": 964,
+    "steam_build_id": 23504596,
+    "label": "SVN 964 / BuildID 23504596",
+    "policy": "newest supported 42.0 snapshot"
+  },
+  "selected_ids": [
+    "dimension:UniversalTraits:UT_adaptivemetabolism:registration",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:definition_parser",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:namespace",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:cost_xp_grants_exclusions",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:source_intent",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:runtime_path",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:numbers",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:cadence",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:cooldown",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:reset_save_load",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:java_lua",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:kahlua",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:events",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:stacking_interactions",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:multiplayer",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:display",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:description",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:localization",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:balance",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:performance",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:tests",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:mocks",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:source_release_parity",
+    "dimension:UniversalTraits:UT_adaptivemetabolism:packaging"
+  ],
+  "dimension_proofs": [
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:registration",
+      "classification": "proven-correct",
+      "positive_path": "media/registries.lua:255 assigns CharacterTrait.register(\"UniversalTraits:UT_adaptivemetabolism\") to UTTraitsRegistries.UT_adaptivemetabolism. CharacterTrait.register(String) delegates through RegistryReset.createLocation and returns the registered CharacterTrait.",
+      "negative_path": "No unnamespaced identifier or alternate suffix occurs on the selected registration line; ResourceLocation.of would otherwise map a one-part identifier to the base namespace, which would not equal this definition's full ID.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/registries.lua:255",
+        "PZCodebase/Java/source/zombie/scripting/objects/CharacterTrait.java:122-132",
+        "PZCodebase/Java/source/zombie/scripting/objects/ResourceLocation.java:27-33"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:definition_parser",
+      "classification": "proven-correct",
+      "positive_path": "The complete block at UT_character_traits.txt:1759-1767 supplies IsProfessionTrait=false, DisabledInMultiplayer=true, CharacterTrait, Cost=4, UIName and UIDescription. CharacterTraitDefinitionScript.Load parses the first block, resolves CharacterTrait through the registry, parses those exact scalar fields, and calls addCharacterTraitDefinition with them.",
+      "negative_path": "The selected block contains no unknown key and no XPBoosts, GrantedTraits, GrantedRecipes, MutuallyExclusiveTraits or Texture token, so none of the parser's optional loops can populate those collections for this definition. An empty or unresolved CharacterTrait value would not be equivalent to the resolved registered object.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/scripts/UT_character_traits.txt:1759-1767",
+        "PZCodebase/Java/source/zombie/scripting/objects/CharacterTraitDefinitionScript.java:23-118"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:namespace",
+      "classification": "proven-correct",
+      "positive_path": "The registration string, script block name, CharacterTrait field, runtime TRAIT_ID and UI-key suffix consistently identify UniversalTraits:UT_adaptivemetabolism.",
+      "negative_path": "ResourceLocation.of splits on the first colon and defaults only one-part IDs to base; the selected full two-part ID therefore cannot silently resolve as base:UT_adaptivemetabolism or as a differently suffixed trait.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/registries.lua:255",
+        "UTMods/UniversalTraits/media/scripts/UT_character_traits.txt:1759-1766",
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua:8",
+        "PZCodebase/Java/source/zombie/scripting/objects/ResourceLocation.java:27-33"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:cost_xp_grants_exclusions",
+      "classification": "proven-correct",
+      "positive_path": "The selected definition sets Cost=4 and omits XPBoosts, GrantedTraits, GrantedRecipes and MutuallyExclusiveTraits; the parser initializes each omitted collection empty and only adds entries when its corresponding token occurs.",
+      "negative_path": "No exclusion or grant is implied by proximity, naming, cost, or DisabledInMultiplayer. This trait's selected block cannot create a reverse exclusion, XP boost, recipe grant or trait grant because none of those keys is present.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/scripts/UT_character_traits.txt:1759-1767",
+        "PZCodebase/Java/source/zombie/scripting/objects/CharacterTraitDefinitionScript.java:33-41",
+        "PZCodebase/Java/source/zombie/scripting/objects/CharacterTraitDefinitionScript.java:54-81",
+        "PZCodebase/Java/source/zombie/scripting/objects/CharacterTraitDefinitionScript.java:96-113"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:source_intent",
+      "classification": "proven-correct",
+      "positive_path": "The selected source comment and English description both define the current intent: while calories are positive, passive hunger is capped at internal HUNGER 0.01 (roughly 99 percent full in the inverted UI); eating may reduce it further; at non-positive calories vanilla hunger remains untouched. Lines 11-20 implement that exact contract.",
+      "negative_path": "Neither current intent surface promises calorie preservation, slower calorie depletion, food-action hooks, an eating bonus, or behavior at calories <= 0; the runtime file calls no Nutrition setter and registers no consumption event.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua:2-20",
+        "UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI.json:316-317"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:runtime_path",
+      "classification": "proven-correct",
+      "positive_path": "On a handler call, getPlayer must return a player, UTCore.hasTrait must resolve and cache the selected CharacterTrait and player:hasTrait result, Nutrition.getCalories must return >0, and Stats.get(HUNGER) must return >0.01; only then Stats.set(HUNGER,0.01) executes.",
+      "negative_path": "A nil player or false trait result returns immediately; calories <=0 returns before Stats is fetched; hunger <=0.01 bypasses the setter. The selected function contains no other write, so it cannot raise hunger or mutate calories.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua:11-20",
+        "UTMods/UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:109-135"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:numbers",
+      "classification": "proven-correct",
+      "positive_path": "The trait gate is the strict domain calories > 0, and the hunger write is exactly 0.01. CharacterStat.HUNGER has engine domain [0,1], default 0, and Stats.set clamps through CharacterStat.clamp before storing; 0.01 is therefore representable and in range.",
+      "negative_path": "Calories 0 and every negative calorie value take the early return. Hunger exactly 0.01 and every value below it take the non-write branch; values above 0.01, including 1, are written to 0.01. No arithmetic, random range or accumulated numeric state exists.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua:9-20",
+        "PZCodebase/Java/source/zombie/characters/CharacterStat.java:19",
+        "PZCodebase/Java/source/zombie/characters/CharacterStat.java:86-95",
+        "PZCodebase/Java/source/zombie/characters/Stats.java:74-82"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:cadence",
+      "classification": "proven-correct",
+      "positive_path": "The selected file adds one handler to Events.EveryTenMinutes. GameTime's update loop detects a change in integer ten-minute bucket with now/10 != minutesMod, runs erosion, climate and room-light work, then triggers LuaEventManager.triggerEvent(\"EveryTenMinutes\") before updating minutesMod.",
+      "negative_path": "The file registers no EveryOneMinute, frame, player-update or food-action handler. The producer condition is a ten-game-minute bucket transition, not ten wall-clock minutes, and the Java trigger passes no payload arguments.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua:23",
+        "PZCodebase/Java/source/zombie/GameTime.java:718-734"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:cooldown",
+      "classification": "proven-correct",
+      "positive_path": "Eligibility is recomputed from current player identity, cached trait membership, current calories and current hunger on each event dispatch. The event cadence is the sole time gate.",
+      "negative_path": "No timestamp, counter, modData key or retained cooldown table is created. After a successful clamp, the next dispatch normally becomes a no-write because hunger is not >0.01, but any intervening engine change above 0.01 makes it eligible again without cooldown delay.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua:11-23",
+        "UTMods/UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:113-135"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:reset_save_load",
+      "classification": "runtime-unproven",
+      "positive_path": "The trait creates no mod-owned persistent field. Engine Stats.save serializes every ordered CharacterStat including HUNGER, Stats.load restores each float through clamping, and IsoGameCharacter invokes those methods in its non-zombie save/load paths. UTCore invalidates its session trait-result cache when player identity changes.",
+      "negative_path": "No in-game current-version save, full exit, reload and post-reload ten-minute dispatch was observed. Static absence of modData cannot prove that the restored player, Nutrition value, trait registry, cached membership and event registration jointly resume correctly.",
+      "proof_needed": "On the stated current build, save with this trait, calories >0 and HUNGER at/above the threshold; fully exit, reload, verify serialized HUNGER and calories, advance across one ten-game-minute boundary, and observe exactly one clamp with the selected trait still resolved. Backward-save migration is not required.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua:8-23",
+        "UTMods/UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:113-121",
+        "PZCodebase/Java/source/zombie/characters/Stats.java:34-55",
+        "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:5888-5893",
+        "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6029-6034"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:java_lua",
+      "classification": "runtime-unproven",
+      "positive_path": "The actual boundary is getPlayer()->IsoPlayer; UTCore CharacterTrait.get(ResourceLocation.of(String))->CharacterTrait; IsoGameCharacter.hasTrait(CharacterTrait)->boolean; IsoPlayer.getNutrition()->Nutrition; Nutrition.getCalories()->float; IsoGameCharacter.getStats()->Stats; Stats.get(CharacterStat)->float; Stats.set(CharacterStat,float)->boolean. The Lua ignores the final boolean return.",
+      "negative_path": "No string-key Stats overload, named hunger getter/setter, Nutrition setter, Java collection, index operation or GameTime receiver is invoked by the selected runtime file. Static Java signatures do not prove Kahlua overload resolution and invocation for this loaded module.",
+      "proof_needed": "Capture one current-build Kahlua execution of the selected handler showing receiver classes, successful ResourceLocation/CharacterTrait resolution, each listed method invocation and absence of a bridge signature error.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua:11-20",
+        "UTMods/UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:109-135",
+        "PZCodebase/Java/source/zombie/scripting/objects/ResourceLocation.java:27-33",
+        "PZCodebase/Java/source/zombie/scripting/objects/CharacterTrait.java:109-110",
+        "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:4338-4340",
+        "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6236-6238",
+        "PZCodebase/Java/source/zombie/characters/IsoPlayer.java:6631-6633",
+        "PZCodebase/Java/source/zombie/characters/BodyDamage/Nutrition.java:303-305",
+        "PZCodebase/Java/source/zombie/characters/Stats.java:74-82"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:kahlua",
+      "classification": "runtime-unproven",
+      "positive_path": "The selected Lua uses local string/number constants, one local zero-argument function, if/then, early return, boolean negation, numeric comparisons, colon-method calls and Events.EveryTenMinutes.Add. It uses no Java-list indexing and delegates trait lookup to UTCore's cached ResourceLocation/CharacterTrait bridge.",
+      "negative_path": "It uses no goto, bit operators, varargs, metatable construction, standard-Lua-only library import or file-system API. Nonetheless, source inspection and standard-Lua tests cannot prove Kahlua module load, global availability or bridge dispatch.",
+      "proof_needed": "After a full game process restart, capture current-build module-load and handler execution without Kahlua compile/global/interop errors, then exercise both an eligible and early-return path.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua:1-23",
+        "UTMods/UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:109-135"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:events",
+      "classification": "runtime-unproven",
+      "positive_path": "At module load, Events.EveryTenMinutes.Add receives the local zero-argument handler. The current Java producer calls LuaEventManager.triggerEvent(\"EveryTenMinutes\") with no payload after erosion, climate and room-light updates and before minutesMod assignment and radio script update on a ten-minute bucket transition.",
+      "negative_path": "The selected file never calls Remove and exposes no handler reference outside its local scope. No current in-game trace proves one module load, insertion position, one dispatch per crossed boundary, or removal behavior; the mock's manual fire method is not the engine producer.",
+      "proof_needed": "After full restart, instrument this selected handler and cross controlled ten-game-minute boundaries to show one Add, zero Remove calls, zero arguments, dispatch order relative to another neutral observer, exact firing count, and no duplicate registration after save/reload.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua:11-23",
+        "PZCodebase/Java/source/zombie/GameTime.java:718-734",
+        "UTMods/UniversalTraits/test/UTTestMocks.lua:1274-1284"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:stacking_interactions",
+      "classification": "runtime-unproven",
+      "positive_path": "Within the selected trait alone, the interaction rule is an absolute HUNGER write: if an earlier system leaves HUNGER >0.01 while calories are positive, this handler overwrites it to 0.01; values already <=0.01 and all non-positive-calorie states pass through unchanged.",
+      "negative_path": "The definition has no exclusion and the handler has no ownership marker, priority or post-dispatch reconciliation; a later writer can change HUNGER after this handler. Evidence for every other trait is forbidden in this audit, so no cross-trait ordering or combined gameplay result is asserted.",
+      "proof_needed": "In a separately authorized interaction audit, use a controlled neutral HUNGER writer before and after this handler, plus current-version save/reload, to prove order-dependent outcomes without broadening this artifact into another trait's evidence.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/scripts/UT_character_traits.txt:1759-1767",
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua:11-23"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:multiplayer",
+      "classification": "explicit-user-approved-non-goal",
+      "positive_path": "The definition sets DisabledInMultiplayer=true and the parser passes that boolean into CharacterTraitDefinition as exclusion metadata; mod.info also describes the package as single-player only.",
+      "negative_path": "DisabledInMultiplayer is only an exclusion guard. Multiplayer execution, synchronization, migration, enforcement proof, tests and documentation are explicitly outside scope, so the absence of a Lua multiplayer branch is not a defect.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/scripts/UT_character_traits.txt:1761-1763",
+        "UTMods/UniversalTraits/mod.info:1-8",
+        "PZCodebase/Java/source/zombie/scripting/objects/CharacterTraitDefinitionScript.java:35-36",
+        "PZCodebase/Java/source/zombie/scripting/objects/CharacterTraitDefinitionScript.java:58-61",
+        "PZCodebase/Java/source/zombie/scripting/objects/CharacterTraitDefinitionScript.java:96-98"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:display",
+      "classification": "proven-correct",
+      "positive_path": "UIName is exactly UI_UT_adaptivemetabolism and the English JSON value for that key is exactly \"Adaptive Metabolism\".",
+      "negative_path": "The description key has the Desc suffix and is distinct; neither the trait ID nor UIDescription can substitute for UIName during definition construction.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/scripts/UT_character_traits.txt:1765",
+        "UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI.json:316"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:description",
+      "classification": "proven-correct",
+      "positive_path": "UIDescription resolves UI_UT_adaptivemetabolismDesc. Each English claim maps to selected code: stored calories gate getCalories()>0, passive hunger is capped at internal 0.01, eating may drive hunger lower because <=0.01 is untouched, and non-positive calories return without mutation.",
+      "negative_path": "The copy does not claim the trait changes calorie consumption, prevents all starvation forever, raises low hunger to the cap, or modifies food actions. The selected handler contains no operation that would imply those claims.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/scripts/UT_character_traits.txt:1766",
+        "UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI.json:317",
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua:2-20"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:localization",
+      "classification": "coverage-gap",
+      "positive_path": "The two selected English keys exist, are distinct, and their current values match the definition and runtime semantics.",
+      "negative_path": "The selected ledger and remediation row record that only Translate/EN/UI.json exists in the closed-world package; therefore no non-English locale can supply these selected keys.",
+      "proof_needed": "Either provide locale files containing both exact selected keys with reviewed translations, or explicitly approve English-only localization as a product non-goal and update the owning ledger classification.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI.json:316-317",
+        "UTMods/trait-deep-audit/campaign/final_trait_ledger.json:selected row UniversalTraits:UT_adaptivemetabolism.localization",
+        "UTMods/trait-deep-audit/campaign/remediation_queue.jsonl:queue_id dimension:UniversalTraits:UT_adaptivemetabolism:localization"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:balance",
+      "classification": "runtime-unproven",
+      "positive_path": "Static balance bounds are fully specified: character-creation cost +4, no XP/grants/exclusions, an every-ten-game-minute check, no calorie mutation, and a conditional internal hunger ceiling of 0.01 only while calories >0.",
+      "negative_path": "Those constants and control-flow bounds do not establish comparative value, exploitability, player burden or whether +4 is fair across realistic nutrition and hunger trajectories.",
+      "proof_needed": "Run controlled current-build playtests or telemetry comparing otherwise identical characters across representative calorie reserves, activity levels and survival durations, measuring time hungry, food usage and starvation onset; backward-save migration and MP are excluded.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/scripts/UT_character_traits.txt:1759-1767",
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua:8-23",
+        "UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI.json:317"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:performance",
+      "classification": "proven-correct",
+      "positive_path": "Per EveryTenMinutes dispatch the selected handler is O(1): one player lookup; one UTCore trait lookup that is cached per player/trait after first resolution; and, on progressively eligible paths, one Nutrition receiver/read, one Stats receiver/read and at most one Stats write. It allocates no trait-owned table and creates no recurring state.",
+      "negative_path": "Absent player exits before UTCore; absent trait exits before Nutrition; non-positive calories exits before Stats. There is no loop, recursion, per-frame registration, appended history, modData growth, retained closure per dispatch or unbounded collection.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua:11-23",
+        "UTMods/UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:113-135",
+        "PZCodebase/Java/source/zombie/GameTime.java:718-734"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:tests",
+      "classification": "coverage-gap",
+      "positive_path": "Three named assertions exist: clamps hunger from 1.0 to 0.01 at calories 2000; preserves hunger 0.005 at calories 2000; preserves hunger 1.0 at calories 0. Each fires the selected EveryTenMinutes mock with an active selected-trait player.",
+      "negative_path": "No selected named assertion covers nil player, absent trait, negative calories, exact boundary hunger=0.01, replacement of an above-cap value immediately after reload, duplicate registration, actual zero-argument engine production or a wrong Java signature. The suite was not run under this read-only delegation.",
+      "proof_needed": "Add isolated named cases for each missing branch and a current-version save/reload integration case; demonstrate a representative negative fixture fails when the calories comparison, hunger comparison, event name or Java receiver signature is deliberately wrong.",
+      "anchors": [
+        "UTMods/UniversalTraits/test/run_tests.lua:605-610",
+        "UTMods/UniversalTraits/test/run_tests.lua:3419-3433"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:mocks",
+      "classification": "coverage-gap",
+      "positive_path": "MockPlayer supplies selected-trait membership, getNutrition/getCalories and getStats/get/set; CharacterStat.HUNGER has a [0,1] clamp helper; EveryTenMinutes stores handlers in insertion order and fireHandlers removes the event-table self argument before invoking handlers.",
+      "negative_path": "Mock Stats.set directly stores v instead of calling stat:clamp(v), unlike engine Stats.set; the mock also cannot reproduce Java overload resolution, engine GameTime production, serialization or Kahlua module loading. Existing selected tests write 0.01, so the clamp mismatch does not invalidate their three in-domain assertions but leaves receiver fidelity unproven.",
+      "proof_needed": "Make the isolated Stats mock enforce CharacterStat.clamp and add a negative fidelity assertion with an out-of-range value; separately use current-build integration evidence for producer, serialization and bridge contracts.",
+      "anchors": [
+        "UTMods/UniversalTraits/test/UTTestMocks.lua:85-115",
+        "UTMods/UniversalTraits/test/UTTestMocks.lua:158-166",
+        "UTMods/UniversalTraits/test/UTTestMocks.lua:217-303",
+        "UTMods/UniversalTraits/test/UTTestMocks.lua:832-839",
+        "UTMods/UniversalTraits/test/UTTestMocks.lua:1274-1284",
+        "UTMods/UniversalTraits/test/UTTestMocks.lua:1547-1566",
+        "PZCodebase/Java/source/zombie/characters/Stats.java:74-82"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:source_release_parity",
+      "classification": "proven-correct",
+      "positive_path": "Current source and 42.0 release SHA-256 pairs match exactly for the selected runtime file (8b5192b6d9eddfb283e7502b0aee310a3c9ed3a75b6ea08935b1cc62e6efdfd1), registry (251da2a8293dd602deaab47fe03dd435f06c1ae8ecaa03c59307cfae5acc4531), definition file (834bf4bf3d7b350c79c23d8c1f9cd2b68a22be05afd9c3ea1f7c3fa5c8f30fc3), English UI file (f10eb6dc3a2f2e7041f1662c58c9d2a298e25a2827e062e99e89269cc4290fe3), and mod.info (6dc0f672fe0bfbe25b56dcd72a921b0c89eef92977f94272e829d23c1305fca7).",
+      "negative_path": "These hashes prove only the exact selected files and shared files containing this trait; they do not assert parity for unrelated traits, unrelated assets, live mods or Workshop content.",
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua",
+        "UTMods/UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua",
+        "UTMods/UniversalTraits/media/registries.lua",
+        "UTMods/UniversalTraits/release/UniversalTraits/42.0/media/registries.lua",
+        "UTMods/UniversalTraits/media/scripts/UT_character_traits.txt",
+        "UTMods/UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+        "UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+        "UTMods/UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_adaptivemetabolism:packaging",
+      "classification": "proven-correct",
+      "positive_path": "The selected runtime file, registry, definition and English keys exist in source and release/UniversalTraits/42.0 at matching relative media paths. Root, release-root and 42.0 mod.info are byte-identical and declare id=UniversalTraits, require=UT_CORE and versionMin=42.0.",
+      "negative_path": "Without the UniversalTraits package being enabled and UT_CORE satisfying the declared dependency, the selected runtime path cannot meet its UTCore.hasTrait dependency. No live-copy, Workshop, deployment or game-load claim is made.",
+      "anchors": [
+        "UTMods/UniversalTraits/mod.info",
+        "UTMods/UniversalTraits/release/UniversalTraits/mod.info",
+        "UTMods/UniversalTraits/release/UniversalTraits/42.0/mod.info",
+        "UTMods/UniversalTraits/release/UniversalTraits/42.0/media/registries.lua:255",
+        "UTMods/UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt:1759-1767",
+        "UTMods/UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_adaptivemetabolism.lua:1-23"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "finding:UniversalTraits:UT_adaptivemetabolism:mock-stats-clamp-fidelity",
+      "classification": "coverage-gap",
+      "dimensions": [
+        "dimension:UniversalTraits:UT_adaptivemetabolism:tests",
+        "dimension:UniversalTraits:UT_adaptivemetabolism:mocks"
+      ],
+      "summary": "The standard-Lua Stats mock exposes CharacterStat.clamp but its set method stores the value directly, unlike engine Stats.set; selected tests also omit exact-boundary, negative-calorie, nil-player, absent-trait, save/reload and engine-producer cases.",
+      "product_defect": false,
+      "anchors": [
+        "UTMods/UniversalTraits/test/UTTestMocks.lua:85-115",
+        "UTMods/UniversalTraits/test/UTTestMocks.lua:1547-1566",
+        "UTMods/UniversalTraits/test/run_tests.lua:3419-3433",
+        "PZCodebase/Java/source/zombie/characters/Stats.java:74-82"
+      ]
+    },
+    {
+      "finding_id": "finding:UniversalTraits:UT_adaptivemetabolism:non-english-localization-absent",
+      "classification": "coverage-gap",
+      "dimensions": [
+        "dimension:UniversalTraits:UT_adaptivemetabolism:localization"
+      ],
+      "summary": "Both English keys are correct, but the selected ledger and remediation evidence record no non-English locale coverage and no user-approved localization non-goal.",
+      "product_defect": false,
+      "anchors": [
+        "UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI.json:316-317",
+        "UTMods/trait-deep-audit/campaign/final_trait_ledger.json:selected row UniversalTraits:UT_adaptivemetabolism.localization",
+        "UTMods/trait-deep-audit/campaign/remediation_queue.jsonl:queue_id dimension:UniversalTraits:UT_adaptivemetabolism:localization"
+      ]
+    }
+  ],
+  "validation": {
+    "selected_id_count": 24,
+    "dimension_proof_count": 24,
+    "unique_selected_id_count": 24,
+    "unique_dimension_proof_id_count": 24,
+    "selected_ids_match_ledger_bidirectionally": true,
+    "selected_ids_missing_from_proofs": [],
+    "proof_ids_not_selected": [],
+    "remediation_rows_selected": 12,
+    "classification_counts": {
+      "proven-correct": 14,
+      "confirmed-defect": 0,
+      "coverage-gap": 3,
+      "runtime-unproven": 6,
+      "explicit-user-approved-non-goal": 1
+    },
+    "finding_count": 2,
+    "product_defect_count": 0,
+    "placeholder_count": 0,
+    "tests_run": false,
+    "runtime_observed": false,
+    "index_mutated": false,
+    "other_trait_evidence_used": false,
+    "backward_save_migration": "explicit-user-approved-non-goal",
+    "multiplayer_support": "explicit-user-approved-non-goal",
+    "current_version_save_reload": "runtime-unproven",
+    "source_runtime_sha256": "8b5192b6d9eddfb283e7502b0aee310a3c9ed3a75b6ea08935b1cc62e6efdfd1",
+    "release_runtime_sha256": "8b5192b6d9eddfb283e7502b0aee310a3c9ed3a75b6ea08935b1cc62e6efdfd1",
+    "source_release_selected_hash_pairs_equal": true,
+    "scope_note": "Only UniversalTraits:UT_adaptivemetabolism evidence was classified; no other trait's behavior or evidence was used. No product code, tests, indexes, release files, live files or deployment state were changed."
+  }
+}

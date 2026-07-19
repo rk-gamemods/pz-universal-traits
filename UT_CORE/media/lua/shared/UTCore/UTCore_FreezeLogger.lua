@@ -21,12 +21,32 @@ local FREEZE_DETECT_TICKS = 5        -- ticks with isMoving+no position change =
 local FREEZE_LOG_INTERVAL = 30       -- while frozen, log state every N ticks
 local MAX_FREEZE_LOGS     = 20       -- stop logging after this many dumps per freeze
 
--- State tracking
-local _prevX, _prevY = nil, nil
-local _stuckCount = 0
-local _freezeLogCount = 0
-local _onPlayerMoveFired = false      -- set by OnPlayerMove hook, read by OnPlayerUpdate
-local _prevMoveX, _prevMoveY = nil, nil -- position last OnPlayerMove saw
+-- Single-player state tracking. Keep the player alongside its state so event
+-- callbacks never borrow coordinates or counters from a different lifecycle.
+-- A single slot is sufficient for the supported single-player runtime and
+-- keeps growth bounded across character/save changes.
+local _playerState = nil
+
+local function resetPlayerState(player)
+    _playerState = {
+        player = player,
+        prevX = nil,
+        prevY = nil,
+        stuckCount = 0,
+        freezeLogCount = 0,
+        onPlayerMoveFired = false,
+        prevMoveX = nil,
+        prevMoveY = nil,
+    }
+    return _playerState
+end
+
+local function getPlayerState(player)
+    if not _playerState or _playerState.player ~= player then
+        return resetPlayerState(player)
+    end
+    return _playerState
+end
 
 ---------------------------------------------------------------------------
 -- Safe method caller — returns nil instead of crashing on missing methods
@@ -49,7 +69,7 @@ end
 ---------------------------------------------------------------------------
 -- State snapshot
 ---------------------------------------------------------------------------
-local function captureState(player)
+local function captureState(player, playerState)
     local x   = safeCall(player, "getX") or 0
     local y   = safeCall(player, "getY") or 0
     local z   = safeCall(player, "getZ") or 0
@@ -74,7 +94,7 @@ local function captureState(player)
         hitReaction     = safeStr(safeCall(player, "getHitReaction")),
         bumpDone        = safeStr(safeCall(player, "isBumpDone")),
         bumpedChr       = safeStr(safeCall(player, "getBumpedChr")),
-        onPlayerMoveFired = safeStr(_onPlayerMoveFired),
+        onPlayerMoveFired = safeStr(playerState.onPlayerMoveFired),
     }
 
     -- Animation variables: use getVariableBoolean for booleans (getVariable
@@ -233,52 +253,54 @@ end
 ---------------------------------------------------------------------------
 -- OnPlayerMove tracker — detects if engine calls OnPlayerMove
 ---------------------------------------------------------------------------
-local function onPlayerMove()
-    _onPlayerMoveFired = true
-    local player = getPlayer()
-    if player then
-        _prevMoveX = safeCall(player, "getX")
-        _prevMoveY = safeCall(player, "getY")
-    end
+local function onPlayerMove(player)
+    if not player then return end
+    local playerState = getPlayerState(player)
+    playerState.onPlayerMoveFired = true
+    playerState.prevMoveX = safeCall(player, "getX")
+    playerState.prevMoveY = safeCall(player, "getY")
 end
 
 ---------------------------------------------------------------------------
 -- Main tick handler
 ---------------------------------------------------------------------------
 local function onPlayerUpdate(player, tick)
+    if not player then return end
+    local playerState = getPlayerState(player)
+
     -- Core handler: centralDispatch already skips dead players.
     -- Vehicle check: reset freeze state when driving (can't freeze in vehicle).
     local vehicle = tick and tick.vehicle or safeCall(player, "getVehicle")
     if vehicle ~= nil then
-        _stuckCount = 0
+        resetPlayerState(player)
         return
     end
 
     local x = tick and tick.x or safeCall(player, "getX") or 0
     local y = tick and tick.y or safeCall(player, "getY") or 0
 
-    if _prevX == nil then
-        _prevX, _prevY = x, y
-        _onPlayerMoveFired = false
+    if playerState.prevX == nil then
+        playerState.prevX, playerState.prevY = x, y
+        playerState.onPlayerMoveFired = false
         return
     end
 
-    local moved = (x ~= _prevX or y ~= _prevY)
+    local moved = (x ~= playerState.prevX or y ~= playerState.prevY)
     local wantsToMove = tick and tick.isMoving or safeCall(player, "isMoving") or false
 
     if moved then
         -- Player actually moved — reset everything
-        _stuckCount = 0
-        _freezeLogCount = 0
+        playerState.stuckCount = 0
+        playerState.freezeLogCount = 0
     elseif wantsToMove then
         -- Player is PRESSING movement keys but position didn't change — real stuck
-        _stuckCount = _stuckCount + 1
+        playerState.stuckCount = playerState.stuckCount + 1
 
-        if _stuckCount == FREEZE_DETECT_TICKS then
-            print("[FREEZE] ===== FREEZE DETECTED at tick " .. _stuckCount .. " =====")
-            local state = captureState(player)
+        if playerState.stuckCount == FREEZE_DETECT_TICKS then
+            print("[FREEZE] ===== FREEZE DETECTED at tick " .. playerState.stuckCount .. " =====")
+            local state = captureState(player, playerState)
             dumpState("[FREEZE]", state)
-            _freezeLogCount = 1
+            playerState.freezeLogCount = 1
             -- Dump ring buffer for pre-freeze event history
             if UTCore.dumpDiagnostics then
                 UTCore.dumpDiagnostics()
@@ -292,28 +314,85 @@ local function onPlayerUpdate(player, tick)
         end
 
         -- Periodic logging while frozen
-        if _stuckCount > FREEZE_DETECT_TICKS
-            and _freezeLogCount > 0
-            and _freezeLogCount < MAX_FREEZE_LOGS
-            and _stuckCount % FREEZE_LOG_INTERVAL == 0 then
-            print("[FREEZE] ===== STILL FROZEN tick=" .. _stuckCount .. " =====")
-            local state = captureState(player)
+        if playerState.stuckCount > FREEZE_DETECT_TICKS
+            and playerState.freezeLogCount > 0
+            and playerState.freezeLogCount < MAX_FREEZE_LOGS
+            and playerState.stuckCount % FREEZE_LOG_INTERVAL == 0 then
+            print("[FREEZE] ===== STILL FROZEN tick=" .. playerState.stuckCount .. " =====")
+            local state = captureState(player, playerState)
             dumpState("[FREEZE]", state)
-            _freezeLogCount = _freezeLogCount + 1
+            playerState.freezeLogCount = playerState.freezeLogCount + 1
         end
 
         -- After prolonged freeze, stop periodic logging
-        if _freezeLogCount >= MAX_FREEZE_LOGS and _stuckCount % (FREEZE_LOG_INTERVAL * 10) == 0 then
-            print("[FREEZE] (logging paused, " .. _stuckCount .. " ticks frozen)")
+        if playerState.freezeLogCount >= MAX_FREEZE_LOGS
+            and playerState.stuckCount % (FREEZE_LOG_INTERVAL * 10) == 0 then
+            print("[FREEZE] (logging paused, " .. playerState.stuckCount .. " ticks frozen)")
         end
     else
         -- Player is NOT pressing movement keys and not moving — normal idle, reset
-        _stuckCount = 0
-        _freezeLogCount = 0
+        playerState.stuckCount = 0
+        playerState.freezeLogCount = 0
     end
 
-    _prevX, _prevY = x, y
-    _onPlayerMoveFired = false  -- reset for next tick
+    playerState.prevX, playerState.prevY = x, y
+    playerState.onPlayerMoveFired = false  -- reset for next tick
+end
+
+local function onCreatePlayer(_playerIndex, player)
+    if player then
+        resetPlayerState(player)
+    else
+        _playerState = nil
+    end
+end
+
+local function removeStoredListener(event, key)
+    local listener = UTCore[key]
+    if listener and event and event.Remove then
+        event.Remove(listener)
+    end
+    UTCore[key] = nil
+end
+
+local function installCoreHandler()
+    if not UTCore._coreHandlers then
+        UTCore.registerCoreHandler("FreezeLogger", onPlayerUpdate, { priority = 100 })
+        return
+    end
+
+    local found = false
+    for i = UTCore._coreHandlerCount or #UTCore._coreHandlers, 1, -1 do
+        local handler = UTCore._coreHandlers[i]
+        if handler and handler.id == "FreezeLogger" then
+            if found then
+                table.remove(UTCore._coreHandlers, i)
+                UTCore._coreHandlerCount = UTCore._coreHandlerCount - 1
+            else
+                handler.fn = onPlayerUpdate
+                handler.throttle = 0
+                handler.priority = 100
+                found = true
+            end
+        end
+    end
+    if not found then
+        UTCore.registerCoreHandler("FreezeLogger", onPlayerUpdate, { priority = 100 })
+    end
+    table.sort(UTCore._coreHandlers, function(a, b)
+        return (a.priority or 0) > (b.priority or 0)
+    end)
+end
+
+local function removeCoreHandlers()
+    if not UTCore._coreHandlers then return end
+    for i = UTCore._coreHandlerCount or #UTCore._coreHandlers, 1, -1 do
+        local handler = UTCore._coreHandlers[i]
+        if handler and handler.id == "FreezeLogger" then
+            table.remove(UTCore._coreHandlers, i)
+            UTCore._coreHandlerCount = UTCore._coreHandlerCount - 1
+        end
+    end
 end
 
 -- Register as high-priority core handler so we see state before other hooks
@@ -321,26 +400,44 @@ end
 -- Gated by UTCore.FREEZE_LOGGER_ENABLED (set in UTCore_API.lua).
 if UTCore.FREEZE_LOGGER_ENABLED then
     if UTCore.registerCoreHandler then
-        UTCore.registerCoreHandler("FreezeLogger", onPlayerUpdate, { priority = 100 })
+        installCoreHandler()
     else
         if Events and Events.OnPlayerUpdate then
+            removeStoredListener(Events.OnPlayerUpdate, "_freezeLoggerUpdateListener")
             Events.OnPlayerUpdate.Add(onPlayerUpdate)
+            UTCore._freezeLoggerUpdateListener = onPlayerUpdate
         end
     end
     if Events and Events.OnPlayerMove then
+        removeStoredListener(Events.OnPlayerMove, "_freezeLoggerMoveListener")
         Events.OnPlayerMove.Add(onPlayerMove)
+        UTCore._freezeLoggerMoveListener = onPlayerMove
+    end
+    if Events and Events.OnCreatePlayer then
+        removeStoredListener(Events.OnCreatePlayer, "_freezeLoggerCreatePlayerListener")
+        Events.OnCreatePlayer.Add(onCreatePlayer)
+        UTCore._freezeLoggerCreatePlayerListener = onCreatePlayer
     end
 else
+    removeCoreHandlers()
+    if Events then
+        removeStoredListener(Events.OnPlayerUpdate, "_freezeLoggerUpdateListener")
+        removeStoredListener(Events.OnPlayerMove, "_freezeLoggerMoveListener")
+        removeStoredListener(Events.OnCreatePlayer, "_freezeLoggerCreatePlayerListener")
+    end
     print("[UTCore] FreezeLogger disabled (UTCore.FREEZE_LOGGER_ENABLED = false)")
 end
 
 -- Expose for testing
 UTCore._freezeLoggerOnPlayerUpdate = onPlayerUpdate
 UTCore._freezeLoggerOnPlayerMove = onPlayerMove
-UTCore._getFreezeLoggerStuckCount = function() return _stuckCount end
-UTCore._resetFreezeLogger = function()
-    _prevX, _prevY = nil, nil
-    _stuckCount = 0
-    _freezeLogCount = 0
-    _onPlayerMoveFired = false
+UTCore._getFreezeLoggerStuckCount = function()
+    return _playerState and _playerState.stuckCount or 0
+end
+UTCore._resetFreezeLogger = function(player)
+    if player then
+        resetPlayerState(player)
+    else
+        _playerState = nil
+    end
 end

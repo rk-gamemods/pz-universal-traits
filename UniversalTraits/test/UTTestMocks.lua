@@ -280,7 +280,10 @@ function MockPlayer(traitList, opts)
             }
         end,
         _mockType = "IsoPlayer",
-        getStats      = function(self) return stats end,
+        getStats      = function(self)
+            if opts.nilStats or opts.noStats then return nil end
+            return stats
+        end,
         getBodyDamage = function(self) return bodyDamage end,
         setBodyDamage = function(self, value) bodyDamage = value end,
         getXp         = function(self) return xp end,
@@ -976,14 +979,6 @@ if not _G.Events.OnWeaponHitCharacter then
     }
 end
 
-if not _G.Events.OnActionAdded then
-    local _actionAddedHandlers = {}
-    _G.Events.OnActionAdded = {
-        Add  = function(fn) table.insert(_actionAddedHandlers, fn) end,
-        fire = function(...) fireHandlers(_G.Events.OnActionAdded, _actionAddedHandlers, ...) end,
-    }
-end
-
 if not _G.Events.OnEnterVehicle then
     local _vehicleEnterHandlers = {}
     _G.Events.OnEnterVehicle = {
@@ -1137,6 +1132,7 @@ function MockWeapon(weaponType, meleeDelay, isTwoHand, isMelee, opts)
     local _melee = (isMelee == nil) and true or isMelee
     local _moddata = opts.moddata or {}
     local _criticalChance = opts.criticalChance or 0
+    local _sharpness = opts.sharpness
     local _conditionLowerChance = opts.conditionLowerChance or 1
     local _subCategory = opts.subCategory or nil
     local _isRanged = opts.isRanged or false
@@ -1179,8 +1175,13 @@ function MockWeapon(weaponType, meleeDelay, isTwoHand, isMelee, opts)
             return makeIndexedList(legacyNames)
         end,
         getModData = function(self) return _moddata end,
-        getCriticalChance = function(self) return _criticalChance end,
+        hasSharpness = function(self) return _sharpness ~= nil end,
+        getSharpness = function(self) return _sharpness or 0 end,
+        getCriticalChance = function(self)
+            return _sharpness ~= nil and _criticalChance * _sharpness or _criticalChance
+        end,
         setCriticalChance = function(self, value) _criticalChance = value end,
+        getRawCriticalChance = function(self) return _criticalChance end,
         getConditionLowerChance = function(self) return _conditionLowerChance end,
         setConditionLowerChance = function(self, value) _conditionLowerChance = value end,
         getSetDelayCalls = function(self) return setDelayCalls end,
@@ -1288,7 +1289,8 @@ if not _G.Events.EveryTenMinutes then
                 if handler == fn then table.remove(_everyTenMinutesHandlers, i) return end
             end
         end,
-        fire = function(...) fireHandlers(_G.Events.EveryTenMinutes, _everyTenMinutesHandlers, ...) end,
+        fire = function() fireHandlers(_G.Events.EveryTenMinutes, _everyTenMinutesHandlers) end,
+        _handlerCount = function() return #_everyTenMinutesHandlers end,
     }
 end
 
@@ -1350,6 +1352,13 @@ function MockItem(typeName, opts)
         hungerChange = -10
     end
     local calories = opts.calories or 100
+    local lipids = opts.lipids or 0
+    local carbohydrates = opts.carbohydrates or 0
+    local proteins = opts.proteins or 0
+    local baseHunger = opts.baseHunger or hungerChange
+    local hungChange = opts.hungChange or baseHunger
+    local actualWeight = opts.actualWeight or 1
+    local worldScale = opts.worldScale or 1
     local moddata = opts.moddata or {}
     -- Build the scriptItem with a forage category set compatible with B42 API
     local scriptItem = {
@@ -1375,6 +1384,20 @@ function MockItem(typeName, opts)
         setHungerChange   = function(self, value) hungerChange = value end,
         getCalories       = function(self) return calories end,
         setCalories       = function(self, value) calories = value end,
+        getLipids         = function(self) return lipids end,
+        setLipids         = function(self, value) lipids = value end,
+        getCarbohydrates  = function(self) return carbohydrates end,
+        setCarbohydrates  = function(self, value) carbohydrates = value end,
+        getProteins       = function(self) return proteins end,
+        setProteins       = function(self, value) proteins = value end,
+        getBaseHunger     = function(self) return baseHunger end,
+        setBaseHunger     = function(self, value) baseHunger = value end,
+        getHungChange     = function(self) return hungChange end,
+        setHungChange     = function(self, value) hungChange = value end,
+        getActualWeight   = function(self) return actualWeight end,
+        setActualWeight   = function(self, value) actualWeight = value end,
+        getWorldScale     = function(self) return worldScale end,
+        setWorldScale     = function(self, value) worldScale = value end,
         getModData        = function(self) return moddata end,
     }
 end
@@ -1506,45 +1529,6 @@ if not _G.Events.OnGameStart then
     }
 end
 
-if not _G.Events.OnFishCaught then
-    local _handlers = {}
-    _G.Events.OnFishCaught = {
-        Add = function(self_or_fn, fn)
-            local f = fn or self_or_fn
-            table.insert(_handlers, f)
-        end,
-        fire = function(...)
-            fireHandlers(_G.Events.OnFishCaught, _handlers, ...)
-        end,
-    }
-end
-
-if not _G.Events.OnFenceClimb then
-    local _handlers = {}
-    _G.Events.OnFenceClimb = {
-        Add = function(self_or_fn, fn)
-            local f = fn or self_or_fn
-            table.insert(_handlers, f)
-        end,
-        fire = function(...)
-            fireHandlers(_G.Events.OnFenceClimb, _handlers, ...)
-        end,
-    }
-end
-
-if not _G.Events.OnClimbFence then
-    local _handlers = {}
-    _G.Events.OnClimbFence = {
-        Add = function(self_or_fn, fn)
-            local f = fn or self_or_fn
-            table.insert(_handlers, f)
-        end,
-        fire = function(...)
-            fireHandlers(_G.Events.OnClimbFence, _handlers, ...)
-        end,
-    }
-end
-
 -- ISEatFoodAction stub — must exist before UT_ItemConsumptionHooks wraps perform
 if not _G.ISEatFoodAction then
     _G.ISEatFoodAction = {
@@ -1671,15 +1655,6 @@ if not _G.Events.OnHitZombie then
     }
 end
 
--- Events.OnTreeChopped stub — needed by UT_woodsplitter
-if not _G.Events.OnTreeChopped then
-    local _handlers = {}
-    _G.Events.OnTreeChopped = {
-        Add  = function(fn) table.insert(_handlers, fn) end,
-        fire = function(...) fireHandlers(_G.Events.OnTreeChopped, _handlers, ...) end,
-    }
-end
-
 -- Events.OnRefreshInventoryWindowContainers stub — needed by UT_antique, UT_scrounger
 if not _G.Events.OnRefreshInventoryWindowContainers then
     local _handlers = {}
@@ -1750,15 +1725,6 @@ function MockTrapItem(typeName, condition, conditionMax)
         setCondition    = function(self, v) _condition = v end,
         getConditionMax = function(self) return _conditionMax end,
         getModData      = function(self) return _moddata end,
-    }
-end
-
--- MockTree — tree object for UT_woodsplitter tests
-function MockTree(hp)
-    local _hp = hp or 100
-    return {
-        getHp = function(self) return _hp end,
-        setHp = function(self, v) _hp = v end,
     }
 end
 

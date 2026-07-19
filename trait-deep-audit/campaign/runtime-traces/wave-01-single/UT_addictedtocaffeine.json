@@ -1,0 +1,95 @@
+{
+  "schema_version": "1.1.0",
+  "artifact_kind": "single-trait exact-current QA trace",
+  "trait_id": "UniversalTraits:UT_addictedtocaffeine",
+  "trait_key": "UT_addictedtocaffeine",
+  "scope": {
+    "game_version": "current supported 42.0 line",
+    "multiplayer": "out of scope",
+    "backward_save_migration": "out of scope",
+    "live_runtime_proof": "not established by this artifact"
+  },
+  "exact_current_bytes": {
+    "source_trait_sha256": "6ce08dfa51f1141522751125ee12f7df13994a1213eaed7ef0e3bbf0073b7430",
+    "release_trait_sha256": "6ce08dfa51f1141522751125ee12f7df13994a1213eaed7ef0e3bbf0073b7430",
+    "source_hook_sha256": "c083fd9b9415eefe76a3735b18ee94808301bed6b2b257d3a8a97256cd79643c",
+    "release_hook_sha256": "c083fd9b9415eefe76a3735b18ee94808301bed6b2b257d3a8a97256cd79643c",
+    "source_definition_sha256": "834bf4bf3d7b350c79c23d8c1f9cd2b68a22be05afd9c3ea1f7c3fa5c8f30fc3",
+    "release_definition_sha256": "834bf4bf3d7b350c79c23d8c1f9cd2b68a22be05afd9c3ea1f7c3fa5c8f30fc3",
+    "source_english_ui_sha256": "0a96c1fa7937d3e741ce18cc96541a7760dfd7ca6b7a3ddcb5403aee4f3d8e70",
+    "release_english_ui_sha256": "0a96c1fa7937d3e741ce18cc96541a7760dfd7ca6b7a3ddcb5403aee4f3d8e70",
+    "focused_tests_sha256": "c2f9c52ee379746998910c41269e8d14226388dc5b64667c2673a3ddb0c3c09d",
+    "focused_mocks_sha256": "d8a955de3f56178497e80d670a76132f892f21ba74e2ca63796f54edafce3e0f"
+  },
+  "trace": {
+    "definition_and_identity": {
+      "state": "static-proven-current",
+      "evidence": [
+        "The exact definition uses CharacterTrait UniversalTraits:UT_addictedtocaffeine, Cost=-3, DisabledInMultiplayer=true, UI_UT_addictedtocaffeine, and UI_UT_addictedtocaffeineDesc.",
+        "Source and 42.0 release definition bytes match."
+      ]
+    },
+    "withdrawal_effect": {
+      "state": "mock-covered-runtime-unproven",
+      "evidence": [
+        "The trait handler adds exactly 0.06 STRESS and clamps at 1 when UT_hadCaffeine is absent.",
+        "Focused assertions cover 0.00 -> 0.06 and 0.98 -> 1.00.",
+        "Focused guards cover no active player, no trait, and a trait player with no stats object."
+      ]
+    },
+    "one_shot_suppression": {
+      "state": "mock-covered-runtime-unproven",
+      "evidence": [
+        "A true UT_hadCaffeine flag suppresses one EveryTenMinutes increase and is cleared.",
+        "A second modeled tick adds exactly 0.06."
+      ]
+    },
+    "consumption_hooks": {
+      "state": "static-and-mock-covered-runtime-unproven",
+      "evidence": [
+        "Current source decorates ISEatFoodAction.perform and ISDrinkFluidAction.perform.",
+        "Matching caffeine writes the boolean player modData key UT_hadCaffeine.",
+        "Each action table stores __UTItemConsumptionPerformWrapper; repeated OnGameStart and module reload preserve installed wrapper identity.",
+        "If a later owner replaces perform, startup leaves that later owner installed."
+      ],
+      "stale_finding_resolution": "IR0104-ADDICTEDTOCAFFEINE-HOOK-STACK is resolved in current bytes. The earlier no-sentinel anchors are stale."
+    },
+    "description": {
+      "state": "static-proven-current",
+      "evidence": [
+        "English copy now states +0.06, every 10 in-game minutes, and prevention of the next increase after caffeine.",
+        "B01-CAF-DESC is resolved in current bytes."
+      ]
+    },
+    "save_reload": {
+      "state": "deterministic-model-only-runtime-unproven",
+      "evidence": [
+        "The focused harness copies current player modData into a newly constructed player, observes one suppressed post-load-model tick, flag clearing, and +0.06 on the following tick.",
+        "This deterministic model does not prove Project Zomboid serialization, event ordering, or BuildID runtime behavior."
+      ]
+    },
+    "source_release_parity": {
+      "state": "static-proven-current",
+      "evidence": [
+        "Trait, hook, definition, and English UI source/release SHA-256 pairs match exactly."
+      ]
+    }
+  },
+  "changes_in_this_resolution": [
+    "Added a nil stats guard to the caffeine trait in source and 42.0 release.",
+    "Added focused exact increment/cap, no-player/no-trait/no-stats, one-shot clearing, and deterministic modData round-trip assertions.",
+    "Retained and re-anchored repeated OnGameStart/module reload idempotence and later-owner preservation coverage.",
+    "Removed stale defect claims and stale line anchors from the exact-current artifact."
+  ],
+  "overall_state": "mock-covered-runtime-proof-required",
+  "resolved_finding_ids": [
+    "B01-CAF-DESC",
+    "IR0104-ADDICTEDTOCAFFEINE-HOOK-STACK"
+  ],
+  "required_buildid_runtime_proof": [
+    "Record the exact current BuildID.",
+    "Consume a matching caffeine item, save before the next EveryTenMinutes callback, fully exit, reload, and record restored UT_hadCaffeine, STRESS before/after the next two callbacks, and flag clearing.",
+    "Across repeated world entries that trigger OnGameStart, instrument one eat and one drink action and record original/wrapper invocation counts while confirming a later hook owner remains installed."
+  ],
+  "confidence": "high for exact static bytes and deterministic harness assertions; live runtime unproven"
+}

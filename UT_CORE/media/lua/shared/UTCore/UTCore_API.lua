@@ -63,13 +63,13 @@ end
 
 -- Cache CharacterTrait objects by string ID to avoid repeated registry lookups.
 local _traitCache = {}
+local _recordedTraitSmoke = {}
+local _traitRegistryAvailable = true
 
--- Session-level result cache: traits are fixed at character creation in PZ,
--- so the result of player:hasTrait() is stable for the entire session.
--- This eliminates ~1,300+ Java interop calls/sec from the negative-path
--- (handlers for traits the player doesn't have).
-local _cachedPlayer = nil
-local _playerTraitResults = {}
+local function isValidTraitId(traitId)
+    if type(traitId) ~= "string" or traitId == "" then return false end
+    return string.match(traitId, "^[%w_.-]+:[%w_./-]+$") ~= nil
+end
 
 local function recordSmoke(scenarioId, detail)
     if UTSmoke and UTSmoke.record then
@@ -77,11 +77,13 @@ local function recordSmoke(scenarioId, detail)
     end
 end
 
---- Invalidate the per-session hasTrait result cache.
--- Call if traits are dynamically added/removed (not normal in vanilla PZ).
-function UTCore.invalidateTraitCache()
-    _cachedPlayer = nil
-    _playerTraitResults = {}
+--- Compatibility hook retained for callers from the former result-cache contract.
+-- CharacterTrait registry objects remain stable, while hasTrait results are no
+-- longer cached because current-version traits can change during a session.
+function UTCore.invalidateTraitCache(traitId)
+    if not isValidTraitId(traitId) then return false end
+    -- No mutation-dependent result cache remains to invalidate.
+    return true
 end
 
 --- Context guard for OnPlayerUpdate handlers.
@@ -102,37 +104,40 @@ function UTCore.shouldSkipTick(player)
 end
 
 --- Nil-safe hasTrait check (B42.16+ registry API).
--- Results are cached for the session since traits don't change during gameplay.
+-- CharacterTrait registry lookups are cached, but the membership result is read
+-- from the player every call so dynamic/admin add and remove operations are
+-- visible immediately.
 -- @param player IsoPlayer
 -- @param traitId string  full namespaced ID e.g. "UniversalTraits:UT_swift"
 -- @return boolean
 function UTCore.hasTrait(player, traitId)
     if not player then return false end
+    if not isValidTraitId(traitId) then return false end
+    if type(instanceof) ~= "function" then return false end
     if not instanceof(player, "IsoGameCharacter") then return false end
+    if type(player.hasTrait) ~= "function" then return false end
 
-    -- Invalidate cache if player identity changed (new game / load / tests)
-    if player ~= _cachedPlayer then
-        _playerTraitResults = {}
-        _cachedPlayer = player
+    if not _recordedTraitSmoke[traitId] then
+        recordSmoke("player.core-runtime", traitId)
+        _recordedTraitSmoke[traitId] = true
     end
-
-    -- Fast path: return cached result (Lua table lookup, no Java interop)
-    local cached = _playerTraitResults[traitId]
-    if cached ~= nil then return cached end
-
-    recordSmoke("player.core-runtime", traitId)
     local ct = _traitCache[traitId]
     if ct == nil then
-        ct = CharacterTrait.get(ResourceLocation.of(traitId))
+        if not _traitRegistryAvailable then return false end
+        local ok, registryReady
+        ok, ct, registryReady = pcall(function()
+            if ResourceLocation == nil or type(ResourceLocation.of) ~= "function" then return nil, false end
+            if CharacterTrait == nil or type(CharacterTrait.get) ~= "function" then return nil, false end
+            return CharacterTrait.get(ResourceLocation.of(traitId)), true
+        end)
+        if not ok or not registryReady then
+            _traitRegistryAvailable = false
+            return false
+        end
         if ct then _traitCache[traitId] = ct end
     end
-    if not ct then
-        _playerTraitResults[traitId] = false
-        return false
-    end
-    local result = player:hasTrait(ct)
-    _playerTraitResults[traitId] = result
-    return result
+    if not ct then return false end
+    return player:hasTrait(ct)
 end
 
 function UTCore.weaponHasCategory(weapon, category)

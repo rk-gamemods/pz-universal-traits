@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "trait_id": "UniversalTraits:UT_accmetabolism",
+  "resolution": "runtime-guard-and-idempotence-plus-copy",
+  "decision": "The current hunger/thirst behavior is authoritative. English copy now matches it; trait runtime now guards nil Stats and replaces its own prior EveryTenMinutes callback on reevaluation.",
+  "evidence": [
+    "Current source and 42.0 release bytes apply exact HUNGER +0.05 and THIRST +0.03 transformations capped at 1.",
+    "Current UI.json lines 318-319 claim only those exact values and cadence; no weight or nutrition behavior is present or claimed.",
+    "Current runtime lines 6-24 guard nil player, absent trait, and nil Stats, and remove/replace the prior trait-owned callback before Add.",
+    "Current focused shared test at run_tests.lua:3333-3338 still proves only positive movement; Action Hero owns the shared test/mock files.",
+    "Current direct SHA-256 parity for both runtime copies is F5B4BF4DD96E206144C2126B5D0C89E0FBC2FFD1FEF0055F01AF308325949BB3; both UI copies are 0A96C1FA7937D3E741CE18CC96541A7760DFD7CA6B7A3DDCB5403AEE4F3D8E70."
+  ],
+  "changes": {
+    "runtime": "source and 42.0 release add nil-Stats guard and trait-owned callback replacement",
+    "definition_cost": "unchanged at -3",
+    "english_description": "unchanged in this task; current bytes already state exact +0.05 hunger and +0.03 thirst with no weight/nutrition claim",
+    "tests_mocks": "not written after ownership correction; exact focused assertions and required mock fields are deferred to Action Hero",
+    "source_release_parity": "runtime source/release and English UI source/release are byte-identical"
+  },
+  "deferred_proof": [
+    "No commands or tests were run by instruction.",
+    "Action Hero owns run_tests.lua and UTTestMocks.lua; proposed exact-value, cap, no-trait, nil-player, nil-Stats, callback-count, and deterministic reload assertions remain unapplied.",
+    "BuildID 23504596 full-exit/relaunch save/load and repeated world-entry proof remains required for preserved Stats, one live callback, and one exact post-load delta.",
+    "Standard-Lua mocks, once added and run by their owner, must not be reported as live Kahlua or in-game proof."
+  ],
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment",
+    "live mod updates",
+    "package asset remediation"
+  ]
+}

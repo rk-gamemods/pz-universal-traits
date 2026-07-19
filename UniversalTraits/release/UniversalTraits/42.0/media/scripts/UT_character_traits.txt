@@ -876,10 +876,12 @@ module UniversalTraits
         IsProfessionTrait = false,
         DisabledInMultiplayer = true,
         CharacterTrait = UniversalTraits:UT_woodsplitter,
-        Cost = 3,
+        Cost = 4,
         UIName = UI_UT_woodsplitter,
         UIDescription = UI_UT_woodsplitterDesc,
         XPBoosts = Axe=1,
+        GrantedTraits = Axeman,
+        MutuallyExclusiveTraits = Axeman,
     }
 
     character_trait_definition UniversalTraits:UT_improviser
@@ -2111,7 +2113,7 @@ module UniversalTraits
         Cost = 4,
         UIName = UI_UT_bouncer_I,
         UIDescription = UI_UT_bouncer_IDesc,
-        XPBoosts = Strength=1;FirstAid=1,
+        XPBoosts = Strength=1;Doctor=1,
         MutuallyExclusiveTraits = UniversalTraits:UT_bouncer_II,
     }
 
@@ -2123,7 +2125,7 @@ module UniversalTraits
         Cost = 6,
         UIName = UI_UT_bouncer_II,
         UIDescription = UI_UT_bouncer_IIDesc,
-        XPBoosts = Strength=2;FirstAid=2,
+        XPBoosts = Strength=2;Doctor=2,
         MutuallyExclusiveTraits = UniversalTraits:UT_bouncer_I,
     }
 

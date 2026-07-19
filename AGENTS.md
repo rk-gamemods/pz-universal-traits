@@ -127,25 +127,41 @@ The UniversalTraits suite now includes a cross-file consistency audit that fails
 
 ## In-Game Testing (Deploy to Live Mods)
 
-Deployment is not implied by a code change. When the user explicitly authorizes deployment,
-run the appropriate command from the repo root after the required tests pass:
+Deployment is not implied by a code change. `deploy.py` is read-only by default and has no
+implicit live-mod destination. Invoke it through an explicit interpreter; on Windows, use
+`py -3` and never rely on `.py` file association.
+
+From the repo root, either plain invocation or `--verify-only` verifies source against each
+mod's existing derived release package without mutating release or live files:
 
 ```bash
-python deploy.py
+py -3 deploy.py
+py -3 deploy.py --verify-only
 ```
 
-This syncs source `media/` and `mod.info` into each mod's `release/` folder, then deploys to `C:\Users\Admin\Zomboid\mods\`. Add `--verify` to hash-compare source vs live after deploy:
+An optional absolute `--target-root` adds that existing root's mod folders to read-only
+verification. Mutation requires both `--deploy` and an explicit absolute, existing
+`--target-root`; there is no default or inferred live path. Run it only after the required
+tests pass and the user explicitly authorizes deployment to that exact root:
 
 ```bash
-python deploy.py --verify
+py -3 deploy.py --deploy --target-root "C:\Users\Admin\Zomboid\mods"
 ```
 
-Deploy a single mod:
+Verify or deploy selected mods by adding their names. With no mod names, both `UT_CORE` and
+`UniversalTraits` are processed as one campaign:
 
 ```bash
-python deploy.py UniversalTraits
-python deploy.py UT_CORE
+py -3 deploy.py --verify-only UniversalTraits
+py -3 deploy.py --deploy --target-root "C:\Users\Admin\Zomboid\mods" UT_CORE
 ```
+
+Unknown arguments and unsupported mod names are usage errors and fail rather than being
+ignored. Deployment stages every selected mod before replacement, then performs the selected
+mods as one transaction. A campaign failure rolls back all changed mods; incomplete rollback
+is reported as a distinct failure. Machine-readable output includes structured warnings and
+exact retained stage or backup artifact paths when cleanup or recovery requires operator
+attention.
 
 **Note:** Always do a full **Exit to Desktop** (not just main menu) after deploying to clear Kahlua's module cache.
 
@@ -153,13 +169,26 @@ python deploy.py UT_CORE
 
 ## Release Folder Policy
 
-`UniversalTraits/release/` and `UT_CORE/release/` are derived deployable copies. During an explicitly authorized deployment, `deploy.py` mirrors source `media/` into `release/<ModName>/42.0/media/`, copies `mod.info`, and then updates the live mods.
+`UniversalTraits/release/` and `UT_CORE/release/` are derived deployable copies used for
+read-only drift verification. The canonical package is newest-only Build 42: source `media/`
+maps to `<ModName>/42.0/media/`, while `mod.info` and `poster.png` exist at both the package
+root and under `42.0/`. Do not introduce backward-compatibility folders.
+
+The hardened CLI does not mutate these in-repository release folders and does not infer a live
+path. An explicitly authorized `--deploy` transaction builds the same canonical package from
+source and replaces only the selected mod directories beneath the exact absolute, existing
+`--target-root` supplied by the operator.
 
 Required authorization-aware workflow:
 
 1. Run tests.
-2. If deployment is explicitly authorized, run `python deploy.py --verify`.
-3. If a commit is separately authorized, review the scoped diff and commit only task-owned changes.
+2. Run `py -3 deploy.py --verify-only` for read-only release verification; add an absolute
+   `--target-root` only when that additional destination should also be verified.
+3. If deployment to an exact destination is explicitly authorized, run
+   `py -3 deploy.py --deploy --target-root "<absolute-existing-target-root>"`.
+4. Treat retained-artifact warnings as recovery evidence: preserve the reported stage or
+   backup path until the deployment result and rollback state are understood.
+5. If a commit is separately authorized, review the scoped diff and commit only task-owned changes.
 
 Do not infer deployment or commit authorization from implementation work alone.
 

@@ -1,0 +1,142 @@
+{
+  "schema_version": "1.0",
+  "map_id": "woodsplitter-axeman-alias",
+  "generated_at": "2026-07-19T00:00:00-04:00",
+  "status": "complete-change-impact-map; implementation-present; validation-and-downstream-integration-deferred",
+  "scope": {
+    "trait_id": "UniversalTraits:UT_woodsplitter",
+    "display_name": "Wood Splitter",
+    "vanilla_alias": "CharacterTrait.AXEMAN",
+    "baseline": "PZCodebase SVN 964 / Steam BuildID 23504596",
+    "implementation_thread": "019f7ae2-f627-7fb3-9193-91d2747862be",
+    "integration_write_owner": "source task 019f7896-d8fe-7233-900d-a2e94f06ffcc or a specifically assigned downstream-integration writer",
+    "this_file_exclusive_writer": "delegated change-impact task 019f7aeb-82d7-77d2-9029-8988f5482ccd"
+  },
+  "semantic_contract": {
+    "retired": [
+      "OnTreeChopped registration (event does not exist in current engine)",
+      "UT_woodsplitterActive inert modData flag",
+      "MockTree getHp/setHp contract",
+      "synthetic Axe-level-plus-one tree HP subtraction",
+      "advertised double tree damage"
+    ],
+    "replacement": "Grant vanilla CharacterTrait.AXEMAN while Wood Splitter is owned, with modData provenance recording only grants made by this module.",
+    "inseparable_effects": [
+      {
+        "effect_id": "axeman-tree-damage",
+        "formula": "WeaponCategory.AXE tree damage = weapon.getTreeDamage() * 1.5",
+        "vanilla_anchor": "PZCodebase/Java/source/zombie/iso/objects/IsoTree.java:209-219",
+        "consumers": ["UT_woodsplitter.lua grant", "UI_UT_woodsplitterDesc", "formula tests", "audit numbers/runtime/description/stacking rows"]
+      },
+      {
+        "effect_id": "axeman-axe-swing-time",
+        "formula": "Axe-category skill attack-time result *= 0.95",
+        "vanilla_anchor": "PZCodebase/Java/source/zombie/inventory/types/HandWeapon.java:560-640",
+        "consumers": ["UT_woodsplitter.lua grant", "UI_UT_woodsplitterDesc", "formula tests", "audit numbers/description/balance rows"]
+      },
+      {
+        "effect_id": "axeman-chop-animation",
+        "formula": "getChopTreeSpeed returns 1.0 with Axeman versus 0.8 without; 1.0/0.8 = 1.25, or 25% faster",
+        "vanilla_anchor": "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:14110-14145",
+        "consumers": ["UT_woodsplitter.lua grant", "UI_UT_woodsplitterDesc", "formula tests", "audit numbers/description/balance rows"]
+      },
+      {
+        "effect_id": "axeman-pine-key-ring",
+        "formula": "Axeman membership participates in vanilla pine-tree key-ring eligibility when special key-ring generation runs",
+        "vanilla_anchor": "PZCodebase exact CharacterTrait.AXEMAN reference in SpawnItems.TraitKeyRings",
+        "consumers": ["semantic documentation", "runtime/in-game validation"],
+        "note": "Inseparable but timing-dependent; the current English description enumerates the three mechanical axe/chop effects and does not promise a key ring."
+      }
+    ],
+    "ownership": {
+      "provenance_key": "UT_woodsplitterGrantedAxeman",
+      "grant_rule": "Set true only when Wood Splitter adds previously absent Axeman.",
+      "revoke_rule": "Remove Axeman only when Wood Splitter is absent and the provenance key is true.",
+      "natural_axeman": "Never claimed or removed.",
+      "idempotence": "Trait membership is set-like; repeated reconciliation neither duplicates nor stacks.",
+      "lifecycle": ["UTCore.registerCoreHandler WoodSplitterAxemanAlias", "OnCreatePlayer", "OnNewGame", "OnPlayerUpdate fallback"],
+      "save_compatibility": "Existing saves reconcile on OnCreatePlayer; provenance persists in player modData; no migration file is required.",
+      "multiplayer": "DisabledInMultiplayer remains true for character selection; migrated/admin cases and network ordering remain in-game-unproven."
+    },
+    "definition": {
+      "cost": 3,
+      "xp_boost": "Axe=1",
+      "exclusion": "Axeman",
+      "nonstacking": "Wood Splitter and Axeman are selection-exclusive; legacy/admin coexistence still produces one Axeman membership."
+    }
+  },
+  "source_hash_handoff": {
+    "UT_woodsplitter.lua_source_and_release_sha256": "73B8E2871EA93502C91B3F9480876902CD34804DC6AB7C3216506BEBD484597C",
+    "UT_character_traits.txt_source_and_release_sha256": "0F6F69C637DC0262208E6E8A543ACF3B0A8EE668467BDC462D43001663E994ED",
+    "UI.json_source_and_release_sha256": "06033932442600DC2C0B54F12A35633C8E7FC097F90B472766ED3BC08554B4B4",
+    "UTTestMocks.lua_sha256": "63F054D7C66BD4477B1E31D0525430FFDFB5881C4942239FF5FEAFC856DEA845",
+    "run_tests.lua_sha256": "D51CA1CF1A2117C7D164A22CC8D9C8FF1EFE1CE6651C304EF35F6D1E40FAF6",
+    "source": "implementation thread final handoff; hashes were not recomputed by this task"
+  },
+  "surfaces": [
+    {"path":"UniversalTraits/media/registries.lua","locator":"UTTraitsRegistries.UT_woodsplitter, line 114","current_claim":"Registers UniversalTraits:UT_woodsplitter.","required_update":"None.","owner":"product source","status":"source; deliberately unaffected","validation":"Exact ID remains registered once."},
+    {"path":"UniversalTraits/release/UniversalTraits/42.0/media/registries.lua","locator":"UTTraitsRegistries.UT_woodsplitter, line 114","current_claim":"Release registration mirror.","required_update":"None.","owner":"deploy.py","status":"derived; deliberately unaffected","validation":"Source/release registration parity."},
+    {"path":"UniversalTraits/media/scripts/UT_character_traits.txt","locator":"character_trait_definition UniversalTraits:UT_woodsplitter, lines 874-884","current_claim":"Cost 3, Axe=1, Wood Splitter UI keys; now excludes Axeman.","required_update":"Implementation writer completed Axeman exclusion; preserve cost and XP boost.","owner":"product source / implementation thread","status":"source; changed","validation":"Parser block, DisabledInMultiplayer=true, exact exclusion and hashes."},
+    {"path":"UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt","locator":"same definition","current_claim":"Release mirror.","required_update":"Already mirrored by implementation writer.","owner":"deploy.py / implementation thread","status":"derived deployable; changed","validation":"Byte parity with source."},
+    {"path":"UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_woodsplitter.lua","locator":"reconcileWoodSplitter; GRANTED_KEY; WoodSplitterAxemanAlias","current_claim":"Provenance-safe Axeman grant/revoke and lifecycle reconciliation.","required_update":"No downstream writer edit; implementation owner only.","owner":"implementation thread 019f7ae2-f627-7fb3-9193-91d2747862be","status":"source; changed","validation":"Focused Lua tests plus in-game new/load/remove checks."},
+    {"path":"UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_woodsplitter.lua","locator":"whole file","current_claim":"Release runtime mirror.","required_update":"Already mirrored.","owner":"deploy.py / implementation thread","status":"derived deployable; changed","validation":"Byte parity with source."},
+    {"path":"UniversalTraits/media/lua/shared/Translate/EN/UI.json","locator":"UI_UT_woodsplitter; UI_UT_woodsplitterDesc, lines 154-155","current_claim":"Wood Splitter; +1 Axe, 50% tree damage, 5% lower swing time, 25% faster chopping, nonstacking with Ax-pert.","required_update":"Already corrected; integration should confirm naming 'Ax-pert' resolves to vanilla Axeman display.","owner":"product source / implementation thread","status":"source; changed","validation":"JSON parse, exact formula copy, in-game rendering."},
+    {"path":"UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json","locator":"same two keys","current_claim":"Release English mirror.","required_update":"Already mirrored.","owner":"deploy.py / implementation thread","status":"derived deployable; changed","validation":"Byte parity with source."},
+    {"path":"UniversalTraits/test/UTTestMocks.lua","locator":"CharacterTrait.AXEMAN and former OnTreeChopped/MockTree area","current_claim":"Old mock fabricated nonexistent event/tree methods; implementation writer replaced/extended Axeman trait support.","required_update":"Retire OnTreeChopped and MockTree contract if no other tests consume them; retain only accurate Axeman collection APIs.","owner":"test source / implementation thread","status":"source test; changed","validation":"No exact OnTreeChopped or getHp/setHp remains for Wood Splitter; mocks match current collection semantics."},
+    {"path":"UniversalTraits/test/run_tests.lua","locator":"Wood Splitter test section near former lines 4425+ and source load near 2930","current_claim":"Old test asserted inert UT_woodsplitterActive only; implementation writer added alias/formula/lifecycle/forbidden-pattern tests.","required_update":"Preserve new cases for 1.5, 0.95, 1.0/0.8, idempotence, provenance, natural Axeman, no-op, nonstacking, MP-disabled, existing-save, no mutation/fake event.","owner":"test source / implementation thread","status":"source test; changed","validation":"Deferred full UniversalTraits suite via bounded-command wrapper."},
+    {"path":"UT_CORE/media/lua/shared/UTCore/*","locator":"registerCoreHandler, invalidateTraitCache, hasTrait","current_claim":"Shared lifecycle/cache APIs consumed by alias runtime.","required_update":"None unless focused tests expose signature/order mismatch.","owner":"UT_CORE source","status":"source dependency; deliberately unaffected","validation":"Existing UT_CORE suite plus focused integration test."},
+    {"path":"PRD.md","locator":"exact UT_woodsplitter/Wood Splitter catalog occurrence","current_claim":"Catalog/intent retains old Wood Splitter semantics where present.","required_update":"Describe vanilla Axeman alias and all inseparable effects; retain cost 3/+1 Axe and note nonstacking/provenance.","owner":"product requirements","status":"source documentation; update required","validation":"Exact old-claim search returns zero unclassified hits."},
+    {"path":"research/TRAIT_AUDIT.md","locator":"exact Wood Splitter occurrence","current_claim":"Historical audit may state double damage/inert implementation.","required_update":"Preserve historical finding as superseded, add corrected contract and validation state rather than erasing provenance.","owner":"research audit","status":"source documentation; update required","validation":"Old claim explicitly marked historical/superseded."},
+    {"path":"UniversalTraits/planning/qa_trait_update_checklist_2026-04-05.md","locator":"scope row and per-trait matrix UT_woodsplitter","current_claim":"Historical source/release/live presence and weak exact-test coverage.","required_update":"Do not rewrite dated evidence; append supersession/link only if integration policy requires it.","owner":"dated planning evidence","status":"historical source; deliberately preserved","validation":"No current-completion claim inferred from dated checklist."},
+    {"path":"trait-deep-audit/campaign/trait_batches/batch_12.jsonl","locator":"trait_id UniversalTraits:UT_woodsplitter; finding B12-WOODSPLITTER-001","current_claim":"Confirmed unreachable wrong-engine implementation.","required_update":"Preserve immutable first-pass record or regenerate batch only through owning audit pipeline; resolution must cite new alias and guarded validation.","owner":"trait audit batch pipeline","status":"generated audit; regenerate/supersede, do not hand-edit","deferred_regeneration":"Use campaign's documented batch/finalization command after tests; exact command must be taken from campaign README/tool help at execution time.","validation":"Finding transitions only after test/runtime evidence."},
+    {"path":"trait-deep-audit/campaign/dimension_ledger_rows.jsonl","locator":"row_ids 4729-4752; 24 rows; queue_id prefix dimension:UniversalTraits:UT_woodsplitter:","current_claim":"Old contract: 10 confirmed-defect, 2 coverage-gap, 12 proven-correct dimensions.","required_update":"Regenerate all 24 rows from resolved batch evidence; registration/display/cost remain, grant/exclusion/runtime/numbers/lifecycle/tests/mocks claims change.","owner":"dimension-ledger generator","status":"generated JSONL; regenerate, never hand-edit","deferred_regeneration":"Run owning campaign ledger generator after source tests and runtime evidence.","validation":"Exactly 24 replacement rows and no stale UT_woodsplitterActive/OnTreeChopped claim."},
+    {"path":"trait-deep-audit/campaign/final_trait_ledger_rows.jsonl","locator":"trait_id UniversalTraits:UT_woodsplitter; row 198 in indexed dataset","current_claim":"overall_state confirmed-defect; translation_terminal_state coverage-gap.","required_update":"Regenerate after batch/dimension resolution.","owner":"final-ledger generator","status":"generated JSONL; regenerate","deferred_regeneration":"Run final-ledger generator after upstream ledgers are updated.","validation":"One Wood Splitter row, consistent finding/dimension states."},
+    {"path":"trait-deep-audit/campaign/final_trait_ledger.json","locator":"trait_id UniversalTraits:UT_woodsplitter around line 61726","current_claim":"Aggregated old confirmed defect including inert flag.","required_update":"Regenerate from JSONL source; do not hand-edit aggregate.","owner":"final-ledger generator","status":"generated JSON aggregate; regenerate","deferred_regeneration":"Same final-ledger command as JSONL.","validation":"No stale inert-event evidence; aggregation equals row source."},
+    {"path":"trait-deep-audit/campaign/remediation_queue.jsonl","locator":"14 rows total: row_ids 18,253,254,255,477,713,714,715,716,798,1544,1836,1975,1976; finding:B12-WOODSPLITTER-001 and 13 dimension queue IDs","current_claim":"All open against old implementation.","required_update":"Regenerate statuses/dependencies; close or supersede only with validation evidence, retain unresolved MP/runtime/balance risks.","owner":"remediation-queue generator","status":"generated JSONL; regenerate","deferred_regeneration":"Run remediation queue generator after final ledger.","validation":"Exactly 14 prior IDs reconciled; no silent deletion."},
+    {"path":"trait-deep-audit/campaign/recurring_pattern_findings.json","locator":"finding for OnTreeChopped absent; UT_woodsplitter anchor near line 106","current_claim":"Wood Splitter exemplifies fabricated event pattern.","required_update":"Keep pattern historically valid; mark this consumer remediated after validation without removing pattern finding.","owner":"recurring-pattern audit","status":"audit source/aggregate; update through audit owner","validation":"Pattern history retained and current product no longer matches."},
+    {"path":"trait-deep-audit/campaign/independent_reviews/traits_09_12.json","locator":"trait record around line 2436; B12-WOODSPLITTER-001 and repeated membership lists","current_claim":"Independent review accepts old defect/runtime-proof gaps.","required_update":"Append/re-run independent resolution review; do not rewrite original accepted review evidence.","owner":"independent-review workflow","status":"review artifact; superseding review required","validation":"New review covers every alias effect and provenance lifecycle."},
+    {"path":"trait-deep-audit/campaign/translation_audit.json","locator":"UI_UT_woodsplitter and UI_UT_woodsplitterDesc","current_claim":"EN key membership and old semantic copy snapshot.","required_update":"Regenerate translation audit to capture corrected description; other locales remain absent by project policy.","owner":"translation-audit generator","status":"generated JSON; regenerate","deferred_regeneration":"Run translation audit checker after UI JSON validation.","validation":"Both keys present once; description formula parity."},
+    {"path":"trait-deep-audit/campaign/source_inventory.json","locator":"trait ID, runtime file, UI keys at lines 324/527/680/831/1234-1235/1439/1639 and other membership arrays","current_claim":"Structural inventory only.","required_update":"Usually none if identifiers/files unchanged; regenerate only if inventory fingerprints/hashes are embedded.","owner":"source-inventory generator","status":"generated JSON; deliberately structurally unaffected, fingerprint refresh conditional","validation":"Counts remain 198 traits and same key/file membership."},
+    {"path":"trait-deep-audit/campaign/MASTER_COVERAGE_LEDGER.md","locator":"exact Wood Splitter/UT_woodsplitter occurrence","current_claim":"Campaign coverage/status summary.","required_update":"Regenerate/update status link after ledger resolution.","owner":"campaign reporting","status":"derived documentation; regenerate","validation":"Matches final ledger state."},
+    {"path":"tools/pz_api_inventory.json","locator":"UT_woodsplitter call records formerly getModData/getHp/getPerkLevel/setHp around lines 12846-12924 plus owner aggregates","current_claim":"Generated API calls for old runtime.","required_update":"Regenerate; old getHp/setHp records must disappear and CharacterTraits add/remove/has/cache APIs appear.","owner":"tools/verify_pz_api.py","status":"generated inventory; never hand-edit","deferred_regeneration":"py -3 tools/verify_pz_api.py --json --inventory-out tools/pz_api_inventory.json (through bounded-command.py)","validation":"No old Wood Splitter event/tree method call records; all new calls resolve."},
+    {"path":"tools/pz_api_baseline.json","locator":"trait:UT_woodsplitter owners/files and method aggregates around lines 1867/1948/2025/2039/5051-5070","current_claim":"Baseline reflects old runtime API surface.","required_update":"Review inventory diff, then explicitly refresh baseline only after verifier approval; baseline mutation is a separate guarded decision.","owner":"API baseline maintainer","status":"verified baseline; conditional update, not automatic","deferred_regeneration":"py -3 tools/verify_pz_api.py --write-baseline --baseline-file tools/pz_api_baseline.json (through bounded-command.py, only after review)","validation":"Diff contains only intended Wood Splitter API changes."},
+    {"path":"UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua","locator":"generated smoke/API pings potentially derived from pz_api_inventory.json","current_claim":"No exact identifier hit found in bounded search.","required_update":"Regenerate after API inventory because candidate zero-arg read calls may change; never hand-edit generated ping output.","owner":"tools/generate_smoke_pings.py","status":"generated; conditionally affected","deferred_regeneration":"py -3 tools/generate_smoke_pings.py --dry-run, then owning gate generation after review (through bounded-command.py)","validation":"Generated diff is intended and startup log has no UT error."},
+    {"path":"package/release manifests and mod.info/poster surfaces","locator":"no exact Wood Splitter identifier hit in bounded search","current_claim":"Package identity/dependencies unchanged.","required_update":"No manifest metadata change; release payload hashes change and deploy remains separately authorized.","owner":"deploy.py / package owner","status":"deliberately unaffected metadata; derived payload changed","validation":"Source/release parity now; live copy only after authorized deploy."},
+    {"path":"README.md, trait-deep-audit/README.md, documentation indexes","locator":"no direct exact hit returned by bounded identifier search beyond listed campaign/docs","current_claim":"General workflow/index documentation.","required_update":"No semantic edit unless they enumerate finding/status counts; regenerate indexes if their owning workflow derives counts.","owner":"documentation owners","status":"deliberately unaffected or conditional derived count refresh","validation":"Exact old-claim search after integration."},
+    {"path":"skills/checkers","locator":"pz-trait-mods and project cross-file/API checkers","current_claim":"Generic workflow; no Wood Splitter-specific source hit.","required_update":"No skill change. Existing checkers must be used for parser/key/API parity.","owner":"global/project tooling","status":"deliberately unaffected","validation":"No repeated workflow defect requiring durable skill edit."},
+    {"path":"changelog/migration/save-compatibility documentation","locator":"no dedicated Wood Splitter migration/changelog file found in exact bounded search","current_claim":"No migration record.","required_update":"Add a release-note/changelog entry only in the repository's canonical changelog if one exists: inert contract replaced by Axeman alias; existing saves auto-reconcile; natural Axeman preserved. Do not add a migration script.","owner":"release documentation","status":"documentation gap; integration owner decision","validation":"Save/load and removal tests plus in-game check before claiming migrated."},
+    {"path":"research/installed-mods/**","locator":"Axeman/OnWeaponHitTree comparison references only; no UniversalTraits:UT_woodsplitter ownership","current_claim":"Third-party read-only research corpus.","required_update":"None; never edit. Use only as comparative evidence.","owner":"external research snapshot","status":"deliberately unaffected/read-only","validation":"Excluded from integration writes."}
+  ],
+  "closure": {
+    "direct_identifier_files_found_in_owned_non-research_scope": 23,
+    "direct_identifier_files_requiring_or_conditionally_requiring_downstream_integration": 15,
+    "product_files_changed_by_implementation_writer": 6,
+    "test_files_changed_by_implementation_writer": 2,
+    "registration_files_deliberately_unchanged": 2,
+    "dimension_rows_to_reconcile": 24,
+    "remediation_rows_to_reconcile": 14,
+    "final_trait_rows_to_reconcile": 1,
+    "known_finding_ids": ["B12-WOODSPLITTER-001"],
+    "bidirectional_assertions": [
+      "Every Axeman effect is mapped to runtime grant, player copy/tests, and audit consumers.",
+      "Every old OnTreeChopped, getHp/setHp, UT_woodsplitterActive, axeLevel+1, and double-damage claim is either retired, historically preserved as superseded, or regenerated.",
+      "No derived JSON/JSONL/API/smoke/final-ledger artifact is authorized for hand editing.",
+      "All source/release implementation writes remain owned by thread 019f7ae2-f627-7fb3-9193-91d2747862be; all downstream integration writes remain with the coordinator-assigned integration owner."
+    ]
+  },
+  "guarded_validation_order": [
+    "Run UniversalTraits tests through C:/Users/Admin/.codex/scripts/bounded-command.py using the full Lua interpreter path.",
+    "Run UT_CORE tests through the same bounded wrapper if shared lifecycle coverage is implicated.",
+    "Run API inventory verification and inspect the exact Wood Splitter diff.",
+    "Regenerate smoke pings and audit/ledger/remediation/translation/report artifacts in dependency order.",
+    "Perform authorized in-game SP new-game/load/remove/natural-Axeman checks and guarded MP existing-character/network check.",
+    "Deploy/live sync only with separate explicit authorization."
+  ],
+  "remaining_risks": [
+    "No tests or game run were executed by either delegated task.",
+    "MP selection is disabled, but runtime/network ordering for migrated or admin-modified characters is unproven.",
+    "Pine-tree key-ring eligibility is timing-dependent and not promised in UI copy.",
+    "Balance of cost 3 for +1 Axe plus all Axeman effects lacks a benchmark.",
+    "The exact campaign regeneration command must be resolved from the current campaign tooling at guarded execution time; this map intentionally does not invent it."
+  ]
+}

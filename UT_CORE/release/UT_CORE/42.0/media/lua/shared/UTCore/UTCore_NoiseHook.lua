@@ -1,45 +1,58 @@
 -- UTCore_NoiseHook.lua
--- Reads UT_noiseMult from player moddata.
--- While the player is sleeping, emits periodic noise pulses scaled by the multiplier.
--- Fires on EveryOneMinute (in-game minute). When asleep, extra noise is produced
--- every in-game minute beyond the minimal default sleeping noise.
---
--- UT_noiseMult reference values:
---   1.0 → no extra noise (hook exits early; also catches "not set" case)
---   2.0 → double sleeping noise (UT_snorer default: loud snoring, ~10 unit radius)
---
--- Noise radius is a linear multiple of a base sleeping noise level of 5 units.
--- A mult of 2.0 emits 5 units of extra noise (total 10), attracting zombies
--- within a short radius even through walls if sufficiently loud.
---
--- Requires player:isAsleep() which returns true during the PZ sleep cycle.
--- If the API is unavailable (version mismatch), the hook exits silently.
+-- Emits mod-defined extra sleeping noise for players with UT_noiseMult.
 
 UTCore = UTCore or {}
 
-local BASE_SLEEPING_NOISE = 5
+local EXTRA_NOISE_RADIUS_SCALE = 5
 
-local function onEveryMinute()
-    local player = getPlayer()
-    if not player then return end
+local function onSleepingMinute()
+    if type(getPlayer) ~= "function" then return end
 
-    local md = player:getModData()
+    local playerOk, player = pcall(getPlayer)
+    if not (playerOk and player) then return end
+
+    local asleepOk, asleep = pcall(function() return player:isAsleep() end)
+    if not (asleepOk and asleep) then return end
+
+    local ok, md = pcall(function() return player:getModData() end)
+    if not (ok and md) then return end
+
     local mult = md["UT_noiseMult"]
-    if not mult or mult <= 1.0 then return end
+    if type(mult) ~= "number" or mult ~= mult or mult == math.huge or mult == -math.huge or mult <= 1.0 then return end
 
-    -- Only emit when actually sleeping
-    local ok, sleeping = pcall(function() return player:isAsleep() end)
-    if not (ok and sleeping) then return end
+    local scaledNoise = EXTRA_NOISE_RADIUS_SCALE * (mult - 1.0)
+    if scaledNoise ~= scaledNoise or scaledNoise == math.huge then return end
 
-    -- Emit noise: extra amount above baseline sleeping noise
-    local extraNoise = math.floor(BASE_SLEEPING_NOISE * (mult - 1.0))
+    local extraNoise = math.floor(scaledNoise)
     if extraNoise <= 0 then return end
 
+    local soundOk, addWorldSound = pcall(function()
+        return player.addWorldSoundUnlessInvisible
+    end)
+    if not (soundOk and type(addWorldSound) == "function") then return end
+
     pcall(function()
-        player:addWorldSoundUnlessInvisible(extraNoise, 1, false)
+        addWorldSound(player, extraNoise, 1, false)
     end)
 end
 
-if Events and Events.EveryOneMinute then
-    Events.EveryOneMinute.Add(onEveryMinute)
+local sleepingMinuteEvent = Events and Events.EveryOneMinute
+if sleepingMinuteEvent
+        and type(sleepingMinuteEvent.Add) == "function"
+        and type(sleepingMinuteEvent.Remove) == "function" then
+    local removed = true
+    if UTCore.NoiseHookHandler then
+        removed = pcall(function()
+            sleepingMinuteEvent.Remove(UTCore.NoiseHookHandler)
+        end)
+    end
+
+    if removed then
+        local added = pcall(function()
+            sleepingMinuteEvent.Add(onSleepingMinute)
+        end)
+        if added then
+            UTCore.NoiseHookHandler = onSleepingMinute
+        end
+    end
 end

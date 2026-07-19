@@ -1,0 +1,184 @@
+{
+  "schema_version": "1.0.0",
+  "trace_type": "single-trait-deep-runtime-trace",
+  "trait_id": "UniversalTraits:UT_alcoholic_III",
+  "scope": {
+    "build": "newest supported Build 42 / 42.0 package",
+    "multiplayer": "non-goal",
+    "backward_migration": "non-goal",
+    "product_fixes": "not performed",
+    "runtime_execution": "not performed by delegation"
+  },
+  "selected_ids": [
+    "dimension:UniversalTraits:UT_alcoholic_III:registration",
+    "dimension:UniversalTraits:UT_alcoholic_III:definition_parser",
+    "dimension:UniversalTraits:UT_alcoholic_III:namespace",
+    "dimension:UniversalTraits:UT_alcoholic_III:cost_xp_grants_exclusions",
+    "dimension:UniversalTraits:UT_alcoholic_III:source_intent",
+    "dimension:UniversalTraits:UT_alcoholic_III:runtime_path",
+    "dimension:UniversalTraits:UT_alcoholic_III:numbers",
+    "dimension:UniversalTraits:UT_alcoholic_III:cadence",
+    "dimension:UniversalTraits:UT_alcoholic_III:cooldown",
+    "dimension:UniversalTraits:UT_alcoholic_III:reset_save_load",
+    "dimension:UniversalTraits:UT_alcoholic_III:java_lua",
+    "dimension:UniversalTraits:UT_alcoholic_III:kahlua",
+    "dimension:UniversalTraits:UT_alcoholic_III:events",
+    "dimension:UniversalTraits:UT_alcoholic_III:stacking_interactions",
+    "dimension:UniversalTraits:UT_alcoholic_III:multiplayer",
+    "dimension:UniversalTraits:UT_alcoholic_III:display",
+    "dimension:UniversalTraits:UT_alcoholic_III:description",
+    "dimension:UniversalTraits:UT_alcoholic_III:localization",
+    "dimension:UniversalTraits:UT_alcoholic_III:balance",
+    "dimension:UniversalTraits:UT_alcoholic_III:performance",
+    "dimension:UniversalTraits:UT_alcoholic_III:tests",
+    "dimension:UniversalTraits:UT_alcoholic_III:mocks",
+    "dimension:UniversalTraits:UT_alcoholic_III:source_release_parity",
+    "dimension:UniversalTraits:UT_alcoholic_III:packaging"
+  ],
+  "prior_evidence_reconciliation": {
+    "preserved": [
+      "Registered and consistently namespaced trait with Cost=-10, no XPBoosts or GrantedTraits, and reciprocal alcoholic-tier exclusions.",
+      "EveryOneMinute runtime path reads INTOXICATION and independently adds STRESS +0.05 below 10 and PANIC +3 below 5.",
+      "No separate cooldown or trait-owned persistent counter/state exists.",
+      "English display and description agree with the implementation numbers and cadence.",
+      "Source and 42.0 release copies match on the trait runtime, registry, script definition, English UI, runtime MET table, and package metadata."
+    ],
+    "refined": [
+      "Definition anchor is UniversalTraits/media/scripts/UT_character_traits.txt:1896-1905, not the stale prior line 1894.",
+      "Focused behavior tests are UniversalTraits/test/run_tests.lua:3467-3481, not the stale prior range 3352-3362.",
+      "Event registration is one Add call per file execution; PZ uses file loading/module lifecycle outside this trace, so prior wording that attributed single-shot registration to require caching is not accepted as current runtime proof.",
+      "The runtime implementation is not script-only: it has a dedicated UT_alcoholic_III.lua in both source and release."
+    ],
+    "rejected": [
+      "A standard-Lua syntax or mock pass is not current Kahlua, ScriptManager, save/reload, or in-game numeric proof.",
+      "UT_MET.AlcoholDetox membership does not itself prove character-creation exclusion; the script definition directly excludes only alcoholic_I and alcoholic_II."
+    ]
+  },
+  "trace": {
+    "registration_definition_parser": {
+      "state": "static-proven/runtime-unproven",
+      "positive_proof": [
+        "registries.lua:268 registers CharacterTrait.register(\"UniversalTraits:UT_alcoholic_III\").",
+        "UT_character_traits.txt:1896-1905 defines the same CharacterTrait, Cost=-10, UI keys, DisabledInMultiplayer=true, and the two alcoholic-tier exclusions.",
+        "The source and release anchors have identical SHA-256 hashes."
+      ],
+      "negative_proof": [
+        "No XPBoosts or GrantedTraits field is present in the exact definition block.",
+        "No current in-game ScriptManager load/log was captured."
+      ],
+      "missing_validation": "Start current Build 42 after a full desktop exit and verify the definition resolves without parser or nil-definition warnings."
+    },
+    "receiver_event_parser": {
+      "state": "static-proven/runtime-unproven",
+      "positive_proof": [
+        "GameTime.java:737-740 triggers LuaEventManager.triggerEvent(\"EveryOneMinute\") with no arguments when the minute stamp changes.",
+        "LuaEventManager.java:697 registers EveryOneMinute.",
+        "LuaManager.java:3558-3560 exposes global getPlayer() and returns IsoPlayer.getInstance().",
+        "IsoGameCharacter.java:4338-4340 returns Stats from getStats().",
+        "Stats.java:74-80 exposes get(CharacterStat) and set(CharacterStat,float); set clamps through the CharacterStat domain.",
+        "CharacterStat.java defines INTOXICATION 0..100, STRESS 0..1, and PANIC 0..100."
+      ],
+      "negative_proof": [
+        "The handler correctly accepts no event arguments and obtains the receiver through getPlayer().",
+        "The handler exits for nil player and for a player lacking the trait before dereferencing Stats.",
+        "No direct UT_CORE state mutation occurs; UTCore is used only for hasTrait gating."
+      ],
+      "missing_validation": "Observe one current-game event invocation through Kahlua and verify getPlayer/getStats/generic get-set receiver bridging without an interop error."
+    },
+    "numbers_cadence_cooldown": {
+      "state": "static-proven/runtime-unproven",
+      "positive_proof": [
+        "At intoxication <10, each in-game minute sets stress to min(1,current+0.05).",
+        "At intoxication <5, the same invocation independently sets panic to min(100,current+3).",
+        "At intoxication 5..9.999..., only stress changes; at intoxication >=10, neither branch changes stats.",
+        "There is no counter, timestamp, random gate, or separate cooldown."
+      ],
+      "negative_proof": [
+        "Strict less-than comparisons mean exactly 5 does not increase panic and exactly 10 does not increase stress.",
+        "Explicit min clamps match the current CharacterStat maxima and Stats.set also clamps.",
+        "The English description states the same thresholds, deltas, and per-minute cadence."
+      ],
+      "missing_validation": "Add focused exact-value proofs for intoxication 0, 5, 9.999, 10; stress 0.95/0.99/1; panic 97/99/100; absent trait; and nil active player, then observe at least one in-game minute transition."
+    },
+    "current_save_reload": {
+      "state": "runtime-unproven",
+      "positive_proof": [
+        "The trait owns no modData, counter, cached receiver, cooldown, or other mutable Lua state.",
+        "Each event call obtains the current player and current Stats anew."
+      ],
+      "negative_proof": [
+        "There is no trait-owned state to reset, serialize, migrate, or duplicate across a current-version save/reload.",
+        "Static absence of trait-owned state does not prove handler registration count or engine Stats persistence after reload."
+      ],
+      "missing_validation": "In current Build 42, save with the trait and known intoxication/stress/panic values, fully exit, reload, cross one minute boundary, and verify exactly one delta with no duplicate handler."
+    },
+    "stacking_interactions": {
+      "state": "static-partial/runtime-unproven",
+      "positive_proof": [
+        "The script block excludes alcoholic_I and alcoholic_II; prior closed-world evidence records reciprocal exclusions from those tiers.",
+        "UT_MET.AlcoholDetox contains ironliver and all three alcoholic tiers for runtime group lookup."
+      ],
+      "negative_proof": [
+        "The trait writes only STRESS and PANIC and reads INTOXICATION; it does not write INTOXICATION or shared modData.",
+        "The exact script block does not list ironliver, so runtime MET membership must not be represented as direct pregame exclusion proof."
+      ],
+      "missing_validation": "Verify character creation from both selection directions for alcoholic_I and alcoholic_II, and separately determine intended/actual ironliver coexistence; exercise one current-game combination with another STRESS/PANIC writer to confirm additive-per-event behavior and caps."
+    },
+    "performance": {
+      "state": "low-static-risk/runtime-unproven",
+      "positive_proof": [
+        "One low-frequency EveryOneMinute handler performs two early exits, one Stats receiver lookup, up to three stat reads, and up to two stat writes.",
+        "No allocation loop, collection traversal, polling OnPlayerUpdate handler, or persistent accumulator exists."
+      ],
+      "negative_proof": [
+        "Static complexity is O(1) per in-game minute.",
+        "No profiler capture proves actual Kahlua or combined-handler cost."
+      ],
+      "missing_validation": "Capture an in-game profiler sample with the trait active across repeated minute events and report handler time/call count, including duplicate-registration detection after reload."
+    },
+    "tests_mocks": {
+      "state": "coverage-gap",
+      "positive_proof": [
+        "run_tests.lua:3467-3481 covers stress increase below 10, panic increase below 5, and no stress at intoxication 20.",
+        "UTTestMocks models INTOXICATION 0..100, STRESS 0..1, PANIC 0..100, generic Stats get/set, active-player dispatch, and EveryOneMinute handler registration/fire."
+      ],
+      "negative_proof": [
+        "Assertions check only greater-than-zero for positive cases, so wrong magnitudes can pass.",
+        "No focused test proves exact deltas, boundary equality, clamps, the stress-only middle band, absent-trait behavior, nil player behavior, or one-handler behavior after reload/re-execution.",
+        "Mock Stats.set does not clamp, unlike current Stats.java; production explicit min masks this for the two upper caps but the mock cannot independently enforce the engine contract."
+      ],
+      "missing_validation": "Add a focused trait test matrix with exact results and boundary/cap negatives, plus an engine-contract fixture for Stats.set clamping and a duplicate-registration/save-reload scenario; run the owning suite only when separately authorized."
+    },
+    "copy_package_localization": {
+      "state": "static-proven-with-localization-gap",
+      "positive_proof": [
+        "Source/release trait Lua hashes match: A295B52D3BC70FD6CDFA7D76CEAD64BF4D1285E8502120ADEB49C0538E79AB93.",
+        "Source/release registry, definition, English UI, and UT_MET whole-file hashes match pairwise.",
+        "UniversalTraits mod.info matches at source, release package root, and 42.0 root; it requires UT_CORE and versionMin=42.0.",
+        "English keys resolve to Alcoholic III and an implementation-accurate description."
+      ],
+      "negative_proof": [
+        "Only English localization is evidenced; non-English locales remain absent.",
+        "No deploy/live copy was read or changed, and no package command was run."
+      ],
+      "missing_validation": "Provide non-English locale files or explicitly accept English-only coverage; when authorized, run read-only package verification and compare the exact deployed destination separately."
+    }
+  },
+  "verdict": {
+    "state": "runtime-unproven-with-test-and-localization-gaps",
+    "product_defect_found": false,
+    "summary": "The implementation, current direct PZ receiver/stat/event contracts, English copy, and source/release package surfaces are statically coherent. Acceptance remains blocked from a fully proven state by missing exact boundary/cap/negative tests, absent non-English localization, and no current-game Kahlua, save/reload, duplicate-handler, numeric, stacking, or profiler observation."
+  },
+  "validation_performed": [
+    "Exact-row reconciliation for the selected trait in normalized dimension/final-ledger/remediation surfaces.",
+    "Direct source inspection of registration, definition, runtime, UT_MET, English localization, focused tests/mocks, release copies, and package metadata.",
+    "Direct current-baseline inspection of GameTime EveryOneMinute producer, Lua event registration, global getPlayer exposure, IsoGameCharacter.getStats, Stats generic get/set clamping, and CharacterStat domains.",
+    "SHA-256 source/release parity checks for the exact inspected package surfaces."
+  ],
+  "commands_tests_git_deploy": {
+    "commands_or_tests_run": false,
+    "git_operations": false,
+    "deployment": false,
+    "live_copy_inspected": false
+  }
+}

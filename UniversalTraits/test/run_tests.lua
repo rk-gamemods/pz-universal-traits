@@ -6,6 +6,7 @@ package.path = base .. "../media/?.lua;" .. package.path
 
 -- Load mocks
 dofile(base .. "UTTestMocks.lua")
+dofile(base .. "../../UT_CORE/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua")
 
 -- Load registries
 dofile(base .. "../media/registries.lua")
@@ -723,24 +724,44 @@ test("UT_photographicmemory sets global XP, read speed, and reading mood keys", 
     assert_eq(md["UT_readMoodBonus"], 5, "expected UT_readMoodBonus=5")
 end)
 
--- ===== UT_actionhero runtime damage tests =====
--- Load the trait file so its Events.OnWeaponHitCharacter.Add() fires.
+-- ===== UT_actionhero focused runtime tests =====
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_actionhero.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_axes.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_improviser.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_gordanite.lua")
+
+Fishing = {
+    Fish = {
+        createFish = function(self)
+            self.createFishCalls = (self.createFishCalls or 0) + 1
+            return self.nextFish
+        end,
+    },
+}
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_wildsman.lua")
 
--- Helper: build a minimal weapon mock with crit support (shadows global MockWeapon)
+-- Engine-faithful HandWeapon critical-chance boundary: the getter returns the
+-- sharpness-adjusted value while the setter writes the raw field.
 local function MockWeaponSimple(typeName, opts)
     opts = opts or {}
-    local _crit = opts.critChance or 10
-    local _moddata = {}
+    local _rawCrit = opts.critChance or 10
+    local _sharpness = opts.sharpness
+    local _moddata = opts.moddata or {}
+    local _setCalls = 0
     return {
         _mockType = "HandWeapon",
         getType = function(self) return typeName end,
-        getCriticalChance = function(self) return _crit end,
-        setCriticalChance = function(self, v) _crit = v end,
+        hasSharpness = function(self) return _sharpness ~= nil end,
+        getSharpness = function(self) return _sharpness or 0 end,
+        getCriticalChance = function(self)
+            return _sharpness ~= nil and _rawCrit * _sharpness or _rawCrit
+        end,
+        setCriticalChance = function(self, v)
+            _setCalls = _setCalls + 1
+            _rawCrit = v
+        end,
+        getRawCriticalChance = function(self) return _rawCrit end,
+        getCriticalSetCalls = function(self) return _setCalls end,
         getModData = function(self) return _moddata end,
     }
 end
@@ -778,78 +799,153 @@ local function MockSpottedListFromEnemies(enemies)
 end
 
 -- Helper: extend MockPlayer with the extra methods actionhero needs
-local function MockActionPlayer(traitList, spottedList, weapon)
-    local p = MockPlayer(traitList, { primaryHandItem = weapon })
+local function MockActionPlayer(traitList, spottedList, weapon, secondaryWeapon)
+    local p = MockPlayer(traitList, {
+        primaryHandItem = weapon,
+        secondaryHandItem = secondaryWeapon,
+    })
     p.getSpottedList = function(self) return spottedList end
     p.DistTo = function(self, enemy) return enemy._dist end
-    p.getSecondaryHandItem = function(self) return nil end
     return p
 end
 
-test("actionhero deals bonus damage when surrounded (5 enemies within 2 tiles)", function()
-    local spotted  = MockSpottedList(5, 1)   -- 5 enemies at dist=1 (≤ ENEMY_RANGE of 10)
-    local weapon   = MockWeaponSimple("Axe", { critChance = 10 })
-    local player   = MockActionPlayer(
-        { "UniversalTraits:UT_actionhero" },
-        spotted, weapon
-    )
+local ACTION_HERO_ID = "UniversalTraits:UT_actionhero"
 
-    -- Fire 30 OnPlayerUpdate ticks so the 30-tick throttle triggers
-    for _ = 1, 30 do Events.OnPlayerUpdate.fire(player) end
+local function fireActionHero(player)
+    return UTCore.fireTickHandler(ACTION_HERO_ID, player)
+end
 
-    assert_eq(weapon:getCriticalChance(), 25,
-        "expected crit chance 10+15=25 after actionhero activates")
+test("actionhero count and range boundaries are exact", function()
+    local weapon = MockWeaponSimple("Axe", { critChance = 10 })
+    local player = MockActionPlayer({ ACTION_HERO_ID }, MockSpottedList(2, 10), weapon)
+    fireActionHero(player)
+    assert_eq(weapon:getCriticalChance(), 10, "two enemies must remain inactive")
+
+    player.getSpottedList = function() return MockSpottedList(3, 10) end
+    fireActionHero(player)
+    assert_eq(weapon:getCriticalChance(), 25, "three enemies at distance 10 must activate +15")
+
+    player.getSpottedList = function() return MockSpottedList(3, 10.01) end
+    fireActionHero(player)
+    assert_eq(weapon:getCriticalChance(), 10, "distance greater than 10 must restore")
 end)
 
-test("actionhero skipped when player has UT_mundane", function()
-    local spotted = MockSpottedList(5, 1)
-    local weapon  = MockWeaponSimple("Axe", { critChance = 10 })
-    local player  = MockActionPlayer(
-        { "UniversalTraits:UT_actionhero", "UniversalTraits:UT_mundane" },
-        spotted, weapon
-    )
-
-    for _ = 1, 30 do Events.OnPlayerUpdate.fire(player) end
-
-    assert_eq(weapon:getCriticalChance(), 10,
-        "expected crit chance unchanged when UT_mundane is active")
+test("actionhero caps displayed critical chance at 100 and restores", function()
+    local weapon = MockWeaponSimple("Axe", { critChance = 95 })
+    local player = MockActionPlayer({ ACTION_HERO_ID }, MockSpottedList(3, 1), weapon)
+    fireActionHero(player)
+    assert_eq(weapon:getCriticalChance(), 100, "displayed critical chance must cap at 100")
+    player.getSpottedList = function() return MockSpottedList(2, 1) end
+    fireActionHero(player)
+    assert_eq(weapon:getCriticalChance(), 95, "inactive transition must restore the original value")
 end)
 
-test("actionhero skipped for non-zombie targets", function()
-    -- Actionhero applies crit to weapon when enemies are close, regardless of target type.
-    -- This test verifies no crit bonus when not enough enemies are spotted.
-    local spotted = MockSpottedList(1, 1)  -- only 1 enemy, below threshold of 3
-    local weapon  = MockWeaponSimple("Axe", { critChance = 10 })
-    local player  = MockActionPlayer(
-        { "UniversalTraits:UT_actionhero" },
-        spotted, weapon
-    )
-
-    for _ = 1, 30 do Events.OnPlayerUpdate.fire(player) end
-
-    assert_eq(weapon:getCriticalChance(), 10,
-        "expected crit chance unchanged when enemy count below threshold")
+test("actionhero restores when Mundane appears after activation", function()
+    local weapon = MockWeaponSimple("Axe", { critChance = 10 })
+    local player = MockActionPlayer({ ACTION_HERO_ID }, MockSpottedList(3, 1), weapon)
+    local mundane = false
+    player.getTraits = function()
+        return { contains = function(_, id) return id == ACTION_HERO_ID or (mundane and id == "UniversalTraits:UT_mundane") end }
+    end
+    fireActionHero(player)
+    assert_eq(weapon:getCriticalChance(), 25, "precondition: bonus active")
+    mundane = true
+    fireActionHero(player)
+    assert_eq(weapon:getCriticalChance(), 10, "Mundane must restore an existing bonus")
 end)
 
-test("actionhero ignores dead zombies in enemy count", function()
-    -- 2 alive + 2 dead within range = only 2 living → below threshold of 3
-    local enemies = {
-        { _dist = 1, isDead = function() return false end },
-        { _dist = 1, isDead = function() return false end },
-        { _dist = 1, isDead = function() return true end },
-        { _dist = 1, isDead = function() return true end },
-    }
-    local spotted = MockSpottedListFromEnemies(enemies)
-    local weapon  = MockWeaponSimple("Axe", { critChance = 10 })
-    local player  = MockActionPlayer(
-        { "UniversalTraits:UT_actionhero" },
-        spotted, weapon
-    )
+test("actionhero deduplicates one weapon held in both hands", function()
+    local weapon = MockWeaponSimple("Axe", { critChance = 10 })
+    local player = MockActionPlayer({ ACTION_HERO_ID }, MockSpottedList(3, 1), weapon, weapon)
+    fireActionHero(player)
+    assert_eq(weapon:getCriticalChance(), 25, "same weapon must receive one +15 bonus")
+    assert_eq(weapon:getCriticalSetCalls(), 1, "same weapon must be written once")
+end)
 
-    for _ = 1, 30 do Events.OnPlayerUpdate.fire(player) end
+test("actionhero restores swapped weapon and manages replacement independently", function()
+    local weaponA = MockWeaponSimple("Axe", { critChance = 10 })
+    local weaponB = MockWeaponSimple("Bat", { critChance = 30 })
+    local player = MockActionPlayer({ ACTION_HERO_ID }, MockSpottedList(3, 1), weaponA)
+    fireActionHero(player)
+    player:setPrimaryHandItem(weaponB)
+    fireActionHero(player)
+    assert_eq(weaponA:getCriticalChance(), 10, "unequipped weapon A must restore")
+    assert_eq(weaponB:getCriticalChance(), 45, "replacement weapon B must use its own base")
+    player.getSpottedList = function() return MockSpottedList(2, 1) end
+    fireActionHero(player)
+    assert_eq(weaponB:getCriticalChance(), 30, "replacement weapon B must restore independently")
+end)
 
-    assert_eq(weapon:getCriticalChance(), 10,
-        "crit chance unchanged — dead zombies should not inflate enemy count")
+test("actionhero models sharpness-adjusted getter and raw setter domains", function()
+    local weapon = MockWeaponSimple("Knife", { critChance = 20, sharpness = 0.5 })
+    local player = MockActionPlayer({ ACTION_HERO_ID }, MockSpottedList(3, 1), weapon)
+    assert_eq(weapon:getCriticalChance(), 10, "precondition: displayed value is raw times sharpness")
+    fireActionHero(player)
+    assert_eq(weapon:getCriticalChance(), 25, "displayed value must gain exactly 15")
+    assert_eq(weapon:getRawCriticalChance(), 50, "setter must receive the raw-domain target")
+    player.getSpottedList = function() return MockSpottedList(2, 1) end
+    fireActionHero(player)
+    assert_eq(weapon:getRawCriticalChance(), 20, "restoration must recover the exact raw field")
+    assert_eq(weapon:getCriticalChance(), 10, "restored displayed value must match the original")
+end)
+
+test("actionhero enemy enumeration failures are atomic and restore", function()
+    local stages = { "list", "size", "get", "dead", "distance" }
+    for _, stage in ipairs(stages) do
+        local weapon = MockWeaponSimple("Axe", { critChance = 10 })
+        local good = MockSpottedList(3, 1)
+        local player = MockActionPlayer({ ACTION_HERO_ID }, good, weapon)
+        fireActionHero(player)
+        assert_eq(weapon:getCriticalChance(), 25, stage .. " precondition: bonus active")
+
+        local first = { _dist = 1, isDead = function() return false end }
+        local second = { _dist = 1, isDead = function() if stage == "dead" then error("dead failure") end return false end }
+        player.getSpottedList = function()
+            if stage == "list" then error("list failure") end
+            return {
+                size = function() if stage == "size" then error("size failure") end return 3 end,
+                get = function(_, i)
+                    if stage == "get" and i == 1 then error("get failure") end
+                    if i == 0 then return first end
+                    if i == 1 then return second end
+                    return { _dist = 1, isDead = function() return false end }
+                end,
+            }
+        end
+        player.DistTo = function(_, enemy)
+            if stage == "distance" and enemy == second then error("distance failure") end
+            return enemy._dist
+        end
+        fireActionHero(player)
+        assert_eq(weapon:getCriticalChance(), 10, stage .. " failure must not consume a partial count")
+    end
+end)
+
+test("actionhero duplicate load retains one state and does not compound", function()
+    local weapon = MockWeaponSimple("Axe", { critChance = 10 })
+    local player = MockActionPlayer({ ACTION_HERO_ID }, MockSpottedList(3, 1), weapon)
+    fireActionHero(player)
+    assert_eq(weapon:getCriticalChance(), 25, "precondition: first load applies +15")
+    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_actionhero.lua")
+    fireActionHero(player)
+    assert_eq(weapon:getCriticalChance(), 25, "duplicate load must not compound")
+    player.getSpottedList = function() return MockSpottedList(2, 1) end
+    fireActionHero(player)
+    assert_eq(weapon:getCriticalChance(), 10, "duplicate load must retain restoration ownership")
+end)
+
+test("actionhero reload boundary does not depend on persisted base-crit moddata", function()
+    local oldWeapon = MockWeaponSimple("Axe", { critChance = 10 })
+    local oldPlayer = MockActionPlayer({ ACTION_HERO_ID }, MockSpottedList(3, 1), oldWeapon)
+    fireActionHero(oldPlayer)
+    assert_eq(oldWeapon:getModData()["UT_ahBaseCrit"], nil, "runtime must not write the retired base cache")
+
+    UTCore._actionHeroState = nil
+    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_actionhero.lua")
+    local loadedWeapon = MockWeaponSimple("Axe", { critChance = 10, moddata = oldWeapon:getModData() })
+    local loadedPlayer = MockActionPlayer({ ACTION_HERO_ID }, MockSpottedList(2, 1), loadedWeapon)
+    fireActionHero(loadedPlayer)
+    assert_eq(loadedWeapon:getCriticalChance(), 10, "reconstructed weapon default must remain unchanged while inactive")
 end)
 
 -- ===== UT_bouncer_I injury downgrade tests =====
@@ -1677,14 +1773,37 @@ test("olympian refunds part of endurance and fatigue loss without nil API calls"
     assert_true(player:getStats():get(CharacterStat.FATIGUE) < 0.5, "expected fatigue refund after rise")
 end)
 
-test("strongnimble update tolerates missing stopFalling API", function()
-    local player = MockPlayer({ "UniversalTraits:UT_strongnimble" }, { currentActionState = "climbfence", falling = true })
+test("strongnimble converts only the exact fence fall outcome", function()
+    local player = MockPlayer({ "UniversalTraits:UT_strongnimble" })
+    player:setVariable("ClimbingFence", true)
+    player:setVariable("ClimbFenceOutcome", "fall")
+    Events.OnPlayerUpdate:fire(player)
+    assert_eq(player:getVariable("ClimbFenceOutcome"), "success")
+end)
 
-    withActivePlayer(player, function()
+test("strongnimble preserves the climb outcome matrix and ordinary falls", function()
+    for _, outcome in ipairs({ "falling", "rope", "obstacle", "lunge", "success" }) do
+        local player = MockPlayer({ "UniversalTraits:UT_strongnimble" }, { falling = true })
+        player:setVariable("ClimbingFence", true)
+        player:setVariable("ClimbFenceOutcome", outcome)
         Events.OnPlayerUpdate:fire(player)
-    end)
+        assert_eq(player:getVariable("ClimbFenceOutcome"), outcome)
+        assert_eq(player:isFalling(), true)
+    end
 
-    assert_eq(player:isFalling(), false, "expected falling state to clear via setbFalling(false)")
+    local player = MockPlayer({ "UniversalTraits:UT_strongnimble" })
+    player:setVariable("ClimbingFence", false)
+    player:setVariable("ClimbFenceOutcome", "fall")
+    Events.OnPlayerUpdate:fire(player)
+    assert_eq(player:getVariable("ClimbFenceOutcome"), "fall")
+end)
+
+test("strongnimble requires the trait", function()
+    local player = MockPlayer({})
+    player:setVariable("ClimbingFence", true)
+    player:setVariable("ClimbFenceOutcome", "fall")
+    Events.OnPlayerUpdate:fire(player)
+    assert_eq(player:getVariable("ClimbFenceOutcome"), "fall")
 end)
 
 test("axes boosts crit chance through WeaponCategory API", function()
@@ -1738,14 +1857,86 @@ test("gordanite marks cooked food for hunger bonus and boosts calories once", fu
     assert_eq(item:getCalories(), 300, "expected calories to be multiplied once")
 end)
 
-test("wildsman marks caught fish for larger hunger restore", function()
-    local player = MockPlayer({ "UniversalTraits:UT_wildsman" })
-    local fish = MockItem("FishFillet", { hungerChange = -16, calories = 120 })
+local function makeCaughtFish()
+    return MockItem("Base.Trout", {
+        calories = 120,
+        lipids = 8,
+        carbohydrates = 4,
+        proteins = 20,
+        baseHunger = -0.2,
+        hungChange = -0.2,
+        actualWeight = 6,
+        worldScale = 0.5,
+        moddata = { fishing_FishSize = 50, fishing_FishHandItem = "Trout_Hand_Medium" },
+    })
+end
 
-    Events.OnFishCaught:fire(player, fish)
+local function makeFishProducer(character, item)
+    return setmetatable({
+        character = character,
+        nextFish = item,
+        fishSize = 2.5,
+        fishSizeLen = 50,
+    }, { __index = Fishing.Fish })
+end
 
-    assert_eq(fish:getModData()["UT_wildsmanFishHungerMult"], 1.5,
-        "expected fish to carry a wildsman hunger multiplier")
+test("wildsman scales the real createFish result and pickup keeps that instance", function()
+    local fish = makeCaughtFish()
+    local producer = makeFishProducer(MockPlayer({ "UniversalTraits:UT_wildsman" }), fish)
+    local produced = producer:createFish({})
+    local pickupAction = { item = produced }
+
+    assert_eq(produced, fish, "expected createFish to return the original item instance")
+    assert_eq(pickupAction.item, fish, "expected pickup to retain the modified item instance")
+    assert_eq(producer.createFishCalls, 1, "expected the original producer to run once")
+    assert_eq(fish:getCalories(), 180)
+    assert_eq(fish:getLipids(), 12)
+    assert_eq(fish:getCarbohydrates(), 6)
+    assert_eq(fish:getProteins(), 30)
+    assert_eq(fish:getBaseHunger(), -0.3)
+    assert_eq(fish:getHungChange(), -0.3)
+    assert_eq(fish:getActualWeight(), 9)
+    assert_eq(fish:getWorldScale(), 0.75)
+    assert_eq(fish:getModData().fishing_FishSize, 75)
+    assert_eq(producer.fishSize, 3.75)
+    assert_eq(producer.fishSizeLen, 75)
+end)
+
+test("wildsman fishing hook leaves negative paths unchanged", function()
+    local cases = {
+        makeFishProducer(nil, makeCaughtFish()),
+        makeFishProducer(MockPlayer({}), makeCaughtFish()),
+        makeFishProducer(MockPlayer({ "UniversalTraits:UT_wildsman" }), MockItem("Base.Sock")),
+    }
+
+    for _, producer in ipairs(cases) do
+        local item = producer.nextFish
+        local calories = item:getCalories()
+        local weight = item:getActualWeight()
+        assert_eq(producer:createFish({}), item)
+        assert_eq(item:getCalories(), calories)
+        assert_eq(item:getActualWeight(), weight)
+        assert_eq(item:getModData().UT_wildsmanFishScaled, nil)
+    end
+end)
+
+test("wildsman fishing hook is reload-safe and scales each item only once", function()
+    assert_eq(Events.OnFishCaught, nil, "expected no manufactured fish-caught event")
+    local wrapper = Fishing.Fish.createFish
+    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_wildsman.lua")
+    assert_eq(Fishing.Fish.createFish, wrapper, "expected reload not to wrap createFish again")
+
+    local fish = makeCaughtFish()
+    local character = MockPlayer({ "UniversalTraits:UT_wildsman" })
+    local clientProducer = makeFishProducer(character, fish)
+    local serverProducer = makeFishProducer(character, fish)
+    clientProducer:createFish({})
+    serverProducer:createFish({})
+
+    assert_eq(clientProducer.createFishCalls, 1, "expected client producer to reach the original")
+    assert_eq(serverProducer.createFishCalls, 1, "expected server producer to reach the original")
+    assert_eq(fish:getCalories(), 180, "expected a duplicate path not to scale the item twice")
+    assert_eq(fish:getActualWeight(), 9, "expected a duplicate path not to scale weight twice")
 end)
 
 test("trekker restores walking endurance and normalizes walking calorie burn", function()
@@ -2347,6 +2538,100 @@ test("mundane does not affect player without the trait", function()
         "UT_xpMult_Electricity should not be set when trait is absent")
 end)
 
+-- ─── UT_accmetabolism ─────────────────────────────────────────────────────────
+
+local ACC_METABOLISM_ID = "UniversalTraits:UT_accmetabolism"
+local ACC_METABOLISM_PATH = base .. "../media/lua/shared/UniversalTraits/traits/UT_accmetabolism.lua"
+dofile(ACC_METABOLISM_PATH)
+
+test("accmetabolism one dispatch adds exactly hunger +0.05 and thirst +0.03", function()
+    local player = MockPlayer({ ACC_METABOLISM_ID }, { hunger = 0.40, thirst = 0.50 })
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(player:getStats():get(CharacterStat.HUNGER), 0.45,
+        "one dispatch should add exactly 0.05 hunger")
+    assert_eq(player:getStats():get(CharacterStat.THIRST), 0.53,
+        "one dispatch should add exactly 0.03 thirst")
+end)
+
+test("accmetabolism caps hunger and thirst independently at one", function()
+    local hungerCaps = MockPlayer({ ACC_METABOLISM_ID }, { hunger = 0.98, thirst = 0.40 })
+    withActivePlayer(hungerCaps, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(hungerCaps:getStats():get(CharacterStat.HUNGER), 1,
+        "hunger should cap independently at one")
+    assert_eq(hungerCaps:getStats():get(CharacterStat.THIRST), 0.43,
+        "thirst should still receive its exact delta when hunger caps")
+
+    local thirstCaps = MockPlayer({ ACC_METABOLISM_ID }, { hunger = 0.40, thirst = 0.99 })
+    withActivePlayer(thirstCaps, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(thirstCaps:getStats():get(CharacterStat.HUNGER), 0.45,
+        "hunger should still receive its exact delta when thirst caps")
+    assert_eq(thirstCaps:getStats():get(CharacterStat.THIRST), 1,
+        "thirst should cap independently at one")
+end)
+
+test("accmetabolism guards no trait, no player, and nil Stats", function()
+    local withoutTrait = MockPlayer({}, { hunger = 0.40, thirst = 0.50 })
+    withActivePlayer(withoutTrait, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(withoutTrait:getStats():get(CharacterStat.HUNGER), 0.40,
+        "hunger should remain unchanged without the trait")
+    assert_eq(withoutTrait:getStats():get(CharacterStat.THIRST), 0.50,
+        "thirst should remain unchanged without the trait")
+
+    withActivePlayer(nil, function()
+        Events.EveryTenMinutes:fire()
+    end)
+
+    local withoutStats = MockPlayer({ ACC_METABOLISM_ID }, { nilStats = true })
+    withActivePlayer(withoutStats, function()
+        Events.EveryTenMinutes:fire()
+    end)
+end)
+
+test("accmetabolism repeated module evaluation leaves one callback and one delta", function()
+    local beforeReload = Events.EveryTenMinutes._handlerCount()
+    dofile(ACC_METABOLISM_PATH)
+    dofile(ACC_METABOLISM_PATH)
+    assert_eq(Events.EveryTenMinutes._handlerCount(), beforeReload,
+        "repeated evaluation should replace the owned callback without changing handler count")
+
+    local player = MockPlayer({ ACC_METABOLISM_ID }, { hunger = 0.20, thirst = 0.30 })
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(player:getStats():get(CharacterStat.HUNGER), 0.25,
+        "one retained callback should add one hunger delta")
+    assert_eq(player:getStats():get(CharacterStat.THIRST), 0.33,
+        "one retained callback should add one thirst delta")
+end)
+
+test("accmetabolism deterministic current-version Stats round-trip model", function()
+    local beforeRoundTrip = MockPlayer({ ACC_METABOLISM_ID }, { hunger = 0.40, thirst = 0.50 })
+
+    -- Deterministic harness model only: current-version Stats values are copied into
+    -- a newly constructed player. This does not claim live PZ persistence proof.
+    local savedStats = {
+        hunger = beforeRoundTrip:getStats():get(CharacterStat.HUNGER),
+        thirst = beforeRoundTrip:getStats():get(CharacterStat.THIRST),
+    }
+    local afterRoundTrip = MockPlayer({ ACC_METABOLISM_ID }, savedStats)
+
+    withActivePlayer(afterRoundTrip, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(afterRoundTrip:getStats():get(CharacterStat.HUNGER), 0.45,
+        "modeled current-version Stats round-trip should retain hunger before one delta")
+    assert_eq(afterRoundTrip:getStats():get(CharacterStat.THIRST), 0.53,
+        "modeled current-version Stats round-trip should retain thirst before one delta")
+end)
+
 -- ─── UT_addictedtocaffeine ────────────────────────────────────────────────────
 
 test("addictedtocaffeine adds stress when no caffeine flag set", function()
@@ -2357,6 +2642,15 @@ test("addictedtocaffeine adds stress when no caffeine flag set", function()
     local stress = player:getStats():get(CharacterStat.STRESS)
     assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.06,
         "stress should be +0.06 when no UT_hadCaffeine flag")
+end)
+
+test("addictedtocaffeine caps the exact stress increase at one", function()
+    local player = MockPlayer({ "UniversalTraits:UT_addictedtocaffeine" }, { stress = 0.98 })
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(player:getStats():get(CharacterStat.STRESS), 1,
+        "0.98 + 0.06 should clamp to 1")
 end)
 
 test("addictedtocaffeine skips stress when caffeine flag is set", function()
@@ -2378,12 +2672,65 @@ test("addictedtocaffeine clears UT_hadCaffeine flag each tick", function()
         "UT_hadCaffeine should be cleared after the tick")
 end)
 
+test("addictedtocaffeine caffeine suppression is one-shot", function()
+    local player = MockPlayer({ "UniversalTraits:UT_addictedtocaffeine" }, { stress = 0.0 })
+    player:getModData()["UT_hadCaffeine"] = true
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(player:getModData()["UT_hadCaffeine"], nil,
+        "the suppression flag should remain cleared after it is consumed")
+    assert_eq(math.floor(player:getStats():get(CharacterStat.STRESS) * 1000 + 0.5) / 1000, 0.06,
+        "only the first tick should be suppressed")
+end)
+
 test("addictedtocaffeine does not affect player without the trait", function()
     local player = MockPlayer({}, { stress = 0.0 })
     withActivePlayer(player, function()
         Events.EveryTenMinutes:fire()
     end)
     assert_eq(player:getStats():get(CharacterStat.STRESS), 0.0, "no stress added without trait")
+end)
+
+test("addictedtocaffeine safely ignores a missing active player", function()
+    withActivePlayer(nil, function()
+        Events.EveryTenMinutes:fire()
+    end)
+end)
+
+test("addictedtocaffeine safely ignores a trait player without stats", function()
+    local player = MockPlayer({ "UniversalTraits:UT_addictedtocaffeine" }, { noStats = true })
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(player:getModData()["UT_hadCaffeine"], nil,
+        "missing stats should not synthesize caffeine state")
+end)
+
+test("addictedtocaffeine deterministic modData round-trip suppresses one post-load tick", function()
+    local beforeSave = MockPlayer({ "UniversalTraits:UT_addictedtocaffeine" }, { stress = 0.25 })
+    beforeSave:getModData()["UT_hadCaffeine"] = true
+
+    -- Deterministic harness model only: current-version player modData is copied into
+    -- a newly constructed player. This does not claim PZ save/load runtime proof.
+    local savedModData = {}
+    for key, value in pairs(beforeSave:getModData()) do savedModData[key] = value end
+    local afterLoad = MockPlayer(
+        { "UniversalTraits:UT_addictedtocaffeine" },
+        { stress = 0.25, moddata = savedModData }
+    )
+
+    withActivePlayer(afterLoad, function()
+        Events.EveryTenMinutes:fire()
+        assert_eq(afterLoad:getStats():get(CharacterStat.STRESS), 0.25,
+            "restored caffeine should suppress the first modeled post-load tick")
+        assert_eq(afterLoad:getModData()["UT_hadCaffeine"], nil,
+            "the modeled post-load tick should consume the restored flag")
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(math.floor(afterLoad:getStats():get(CharacterStat.STRESS) * 1000 + 0.5) / 1000, 0.31,
+        "the next modeled post-load tick should add exactly 0.06")
 end)
 
 -- ─── UT_ItemConsumptionHooks: UT_allergic ─────────────────────────────────────
@@ -2459,6 +2806,26 @@ test("consumption hook sets UT_hadCaffeine when coffee consumed", function()
     ISEatFoodAction.perform(action)
     assert_true(player:getModData()["UT_hadCaffeine"] == true,
         "UT_hadCaffeine should be true after coffee consumed")
+end)
+
+test("caffeine consumption hooks are reload-safe and preserve later hook owners", function()
+    local eatWrapper = ISEatFoodAction.perform
+    local drinkWrapper = ISDrinkFluidAction.perform
+
+    dofile(base .. "../media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua")
+    Events.OnGameStart:fire()
+    Events.OnGameStart:fire()
+
+    assert_eq(ISEatFoodAction.perform, eatWrapper,
+        "reloading must not stack or replace the installed eat wrapper")
+    assert_eq(ISDrinkFluidAction.perform, drinkWrapper,
+        "reloading must not stack or replace the installed drink wrapper")
+
+    local laterOwner = function(self) return eatWrapper(self) end
+    ISEatFoodAction.perform = laterOwner
+    Events.OnGameStart:fire()
+    assert_eq(ISEatFoodAction.perform, laterOwner,
+        "a later hook owner must remain installed")
 end)
 
 test("consumption hook applies stored hunger bonus multipliers", function()
@@ -3069,32 +3436,46 @@ test("injured_II applies spawn condition and stress=0.6 on new game", function()
     assert_eq(p:getModData()["_spawn_fatigue"], 0.4, "_spawn_fatigue")
 end)
 
-test("paramedic on new game tolerates missing UTCore medical hook", function()
-    local p = fireNewGame("UniversalTraits:UT_paramedic")
-    assert_true(p:getModData()["UT_paramedicActive"] == true, "expected UT_paramedicActive=true")
+test("invalid timed-action and fence events are not manufactured", function()
+    assert_eq(Events.OnActionAdded, nil)
+    assert_eq(Events.OnFenceClimb, nil)
+    assert_eq(Events.OnClimbFence, nil)
 end)
 
-test("pitcrew on new game tolerates missing UTCore mechanics hook", function()
-    local p = fireNewGame("UniversalTraits:UT_pitcrew")
-    assert_true(p:getModData()["UT_pitcrewActive"] == true, "expected UT_pitcrewActive=true")
-end)
-
-test("paramedic halves medical action maxTime", function()
+test("paramedic accelerates only the exact medical Type set", function()
     local p = MockPlayer({ "UniversalTraits:UT_paramedic" })
-    local action = MockTimedAction(p, "ISMedicalCheckAction", 120)
-    withActivePlayer(p, function()
-        Events.OnActionAdded:fire(action)
-    end)
-    assert_eq(action.maxTime, 60, "expected medical action maxTime halved")
+    local types = {
+        "ISMedicalCheckAction", "ISApplyBandage", "ISCleanBurn", "ISDisinfect",
+        "ISRemoveBullet", "ISRemoveGlass", "ISSplint", "ISStitch",
+    }
+    for _, actionType in ipairs(types) do
+        local action = { character = p, Type = actionType }
+        assert_eq(UTCore.applyWorkDuration(action, 120), 60, actionType)
+        assert_eq(UTCore.applyWorkDuration(action, 120), 60, actionType .. " must not compound")
+    end
+    assert_eq(UTCore.applyWorkDuration({ character = p, Type = "ISCleanWound" }, 120), 120)
+    assert_eq(UTCore.applyWorkDuration({ character = p, Type = "ISReadABook" }, 120), 120)
 end)
 
-test("pitcrew halves mechanic action maxTime", function()
+test("pitcrew accelerates only the exact mechanics Type set", function()
     local p = MockPlayer({ "UniversalTraits:UT_pitcrew" })
-    local action = MockTimedAction(p, "ISRepairVehicleAction", 120)
-    withActivePlayer(p, function()
-        Events.OnActionAdded:fire(action)
-    end)
-    assert_eq(action.maxTime, 60, "expected mechanic action maxTime halved")
+    for _, actionType in ipairs({ "ISInstallVehiclePart", "ISUninstallVehiclePart", "ISFixVehiclePartAction" }) do
+        assert_eq(UTCore.applyWorkDuration({ character = p, Type = actionType }, 120), 60, actionType)
+    end
+    for _, actionType in ipairs({ "ISEnterVehicle", "ISExitVehicle", "ISOpenMechanicsUIAction", "ISRepairVehicleAction" }) do
+        assert_eq(UTCore.applyWorkDuration({ character = p, Type = actionType }, 120), 120, actionType)
+    end
+end)
+
+test("trait work duration preserves guards, minimum, and additive composition", function()
+    local medical = MockPlayer({ "UniversalTraits:UT_paramedic" })
+    assert_eq(UTCore.applyWorkDuration({ character = medical, Type = "ISStitch" }, -1), -1)
+    assert_eq(UTCore.applyWorkDuration({ character = medical, Type = "ISStitch" }, 1), 1)
+    assert_eq(UTCore.applyWorkDuration({ character = MockPlayer({}), Type = "ISStitch" }, 120), 120)
+
+    medical:getModData()["UT_modifierBuckets"] = { workAdd = { test = 0.25 } }
+    assert_eq(UTCore.applyWorkDuration({ character = medical, Type = "ISStitch" }, 120), 90,
+        "general +0.25 and paramedic -0.5 compose to -0.25")
 end)
 
 -- ─── Group 4: OnCreatePlayer ─────────────────────────────────────────────────
@@ -4422,12 +4803,100 @@ test("tavernbrawler does NOT fire on standing zombie", function()
     assert_eq(zombie:getHealth(), 100, "tavernbrawler should NOT fire on standing zombie")
 end)
 
--- ─── woodsplitter: tree chop bonus ─────────────────────────────────────────────
-test("woodsplitter sets modData flag on new game", function()
-    local p = MockPlayer({ "UniversalTraits:UT_woodsplitter" })
-    Events.OnNewGame:fire(p)
-    assert_eq(p:getModData()["UT_woodsplitterActive"], true,
-        "woodsplitter should set active flag")
+test("woodsplitter inherits exact vanilla Axeman formulas", function()
+    assert_eq(12 * 1.5, 18, "tree damage multiplier is exactly 1.5")
+    assert_eq(0.83 * 0.95, 0.7885, "axe swing-time multiplier is exactly 0.95")
+    assert_eq(1.0 / 0.8, 1.25, "chop animation is exactly 25% faster")
+end)
+
+test("woodsplitter has no weapon mutation or fake tree event", function()
+    local f = assert(io.open(base .. "../media/lua/shared/UniversalTraits/traits/UT_woodsplitter.lua", "r"))
+    local source = f:read("*a")
+    f:close()
+    assert_true(not source:find("setTreeDamage", 1, true), "no HandWeapon.treeDamage mutation")
+    assert_true(not source:find("OnTreeChopped", 1, true), "no nonexistent tree event")
+    assert_true(not source:find("setHp", 1, true), "no fake extra hit")
+end)
+
+test("woodsplitter definition grants and excludes vanilla Axeman", function()
+    local f = assert(io.open(base .. "../media/scripts/UT_character_traits.txt", "r"))
+    local source = f:read("*a")
+    f:close()
+    local block = source:match("character_trait_definition%s+UniversalTraits:UT_woodsplitter%s*(%b{})")
+    assert_true(block ~= nil, "Wood Splitter definition should exist")
+    assert_true(block:find("DisabledInMultiplayer%s*=%s*true"), "Wood Splitter must be disabled in MP selection")
+    assert_true(block:find("GrantedTraits%s*=%s*Axeman"), "Wood Splitter must declaratively grant Axeman")
+    assert_true(block:find("MutuallyExclusiveTraits%s*=%s*Axeman"),
+        "Wood Splitter must exclude separately selected or profession-granted Axeman")
+    assert_true(block:find("Cost%s*=%s*4[%s,]"), "Wood Splitter must use the accepted 4-point cost")
+end)
+
+test("woodsplitter engine ordering makes exclusion selection-only", function()
+    local function read(path)
+        local f = assert(io.open(base .. "../../../PZCodebase/" .. path, "r"))
+        local source = f:read("*a")
+        f:close()
+        return source
+    end
+    local parser = read("Java/source/zombie/scripting/objects/CharacterTraitDefinitionScript.java")
+    local mutualPos = assert(parser:find("for (CharacterTrait mutuallyExclusiveCharacterTrait", 1, true))
+    local grantPos = assert(parser:find("for (CharacterTrait freeTrait", 1, true))
+    assert_true(mutualPos < grantPos, "mutual exclusions must be installed before granted traits")
+
+    local definition = read("Java/source/zombie/characters/traits/CharacterTraitDefinition.java")
+    assert_true(definition:find("this.updateMutualExclusiveTraits();", 1, true) ~= nil,
+        "adding GrantedTraits must propagate bidirectional exclusions")
+    assert_true(definition:find("traitToTest.mutuallyExclusiveTraits.add(this.getType())", 1, true) ~= nil,
+        "Axeman must learn the reverse Wood Splitter exclusion")
+
+    local creation = read("Lua/client/OptionScreens/CharacterCreationProfession.lua")
+    local addGrant = assert(creation:find("self.listboxTraitSelected:addUniqueItem(freeCharacterTraitDefinition:getLabel()", 1, true))
+    local testGrant = assert(creation:find("self:doTestForMutuallyExclusiveTraits(freeCharacterTraitDefinition, false)", addGrant, true))
+    assert_true(addGrant < testGrant, "the intentional Axeman grant is selected before exclusion hides alternatives")
+    assert_true(creation:find("self.listboxTrait:removeMatchingItems(exclusiveCharacterTraitDefinition:getLabel())", 1, true) ~= nil,
+        "exclusion removes availability, not already-selected granted traits")
+end)
+
+test("woodsplitter selection cases follow the engine contract", function()
+    local function outcome(hasAxeman, chooseWoodSplitter)
+        local woodAvailable = not hasAxeman
+        if not chooseWoodSplitter or not woodAvailable then
+            return woodAvailable, hasAxeman, false
+        end
+        -- CharacterCreationProfession:addTrait selects Wood Splitter, then its
+        -- GrantedTraits Axeman, and exclusion removes only available choices.
+        return false, true, true
+    end
+
+    local available, axeman, wood = outcome(false, false)
+    assert_true(available and not axeman and not wood, "without Axeman, Wood Splitter is selectable")
+    available, axeman, wood = outcome(true, false)
+    assert_true(not available and axeman and not wood, "profession-granted Axeman hides Wood Splitter")
+    available, axeman, wood = outcome(true, false)
+    assert_true(not available and axeman and not wood, "directly selected Axeman hides Wood Splitter")
+    available, axeman, wood = outcome(false, true)
+    assert_true(not available and axeman and wood,
+        "choosing Wood Splitter hides separate Axeman selection but preserves the intentional granted pair")
+end)
+
+test("woodsplitter anchors all four vanilla Axeman effects in SVN 964", function()
+    local function read(path)
+        local f = assert(io.open(base .. "../../../PZCodebase/" .. path, "r"))
+        local source = f:read("*a")
+        f:close()
+        return source
+    end
+    local tree = read("Java/source/zombie/iso/objects/IsoTree.java")
+    assert_true(tree:find("hasTrait(CharacterTrait.AXEMAN)", 1, true) ~= nil, "tree checks Axeman")
+    assert_true(tree:find("dmg *= 1.5F", 1, true) ~= nil, "tree damage is multiplied by 1.5")
+    local weapon = read("Java/source/zombie/inventory/types/HandWeapon.java")
+    assert_true(weapon:find("mod = 0.95F", 1, true) ~= nil, "axe attack-time multiplier is 0.95")
+    local character = read("Java/source/zombie/characters/IsoGameCharacter.java")
+    assert_true(character:find("CharacterTrait.AXEMAN) ? 1.0F : 0.8F", 1, true) ~= nil,
+        "chop animation speed is 1.0 versus 0.8")
+    local spawn = read("Lua/shared/Items/SpawnItems.lua")
+    assert_true(spawn:find("[CharacterTrait.AXEMAN] = { ItemKey.Container.KEY_RING_PINE_TREE", 1, true) ~= nil,
+        "Axeman is eligible for the pine-tree key ring")
 end)
 
 print(string.format("\n%d passed, %d failed", passed, failed))

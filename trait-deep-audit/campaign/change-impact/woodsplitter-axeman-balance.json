@@ -1,0 +1,255 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_kind": "UniversalTraits corrected Wood Splitter balance contract",
+  "generated_at_utc": "2026-07-19T00:00:00Z",
+  "scope": {
+    "trait_id": "UniversalTraits:UT_woodsplitter",
+    "target_build": "Project Zomboid Build 42 newest supported 42.0 compatibility target",
+    "mode": "read-only evidence synthesis with one authorized artifact write",
+    "product_scope": "new-character behavior only",
+    "excluded_from_cost_and_risk": [
+      "existing-save migration",
+      "migration proof",
+      "migration compatibility",
+      "retroactive key-ring handling"
+    ]
+  },
+  "recommendation": {
+    "point_cost": 4,
+    "previous_point_cost": 3,
+    "decision": "increase corrected Wood Splitter from 3 to 4 points",
+    "confidence": "moderate",
+    "rationale": "Four points is the smallest defensible price for +1 Axe plus the complete, permanent vanilla Axeman package. It matches the observed median positive price in the audited UniversalTraits comparison sample and the mod's 4-point weapon-specialist cluster. Three points is supported for narrower +1-skill packages with one modest secondary effect, but understates a package that materially accelerates both axe combat and the full tree-chopping loop. Five points is not justified without telemetry because every non-XP benefit is axe-specific, the key ring is cosmetic/rare, and the starting Axe level loses marginal value as the character advances.",
+    "sensitivity": {
+      "retain_3_only_if": "Live measurements show axe use is sufficiently uncommon that the permanent combat and chopping throughput gains have negligible build impact, or the corrected implementation does not actually confer every vanilla Axeman consumer listed here.",
+      "raise_to_5_only_if": "Controlled play shows the cross-profession Axeman package is a dominant choice at 4 points, especially through materially improved early survival with axes or sustained wood-production advantage.",
+      "recommended_band": [
+        4,
+        5
+      ],
+      "selected_value": 4
+    }
+  },
+  "corrected_behavior_contract": {
+    "selection": {
+      "xp_boosts": {
+        "Axe": 1
+      },
+      "inherits_vanilla_trait": "Axeman",
+      "disabled_in_multiplayer": true,
+      "required_mutual_exclusions": [
+        {
+          "trait": "Axeman",
+          "reason": "All inherited effects are boolean/nonstacking and a profession that grants Axeman already supplies the package. Wood Splitter must be unavailable when Axeman is already present or profession-granted at character creation."
+        }
+      ],
+      "enforcement_requirement": "The character-creation result must reject Wood Splitter plus direct Axeman and Wood Splitter plus every profession whose free traits include Axeman. Do not rely on duplicate boolean traits being harmless; prevent the wasted-point combination at selection time."
+    },
+    "runtime": "No parallel Wood Splitter damage or timing hook should duplicate Axeman. Corrected behavior is the engine's own Axeman consumers plus the scripted +1 Axe XP boost.",
+    "copy_requirement": "Copy must describe +1 Axe and the inherited Axeman outcomes (better/faster tree chopping and faster axe attacks) without claiming double tree damage. Pine key-ring eligibility is not important enough to advertise as a power benefit."
+  },
+  "effect_valuation": [
+    {
+      "effect": "+1 Axe",
+      "mechanic": "Starting level/XPBoosts Axe=1",
+      "estimated_point_value": {
+        "low": 1.5,
+        "high": 2.5
+      },
+      "timing": "Highest early, declining marginal value as Axe level rises; the XP-boost implications remain relevant beyond the literal starting level but were not assigned an exact lifetime value without telemetry.",
+      "evidence_basis": "UniversalTraits comparables include cost 2 for SmallBlunt +1 plus a conditional effect, and cost 3 for Maintenance +1 plus doubled condition-lower denominator or Cooking +1 plus a bounded movement effect."
+    },
+    {
+      "effect": "1.5 tree damage",
+      "mechanic": "IsoTree multiplies weapon.getTreeDamage() by 1.5 for an axe-category weapon when owner has Axeman.",
+      "estimated_point_value": {
+        "low": 0.5,
+        "high": 1.25
+      },
+      "timing": "Strong when establishing or expanding a base and whenever logs are a production bottleneck; narrower in nomadic/urban play and less strategically scarce late game.",
+      "quantification": "At equal animation cadence this is 50% more tree damage per hit and approximately 33.3% fewer hits for the same tree, subject to integer damage/overkill and durability/endurance behavior."
+    },
+    {
+      "effect": "0.95 axe attack-time multiplier",
+      "mechanic": "HandWeapon applies an Axeman multiplier of 0.95 inside the axe attack-time calculation, multiplicatively with the Axe-level timing table.",
+      "estimated_point_value": {
+        "low": 0.5,
+        "high": 1.0
+      },
+      "timing": "Permanent combat value from the first usable axe through late game; limited to axes and constrained by stamina, spacing, weapon supply, and animation/combat conditions.",
+      "quantification": "A 0.95 duration multiplier is about 5.26% more attacks per unit time when timing is the limiting factor, not a flat 5% damage increase and not an additive skill bonus."
+    },
+    {
+      "effect": "ChopTreeSpeed 1.0 instead of 0.8",
+      "mechanic": "IsoGameCharacter.getChopTreeSpeed returns 1.0 with Axeman and 0.8 otherwise; axe combat speed is multiplied by this variable in the tree-chopping path.",
+      "estimated_point_value": {
+        "low": 0.5,
+        "high": 1.0
+      },
+      "timing": "Same wood-production windows as tree damage; it improves real-time throughput rather than per-hit resource efficiency.",
+      "quantification": "1.0/0.8 is 1.25 times baseline chop cadence. Combined with 1.5 tree damage, the idealized damage-throughput ratio is 1.875 times baseline, corresponding to about 46.7% of baseline chopping time for equal tree health, before rounding, endurance, movement, and action overhead."
+    },
+    {
+      "effect": "pine key-ring eligibility",
+      "mechanic": "SpawnItems.TraitKeyRings maps Axeman to KEY_RING_PINE_TREE.",
+      "estimated_point_value": {
+        "low": 0.0,
+        "high": 0.1
+      },
+      "timing": "New-character creation only; rare/cosmetic and does not justify a point increment.",
+      "quantification": "No spawn probability was established in the allowed evidence, so eligibility is proven but rarity and expected utility are not numerically priced."
+    }
+  ],
+  "interaction_and_opportunity_cost": {
+    "nonstacking": "Vanilla Axeman checks are boolean. A second source does not produce 2.25 tree damage, another 0.95 timing multiplier, or ChopTreeSpeed above 1.0.",
+    "direct_axeman_overlap": "Selection-time exclusion removes the zero-value duplicate purchase and is required for the 4-point price to be honest.",
+    "profession_overlap": "A profession-granted Axeman must also block Wood Splitter. The profession route carries the opportunity cost of choosing that occupation and bundles other profession-specific benefits/tradeoffs; Wood Splitter's value is chiefly that it makes the Axeman package available to other professions for trait points.",
+    "lumberjack_adjacent_benefits_not_included": [
+      "Lumberjack profession tree-movement modifiers",
+      "Lumberjack reduced combat muscle strain while chopping/removing bushes",
+      "Lumberjack foraging specialization"
+    ],
+    "single_player_scope": "DisabledInMultiplayer=true makes this a single-player-only trait. That restriction does not warrant pricing below its single-player build value because points are paid only where the trait is selectable.",
+    "early_game": "High value: immediate Axe level improves access/competence while permanent attack and chopping modifiers apply before the character has accumulated gear, skills, and stockpiled logs.",
+    "late_game": "Mixed value: the +1 starting level is less important, but the 0.95 attack-time modifier and Axeman tree multipliers remain permanent. Abundant materials and mature bases reduce the marginal economic value of chopping."
+  },
+  "comparative_pricing": {
+    "audited_sample_note": "A bounded extraction from explicit cost statements in final_trait_ledger.json yielded 41 positive observations; it is an audit-evidence sample, not a guaranteed one-row-per-trait census because ledger wording is heterogeneous.",
+    "positive_sample_distribution": {
+      "1": 5,
+      "2": 5,
+      "3": 4,
+      "4": 11,
+      "6": 4,
+      "7": 6,
+      "8": 4,
+      "12": 2
+    },
+    "positive_sample_median": 4,
+    "comparables": [
+      {
+        "trait": "UniversalTraits:UT_improviser",
+        "cost": 3,
+        "package": "+1 Maintenance and doubled weapon condition-lower-chance denominator",
+        "implication": "Supports 3 as a narrower skill-plus-secondary-effect price floor."
+      },
+      {
+        "trait": "UniversalTraits:UT_natural",
+        "cost": 3,
+        "package": "+1 Cooking and a bounded movement-speed effect",
+        "implication": "Another 3-point skill-plus-moderate-effect anchor."
+      },
+      {
+        "trait": "UniversalTraits:UT_tavernbrawler",
+        "cost": 2,
+        "package": "+1 SmallBlunt and a conditional stomp bonus",
+        "implication": "The corrected Axeman package is materially broader and should price above 2."
+      },
+      {
+        "trait": "UniversalTraits:UT_twohanded_axes",
+        "cost": 4,
+        "package": "+2 Axe and +10 critical chance for two-handed axes",
+        "implication": "Closest weapon-specialist anchor; its existing runtime defect limits confidence but its intended package supports the 4-point cluster."
+      },
+      {
+        "trait": "UniversalTraits:UT_long_blades",
+        "cost": 4,
+        "package": "+2 LongBlade and +10 critical chance",
+        "implication": "Shows the mod prices a stronger weapon starting bonus plus a combat modifier at 4."
+      },
+      {
+        "trait": "UniversalTraits:UT_sharpshooter",
+        "cost": 4,
+        "package": "+2 Aiming, 1.25 hit chance, and 1.25 max range",
+        "implication": "A broader ranged package is also priced at 4, arguing against 5 without dominance telemetry."
+      },
+      {
+        "trait": "UniversalTraits:UT_trackman",
+        "cost": 4,
+        "package": "+2 Trapping and intended no-condition-loss behavior",
+        "implication": "Intended pricing supports 4, although its confirmed implementation defect makes it a weak empirical balance anchor."
+      }
+    ]
+  },
+  "vanilla_axeman_evidence": {
+    "availability": "Axeman is a registered base CharacterTrait and is profession-granted in the Lumberjack route represented by CharacterProfession.LUMBERJACK. It is not priced here as a separately selectable vanilla positive trait because the inspected evidence identifies it as a profession trait/package.",
+    "profession_tradeoffs": [
+      "Choosing Lumberjack consumes the occupation slot rather than generic positive-trait points alone.",
+      "Lumberjack also has profession-only tree movement, strain, and foraging benefits, so the occupation is not a clean price proxy for Axeman by itself."
+    ],
+    "profession_numeric_cost_status": "not established by the indexed source surfaces available under the no-command/no-index boundary; no numeric occupation cost is used in the recommendation",
+    "formula_anchors": [
+      "PZCodebase/Java/source/zombie/iso/objects/IsoTree.java:221",
+      "PZCodebase/Java/source/zombie/inventory/types/HandWeapon.java:598",
+      "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:10317,14131-14132",
+      "PZCodebase/Lua/shared/Items/SpawnItems.lua:215",
+      "PZCodebase/Java/source/zombie/scripting/objects/CharacterTrait.java:14",
+      "PZCodebase/Java/source/zombie/scripting/objects/CharacterProfession.java:20",
+      "PZCodebase/Java/source/zombie/characters/IsoPlayer.java:2663",
+      "PZCodebase/Java/source/zombie/iso/objects/IsoTree.java:258",
+      "PZCodebase/Lua/shared/TimedActions/ISChopTreeAction.lua:70",
+      "PZCodebase/Lua/shared/Foraging/forageSkills.lua:54-65"
+    ]
+  },
+  "audit_methodology": {
+    "source_order": [
+      "current user/delegation product scope",
+      "current UniversalTraits registration, definition/copy/runtime and closed-world audit ledger",
+      "current indexed Build 42 PZCodebase formulas and availability",
+      "comparable UniversalTraits intended packages and costs",
+      "conservative inference with explicit ranges"
+    ],
+    "adopted_findings": [
+      "The prior cost 3 covered +1 Axe plus a dead/mismatched claimed double-damage runtime.",
+      "The prior runtime used nonexistent OnTreeChopped and incorrect IsoTree getHp/setHp mocks; it is not balance evidence for the corrected package.",
+      "Vanilla Axeman is a four-consumer package: 1.5 tree damage, 0.95 axe timing, ChopTreeSpeed 1.0 versus 0.8, and pine key-ring eligibility.",
+      "No authorized in-game telemetry establishes real usage frequency, time saved, survival effect, or pick-rate dominance."
+    ],
+    "uncertainty_rules": [
+      "Do not sum estimated component ranges as though they were independent; tree damage and chop speed overlap in the same activity and are valued jointly through sensitivity.",
+      "Treat intended but defective UniversalTraits comparables as pricing-policy evidence, not proof of realized gameplay value.",
+      "Treat formula implications as idealized bounds until action overhead, integer rounding, endurance, weapon condition, and combat animation behavior are observed in game."
+    ]
+  },
+  "migration": {
+    "required": false,
+    "contract": "Prior saves may be invalidated. No migration code, compatibility proof, retroactive grant/exclusion reconciliation, or retroactive pine key-ring handling is required or priced."
+  },
+  "smallest_in_game_validation": {
+    "purpose": "Validate the two material throughput claims and exclusion contract without a campaign-scale telemetry program.",
+    "character_matrix": [
+      "control: same non-Lumberjack profession, no Wood Splitter, Axe 1 normalized",
+      "treatment: same profession, Wood Splitter, Axe 1 normalized",
+      "selection guard: Lumberjack/Axeman route confirms Wood Splitter cannot also be selected"
+    ],
+    "procedure": [
+      "Use identical axe item, condition, fatigue/endurance, tree size/health, game speed, and Axe level.",
+      "Record hits and elapsed action time to fell at least 10 matched trees per arm; verify treatment damage per hit is 1.5 times control subject to integer rounding and that elapsed chop time approaches the formula-predicted combined direction.",
+      "Against a controlled non-tree target, record at least 30 matched axe attack cycles per arm and compare median cycle duration; expected treatment/control ratio is approximately 0.95 when other timing inputs are fixed.",
+      "Create new characters only and record whether the pine key ring appears as an eligibility smoke check, without treating nonappearance in a small sample as a failure unless spawn selection is deterministic.",
+      "Capture character-creation evidence that direct/profession-granted Axeman and Wood Splitter cannot coexist."
+    ],
+    "decision_threshold": "Keep cost 4 if formulas reproduce and no obvious dominance appears in the bounded run. Reopen at 5 only after broader pick-rate/survival or resource-production telemetry demonstrates dominance; reopen at 3 only if the corrected trait fails to confer the complete Axeman package or measured real-world gains are negligible.",
+    "telemetry_not_required": [
+      "existing-save load",
+      "migration",
+      "non-applicable network-mode testing because the trait is single-player-only",
+      "retroactive key-ring state"
+    ]
+  },
+  "evidence_anchors": [
+    "UniversalTraits/media/registries.lua:114",
+    "UniversalTraits/media/scripts/UT_character_traits.txt:874-883",
+    "UniversalTraits/media/lua/shared/Translate/EN/UI.json:154-155",
+    "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_woodsplitter.lua:1-25",
+    "trait-deep-audit/campaign/final_trait_ledger.json:61726-62004",
+    "trait-deep-audit/campaign/source_inventory.json:1-120",
+    "trait-deep-audit/campaign/final_trait_ledger.json comparable trait entries"
+  ],
+  "unresolved_uncertainties": [
+    "No live Build 42 telemetry measures Wood Splitter pick rate, axe combat survival impact, or wood-production time saved.",
+    "No exact probability for pine key-ring selection was established.",
+    "The numeric Lumberjack occupation cost was not exposed by the current indexed sources under this task's no-command/no-index boundary, so it is deliberately not asserted or used as a quantitative price anchor.",
+    "The current index anchors the pre-correction Wood Splitter source; this artifact evaluates the explicitly supplied corrected contract of +1 Axe plus inherited Axeman and required selection-time exclusion."
+  ]
+}

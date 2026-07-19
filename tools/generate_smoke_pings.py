@@ -1,327 +1,290 @@
 #!/usr/bin/env python3
-"""
-Generate UT_SmokePings.lua from the PZ API inventory.
-
-Reads pz_api_inventory.json and writes a Lua file containing one unguarded
-call per unique API surface. When loaded in-game at OnGameStart, any broken
-API surface triggers PZ's native error handler immediately.
-"""
+"""Generate deterministic, protocol-bearing UniversalTraits smoke pings."""
 
 import argparse
 import json
-import sys
+import os
+import tempfile
 from pathlib import Path
-from collections import defaultdict
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-UTMODS_ROOT = SCRIPT_DIR.parent
+ROOT = SCRIPT_DIR.parent
 DEFAULT_INVENTORY = SCRIPT_DIR / "pz_api_inventory.json"
-DEFAULT_OUTPUT = (
-    UTMODS_ROOT
-    / "UniversalTraits"
-    / "media"
-    / "lua"
-    / "shared"
-    / "UniversalTraits"
-    / "UT_SmokePings.lua"
-)
-
-# How to obtain each receiver variable at OnGameStart time.
-# Key: receiver name from the inventory.
-# Value: Lua expression that yields the receiver, or None to skip.
-#
-# "chain" entries are obtained by calling a method on a parent receiver.
-# They don't need a root expression — the generator builds the chain.
-RECEIVER_ROOTS = {
-    # Player object — the main root for most pings
-    "player":     "getPlayer()",
-    "character":  "getPlayer()",
-    "attacker":   "getPlayer()",
-    "target":     "getPlayer()",
-
-    # Chained from player
-    "stats":       None,  # player:getStats()
-    "bodyDamage":  None,  # player:getBodyDamage()
-    "bd":          None,  # player:getBodyDamage()
-    "nutrition":   None,  # player:getBodyDamage():getNutrition()
-    "inv":         None,  # player:getInventory()
-    "inventory":   None,  # player:getInventory()
-    "container":   None,  # player:getInventory()
-    "pack":        None,  # player:getInventory()
-    "wornItems":   None,  # player:getWornItems()
-    "wornItem":    None,  # requires wornItems:getItemByIndex(0)
-    "ENDURANCE":   None,  # player:getStats():getEndurance()
-
-    # Items — need getPrimaryHandItem() which can be nil
-    "weapon":      None,  # player:getPrimaryHandItem()
-    "primary":     None,  # player:getPrimaryHandItem()
-    "secondary":   None,  # player:getSecondaryHandItem()
-    "item":        None,  # generic item — skip at startup (needs game context)
-    "food":        None,  # Food subclass — skip at startup
-    "sourceItem":  None,  # skip
-
-    # Body parts — chained from bodyDamage
-    "part":        None,
-    "head":        None,
-
-    # Environment globals
-    "vehicle":     None,  # no vehicle at startup — skip
-    "square":      None,  # player:getCurrentSquare()
-    "sq":          None,  # player:getCurrentSquare()
-    "cm":          "getClimateManager()",
-    "gt":          "getGameTime()",
-
-    # Zombie — no zombie at startup
-    "zombie":      None,
-    "chr":         None,
-
-    # Lua PZ globals (table access, not method calls)
-    "ISEatFoodAction":    None,  # handled in Lua globals section
-    "ISDrinkFluidAction": None,  # handled in Lua globals section
-    "ISFitnessAction":    None,  # handled in Lua globals section,
-
-    # Java collections — chained from other calls
-    "spottedList": None,
-
-    # Skip receivers (not PZ API — modData, strings, etc.)
-    "obj":         None,
-    "containerObj": None,
-    "key":         None,
-    "wtype":       None,
-    "action":      None,
-    "actionName":  None,
-    "actionType":  None,
-    "cats":        None,
-    "trait":       None,
-    "traitDefinition": None,
-    "CharacterCreationProfession": None,
-    "tree":        None,
-    "md":          None,
-    "fish":        None,
+DEFAULT_OUTPUT = ROOT / "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
+SAFE_METHOD_PREFIXES = ("get", "is", "has", "num", "size")
+RECEIVER_EXPRESSIONS = {
+    "player": "player", "character": "player", "attacker": "player", "target": "player",
+    "stats": "_stats", "bodyDamage": "_bd", "bd": "_bd", "nutrition": "_nutrition",
+    "inv": "_inv", "inventory": "_inv", "container": "_inv", "pack": "_inv",
+    "wornItems": "_wornItems", "square": "_square", "sq": "_square",
+    "cm": "_cm", "gt": "_gt", "spottedList": "_parts",
 }
-
-# Receivers that should be skipped entirely (no way to get them at startup,
-# or they're not PZ API surfaces).
-SKIP_RECEIVERS = {
-    "obj", "key", "wtype", "action", "actionName", "actionType", "cats",
-    "trait", "traitDefinition", "CharacterCreationProfession", "tree", "md",
-    "fish", "containerObj",
-}
-
-# How to obtain chained receivers from a parent.
-# (receiver_name, parent_receiver, method_on_parent)
-CHAIN_SETUP = [
-    # From player
-    ("_stats",      "player",      "getStats()"),
-    ("_bd",         "player",      "getBodyDamage()"),
-    ("_nutrition",  "player",      "getNutrition()"),
-    ("_inv",        "player",      "getInventory()"),
-    ("_wornItems",  "player",      "getWornItems()"),
-    ("_square",     "player",      "getCurrentSquare()"),
-    # Body parts from BodyDamage (getBodyPart takes a BodyPartType enum)
-    # Use getBodyParts():get(0) for a generic part ping
-    ("_parts",      "_bd",         "getBodyParts()"),
-]
-
-# Maps inventory receivers to the local variable name used in the generated Lua.
-RECEIVER_TO_LOCAL = {
-    "player":     "player",
-    "character":  "player",
-    "attacker":   "player",
-    "target":     "player",
-    "stats":      "_stats",
-    "bodyDamage": "_bd",
-    "bd":         "_bd",
-    "nutrition":  "_nutrition",
-    "inv":        "_inv",
-    "inventory":  "_inv",
-    "container":  "_inv",
-    "pack":       "_inv",
-    "wornItems":  "_wornItems",
-    "square":     "_square",
-    "sq":         "_square",
-    "cm":         "_cm",
-    "gt":         "_gt",
-    "ISEatFoodAction":    None,  # handled in Lua globals section
-    "ISDrinkFluidAction": None,  # handled in Lua globals section
-    "ISFitnessAction":    None,  # handled in Lua globals section
-    "ENDURANCE":  None,  # CharacterStat enum constant, not the Stats object
-    "spottedList": None,  # handled in ArrayList section,
-    "part":       None,  # handled specially via _parts
-    "head":       None,  # handled specially via _bd
-}
-
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Generate UT_SmokePings.lua from PZ API inventory"
-    )
-    parser.add_argument(
-        "--inventory",
-        type=Path,
-        default=DEFAULT_INVENTORY,
-        help=f"Inventory JSON path (default: {DEFAULT_INVENTORY})",
-    )
-    parser.add_argument(
-        "--output",
-        type=Path,
-        default=DEFAULT_OUTPUT,
-        help=f"Output Lua file path (default: {DEFAULT_OUTPUT})",
-    )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Print generated Lua to stdout instead of writing file",
-    )
-    return parser.parse_args()
-
-
-def load_inventory(path: Path) -> dict:
-    return json.loads(path.read_text(encoding="utf-8"))
-
-
-# Method prefixes that are safe to call at startup (read-only / no side effects).
-# Anything not matching these prefixes is skipped to avoid mutating game state.
-SAFE_METHOD_PREFIXES = (
-    "get", "is", "has", "num", "size",
+GLOBAL_RECEIVERS = {"ISEatFoodAction", "ISDrinkFluidAction", "ISFitnessAction"}
+SETUP_CALLS = (
+    ("getPlayer", "    local player = getPlayer()"),
+    ("player.getStats", "    local _stats = player:getStats()"),
+    ("player.getBodyDamage", "    local _bd = player:getBodyDamage()"),
+    ("player.getNutrition", "    local _nutrition = player:getNutrition()"),
+    ("player.getInventory", "    local _inv = player:getInventory()"),
+    ("player.getWornItems", "    local _wornItems = player:getWornItems()"),
+    ("player.getCurrentSquare", "    local _square = player:getCurrentSquare()"),
+    ("bodyDamage.getBodyParts", "    local _parts = _bd:getBodyParts()"),
+    ("getClimateManager", "    local _cm = getClimateManager()"),
+    ("getGameTime", "    local _gt = getGameTime()"),
 )
 
 
-def _zero_arg_surfaces(inventory: dict) -> set[tuple[str, str]]:
-    """Return (receiver, method) pairs that have at least one real zero-arg call site."""
-    zero_arg: set[tuple[str, str]] = set()
-    for cs in inventory.get("call_sites", []):
-        # Exclude SmokePings' own entries (they always emit 0 args)
-        if "UT_SmokePings" in cs.get("relative_file", ""):
-            continue
-        if cs.get("arg_count", 1) == 0:
-            zero_arg.add((cs["receiver"], cs["method"]))
-    return zero_arg
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--inventory", type=Path, default=DEFAULT_INVENTORY)
+    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--allowlist", type=Path)
+    parser.add_argument("--report", type=Path)
+    parser.add_argument("--dry-run", action="store_true")
+    return parser.parse_args(argv)
 
 
-def build_ping_groups(inventory: dict) -> dict[str, list[str]]:
-    """Group unique surfaces by receiver, returning {receiver: [method, ...]}.
-
-    Only includes methods that have at least one real (non-SmokePings) call
-    site with zero arguments, avoiding runtime crashes from calling setters
-    or methods that require parameters.
-    """
-    zero_arg = _zero_arg_surfaces(inventory)
-    groups: dict[str, list[str]] = defaultdict(list)
-    for surface in inventory.get("unique_surfaces", []):
-        if surface["verification_kind"] == "script_xpboosts":
-            continue
-        receiver = surface["receiver"]
-        if receiver in SKIP_RECEIVERS:
-            continue
-        method = surface["method"]
-        if (receiver, method) not in zero_arg:
-            continue
-        # Only ping read-only methods to avoid mutating game state at startup
-        if not method.startswith(SAFE_METHOD_PREFIXES):
-            continue
-        groups[receiver].append(method)
-    # Sort methods within each group for stable output
-    return {r: sorted(set(methods)) for r, methods in groups.items()}
+def load_inventory(path):
+    value = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(value, dict) or not isinstance(value.get("unique_surfaces"), list) \
+            or not isinstance(value.get("call_sites"), list):
+        raise ValueError("inventory must contain unique_surfaces and call_sites arrays")
+    return value
 
 
-def generate_lua(ping_groups: dict[str, list[str]]) -> str:
-    """Generate the Lua source for UT_SmokePings.lua."""
+def load_allowlist(path):
+    if path is None:
+        return {}
+    value = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(value, dict) or any(not isinstance(k, str) or not isinstance(v, str) or not v.strip()
+                                          for k, v in value.items()):
+        raise ValueError("allowlist must map exact surface keys to non-empty reasons")
+    return value
+
+
+def eligible_surfaces(inventory):
+    zero_arg = {(site.get("receiver"), site.get("method")) for site in inventory["call_sites"]
+                if site.get("arg_count") == 0
+                and "UT_SmokePings" not in site.get("relative_file", "")}
+    return {(item.get("receiver"), item.get("method")) for item in inventory["unique_surfaces"]
+            if item.get("verification_kind") != "script_xpboosts"
+            and (item.get("receiver"), item.get("method")) in zero_arg
+            and isinstance(item.get("receiver"), str) and isinstance(item.get("method"), str)
+            and item["method"].startswith(SAFE_METHOD_PREFIXES)}
+
+
+def build_plan(inventory, allowlist):
+    eligible = eligible_surfaces(inventory)
+    emitted, omitted = set(), {}
+    for receiver, method in sorted(eligible):
+        key = f"{receiver}.{method}"
+        if key in allowlist:
+            omitted[key] = allowlist[key]
+        elif receiver in RECEIVER_EXPRESSIONS or receiver in GLOBAL_RECEIVERS:
+            emitted.add((receiver, method))
+        else:
+            raise ValueError(f"eligible surface has no emitter or allowlisted omission: {key}")
+    unused = sorted(set(allowlist) - {f"{r}.{m}" for r, m in eligible})
+    if unused:
+        raise ValueError("allowlist contains ineligible surfaces: " + ", ".join(unused))
+    return sorted(emitted), omitted
+
+
+def runtime_calls(emitted):
+    return [surface for surface, _ in SETUP_CALLS] + [f"{r}.{m}" for r, m in sorted(emitted)]
+
+
+def call_manifest(emitted):
+    counts = {}
+    order = []
+    for surface in runtime_calls(emitted):
+        if surface not in counts:
+            order.append(surface)
+            counts[surface] = 0
+        counts[surface] += 1
+    calls = [{"surface": surface, "count": counts[surface], "evidence": "marker"}
+             for surface in order]
+    marker_count = sum(counts.values())
+    calls.extend([
+        {"surface": "getTimestampMs", "count": marker_count, "evidence": "protocol"},
+        {"surface": "print", "count": marker_count, "evidence": "protocol"},
+        {"surface": "Events.OnGameStart.Add", "count": 1, "evidence": "protocol"},
+    ])
+    return calls
+
+
+def generate_lua(emitted):
+    emitted = sorted(emitted)
     lines = [
-        "-- UT_SmokePings.lua",
-        "-- Auto-generated by tools/generate_smoke_pings.py -- do not hand-edit.",
-        "-- Fires every PZ API surface used by UniversalTraits at startup.",
-        "-- If any call hits nil, PZ's error handler reports it immediately.",
-        "",
+        "-- UT_SmokePings.lua", "-- Auto-generated; do not hand-edit.",
         "local function runPings()",
-        "    local player = getPlayer()",
-        "    local _",
-        "",
+        "    local runId = tostring(UT_SMOKE_RUN_ID or '')",
+        "    local challenge = tostring(UT_SMOKE_CHALLENGE or '')",
+        "    if runId == '' or challenge == '' then error('UT smoke run proof is not configured') end",
+        "    local function mark(surface)",
+        "        print('[UT_SMOKE] run=' .. runId .. ' challenge=' .. challenge .. ' timestamp=' .. tostring(getTimestampMs()) .. ' surface=' .. surface)",
+        "    end",
     ]
-
-    # Set up chain roots
-    lines.append("    -- Chain roots")
-    for local_name, parent, method in CHAIN_SETUP:
-        lines.append(f"    local {local_name} = {parent}:{method}")
-    lines.append("")
-
-    # Set up global roots
-    lines.append("    -- Global roots")
-    lines.append("    local _cm = getClimateManager()")
-    lines.append("    local _gt = getGameTime()")
-    lines.append("")
-
-    # Group pings by the local variable they call on
-    # Build a mapping: local_var -> [(method, comment), ...]
-    var_pings: dict[str, list[tuple[str, str]]] = defaultdict(list)
-
-    for receiver, methods in sorted(ping_groups.items()):
-        local_var = RECEIVER_TO_LOCAL.get(receiver)
-        if local_var is None:
-            # Skip receivers we can't obtain at startup
-            continue
-        for method in methods:
-            var_pings[local_var].append((method, receiver))
-
-    # Emit pings grouped by local variable
-    for local_var in sorted(var_pings.keys()):
-        pings = var_pings[local_var]
-        # Get a representative surface name for the comment
-        receivers = sorted(set(p[1] for p in pings))
-        lines.append(f"    -- {local_var} (receivers: {', '.join(receivers)})")
-        for method, _receiver in sorted(pings):
-            lines.append(f"    _ = {local_var}:{method}()")
-        lines.append("")
-
-    # Lua global existence checks (ISEatFoodAction etc.)
-    lua_globals = []
-    for receiver in sorted(ping_groups.keys()):
-        if receiver in ("ISEatFoodAction", "ISDrinkFluidAction", "ISFitnessAction"):
-            lua_globals.append(receiver)
-
-    if lua_globals:
-        lines.append("    -- Lua PZ globals")
-        for g in lua_globals:
-            methods = ping_groups[g]
-            lines.append(f"    _ = {g}")
-            for method in methods:
-                lines.append(f"    _ = {g}.{method}")
-        lines.append("")
-
-    # ArrayList pings (spottedList etc.) via _parts
-    if "spottedList" in ping_groups:
-        lines.append("    -- Java collection interop (ArrayList)")
-        for method in ping_groups["spottedList"]:
-            lines.append(f"    _ = _parts:{method}()")
-        lines.append("")
-
-    lines.append("end")
-    lines.append("")
-    lines.append("Events.OnGameStart.Add(runPings)")
-    lines.append("")
-
+    for surface, expression in SETUP_CALLS:
+        lines.extend([expression, f"    mark('{surface}')"])
+    for receiver, method in emitted:
+        key = f"{receiver}.{method}"
+        if receiver in GLOBAL_RECEIVERS:
+            lines.extend([
+                f"    if type({receiver}) ~= 'table' then error('{receiver} is missing or not a table') end",
+                f"    if type({receiver}.{method}) ~= 'function' then error('{key} is missing or not callable') end",
+                f"    local _ = {receiver}.{method}",
+            ])
+        else:
+            lines.append(f"    local _ = {RECEIVER_EXPRESSIONS[receiver]}:{method}()")
+        lines.append(f"    mark('{key}')")
+    lines.extend(["end", "", "Events.OnGameStart.Add(runPings)", ""])
     return "\n".join(lines)
 
 
-def main() -> None:
-    args = parse_args()
-    inventory = load_inventory(args.inventory)
-    ping_groups = build_ping_groups(inventory)
+def atomic_write(path, text):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as stream:
+            stream.write(text)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    except BaseException:
+        try:
+            os.unlink(temporary)
+        except FileNotFoundError:
+            pass
+        raise
 
-    lua_source = generate_lua(ping_groups)
 
+def _stage_text(path, text):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as stream:
+            stream.write(text)
+            stream.flush()
+            os.fsync(stream.fileno())
+        return Path(temporary)
+    except BaseException:
+        try:
+            os.unlink(temporary)
+        except FileNotFoundError:
+            pass
+        raise
+
+
+def _validate_staged_pair(output_stage, report_stage, source, report):
+    if output_stage.read_bytes() != source.encode("utf-8"):
+        raise ValueError("staged smoke output is not deterministic")
+    loaded = json.loads(report_stage.read_text(encoding="utf-8"))
+    calls = loaded.get("calls") if isinstance(loaded, dict) else None
+    if loaded != report or not isinstance(calls, list) or any(not isinstance(item, dict) for item in calls):
+        raise ValueError("staged smoke report does not match generated calls")
+    if any(not isinstance(item.get("surface"), str) or not item["surface"]
+           or not isinstance(item.get("count"), int) or item["count"] <= 0
+           or item.get("evidence") not in {"marker", "protocol"} for item in calls) \
+            or len({item["surface"] for item in calls}) != len(calls):
+        raise ValueError("staged smoke report has an invalid call manifest")
+    marker_calls = [item for item in calls if item.get("evidence") == "marker"]
+    if loaded.get("surfaces") != [item.get("surface") for item in marker_calls]:
+        raise ValueError("staged smoke report does not match generated calls")
+    for item in marker_calls:
+        surface, count = item.get("surface"), item.get("count")
+        if not isinstance(surface, str) or not isinstance(count, int) or count <= 0 \
+                or source.count(f"mark('{surface}')") != count:
+            raise ValueError("staged smoke report has an invalid call multiplicity")
+    protocol = {item.get("surface"): item for item in calls if item.get("evidence") == "protocol"}
+    marker_count = sum(item["count"] for item in marker_calls)
+    expected_protocol = {
+        "getTimestampMs": (marker_count, source.count("getTimestampMs()") == 1),
+        "print": (marker_count, source.count("        print('[UT_SMOKE]") == 1),
+        "Events.OnGameStart.Add": (1, source.count("Events.OnGameStart.Add(runPings)") == 1),
+    }
+    if set(protocol) != set(expected_protocol):
+        raise ValueError("staged smoke report has an invalid protocol-call manifest")
+    for surface, (count, source_exact) in expected_protocol.items():
+        if protocol[surface].get("count") != count or not source_exact:
+            raise ValueError("staged smoke report has an invalid protocol-call multiplicity")
+
+
+def promote_pair(output_path, source, report_path, report):
+    """Promote output and report together, restoring both old files on any failure."""
+    report_text = json.dumps(report, indent=2, sort_keys=True) + "\n"
+    output_stage = None
+    report_stage = None
+    backups = []
+    promoted = []
+    try:
+        output_stage = _stage_text(output_path, source)
+        report_stage = _stage_text(report_path, report_text)
+        _validate_staged_pair(output_stage, report_stage, source, report)
+        for destination, stage in ((output_path, output_stage), (report_path, report_stage)):
+            backup = None
+            if destination.exists():
+                descriptor, name = tempfile.mkstemp(prefix=f".{destination.name}.rollback.", dir=destination.parent)
+                os.close(descriptor)
+                backup = Path(name)
+                backup.unlink()
+                try:
+                    os.replace(destination, backup)
+                except BaseException:
+                    backup.unlink(missing_ok=True)
+                    raise
+            backups.append((destination, backup))
+            try:
+                os.replace(stage, destination)
+            except BaseException:
+                if backup is not None:
+                    os.replace(backup, destination)
+                raise
+            promoted.append(destination)
+        for _, backup in backups:
+            if backup is not None:
+                try:
+                    backup.unlink(missing_ok=True)
+                except OSError:
+                    pass
+    except BaseException:
+        for destination, backup in reversed(backups):
+            if destination in promoted:
+                destination.unlink(missing_ok=True)
+            if backup is not None and backup.exists():
+                os.replace(backup, destination)
+        raise
+    finally:
+        if output_stage is not None:
+            output_stage.unlink(missing_ok=True)
+        if report_stage is not None:
+            report_stage.unlink(missing_ok=True)
+
+
+def generate(inventory_path, output_path, allowlist_path=None):
+    emitted, omitted = build_plan(load_inventory(inventory_path), load_allowlist(allowlist_path))
+    source = generate_lua(emitted)
+    calls = call_manifest(emitted)
+    report = {"version": 2, "status": "generated",
+              "surfaces": [item["surface"] for item in calls if item["evidence"] == "marker"],
+              "calls": calls,
+              "omitted": omitted}
+    if output_path is not None:
+        atomic_write(output_path, source)
+    return source, report
+
+
+def main(argv=None):
+    args = parse_args(argv)
+    source, report = generate(args.inventory, None, args.allowlist)
+    if not args.dry_run and args.report:
+        promote_pair(args.output, source, args.report, report)
+    elif not args.dry_run:
+        atomic_write(args.output, source)
     if args.dry_run:
-        print(lua_source)
-        return
-
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(lua_source, encoding="utf-8")
-
-    # Count pings
-    ping_count = sum(len(methods) for methods in ping_groups.values())
-    receiver_count = len(ping_groups)
-    print(f"Generated {args.output}")
-    print(f"  {ping_count} pings across {receiver_count} receivers")
+        print(source, end="")
+    else:
+        print(json.dumps(report, sort_keys=True))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,326 @@
+{
+  "schema_version": "1.0.0",
+  "trait_id": "UniversalTraits:UT_alcoholic_II",
+  "source_snapshot": {
+    "svn_revision": 964,
+    "build_id": 23504596,
+    "label": "SVN 964 / BuildID 23504596"
+  },
+  "selected_ids": [
+    "registration",
+    "definition_parser",
+    "namespace",
+    "cost_xp_grants_exclusions",
+    "source_intent",
+    "runtime_path",
+    "numbers",
+    "cadence",
+    "cooldown",
+    "reset_save_load",
+    "java_lua",
+    "kahlua",
+    "events",
+    "stacking_interactions",
+    "multiplayer",
+    "display",
+    "description",
+    "localization",
+    "balance",
+    "performance",
+    "tests",
+    "mocks",
+    "source_release_parity",
+    "packaging"
+  ],
+  "dimension_proofs": {
+    "registration": {
+      "classification": "proven-correct",
+      "proof": "UniversalTraits/media/registries.lua:267 assigns UTTraitsRegistries.UT_alcoholic_II from CharacterTrait.register(\"UniversalTraits:UT_alcoholic_II\"); the exact ID agrees with the runtime constant and definition.",
+      "positive_path": "Evaluate registries.lua and register the fully qualified ID before the definition is parsed.",
+      "negative_path": "An absent registration or different namespace makes UTCore.hasTrait unable to resolve the CharacterTrait and returns false."
+    },
+    "definition_parser": {
+      "classification": "runtime-unproven",
+      "proof": "UniversalTraits/media/scripts/UT_character_traits.txt:1885-1894 contains one complete block with IsProfessionTrait=false, DisabledInMultiplayer=true, matching CharacterTrait, Cost=-7, both UI keys, and tier-I/tier-III exclusions. CharacterTraitDefinitionScript.java:30-106 parses these exact fields and calls addCharacterTraitDefinition/addMutuallyExclusive, but no live ScriptManager load was observed.",
+      "positive_path": "Parse the exact block and materialize the II definition with cost -7, its two UI keys, no XP/grants, and the two listed alcoholic-tier exclusions.",
+      "negative_path": "A missing CharacterTrait, unresolved exclusion token, or malformed field must not be credited as a fully materialized definition.",
+      "exact_proof_needed": "A BuildID 23504596 startup/ScriptManager trace showing this exact block loaded without warning and with both listed exclusions resolved non-null."
+    },
+    "namespace": {
+      "classification": "proven-correct",
+      "proof": "Registration, definition CharacterTrait, runtime TRAIT_ID, test carrier ID, and selected ledger all use UniversalTraits:UT_alcoholic_II; UIName and UIDescription consistently use UI_UT_alcoholic_II and UI_UT_alcoholic_IIDesc.",
+      "positive_path": "Resolve the same fully qualified trait through registration, definition parsing, UTCore.hasTrait, and the runtime handler.",
+      "negative_path": "Changing any site to an unqualified or differently cased ID prevents exact registry/trait membership agreement."
+    },
+    "cost_xp_grants_exclusions": {
+      "classification": "confirmed-defect",
+      "proof": "The selected ledger correctly proves Cost=-7, no XPBoosts, no GrantedTraits, and reciprocal tier-I/tier-III exclusions. However UT_MET.lua:75-80 declares AlcoholDetox as Iron Liver plus all three alcoholic tiers, while this selected definition at UT_character_traits.txt:1893 excludes only I and III. Project guidance states UT_MET is reference-only and script addMutuallyExclusive is one-way, so selection-time II-versus-Iron-Liver exclusion is absent from the II side.",
+      "positive_path": "Selecting II excludes alcoholic I and III through the two explicit definition entries; the selected ledger's deterministic reverse scan proves those tier exclusions exist and are reciprocal.",
+      "negative_path": "Select II before Iron Liver: this definition supplies no Iron Liver exclusion, and UT_MET cannot populate the character-creation UI, so bidirectional Iron Liver exclusion cannot be inferred from the group or the opposite trait alone.",
+      "exact_proof_needed": "After an authorized product correction, directly verify both script definitions list one another and run two character-creation cases: II then Iron Liver and Iron Liver then II. No correction is authorized in this audit."
+    },
+    "source_intent": {
+      "classification": "proven-correct",
+      "proof": "The current trait comment describes moderate craving causing stress when sober; English UI.json:341 states INTOXICATION below 5, +0.10 STRESS, every ten in-game minutes; UT_alcoholic_II.lua:6-16 implements precisely that current product intent without panic or a persistent withdrawal timer.",
+      "positive_path": "At intoxication 4 and stress 0.20, one ten-minute dispatch yields stress 0.30.",
+      "negative_path": "At intoxication exactly 5, stress is unchanged; no panic, trait mutation, or timer write occurs.",
+      "historical_boundary": "No upstream source-mod commit/tag was supplied, so historical equivalence is not claimed."
+    },
+    "runtime_path": {
+      "classification": "proven-correct",
+      "proof": "UT_alcoholic_II.lua:6-16 registers handler on Events.EveryTenMinutes; handler gets the local player, exits on nil, exits when UTCore.hasTrait is false, gets Stats, reads CharacterStat.INTOXICATION, and conditionally read-modify-writes CharacterStat.STRESS.",
+      "positive_path": "Valid carrier -> Stats -> INTOXICATION<5 -> STRESS=min(1, old+0.10).",
+      "negative_path": "Nil player, non-carrier, or INTOXICATION>=5 exits without a Stats write."
+    },
+    "numbers": {
+      "classification": "proven-correct",
+      "proof": "The code uses strict INTOXICATION < 5 and STRESS math.min(1, old+0.10). CharacterStat.java:21/29 defines INTOXICATION 0..100 and STRESS 0..1; Stats.java:74-82 independently clamps set values.",
+      "positive_path": "INTOXICATION 4.999 and STRESS 0.89 produce 0.99.",
+      "negative_path": "INTOXICATION 5 leaves 0.89 unchanged; qualifying STRESS 0.95 becomes 1.0, not 1.05."
+    },
+    "cadence": {
+      "classification": "proven-correct",
+      "proof": "The sole subscription is Events.EveryTenMinutes and there is no secondary counter or modulo gate. GameTime.java:729-733 emits zero-argument EveryTenMinutes at ten-minute boundaries, giving six handler attempts per in-game hour.",
+      "positive_path": "Each producer dispatch can apply one +0.10 stress transformation to an eligible carrier.",
+      "negative_path": "GameTime.java:737-739 emits EveryOneMinute separately; a non-ten-minute minute boundary does not invoke this handler."
+    },
+    "cooldown": {
+      "classification": "proven-correct",
+      "proof": "The trait module contains no timestamp, counter, modData, elapsed-time read, or cooldown branch; EveryTenMinutes is the only limiter.",
+      "positive_path": "Two producer dispatches cause two independent eligible transformations.",
+      "negative_path": "Elapsed wall time or world age alone cannot call this module without the subscribed event dispatch."
+    },
+    "reset_save_load": {
+      "classification": "runtime-unproven",
+      "proof": "The trait owns no persisted state. Stats.java:34-55 loads/saves every ORDERED_STATS value, including INTOXICATION and STRESS; IsoGameCharacter.java:6029-6034 calls Stats.save. UTCore_API.lua invalidates per-player trait-result cache when player identity changes. No current-version live save/reload trace was supplied.",
+      "positive_path": "Save INTOXICATION 4/STRESS 0.20, reload current version into a new player object, recompute the trait result, then one event should yield 0.30.",
+      "negative_path": "Save INTOXICATION 5/STRESS 0.20, reload, and one event should leave 0.20; no II-owned modData key should appear.",
+      "exact_proof_needed": "A BuildID 23504596 full-exit/relaunch current-version save/load trace proving preserved Stats, player-cache invalidation, exactly one callback, and exactly one post-load delta. Backward migration is explicitly out of scope."
+    },
+    "java_lua": {
+      "classification": "runtime-unproven",
+      "proof": "LuaManager.java:3558-3561 exposes global getPlayer():IsoPlayer; UTCore.hasTrait validates IsoGameCharacter, resolves ResourceLocation/CharacterTrait, and calls player:hasTrait; IsoGameCharacter.java:4338-4340 returns Stats and :6236-6238 accepts CharacterTrait; Stats.java:74-82 exposes get/set(CharacterStat,float). Receiver and argument chains are exact in source, but live Kahlua overload binding was not observed.",
+      "positive_path": "getPlayer returns IsoPlayer; UTCore resolves the namespaced CharacterTrait; getStats returns Stats; get/set receive CharacterStat.INTOXICATION/STRESS and numeric values.",
+      "negative_path": "Nil/non-IsoGameCharacter exits; a string stat key, legacy named getter/setter, unresolved ResourceLocation, or wrong receiver is not equivalent to the exact bridge path.",
+      "exact_proof_needed": "A live BuildID 23504596 Kahlua trace proving global/class exposure and overload binding for getPlayer, CharacterTrait resolution, hasTrait, getStats, Stats.get, and Stats.set."
+    },
+    "kahlua": {
+      "classification": "runtime-unproven",
+      "proof": "The module uses only locals, a closure, if/return/not, colon calls, table constants, numeric comparison/addition, math.min, and Events.Add. It uses no goto, Java collection indexing, pcall, iterator, or unsupported syntax; standard-Lua loading and mocks are not live Kahlua proof.",
+      "positive_path": "Load the module with UTCore, CharacterStat, math, getPlayer, and Events.EveryTenMinutes exposed, then dispatch the stored closure.",
+      "negative_path": "Remove CharacterStat or the event table to distinguish parser compatibility from required runtime-global availability; nil player and absent trait remain safe exits.",
+      "exact_proof_needed": "A full desktop relaunch followed by successful module load and one live dispatch without a Kahlua dialog or log exception."
+    },
+    "events": {
+      "classification": "runtime-unproven",
+      "proof": "GameTime.java:729-733 produces zero-argument EveryTenMinutes; UT_alcoholic_II.lua:16 adds one local closure and never removes it. The prior ledger's claim of single-shot require caching is rejected: project guidance says PZ loads via dofile, and the test suite also uses dofile. No idempotence key or Remove guard exists.",
+      "positive_path": "Evaluate the trait file once in a clean process, cross one ten-minute boundary, and observe one zero-argument callback.",
+      "negative_path": "Evaluate the file twice: two distinct local closures are added, so one producer event can apply two deltas.",
+      "exact_proof_needed": "A current-build full-exit/relaunch and repeated-world-entry trace proving the loader evaluates this file exactly once per relevant lifecycle and that only one listener remains registered."
+    },
+    "stacking_interactions": {
+      "classification": "runtime-unproven",
+      "proof": "The handler performs a sequential read-modify-write on shared STRESS and clamps at 1.0. Tier I/III coexistence is prevented by explicit reciprocal definitions per selected ledger evidence. UT_MET groups Iron Liver with the tiers but supplies no runtime enforcement; II-side Iron Liver selection exclusion is missing. No other trait implementation was read.",
+      "positive_path": "With any external STRESS writer before this listener, II reads the resulting value and adds 0.10 up to 1.0; normal tier-I/III selection is rejected in both directions.",
+      "negative_path": "Forced coexistence or another listener changes STRESS sequentially in event order; at cap II contributes no further value. Iron Liver coexistence cannot be ruled out from II's definition.",
+      "exact_proof_needed": "Targeted current-build tests for II/I and II/III both selection orders, II/Iron-Liver both selection orders, and representative shared-STRESS listener orders. Broad all-trait analysis is outside this artifact."
+    },
+    "multiplayer": {
+      "classification": "explicit-user-approved-non-goal",
+      "proof": "UT_character_traits.txt:1888 sets DisabledInMultiplayer=true. The user and project contract define multiplayer support, synchronization, migration, proof, tests, and documentation as non-goals; the flag proves only a selection restriction.",
+      "positive_path": "Parse and expose DisabledInMultiplayer=true so the supported selection path can exclude the trait in multiplayer.",
+      "negative_path": "No synchronization or multiplayer execution guarantee is inferred from the metadata."
+    },
+    "display": {
+      "classification": "proven-correct",
+      "proof": "The definition assigns UIName=UI_UT_alcoholic_II and English UI.json:340 maps that exact key to Alcoholic II.",
+      "positive_path": "Resolve UIName through EN/UI.json and obtain Alcoholic II.",
+      "negative_path": "Resolve UI_UT_alcoholic_IIDesc instead and obtain the distinct description string."
+    },
+    "description": {
+      "classification": "proven-correct",
+      "proof": "English UI.json:341 says intoxication below 5 causes +0.10 stress every ten in-game minutes; the runtime uses strict <5, +0.10, math.min(1), and EveryTenMinutes with no secondary throttle.",
+      "positive_path": "At intoxication 0, one event increases stress by 0.10 subject to the 1.0 cap.",
+      "negative_path": "At intoxication exactly 5 or higher, no increase occurs, matching the word below."
+    },
+    "localization": {
+      "classification": "coverage-gap",
+      "proof": "English UI.json:340-341 contains both exact assigned keys. The selected closed-world ledger states no owned non-English Translate locale files exist; no non-English entries or runtime fallback trace were available.",
+      "positive_path": "English lookup resolves both name and description.",
+      "negative_path": "Request an owned non-English entry for either key and the selected inventory has none.",
+      "exact_proof_needed": "Supply entries for each supported locale and verify Translator resolution, or explicitly approve English-only localization as a product non-goal."
+    },
+    "balance": {
+      "classification": "runtime-unproven",
+      "proof": "Cost=-7 trades against up to +0.10 STRESS per sober ten minutes: six eligible dispatches produce +0.60 per game hour before the 1.0 cap, and ten eligible dispatches take stress from zero to cap. No gameplay telemetry defines whether this burden is fair.",
+      "positive_path": "Simulate six eligible transformations from zero to obtain STRESS 0.60 and compare observed burden against seven granted points.",
+      "negative_path": "Starting at STRESS 0.95 realizes only +0.05, disproving a constant realized hourly penalty near saturation.",
+      "exact_proof_needed": "Matched current-build playtests measuring sober fraction, stress area-under-curve, alcohol use, and outcomes against no trait under a declared -7-point acceptance criterion."
+    },
+    "performance": {
+      "classification": "runtime-unproven",
+      "proof": "Static cost is O(1) at six callbacks per game hour: player lookup and cached trait check on all paths; an owner adds getStats and one intoxication read; only a sober owner adds stress get/set. No loop or trait-owned growing state exists, but callback multiplication and live cost were not profiled.",
+      "positive_path": "For H game hours a single listener performs 6H bounded attempts with constant trait-local memory.",
+      "negative_path": "Non-carriers do no Stats work and intoxication>=5 performs no stress read/write; duplicate module evaluation would multiply the otherwise constant work.",
+      "exact_proof_needed": "An in-game profiler capture on BuildID 23504596 proving one listener, expected call counts, and no allocation/cost growth across reloads."
+    },
+    "tests": {
+      "classification": "coverage-gap",
+      "proof": "run_tests.lua:3391-3400 has one positive event test and one intoxication>=5 negative test. The positive assertion checks only STRESS>0, and the negative uses intoxication 10 rather than the exact boundary. No exact +0.10, cap, nil-player, absent-trait, repeated cadence, reload, or duplicate-registration test exists in the inspected cases.",
+      "positive_path": "The current positive fails if sober execution never raises stress; the current negative fails if intoxication 10 still mutates stress.",
+      "negative_path": "An implementation adding any positive amount can pass; a faulty <=5 comparison can pass because equality 5 is not tested; ungated non-carrier mutation and overflow are also unchallenged.",
+      "exact_proof_needed": "Add exact delta, equality-5, cap, nil-player, non-carrier, consecutive-event, and duplicate-load fixtures, plus separate current-version live save/reload proof. Tests were not run by instruction."
+    },
+    "mocks": {
+      "classification": "coverage-gap",
+      "proof": "UTTestMocks.lua:85-112 models generic CharacterStat get/set and :1547-1580 supplies correct INTOXICATION 0..100 and STRESS 0..1 metadata; :1274-1284 stores and fires EveryTenMinutes handlers. However mock Stats.set neither clamps nor returns Stats.set's real boolean, and event fire accepts arbitrary payload arguments.",
+      "positive_path": "MockPlayer supplies the carrier and Stats receiver; the event stores the real closure and zero-argument fire exercises the consumer path.",
+      "negative_path": "A production regression relying on Stats.set clamping/return value or an incorrect event payload can pass because set merely assigns and fire is variadic.",
+      "exact_proof_needed": "Make mock Stats.set clamp via CharacterStat and return whether the value changed, and add a producer-contract fixture that rejects a handler depending on EveryTenMinutes payload arguments."
+    },
+    "source_release_parity": {
+      "classification": "proven-correct",
+      "proof": "Direct SHA-256 pairs match: trait Lua 3F69F7FD73ED9E5F6EA84238F77DCABAB932BED3C650EE195289F56953AB0309; registries.lua 251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531; UT_character_traits.txt 834BF4BF3D7B350C79C23D8C1F9CD2B68A22BE05AFD9C3EA1F7C3FA5C8F30FC3; EN/UI.json F10EB6DC3A2F2E7041F1662C58C9D2A298E25A2827E062E99E89269CC4290FE3; UT_MET.lua 5F8C606B321CBF78DB2532602F8385E9637909E42D4C084335773EDD12F0BC3B; directly invoked UTCore_API.lua DCD4FB67425910E9035FD1C1B1BAE28B7BE0DF8131E41D1732F72E1D6ECFFF81.",
+      "positive_path": "Hash every authorized canonical source/release pair and obtain byte-identical digests.",
+      "negative_path": "Any byte drift changes the corresponding digest instead of inheriting source evidence."
+    },
+    "packaging": {
+      "classification": "confirmed-defect",
+      "proof": "The trait Lua and shared registration, definition, English UI, UT_MET, and UTCore dependency exist in their 42.0 release locations. mod.info is identical at source, release root, and release/42.0 with SHA-256 6DC0F672FE0BFBE25B56DCD72A921B0C89EEF92977F94272E829D23C1305FCA7. poster.png is absent from all three required UniversalTraits locations, violating the project package contract.",
+      "positive_path": "Resolve the exact 42.0 executable media and identical mod.info files.",
+      "negative_path": "Check UniversalTraits/poster.png, release/UniversalTraits/poster.png, and release/UniversalTraits/42.0/poster.png; all are absent.",
+      "exact_proof_needed": "After separately authorized product/package work, verify poster.png exists at the source root and both required package levels and that package verification passes."
+    }
+  },
+  "findings": [
+    {
+      "finding_id": "UT-ALCII-IRONLIVER-EXCLUSION",
+      "classification": "confirmed-defect",
+      "dimension_ids": [
+        "cost_xp_grants_exclusions",
+        "stacking_interactions"
+      ],
+      "summary": "The AlcoholDetox reference group includes Iron Liver, but UT_alcoholic_II does not explicitly exclude Iron Liver, so selection-time exclusivity is not bidirectional from this trait's side.",
+      "anchors": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt:1885-1894",
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_MET.lua:75-80",
+        "UTMods/AGENTS.md: Script Block Format"
+      ]
+    },
+    {
+      "finding_id": "UT-ALCII-TEST-MOCK-FIDELITY",
+      "classification": "coverage-gap",
+      "dimension_ids": [
+        "tests",
+        "mocks"
+      ],
+      "summary": "Tests prove only a positive movement and intoxication-10 suppression; exact amount, equality boundary, cap, negative gates, duplicate load, real Stats.set behavior, event signature, and save/reload remain uncovered.",
+      "anchors": [
+        "UniversalTraits/test/run_tests.lua:3391-3400",
+        "UniversalTraits/test/UTTestMocks.lua:85-112",
+        "UniversalTraits/test/UTTestMocks.lua:1274-1284",
+        "UniversalTraits/test/UTTestMocks.lua:1547-1580",
+        "PZCodebase/Java/source/zombie/characters/Stats.java:74-82"
+      ]
+    },
+    {
+      "finding_id": "UT-ALCII-LOCALIZATION",
+      "classification": "coverage-gap",
+      "dimension_ids": [
+        "localization"
+      ],
+      "summary": "Both English keys exist, but the selected closed-world inventory contains no owned non-English locale entries.",
+      "anchors": [
+        "UniversalTraits/media/lua/shared/Translate/EN/UI.json:340-341",
+        "trait-deep-audit/campaign/final_trait_ledger_rows.jsonl:UniversalTraits:UT_alcoholic_II"
+      ]
+    },
+    {
+      "finding_id": "UT-ALCII-PACKAGE-POSTER",
+      "classification": "confirmed-defect",
+      "dimension_ids": [
+        "packaging"
+      ],
+      "summary": "poster.png is missing from the source root and both required UniversalTraits package levels.",
+      "anchors": [
+        "UniversalTraits/poster.png (missing)",
+        "UniversalTraits/release/UniversalTraits/poster.png (missing)",
+        "UniversalTraits/release/UniversalTraits/42.0/poster.png (missing)",
+        "UTMods/AGENTS.md: Release Folder Policy"
+      ]
+    }
+  ],
+  "validation": {
+    "selected_id_reconciliation": {
+      "ledger_count": 24,
+      "artifact_count": 24,
+      "missing_from_artifact": [],
+      "extra_in_artifact": [],
+      "duplicate_ids": []
+    },
+    "classification_counts": {
+      "proven-correct": 10,
+      "confirmed-defect": 2,
+      "coverage-gap": 3,
+      "runtime-unproven": 8,
+      "explicit-user-approved-non-goal": 1
+    },
+    "proof_shape": {
+      "dimension_count": 24,
+      "dimensions_with_positive_path": 24,
+      "dimensions_with_negative_path": 24,
+      "placeholders": 0
+    },
+    "reused_prior_evidence": {
+      "source": "trait-deep-audit/campaign/runtime-traces/wave-01-rebuild/part-03.jsonl",
+      "preserved": [
+        "definition/parser field mapping",
+        "current source intent",
+        "numeric thresholds and caps",
+        "stateless save/load model",
+        "receiver chain",
+        "Kahlua construct inventory",
+        "EveryTenMinutes producer",
+        "tier stacking model",
+        "constant-time performance model",
+        "existing test coverage"
+      ],
+      "refined_or_rejected": [
+        "Updated all stale line anchors to current exact lines.",
+        "Rejected module-load single-shot under require caching because project loading is dofile and no idempotence guard exists.",
+        "Separated static correctness from missing live Kahlua, bridge, event-lifecycle, save/reload, balance, and performance proof.",
+        "Added the omitted II-side Iron Liver selection-exclusion defect.",
+        "Corrected prior historical legacy-getter language to current generic CharacterStat get/set behavior."
+      ]
+    },
+    "direct_read_hashes_sha256": {
+      "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_II.lua": "3F69F7FD73ED9E5F6EA84238F77DCABAB932BED3C650EE195289F56953AB0309",
+      "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_alcoholic_II.lua": "3F69F7FD73ED9E5F6EA84238F77DCABAB932BED3C650EE195289F56953AB0309",
+      "UniversalTraits/media/registries.lua": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+      "UniversalTraits/release/UniversalTraits/42.0/media/registries.lua": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+      "UniversalTraits/media/scripts/UT_character_traits.txt": "834BF4BF3D7B350C79C23D8C1F9CD2B68A22BE05AFD9C3EA1F7C3FA5C8F30FC3",
+      "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt": "834BF4BF3D7B350C79C23D8C1F9CD2B68A22BE05AFD9C3EA1F7C3FA5C8F30FC3",
+      "UniversalTraits/media/lua/shared/Translate/EN/UI.json": "F10EB6DC3A2F2E7041F1662C58C9D2A298E25A2827E062E99E89269CC4290FE3",
+      "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json": "F10EB6DC3A2F2E7041F1662C58C9D2A298E25A2827E062E99E89269CC4290FE3",
+      "UniversalTraits/media/lua/shared/UniversalTraits/UT_MET.lua": "5F8C606B321CBF78DB2532602F8385E9637909E42D4C084335773EDD12F0BC3B",
+      "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/UT_MET.lua": "5F8C606B321CBF78DB2532602F8385E9637909E42D4C084335773EDD12F0BC3B",
+      "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua": "DCD4FB67425910E9035FD1C1B1BAE28B7BE0DF8131E41D1732F72E1D6ECFFF81",
+      "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_API.lua": "DCD4FB67425910E9035FD1C1B1BAE28B7BE0DF8131E41D1732F72E1D6ECFFF81",
+      "UniversalTraits/mod.info": "6DC0F672FE0BFBE25B56DCD72A921B0C89EEF92977F94272E829D23C1305FCA7",
+      "UniversalTraits/release/UniversalTraits/mod.info": "6DC0F672FE0BFBE25B56DCD72A921B0C89EEF92977F94272E829D23C1305FCA7",
+      "UniversalTraits/release/UniversalTraits/42.0/mod.info": "6DC0F672FE0BFBE25B56DCD72A921B0C89EEF92977F94272E829D23C1305FCA7"
+    },
+    "package_missing_paths": [
+      "UniversalTraits/poster.png",
+      "UniversalTraits/release/UniversalTraits/poster.png",
+      "UniversalTraits/release/UniversalTraits/42.0/poster.png"
+    ],
+    "execution_tests_git_deploy_runtime": "No tests, Git, deployment, game/runtime, GUI, process, or product commands were performed; only bounded read-only evidence inspection and exact-artifact JSON structural validation were used.",
+    "index_mutation": "not performed",
+    "other_trait_evidence": "not read or analyzed; only selected-ledger reciprocal-scan results and the selected trait's direct UT_MET membership were reused",
+    "multiplayer": "explicit-user-approved-non-goal",
+    "backward_save_migration": "explicit-user-approved-non-goal",
+    "current_version_save_reload": "runtime-unproven; exact proof is specified in reset_save_load",
+    "product_fixes": "not performed"
+  }
+}

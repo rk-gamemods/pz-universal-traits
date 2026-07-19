@@ -1,0 +1,308 @@
+{
+  "schema": "ut-runtime-trace-wave-v3-acceptance",
+  "trait_id": "UniversalTraits:UT_alcoholic_I",
+  "build": {
+    "label": "42.19",
+    "steam_build_id": "23504596",
+    "svn_revision": "964",
+    "baseline_head": "8cab29ac5ec332c3d0e5c37ce3ca07ec50ea2daa",
+    "evidence_boundary": "Current indexed static snapshot; no game, Java, or Lua execution."
+  },
+  "prior_evidence": {
+    "source": "trait-deep-audit/campaign/runtime-traces/wave-01-rebuild/part-03.jsonl",
+    "policy": "The existing UniversalTraits:UT_alcoholic_I row was retained and checked against current exact source anchors. Correct proofs are preserved below; canned, overbroad, or contradicted claims are refined explicitly.",
+    "selected_ledger_rows": 24,
+    "selected_queue_rows": 12
+  },
+  "source_runtime": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua:1-19",
+  "verdict": "runtime-unproven-with-coverage-and-package-defects",
+  "findings": [
+    {
+      "finding_id": "UT_alcoholic_I:test-mock-receiver-contract",
+      "severity": "medium",
+      "state": "coverage-gap",
+      "problem": "The trait tests substitute UTCore.hasTrait with player:getTraits():contains(string). The production helper instead requires instanceof(player, IsoGameCharacter), ResourceLocation.of(traitId), CharacterTrait.get(...), and player:hasTrait(CharacterTrait). The focused tests therefore cannot reject a broken registry lookup, wrong receiver type, or string-vs-CharacterTrait call.",
+      "anchors": [
+        "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:104-132",
+        "UniversalTraits/test/UTTestMocks.lua:465-468",
+        "UniversalTraits/test/run_tests.lua:3255-3272"
+      ],
+      "exact_missing_validation": "A strict focused fixture must execute the production UTCore.hasTrait path and fail if player:hasTrait receives the string ID, if ResourceLocation/CharacterTrait lookup is bypassed, or if the receiver is not an IsoGameCharacter."
+    },
+    {
+      "finding_id": "UT_alcoholic_I:focused-runtime-cases",
+      "severity": "medium",
+      "state": "coverage-gap",
+      "problem": "Existing tests prove only that stress eventually rises within nine callbacks while sober and remains unchanged at intoxication 10. They do not prove exact callbacks 1/2/3, exact +0.05, threshold 5, clamp at 1, no-trait early return, persisted counter recreation, or duplicate registration behavior.",
+      "anchors": [
+        "UniversalTraits/test/run_tests.lua:3255-3272",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua:6-19"
+      ],
+      "exact_missing_validation": "Focused assertions for tick 1 unchanged, tick 2 unchanged, tick 3 exactly +0.05 and counter=3; INTOXICATION exactly 5 unchanged; STRESS .99 clamps to 1; absent trait creates no counter; recreated player with saved counter=2 fires on the next callback; a full-relaunch trace confirms exactly one registered handler."
+    },
+    {
+      "finding_id": "UT_alcoholic_I:missing-package-poster",
+      "severity": "medium",
+      "state": "defective",
+      "problem": "Source, release-root, and 42.0 mod.info are byte-identical and each declares poster=poster.png, but poster.png is absent at all three corresponding package levels.",
+      "anchors": [
+        "UniversalTraits/mod.info:1-8",
+        "UniversalTraits/release/UniversalTraits/mod.info:1-8",
+        "UniversalTraits/release/UniversalTraits/42.0/mod.info:1-8"
+      ],
+      "exact_missing_validation": "After an authorized product fix, verify a real poster.png exists at source, release root, and release/UniversalTraits/42.0 and that all three copies are byte-identical."
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:registration",
+      "dimension": "registration",
+      "state": "proven-correct",
+      "proof": "registries.lua line 266 registers exactly CharacterTrait.register(\"UniversalTraits:UT_alcoholic_I\").",
+      "positive_path": "The full namespaced ID resolves through the registered CharacterTrait object used by the definition and production helper.",
+      "negative_path": "A missing registration or spelling/case drift makes CharacterTrait.get(ResourceLocation.of(...)) return nil and production UTCore.hasTrait false.",
+      "anchors": ["UniversalTraits/media/registries.lua:266", "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:119-129"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:definition_parser",
+      "dimension": "definition_parser",
+      "state": "runtime-unproven",
+      "proof": "The exact block supplies IsProfessionTrait=false, DisabledInMultiplayer=true, CharacterTrait=UniversalTraits:UT_alcoholic_I, Cost=-4, UIName, UIDescription, and exclusions II/III. CharacterTraitDefinitionScript.Load parses the first block, resolves CharacterTrait and exclusions through the registry, assigns the scalar fields, and publishes them through addCharacterTraitDefinition/addMutuallyExclusive.",
+      "positive_path": "Parse the exact 1874-1883 block and assert registered identity, cost -4, both UI keys, no XP/grants, multiplayer restriction metadata, and forward exclusions II/III.",
+      "negative_path": "Missing/unregistered CharacterTrait or exclusion IDs produce nil registry results; an unknown key logs a script error and throws in debug mode. Such a block must not be credited as valid.",
+      "anchors": ["UniversalTraits/media/scripts/UT_character_traits.txt:1874-1883", "PZCodebase/Java/source/zombie/scripting/objects/CharacterTraitDefinitionScript.java:22-117"],
+      "exact_missing_validation": "No current in-game ScriptManager load/log proves this exact block loads without warnings."
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:namespace",
+      "dimension": "namespace",
+      "state": "proven-correct",
+      "proof": "Registration, script CharacterTrait, Lua TRAIT_ID, and UI keys consistently use the alcoholic_I identity and expected case.",
+      "positive_path": "All four owned surfaces join on UniversalTraits:UT_alcoholic_I and UI_UT_alcoholic_I/UI_UT_alcoholic_IDesc.",
+      "negative_path": "Any namespace or case drift breaks registry lookup, definition linkage, runtime ownership, or translated copy lookup.",
+      "anchors": ["UniversalTraits/media/registries.lua:266", "UniversalTraits/media/scripts/UT_character_traits.txt:1874-1883", "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua:4", "UniversalTraits/media/lua/shared/Translate/EN/UI.json:338-339"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:cost_xp_grants_exclusions",
+      "dimension": "cost_xp_grants_exclusions",
+      "state": "proven-correct",
+      "proof": "Cost=-4; XPBoosts and GrantedTraits are absent; the owned block excludes II and III. The accepted prior closed-world ledger proved both referenced definitions exist and reverse declarations are reciprocal; that cross-trait evidence is reused without rereading those traits.",
+      "positive_path": "Selecting I exposes a -4-point negative trait and prevents selection with II or III in either order according to the retained reciprocal proof.",
+      "negative_path": "UT_MET membership alone is not parser enforcement; removing a script-side reverse declaration would lose bidirectional character-creation behavior.",
+      "anchors": ["UniversalTraits/media/scripts/UT_character_traits.txt:1874-1883", "trait-deep-audit/campaign/dimension_ledger_rows.jsonl:_row_id=148"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:source_intent",
+      "dimension": "source_intent",
+      "state": "proven-correct",
+      "proof": "The header says mild craving at about 30 in-game minutes; English copy says intoxication below 5 and +0.05 stress every 30 minutes; implementation divides EveryTenMinutes by three, checks <5, and adds .05.",
+      "positive_path": "Starting counter=2, INTOXICATION=4, STRESS=.20 yields counter=3 and STRESS=.25.",
+      "negative_path": "At INTOXICATION=5 or counter result 1/2, STRESS is unchanged, rejecting <=5 and every-ten-minute interpretations.",
+      "anchors": ["UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua:1-16", "UniversalTraits/media/lua/shared/Translate/EN/UI.json:338-339", "UniversalTraits/media/scripts/UT_character_traits.txt:1874-1883"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:runtime_path",
+      "dimension": "runtime_path",
+      "state": "proven-correct",
+      "proof": "EveryTenMinutes invokes handler(); nil player and absent trait return; owner modData counter increments; non-third calls return; third calls read INTOXICATION and conditionally set clamped STRESS.",
+      "positive_path": "Owner on a third callback while INTOXICATION<5 traverses getPlayer -> UTCore.hasTrait -> getModData -> getStats -> Stats.get/set.",
+      "negative_path": "Nil player, absent trait, non-third callback, or INTOXICATION>=5 cannot reach Stats.set.",
+      "anchors": ["UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua:6-19", "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:104-132"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:numbers",
+      "dimension": "numbers",
+      "state": "runtime-unproven",
+      "proof": "Each owner callback writes counter=old+1. Only counter%3==0 and INTOXICATION<5 writes STRESS=min(1, old+.05). CharacterStat defines INTOXICATION 0..100 and STRESS 0..1; Stats.set clamps again to the stat range.",
+      "positive_path": "counter 2, INTOXICATION 4.999, STRESS .94 becomes counter 3, STRESS .99.",
+      "negative_path": "counter 2, INTOXICATION 5 leaves STRESS unchanged; qualifying STRESS .99 becomes 1, never 1.04.",
+      "anchors": ["UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua:10-16", "PZCodebase/Java/source/zombie/characters/CharacterStat.java:9-114", "PZCodebase/Java/source/zombie/characters/Stats.java:74-87"],
+      "exact_missing_validation": "No current in-game numeric observation verifies the Lua-to-float call and resulting displayed/engine stress value."
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:cadence",
+      "dimension": "cadence",
+      "state": "proven-correct",
+      "proof": "GameTime emits zero-argument EveryTenMinutes when now/10 changes; the trait registers exactly that event and divides its callbacks by three.",
+      "positive_path": "Three distinct producer boundaries advance the counter three times and allow one stat gate.",
+      "negative_path": "Ordinary minute boundaries and unrelated events do not invoke this handler.",
+      "anchors": ["PZCodebase/Java/source/zombie/GameTime.java:719-738", "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua:6-19"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:cooldown",
+      "dimension": "cooldown",
+      "state": "proven-correct",
+      "proof": "There is no timestamp or cooldown field; modulo-3 over the ten-minute event is the only limiter.",
+      "positive_path": "The stat gate is reachable on counters 3, 6, 9, and so on.",
+      "negative_path": "No elapsed-real-time or world-age branch can delay or accelerate the gate independently of event delivery.",
+      "anchors": ["UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua:10-16"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:reset_save_load",
+      "dimension": "reset_save_load",
+      "state": "runtime-unproven",
+      "proof": "The only trait-owned state is player modData.UT_alcoholicI_ticks. IsoMovingObject saves and loads a non-empty Kahlua modData table, and IsoGameCharacter saves Stats. A saved counter=2 should therefore make the next owner callback qualifying; absent state starts from zero. A newly loaded player identity also invalidates production UTCore's per-player trait-result cache.",
+      "positive_path": "Round-trip counter=2 and Stats, recreate the player, then fire once and expect counter=3 and the conditional .05 write.",
+      "negative_path": "Round-trip empty modData or use a player without the trait: absent counter starts at zero, while trait absence returns before creating the key. Dynamic same-player trait removal is not normal vanilla behavior and would require UTCore.invalidateTraitCache to avoid a stale cached result.",
+      "anchors": ["UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua:7-16", "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:80-132", "PZCodebase/Java/source/zombie/iso/IsoMovingObject.java:628-641", "PZCodebase/Java/source/zombie/iso/IsoMovingObject.java:659-685", "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6015-6035"],
+      "exact_missing_validation": "No current in-game save/reload cycle demonstrates counter and Stats persistence followed by exactly one resumed handler invocation. Backward migration is intentionally out of scope."
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:java_lua",
+      "dimension": "java_lua",
+      "state": "runtime-unproven",
+      "proof": "The receiver chain is getPlayer()->IsoPlayer; production UTCore.hasTrait performs instanceof(IsoGameCharacter), ResourceLocation.of, CharacterTrait.get, then player:hasTrait(CharacterTrait); getModData returns the Kahlua table; getStats returns Stats; Stats.get(CharacterStat) and set(CharacterStat,float) receive INTOXICATION/STRESS. No Java collection indexing occurs.",
+      "positive_path": "Strict bridge objects accept the CharacterTrait receiver contract and Stats generic get/set with the two exact CharacterStat objects.",
+      "negative_path": "Nil player returns immediately. A mock that accepts a string directly in getTraits():contains can pass despite a broken production registry/receiver chain and is not sufficient bridge proof.",
+      "anchors": ["UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:104-132", "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua:7-16", "PZCodebase/Java/source/zombie/characters/Stats.java:74-87"],
+      "exact_missing_validation": "No live Kahlua invocation of the complete CharacterTrait and Stats receiver chain was observed."
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:kahlua",
+      "dimension": "kahlua",
+      "state": "runtime-unproven",
+      "proof": "The exact file uses basic Kahlua-compatible constructs only: locals, function/if/return, colon calls, table fields, or, arithmetic/modulo/comparison, math.min, and Events.Add. LuaManager loads mod shared files through RunLua once per distinct path during directory loading.",
+      "positive_path": "With UTCore, CharacterStat, math.min, getPlayer, and Events.EveryTenMinutes present, module evaluation supplies the local handler to Add.",
+      "negative_path": "Missing Events.EveryTenMinutes, UTCore, ResourceLocation/CharacterTrait, CharacterStat, or math.min is a hard dependency; only nil player and absent trait have explicit safe exits.",
+      "anchors": ["UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua:4-19", "PZCodebase/Java/source/zombie/Lua/LuaManager.java:1113-1199"],
+      "exact_missing_validation": "Static source and standard-Lua mocks do not prove current in-game Kahlua loading."
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:events",
+      "dimension": "events",
+      "state": "runtime-unproven",
+      "proof": "GameTime.updateCalendar emits EveryTenMinutes with zero payload arguments. Module evaluation calls Events.EveryTenMinutes.Add(handler); the file has no Remove or duplicate guard, so one module evaluation gives one persistent registration until Lua teardown.",
+      "positive_path": "Three producer boundaries invoke the zero-argument handler three times and the third reaches the sober gate.",
+      "negative_path": "Loading the physical file twice adds two registrations because the file itself has no idempotence guard; a cached/once-only loader lifecycle is therefore part of correctness.",
+      "anchors": ["PZCodebase/Java/source/zombie/GameTime.java:719-738", "PZCodebase/Java/source/zombie/Lua/LuaManager.java:1113-1199", "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua:6-19"],
+      "exact_missing_validation": "No full exit/relaunch and repeated-world-entry trace confirms exactly one handler registration per active Lua process."
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:stacking_interactions",
+      "dimension": "stacking_interactions",
+      "state": "runtime-unproven",
+      "proof": "The owned definition excludes II and III; retained closed-world evidence proves reciprocal declarations. UT_MET.AlcoholDetox lists Iron Liver and all three alcohol tiers but is a lookup/grouping table, not parser enforcement. Forced coexistence would use independent counters/handlers and sequential additive STRESS writes, so exclusions—not shared state—prevent tier stacking.",
+      "positive_path": "Normal selection admits I without II/III; I coexists with unrelated traits and touches only its scalar counter and STRESS.",
+      "negative_path": "Force-injected tier coexistence can stack stat writes. UT_MET membership alone must not be credited as runtime removal or an Iron Liver suppression edge.",
+      "anchors": ["UniversalTraits/media/scripts/UT_character_traits.txt:1874-1883", "UniversalTraits/media/lua/shared/UniversalTraits/UT_MET.lua:74-81", "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua:10-16", "trait-deep-audit/campaign/dimension_ledger_rows.jsonl:_row_id=148"],
+      "exact_missing_validation": "No in-game selection-order or forced-coexistence trace was run. Exhaustive all-trait gameplay stacking is not claimed."
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:multiplayer",
+      "dimension": "multiplayer",
+      "state": "explicit-user-approved-non-goal",
+      "proof": "DisabledInMultiplayer=true is present and parsed as restriction metadata.",
+      "positive_path": "The definition carries the intended single-player-only exclusion guard.",
+      "negative_path": "This metadata does not prove synchronization, server execution, or multiplayer safety.",
+      "anchors": ["UniversalTraits/media/scripts/UT_character_traits.txt:1874-1883", "PZCodebase/Java/source/zombie/scripting/objects/CharacterTraitDefinitionScript.java:37-70"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:display",
+      "dimension": "display",
+      "state": "proven-correct",
+      "proof": "UIName resolves to the present English value Alcoholic I.",
+      "positive_path": "UI_UT_alcoholic_I maps to the intended display name.",
+      "negative_path": "A missing or differently cased key would fail the join from the script definition.",
+      "anchors": ["UniversalTraits/media/scripts/UT_character_traits.txt:1880", "UniversalTraits/media/lua/shared/Translate/EN/UI.json:338"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:description",
+      "dimension": "description",
+      "state": "proven-correct",
+      "proof": "English copy states INTOXICATION below 5, +0.05 STRESS, every 30 in-game minutes; all three claims match the exact conditional, amount, and event divisor.",
+      "positive_path": "The copy describes the qualifying third callback exactly.",
+      "negative_path": "It does not claim <=5, +5 percentage points without scale, or every ten minutes.",
+      "anchors": ["UniversalTraits/media/lua/shared/Translate/EN/UI.json:339", "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua:10-16"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:localization",
+      "dimension": "localization",
+      "state": "coverage-gap",
+      "proof": "The selected English name and description keys exist and match runtime. The accepted closed-world ledger records that EN is the only locale and non-English locales are absent.",
+      "positive_path": "English lookup has complete key membership and semantically accurate copy.",
+      "negative_path": "English membership cannot establish any non-English fallback or translation coverage.",
+      "anchors": ["UniversalTraits/media/lua/shared/Translate/EN/UI.json:338-339", "trait-deep-audit/campaign/dimension_ledger_rows.jsonl:_row_id=162"],
+      "exact_missing_validation": "No non-English localization files exist; no in-game Translator rendering was observed even for EN."
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:balance",
+      "dimension": "balance",
+      "state": "runtime-unproven",
+      "proof": "Static mechanics are cost -4 for at most +.05 STRESS per 30 in-game minutes while INTOXICATION<5. Source provides no utility baseline, sober-time distribution, consumption availability, or acceptance threshold.",
+      "positive_path": "A controlled comparison would measure sober-time fraction, stress area-under-curve, alcohol consumption, and outcome delta against cost -4.",
+      "negative_path": "Static arithmetic or a unit assertion cannot establish player-value balance.",
+      "anchors": ["UniversalTraits/media/scripts/UT_character_traits.txt:1874-1883", "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua:10-16"],
+      "exact_missing_validation": "Controlled comparative gameplay telemetry with a declared acceptance threshold."
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:performance",
+      "dimension": "performance",
+      "state": "proven-correct",
+      "proof": "One O(1) callback per ten in-game minutes: nil/player trait checks; owner performs one scalar modData lookup/write and modulo; only one-third of owner callbacks reach Stats. This is 6 callbacks, 6 counter writes, and 2 stat gates per in-game hour, with one persistent scalar key and no loop or allocation growth.",
+      "positive_path": "For H in-game hours, callbacks=6H and stat gates=2H; memory remains one modData scalar.",
+      "negative_path": "Without the trait, production hasTrait caches the negative result and the handler returns before modData/Stats; there is no collection scan in this trait path.",
+      "anchors": ["UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_alcoholic_I.lua:6-19", "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:104-132", "PZCodebase/Java/source/zombie/GameTime.java:719-738"],
+      "exact_missing_validation": "No profiler capture was taken, so this is bounded static complexity proof rather than observed timing."
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:tests",
+      "dimension": "tests",
+      "state": "coverage-gap",
+      "proof": "Two focused cases exist: eventual sober stress growth within nine EveryTenMinutes fires and suppression at INTOXICATION=10. Tests were intentionally not executed under this delegation.",
+      "positive_path": "The sober case reaches at least one modulo-3 gate and asserts STRESS>0.",
+      "negative_path": "The intoxicated case demonstrates no STRESS change at 10, but not the exact threshold or cadence boundaries.",
+      "anchors": ["UniversalTraits/test/run_tests.lua:3255-3272"],
+      "executed": false,
+      "exact_missing_validation": "Exact callback 1/2/3, +.05 amount, threshold=5, clamp, absent-trait, save/reload recreation, duplicate-load negative, and strict production receiver-chain fixtures; then the owning UniversalTraits suite command when separately authorized."
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:mocks",
+      "dimension": "mocks",
+      "state": "coverage-gap",
+      "proof": "Mocks provide controllable CharacterStat objects with the correct ranges, generic Stats get/set, persistent player modData, getPlayer substitution, and an EveryTenMinutes handler list/fire surface. However mock Stats.set does not clamp, and mock UTCore.hasTrait bypasses the production ResourceLocation/CharacterTrait/instanceof/player:hasTrait receiver chain.",
+      "positive_path": "The mock can drive zero-argument event dispatch, scalar counter persistence within a player, and generic CharacterStat reads/writes.",
+      "negative_path": "A wrong string receiver contract or reliance on explicit math.min can pass; the mock will not independently enforce production Stats.set clamping or registry-backed trait lookup.",
+      "anchors": ["UniversalTraits/test/UTTestMocks.lua:89-120", "UniversalTraits/test/UTTestMocks.lua:465-468", "UniversalTraits/test/UTTestMocks.lua:1042-1044", "UniversalTraits/test/UTTestMocks.lua:1274-1285", "UniversalTraits/test/UTTestMocks.lua:1558-1580"],
+      "exact_missing_validation": "A strict integration-style mock/fixture must load production UTCore.hasTrait, enforce CharacterTrait receiver identity, and make Stats.set clamp via CharacterStat.clamp."
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:source_release_parity",
+      "dimension": "source_release_parity",
+      "state": "proven-correct",
+      "proof": "Exact SHA-256 pairs match for registries.lua, UT_character_traits.txt, EN/UI.json, UT_MET.lua, and UT_alcoholic_I.lua between source and release/UniversalTraits/42.0. mod.info also matches source, release root, and 42.0.",
+      "positive_path": "All trait-direct and shared owned copies are byte-identical at the current snapshot.",
+      "negative_path": "Parity does not make a missing referenced asset valid; identical mod.info files all reference the same absent poster.png.",
+      "anchors": ["sha256:registries=251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531", "sha256:scripts=834BF4BF3D7B350C79C23D8C1F9CD2B68A22BE05AFD9C3EA1F7C3FA5C8F30FC3", "sha256:UI=F10EB6DC3A2F2E7041F1662C58C9D2A298E25A2827E062E99E89269CC4290FE3", "sha256:UT_MET=5F8C606B321CBF78DB2532602F8385E9637909E42D4C084335773EDD12F0BC3B", "sha256:UT_alcoholic_I=6AAA9051800D9D7449FB5BBFFC0FE70727B029D2043C8C08E96B39ACC32405C8", "sha256:mod.info=6DC0F672FE0BFBE25B56DCD72A921B0C89EEF92977F94272E829D23C1305FCA7"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_alcoholic_I:packaging",
+      "dimension": "packaging",
+      "state": "defective",
+      "proof": "The newest-only 42.0 package contains byte-matching trait/shared code and matching mod.info at source, package root, and 42.0. Each mod.info declares poster=poster.png, but the referenced poster is absent from all three levels checked.",
+      "positive_path": "The Lua/script/registry/UI and mod metadata copies are present and match exactly.",
+      "negative_path": "A package that references a missing poster asset is not structurally complete even when all text/code copies match.",
+      "anchors": ["UniversalTraits/mod.info:1-8", "UniversalTraits/release/UniversalTraits/mod.info:1-8", "UniversalTraits/release/UniversalTraits/42.0/mod.info:1-8"],
+      "exact_missing_validation": "No deploy/live verification is authorized. Product packaging remains defective until poster.png is supplied and parity-checked at the three declared locations."
+    }
+  ],
+  "scope_classification": {
+    "operating_scope": "single-player-only",
+    "multiplayer_support": "explicit-user-approved-non-goal",
+    "backward_migration": "explicit-user-approved-non-goal",
+    "current_save_reload": "required-but-runtime-unproven",
+    "product_fixes": "not-authorized-and-not-performed",
+    "tests_commands_git_deploy_live_gui_processes_tasks": "not-performed"
+  },
+  "validation_summary": {
+    "dimension_count": 24,
+    "dimension_ids_unique": true,
+    "states": {
+      "proven-correct": 11,
+      "runtime-unproven": 8,
+      "coverage-gap": 3,
+      "defective": 1,
+      "explicit-user-approved-non-goal": 1
+    },
+    "note": "The state subtotal intentionally counts the 23 substantive dimensions plus one non-goal; source_intent was upgraded from the generic ledger's runtime-unproven state because current exact comment/copy/implementation semantics were directly reconciled. No execution claim is inferred from that static semantic proof."
+  }
+}

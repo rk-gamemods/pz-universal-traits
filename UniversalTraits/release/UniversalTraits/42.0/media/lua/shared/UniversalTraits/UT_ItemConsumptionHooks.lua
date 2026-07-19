@@ -159,12 +159,15 @@ end
 -- Override ISEatFoodAction.perform (shared Lua, safe for both SP and MP)
 local function hookISEatFoodAction()
     if not _G["ISEatFoodAction"] then return end
+    if ISEatFoodAction.__UTItemConsumptionPerformWrapper then return end
     local original = ISEatFoodAction.perform
-    function ISEatFoodAction:perform()
+    local function wrapper(self)
         local percentage = self.percentage or 1.0
         original(self)
         pcall(applyEatEffects, self.character, self.item, percentage)
     end
+    ISEatFoodAction.perform = wrapper
+    ISEatFoodAction.__UTItemConsumptionPerformWrapper = wrapper
 end
 
 -- ─── ISDrinkFluidAction override ──────────────────────────────────────────────
@@ -186,12 +189,15 @@ end
 
 local function hookISDrinkFluidAction()
     if not _G["ISDrinkFluidAction"] then return end
+    if ISDrinkFluidAction.__UTItemConsumptionPerformWrapper then return end
     local original = ISDrinkFluidAction.perform
-    function ISDrinkFluidAction:perform()
+    local function wrapper(self)
         original(self)
         -- ISDrinkFluidAction stores the fluid container as self.item
         pcall(applyDrinkEffects, self.character, self.item)
     end
+    ISDrinkFluidAction.perform = wrapper
+    ISDrinkFluidAction.__UTItemConsumptionPerformWrapper = wrapper
 end
 
 -- Apply both hooks at startup.

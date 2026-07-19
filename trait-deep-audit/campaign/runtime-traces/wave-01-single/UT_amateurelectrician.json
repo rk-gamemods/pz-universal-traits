@@ -1,0 +1,248 @@
+{
+  "schema": "ut-runtime-trace-wave-v2-single",
+  "correction_reason": "Retains the valid part-04 registration, definition, parser, XP-application, localization, parity, and selection evidence; removes formulaic handler/event claims, removes multiplayer as an in-scope defect, and replaces the stale save/load statement with the exact SurvivorDesc XP-boost serialization path.",
+  "selection_rank": 11,
+  "trait_id": "UniversalTraits:UT_amateurelectrician",
+  "selection_basis": {
+    "queue_sha256": "3ee21fdaa44bf817f58ea789471f578b791e440cc719860960ffe7bba94e4998",
+    "ledger_sha256": "832f90d87cd0fc65d20738060a67d473e704a2c9a2999ef1a34981cad17222ff",
+    "rule": "first 12 unique ordinal trait IDs with current runtime-unproven rows"
+  },
+  "evidence_version": {
+    "pzcodebase": {
+      "svn": 964,
+      "steam_build_id": 23504596,
+      "index": "local/PZCodebase-61973d88",
+      "verification": "Exact already-named on-disk Java symbols were reread; no index search or mutation was performed."
+    },
+    "registration_source_sha256": "251da2a8293dd602deaab47fe03dd435f06c1ae8ecaa03c59307cfae5acc4531",
+    "definition_source_sha256": "834bf4bf3d7b350c79c23d8c1f9cd2b68a22be05afd9c3ea1f7c3fa5c8f30fc3",
+    "localization_source_sha256": "f10eb6dc3a2f2e7041f1662c58c9d2a298e25a2827e062e99e89269cc4290fe3",
+    "mod_info_source_sha256": "6dc0f672fe0bfbe25b56dcd72a921b0c89eef92977f94272e829d23c1305fca7",
+    "source_release_equal": true
+  },
+  "registration": {
+    "anchor": "UniversalTraits/media/registries.lua:107",
+    "text": "UTTraitsRegistries.UT_amateurelectrician = CharacterTrait.register(\"UniversalTraits:UT_amateurelectrician\")"
+  },
+  "definition": {
+    "anchor": "UniversalTraits/media/scripts/UT_character_traits.txt:840-849",
+    "character_trait": "UniversalTraits:UT_amateurelectrician",
+    "is_profession_trait": false,
+    "disabled_in_multiplayer": true,
+    "cost": 1,
+    "ui_name_key": "UI_UT_amateurelectrician",
+    "ui_description_key": "UI_UT_amateurelectricianDesc",
+    "xp_boosts": {
+      "Electricity": 1
+    },
+    "granted_traits": [],
+    "mutually_exclusive_traits": []
+  },
+  "localization": {
+    "anchor": "UniversalTraits/media/lua/shared/Translate/EN/UI.json:148-149",
+    "name": "Amateur Electrician",
+    "description": "Weekend electrical projects taught you more than most people know. +1 to Electrical.",
+    "semantic_match": "The only quantitative player-facing claim is +1 Electrical, matching XPBoosts = Electricity=1."
+  },
+  "runtime_trace": {
+    "kind": "definition-only XP boost",
+    "trait_specific_lua": {
+      "source_shared": false,
+      "source_client": false,
+      "source_server": false,
+      "release_shared": false,
+      "release_client": false,
+      "release_server": false
+    },
+    "ut_core": {
+      "dependency_anchor": "UniversalTraits/mod.info:5",
+      "dependency": "UT_CORE",
+      "direct_trait_literal_matches": [],
+      "conclusion": "UT_CORE is a package dependency but has no direct UT_amateurelectrician path; this trait uses the engine definition/parser path."
+    },
+    "positive_path": [
+      {
+        "symbol": "CharacterTrait.register(String)",
+        "anchor": "UniversalTraits/media/registries.lua:107",
+        "effect": "Registers UniversalTraits:UT_amateurelectrician."
+      },
+      {
+        "symbol": "CharacterTraitDefinitionScript.loadCharacterTraitDefinition",
+        "anchor": "PZCodebase/Java/source/zombie/scripting/objects/CharacterTraitDefinitionScript.java:30-102",
+        "effect": "Resolves CharacterTrait, parses Electricity through PerkFactory.Perks.FromString, retains the integer value 1, creates the definition, and adds the XP boost."
+      },
+      {
+        "symbol": "IsoGameCharacter.applyTraits / modifyTraitXPBoost",
+        "anchor": "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:12045-12087",
+        "effect": "Reads the definition XP map and adds +1 Electricity to the descriptor XPBoostMap; removal subtracts the same value."
+      }
+    ],
+    "negative_paths": [
+      {
+        "condition": "PerkFactory.Perks.FromString returns MAX",
+        "proof": "CharacterTraitDefinitionScript.java:68-76 skips the entry; the exact declared Electricity symbol must resolve for the boost to be retained."
+      },
+      {
+        "condition": "Trait is removed",
+        "proof": "IsoGameCharacter.java:12045-12058 applies -entry.getValue(), reversing this trait's +1 contribution."
+      },
+      {
+        "condition": "Trait-specific Lua/event/cooldown/modData mechanic is assumed",
+        "proof": "All six exact source/release shared/client/server UT_amateurelectrician.lua paths are absent, and UT_CORE has no direct trait-literal match. No such mechanic is part of this trait."
+      }
+    ],
+    "current_version_save_reload": {
+      "state": "statically-proven",
+      "positive_path": "SurvivorDesc owns xpBoostMap; SurvivorDesc.java:323-328 serializes every perk/value entry and SurvivorDesc.java:281-289 loads each entry back into the same map.",
+      "negative_proof": "No trait-local transient Lua or modData state exists to reconstruct, but no in-game save/reload session was executed.",
+      "anchors": [
+        "PZCodebase/Java/source/zombie/characters/SurvivorDesc.java:41,155-156",
+        "PZCodebase/Java/source/zombie/characters/SurvivorDesc.java:281-289",
+        "PZCodebase/Java/source/zombie/characters/SurvivorDesc.java:323-328"
+      ]
+    }
+  },
+  "dimension_resolutions": [
+    {
+      "record_id": "dimension:UniversalTraits:UT_amateurelectrician:source_intent",
+      "dimension": "source_intent",
+      "from": "runtime-unproven",
+      "to": "proven-correct",
+      "confidence": "high",
+      "positive_proof": "The definition declares exactly Electricity=1 and EN describes exactly +1 Electrical; parser and application symbols preserve that perk/value pair.",
+      "negative_proof": "No additional cadence, chance, cooldown, periodic effect, or trait-local state is claimed by the copy or present on the exact trait path.",
+      "anchors": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt:840-849",
+        "UniversalTraits/media/lua/shared/Translate/EN/UI.json:148-149",
+        "PZCodebase/Java/source/zombie/scripting/objects/CharacterTraitDefinitionScript.java:68-75,96-102",
+        "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:12045-12058"
+      ],
+      "remaining_runtime_validation": null,
+      "finding_ids": []
+    },
+    {
+      "record_id": "dimension:UniversalTraits:UT_amateurelectrician:stacking_interactions",
+      "dimension": "stacking_interactions",
+      "from": "runtime-unproven",
+      "to": "proven-correct",
+      "confidence": "high",
+      "positive_proof": "modifyTraitXPBoost reads any existing Electricity value and writes currentValue + 1, so this contribution composes additively with an existing profession or trait boost.",
+      "negative_proof": "Removal writes currentValue - 1; the definition grants no traits and declares no mutual exclusions, so it adds no separate grant/exclusion interaction.",
+      "anchors": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt:840-849",
+        "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:12045-12058"
+      ],
+      "remaining_runtime_validation": null,
+      "finding_ids": []
+    },
+    {
+      "record_id": "dimension:UniversalTraits:UT_amateurelectrician:balance",
+      "dimension": "balance",
+      "from": "runtime-unproven",
+      "to": "still-runtime-unproven",
+      "confidence": "high",
+      "positive_proof": "Static evidence fixes the exchange under review at Cost=1 for a persistent +1 Electricity XP boost.",
+      "negative_proof": "Source, parser, mocks, and package parity cannot establish comparative player value or an acceptable balance threshold.",
+      "anchors": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt:840-849",
+        "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:12045-12058"
+      ],
+      "remaining_runtime_validation": "Controlled current-build comparative playtest with a declared baseline, duration, metric, and acceptance threshold.",
+      "finding_ids": []
+    },
+    {
+      "record_id": "dimension:UniversalTraits:UT_amateurelectrician:performance",
+      "dimension": "performance",
+      "from": "runtime-unproven",
+      "to": "proven-correct",
+      "confidence": "high",
+      "positive_proof": "The selected definition contains one XPBoosts entry; application/removal performs one bounded map iteration for this trait and there is no trait-specific Lua handler, tick, cadence, or recursion.",
+      "negative_proof": "The old generic claim about event-handler keyword loops is inapplicable and is not retained; this conclusion is structural, not a measured timing claim.",
+      "anchors": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt:848",
+        "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:12045-12058"
+      ],
+      "remaining_runtime_validation": null,
+      "finding_ids": []
+    },
+    {
+      "record_id": "dimension:UniversalTraits:UT_amateurelectrician:tests",
+      "dimension": "tests",
+      "from": "runtime-unproven",
+      "to": "coverage-gap",
+      "confidence": "high",
+      "positive_proof": "run_tests.lua:325 includes the exact trait ID in registration/definition inventory coverage.",
+      "negative_proof": "The exact trait literal has no named behavior case, and UTTestMocks.lua has no exact trait-literal fixture; unrelated Electricity tests do not prove parsing, +1 application, removal, or persistence for this trait.",
+      "anchors": [
+        "UniversalTraits/test/run_tests.lua:325",
+        "UniversalTraits/test/run_tests.lua",
+        "UniversalTraits/test/UTTestMocks.lua"
+      ],
+      "smallest_regression_test": "A named UT_amateurelectrician case that asserts the parsed Electricity=1 entry, additive application, symmetric removal, and SurvivorDesc map persistence contract using strict trait-specific fixtures.",
+      "remaining_runtime_validation": null,
+      "finding_ids": []
+    }
+  ],
+  "affected_record_ids": [
+    "dimension:UniversalTraits:UT_amateurelectrician:source_intent",
+    "dimension:UniversalTraits:UT_amateurelectrician:stacking_interactions",
+    "dimension:UniversalTraits:UT_amateurelectrician:balance",
+    "dimension:UniversalTraits:UT_amateurelectrician:performance",
+    "dimension:UniversalTraits:UT_amateurelectrician:tests"
+  ],
+  "findings": [
+    {
+      "class": "coverage-gap",
+      "dimension": "tests",
+      "detail": "Inventory coverage names the trait, but no named trait-specific behavior/persistence regression test exists.",
+      "anchors": [
+        "UniversalTraits/test/run_tests.lua:325",
+        "UniversalTraits/test/UTTestMocks.lua"
+      ]
+    }
+  ],
+  "package_parity": {
+    "registration_equal": true,
+    "definition_equal": true,
+    "localization_equal": true,
+    "root_mod_info_equal": true,
+    "versioned_mod_info_equal": true,
+    "release_trait_specific_lua_absent": true,
+    "release_anchors": [
+      "UniversalTraits/release/UniversalTraits/42.0/media/registries.lua:107",
+      "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt:840-849",
+      "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json:148-149",
+      "UniversalTraits/release/UniversalTraits/mod.info",
+      "UniversalTraits/release/UniversalTraits/42.0/mod.info"
+    ]
+  },
+  "tests_and_mocks": {
+    "named_cases": [],
+    "inventory_anchor": "UniversalTraits/test/run_tests.lua:325",
+    "source": "UniversalTraits/test/run_tests.lua",
+    "mock_source": "UniversalTraits/test/UTTestMocks.lua",
+    "executed": false,
+    "reason": "Commands and tests were explicitly forbidden.",
+    "fidelity_gap": "No exact trait-specific behavior fixture rejects parser, additive application, removal, or persistence counterexamples."
+  },
+  "scope_non_goals": {
+    "multiplayer": "UTMods is single-player-only; DisabledInMultiplayer=true is retained as definition metadata but multiplayer enforcement is not classified as a product defect.",
+    "backward_migration": "Not evaluated or claimed.",
+    "product_fixes": "None requested or performed."
+  },
+  "remaining_validation": [
+    {
+      "record_id": "dimension:UniversalTraits:UT_amateurelectrician:balance",
+      "requirement": "Run a controlled current-build comparative balance session."
+    },
+    {
+      "record_id": "dimension:UniversalTraits:UT_amateurelectrician:tests",
+      "requirement": "Add and run the named trait-specific regression case only in a separately authorized product-fix/test task."
+    },
+    {
+      "record_id": "current-version-save-reload",
+      "requirement": "Optional in-game current-version save/reload confirmation; static serialization proof is present, but no game session was run."
+    }
+  ]
+}

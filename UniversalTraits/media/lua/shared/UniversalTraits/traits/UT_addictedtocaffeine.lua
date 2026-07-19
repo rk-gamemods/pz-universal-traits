@@ -14,6 +14,7 @@ local function handler()
     local md = player:getModData()
     if not md["UT_hadCaffeine"] then
         local stats = player:getStats()
+        if not stats then return end
         stats:set(CharacterStat.STRESS, math.min(1, stats:get(CharacterStat.STRESS) + 0.06))
     end
     md["UT_hadCaffeine"] = nil

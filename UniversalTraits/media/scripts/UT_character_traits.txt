@@ -876,10 +876,12 @@ module UniversalTraits
         IsProfessionTrait = false,
         DisabledInMultiplayer = true,
         CharacterTrait = UniversalTraits:UT_woodsplitter,
-        Cost = 3,
+        Cost = 4,
         UIName = UI_UT_woodsplitter,
         UIDescription = UI_UT_woodsplitterDesc,
         XPBoosts = Axe=1,
+        GrantedTraits = Axeman,
+        MutuallyExclusiveTraits = Axeman,
     }
 
     character_trait_definition UniversalTraits:UT_improviser

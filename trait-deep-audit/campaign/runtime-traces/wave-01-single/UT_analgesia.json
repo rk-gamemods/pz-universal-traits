@@ -1,0 +1,255 @@
+{
+  "schema": "ut-wave-01-single-trait-proof-v1",
+  "trait_id": "UniversalTraits:UT_analgesia",
+  "selected_ids": {
+    "prior": "UT_analgesia",
+    "ledger": "UniversalTraits:UT_analgesia",
+    "dimensions": [
+      "dimension:UniversalTraits:UT_analgesia:registration",
+      "dimension:UniversalTraits:UT_analgesia:definition_parser",
+      "dimension:UniversalTraits:UT_analgesia:namespace",
+      "dimension:UniversalTraits:UT_analgesia:cost_xp_grants_exclusions",
+      "dimension:UniversalTraits:UT_analgesia:source_intent",
+      "dimension:UniversalTraits:UT_analgesia:runtime_path",
+      "dimension:UniversalTraits:UT_analgesia:numbers",
+      "dimension:UniversalTraits:UT_analgesia:cadence",
+      "dimension:UniversalTraits:UT_analgesia:cooldown",
+      "dimension:UniversalTraits:UT_analgesia:reset_save_load",
+      "dimension:UniversalTraits:UT_analgesia:java_lua",
+      "dimension:UniversalTraits:UT_analgesia:kahlua",
+      "dimension:UniversalTraits:UT_analgesia:events",
+      "dimension:UniversalTraits:UT_analgesia:stacking_interactions",
+      "dimension:UniversalTraits:UT_analgesia:multiplayer",
+      "dimension:UniversalTraits:UT_analgesia:display",
+      "dimension:UniversalTraits:UT_analgesia:description",
+      "dimension:UniversalTraits:UT_analgesia:localization",
+      "dimension:UniversalTraits:UT_analgesia:balance",
+      "dimension:UniversalTraits:UT_analgesia:performance",
+      "dimension:UniversalTraits:UT_analgesia:tests",
+      "dimension:UniversalTraits:UT_analgesia:mocks",
+      "dimension:UniversalTraits:UT_analgesia:source_release_parity",
+      "dimension:UniversalTraits:UT_analgesia:packaging"
+    ],
+    "open_queue_ids": [
+      "dimension:UniversalTraits:UT_analgesia:definition_parser",
+      "dimension:UniversalTraits:UT_analgesia:source_intent",
+      "dimension:UniversalTraits:UT_analgesia:numbers",
+      "dimension:UniversalTraits:UT_analgesia:events",
+      "dimension:UniversalTraits:UT_analgesia:java_lua",
+      "dimension:UniversalTraits:UT_analgesia:kahlua",
+      "dimension:UniversalTraits:UT_analgesia:reset_save_load",
+      "dimension:UniversalTraits:UT_analgesia:stacking_interactions",
+      "dimension:UniversalTraits:UT_analgesia:localization",
+      "dimension:UniversalTraits:UT_analgesia:balance",
+      "dimension:UniversalTraits:UT_analgesia:performance",
+      "dimension:UniversalTraits:UT_analgesia:tests"
+    ]
+  },
+  "evidence_version": {
+    "pzcodebase_svn": 964,
+    "steam_build_id": 23504596,
+    "dimension_ledger_sha256": "832F90D87CD0FC65D20738060A67D473E704A2C9A2999EF1A34981CAD17222FF",
+    "remediation_queue_sha256": "3EE21FDAA44BF817F58EA789471F578B791E440CC719860960FFE7BBA94E4998"
+  },
+  "scope": {
+    "current_version_save_reload": true,
+    "multiplayer": "non-goal",
+    "backward_migration": "non-goal",
+    "product_fixes": "not_performed",
+    "tests_commands_game_launch": "not_performed"
+  },
+  "overall_verdict": "runtime-unproven",
+  "dimensions": [
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:registration",
+      "verdict": "proven-correct",
+      "positive_proof": "registries.lua registers the exact full ID and stores the returned CharacterTrait in UTTraitsRegistries.UT_analgesia; the named registration assertion expects the same ID.",
+      "negative_proof": "No bare or alternate ID occurs on the selected registration path; a mismatch would fail the named ID assertion and UTCore lookup.",
+      "anchors": ["UniversalTraits/media/registries.lua:171", "UniversalTraits/test/run_tests.lua:101-103"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:definition_parser",
+      "verdict": "proven-correct",
+      "positive_proof": "The selected definition supplies CharacterTrait, Cost=12, both UI keys, DisabledInMultiplayer=true, and three semicolon-separated registered exclusion IDs in the current parser form.",
+      "negative_proof": "There is no XPBoosts, grant, recipe, profession flag, missing selected field, or unresolved selected exclusion ID.",
+      "anchors": ["UniversalTraits/media/scripts/UT_character_traits.txt:1279-1288", "PZCodebase/Java/source/zombie/scripting/objects/CharacterTraitDefinitionScript.java:30-41,50-82,96-106"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:namespace",
+      "verdict": "proven-correct",
+      "positive_proof": "Registration, definition, CharacterTrait field, runtime TRAIT_ID, and reverse exclusion references consistently select UniversalTraits:UT_analgesia.",
+      "negative_proof": "The upstream bare ID Analgesia is confined to the source-mod evidence and is not reused as the UT runtime ID.",
+      "anchors": ["UniversalTraits/media/registries.lua:171", "UniversalTraits/media/scripts/UT_character_traits.txt:1279-1287", "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_analgesia.lua:4"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:cost_xp_grants_exclusions",
+      "verdict": "proven-correct",
+      "positive_proof": "Cost is 12; there are no XP boosts or grants; explicit exclusions are exactly UT_glassbody, UT_sore, and UT_fibromyalgia, and each selected counterpart block contains the reciprocal Analgesia exclusion.",
+      "negative_proof": "The parser does not infer exclusions from pain behavior, so nonlisted pain-producing traits remain selectable; no one-way selected exclusion was found.",
+      "anchors": ["UniversalTraits/media/scripts/UT_character_traits.txt:1093-1101", "UniversalTraits/media/scripts/UT_character_traits.txt:1237-1245", "UniversalTraits/media/scripts/UT_character_traits.txt:1279-1288", "UniversalTraits/media/scripts/UT_character_traits.txt:1790-1798"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:source_intent",
+      "verdict": "proven-correct",
+      "positive_proof": "FillerTraits registers Analgesia at cost 8 and its OnPlayerUpdate handler sets pain to 0 while the trait is present. UT changes cost/exclusions deliberately but preserves continuous pain suppression through an OnNewGame marker consumed every OnPlayerUpdate by UT_CORE PainHook.",
+      "negative_proof": "The prior claim that UT_painImmune has no consumer is false: UTCore_PainHook reads the exact key and clears PAIN. Absence in pre-marker legacy saves is backward-migration territory and is not a current-version defect in this audit.",
+      "anchors": ["research/installed-mods/FillerTraits/mods/FillerTraits/media/lua/shared/NPCs/UpgradeMainCreationMethods.lua:6", "research/installed-mods/FillerTraits/mods/FillerTraits/media/lua/client/UpgradeTraits.lua:118-127,145-147", "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_analgesia.lua:4-11", "UT_CORE/media/lua/shared/UTCore/UTCore_PainHook.lua:23-41"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:runtime_path",
+      "verdict": "proven-correct",
+      "positive_proof": "OnNewGame(player,square) invokes the one-argument handler, UTCore.hasTrait validates the namespaced trait, and modData.UT_painImmune becomes true. IsoPlayer.update emits OnPlayerUpdate; centralDispatch supplies modData/stats to PainHook, which clears positive PAIN.",
+      "negative_proof": "Without the trait the initializer returns; without a true marker, player, modData, or stats the hook returns; PAIN at 0 causes no write.",
+      "anchors": ["UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_analgesia.lua:4-11", "UT_CORE/media/lua/shared/UTCore/UTCore_PainHook.lua:23-41,63-83", "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua:156-171,328-342,426", "PZCodebase/Java/source/zombie/iso/IsoWorld.java:2202-2208,2313-2319", "PZCodebase/Java/source/zombie/characters/IsoPlayer.java:2240-2242"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:numbers",
+      "verdict": "proven-correct",
+      "positive_proof": "For every eligible update, PAIN strictly greater than 0 is assigned exactly 0; CharacterStat.PAIN is bounded 0..100 and Stats.set clamps to that range.",
+      "negative_proof": "PAIN=0 is not rewritten, an absent marker leaves positive pain unchanged, and there is no multiplier, partial decrement, or injury exception.",
+      "anchors": ["UT_CORE/media/lua/shared/UTCore/UTCore_PainHook.lua:35-41", "PZCodebase/Java/source/zombie/characters/CharacterStat.java:24,62-95", "PZCodebase/Java/source/zombie/characters/Stats.java:74-82"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:cadence",
+      "verdict": "proven-correct",
+      "positive_proof": "Initialization occurs on OnNewGame and suppression is evaluated on each OnPlayerUpdate through a core handler whose throttle is 0.",
+      "negative_proof": "No minute-based event or delayed cadence participates; a pain write after this hook can remain only until the next player-update dispatch.",
+      "anchors": ["UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_analgesia.lua:6-11", "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:22-35", "UT_CORE/media/lua/shared/UTCore/UTCore_PainHook.lua:63-83", "PZCodebase/Java/source/zombie/characters/IsoPlayer.java:2240-2242"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:cooldown",
+      "verdict": "proven-correct",
+      "positive_proof": "PainHook has throttle 0 and no timer, timestamp, or counter state, so every eligible update may clear pain.",
+      "negative_proof": "There is no cooldown to persist or reset; response latency is bounded by the next OnPlayerUpdate rather than a timer.",
+      "anchors": ["UT_CORE/media/lua/shared/UTCore/UTCore_PainHook.lua:54-71", "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua:328-340"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:reset_save_load",
+      "verdict": "runtime-unproven",
+      "positive_proof": "A current-version new character receives a nonempty modData table containing UT_painImmune=true; IsoMovingObject.save serializes that table and load restores it, after which PainHook consumes the restored marker. PAIN itself is also serialized by Stats.",
+      "negative_proof": "No authorized in-game current-version save/reload was executed. Legacy saves lacking the marker and dynamic trait removal are not evidence of a current-version save/reload defect; backward migration is an explicit non-goal.",
+      "anchors": ["UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_analgesia.lua:6-11", "PZCodebase/Java/source/zombie/iso/IsoMovingObject.java:628-641,667-683", "PZCodebase/Java/source/zombie/characters/Stats.java:34-55"],
+      "gap": "current-version-in-game-save-reload-not-executed"
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:java_lua",
+      "verdict": "proven-correct",
+      "positive_proof": "The selected bridge uses OnNewGame(IsoPlayer,IsoGridSquare), OnPlayerUpdate(IsoPlayer), IsoGameCharacter trait lookup, IsoMovingObject modData, IsoPlayer.getStats, and Stats.get/set(CharacterStat,float) with matching receiver and argument types.",
+      "negative_proof": "Lua safely ignores the unused square argument; reversing the OnNewGame arguments or using obsolete setPain would violate the selected current API, but neither occurs.",
+      "anchors": ["UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_analgesia.lua:6-11", "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:104-118", "UT_CORE/media/lua/shared/UTCore/UTCore_PainHook.lua:23-41", "PZCodebase/Java/source/zombie/characters/Stats.java:74-82"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:kahlua",
+      "verdict": "runtime-unproven",
+      "positive_proof": "The selected Lua uses Kahlua-compatible local functions, colon calls, table indexing, numeric loops, Events.Add/Remove, and no goto, coroutine, module return dependency, or Java-list indexing on the PainHook path.",
+      "negative_proof": "Static syntax/API inspection and standard-Lua mocks do not prove a current in-game Kahlua load or hot-reload lifecycle.",
+      "anchors": ["UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_analgesia.lua:1-11", "UT_CORE/media/lua/shared/UTCore/UTCore_PainHook.lua:1-83"],
+      "gap": "no-current-game-kahlua-execution"
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:events",
+      "verdict": "proven-correct",
+      "positive_proof": "The engine emits OnNewGame with player first on new-character branches and OnPlayerUpdate with the player during IsoPlayer.update; the trait and centralized hook register on exactly those events.",
+      "negative_proof": "Ordinary load does not need a new initializer for a current-version save because the marker is serialized; no unrelated event is claimed to initialize the trait.",
+      "anchors": ["PZCodebase/Java/source/zombie/iso/IsoWorld.java:2202-2208,2313-2319", "PZCodebase/Java/source/zombie/characters/IsoPlayer.java:2240-2242", "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_analgesia.lua:11", "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua:426"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:stacking_interactions",
+      "verdict": "proven-correct",
+      "positive_proof": "Selection forbids UT_glassbody, UT_sore, and UT_fibromyalgia bidirectionally. Other injury producers may coexist, but Analgesia only overwrites PAIN and leaves wounds and BodyDamage intact.",
+      "negative_proof": "Without UT_painImmune, the hook leaves identical pain untouched; PAIN already at 0 is not redundantly written. No broader all-trait interaction claim is made.",
+      "anchors": ["UniversalTraits/media/scripts/UT_character_traits.txt:1093-1101,1237-1245,1279-1288,1790-1798", "UT_CORE/media/lua/shared/UTCore/UTCore_PainHook.lua:23-41"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:multiplayer",
+      "verdict": "explicit-user-approved-non-goal",
+      "positive_proof": "The definition sets DisabledInMultiplayer=true and both source and release package metadata declare the mod single-player only.",
+      "negative_proof": "No synchronization, server, client, or multiplayer behavior is inferred from the restriction flag.",
+      "anchors": ["UniversalTraits/media/scripts/UT_character_traits.txt:1281-1283", "UniversalTraits/mod.info:description", "UniversalTraits/release/UniversalTraits/42.0/mod.info:description"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:display",
+      "verdict": "proven-correct",
+      "positive_proof": "UIName selects UI_UT_analgesia and the EN value is exactly Analgesia.",
+      "negative_proof": "The selected display key is present and does not fall back to the raw namespaced ID.",
+      "anchors": ["UniversalTraits/media/scripts/UT_character_traits.txt:1285", "UniversalTraits/media/lua/shared/Translate/EN/UI.json:UI_UT_analgesia"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:description",
+      "verdict": "proven-correct",
+      "positive_proof": "The EN claim that all pain is permanently suppressed regardless of injuries matches the persistent current-version marker plus every-update assignment of positive PAIN to 0, while injuries themselves remain untouched.",
+      "negative_proof": "The description does not promise wound immunity, healing, or damage immunity. The prior unsupported downstream-consumer warning is removed because the exact consumer is proven.",
+      "anchors": ["UniversalTraits/media/lua/shared/Translate/EN/UI.json:UI_UT_analgesiaDesc", "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_analgesia.lua:6-11", "UT_CORE/media/lua/shared/UTCore/UTCore_PainHook.lua:23-41"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:localization",
+      "verdict": "coverage-gap",
+      "positive_proof": "Both selected EN keys exist and match the definition's UIName and UIDescription fields; the source and release EN JSON hashes match.",
+      "negative_proof": "No selected non-English locale evidence exists, so translation completeness beyond EN is not claimed.",
+      "anchors": ["UniversalTraits/media/scripts/UT_character_traits.txt:1285-1286", "UniversalTraits/media/lua/shared/Translate/EN/UI.json:UI_UT_analgesia,UI_UT_analgesiaDesc"],
+      "gap": "non-English-locales-absent"
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:balance",
+      "verdict": "runtime-unproven",
+      "positive_proof": "UT costs 12 for every-update complete pain suppression; upstream costs 8. The +4 divergence is exact and the three explicit negative-trait exclusions prevent the selected direct pain-counterpart combinations.",
+      "negative_proof": "No telemetry, pick-rate data, comparative playtest, or accepted balance rubric proves that 12 is optimal; no defect is inferred from cost divergence alone.",
+      "anchors": ["UniversalTraits/media/scripts/UT_character_traits.txt:1284-1287", "research/installed-mods/FillerTraits/mods/FillerTraits/media/lua/shared/NPCs/UpgradeMainCreationMethods.lua:6"],
+      "gap": "comparative-gameplay-required"
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:performance",
+      "verdict": "proven-correct",
+      "positive_proof": "PainHook is one priority-0 core callback per player update and reuses central tick modData/stats; its active path performs one key lookup, one stat read, and at most one stat write.",
+      "negative_proof": "It performs no allocations, body-part traversal, enemy-list construction, nested scan, or timer maintenance on the selected path; no profiler claim is made.",
+      "anchors": ["UT_CORE/media/lua/shared/UTCore/UTCore_PainHook.lua:23-41,63-71", "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua:156-171,328-342"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:tests",
+      "verdict": "coverage-gap",
+      "positive_proof": "Named tests assert exact registration, set UT_painImmune=true for the trait on OnNewGame, and leave the key nil without the trait.",
+      "negative_proof": "No selected test fires the actual PainHook to prove positive PAIN becomes 0, serializes/reloads modData, or exercises current-version save/reload; the suite was not run under this delegation.",
+      "anchors": ["UniversalTraits/test/run_tests.lua:101-103", "UniversalTraits/test/run_tests.lua:2959", "UniversalTraits/test/run_tests.lua:3048-3056"],
+      "gap": "missing-painhook-and-save-reload-regression"
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:mocks",
+      "verdict": "coverage-gap",
+      "positive_proof": "The selected mocks expose CharacterStat.PAIN, generic Stats.get/set, modData, OnNewGame, OnCreatePlayer, and OnPlayerUpdate handler storage/removal.",
+      "negative_proof": "Mock Stats.set does not clamp like engine Stats.set, mock modData has no save/load serialization, and the selected OnNewGame test omits the engine's square argument.",
+      "anchors": ["UniversalTraits/test/UTTestMocks.lua:85-112", "UniversalTraits/test/UTTestMocks.lua:842-868", "UniversalTraits/test/UTTestMocks.lua:882-903"],
+      "gap": "mock-omits-clamp-serialization-and-square"
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:source_release_parity",
+      "verdict": "proven-correct",
+      "positive_proof": "Selected source/release SHA-256 pairs match for registries.lua, UT_character_traits.txt, EN/UI.json, UT_analgesia.lua, and mod.info.",
+      "negative_proof": "No selected source artifact has a differing 42.0 release hash; live deployment parity is outside scope and is not claimed.",
+      "anchors": ["UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_analgesia.lua#sha256=6575F8A78A54BA61B71907277D4D3307093F8946A19A66B955043E7ECED0D6B3", "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_analgesia.lua#sha256=6575F8A78A54BA61B71907277D4D3307093F8946A19A66B955043E7ECED0D6B3", "UniversalTraits/media/registries.lua#sha256=251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531", "UniversalTraits/media/scripts/UT_character_traits.txt#sha256=834BF4BF3D7B350C79C23D8C1F9CD2B68A22BE05AFD9C3EA1F7C3FA5C8F30FC3", "UniversalTraits/media/lua/shared/Translate/EN/UI.json#sha256=F10EB6DC3A2F2E7041F1662C58C9D2A298E25A2827E062E99E89269CC4290FE3"]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_analgesia:packaging",
+      "verdict": "proven-correct",
+      "positive_proof": "The selected 42.0 release contains hash-identical registration, definition, EN localization, runtime trait file, and mod.info; mod.info requires UT_CORE, which owns the proven PainHook consumer.",
+      "negative_proof": "No live-mod or Workshop copy was read and no deployment state is claimed; no backward-compatibility folder is required by the workspace contract.",
+      "anchors": ["UniversalTraits/release/UniversalTraits/42.0/mod.info", "UniversalTraits/release/UniversalTraits/42.0/media/registries.lua", "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt", "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json", "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_analgesia.lua"]
+    }
+  ],
+  "retained_findings": [
+    "The upstream trait continuously clears pain and UT preserves that intent through a persistent marker plus the centralized UT_CORE PainHook.",
+    "Cost changes from upstream 8 to UT 12 and selected exclusions expand to UT_glassbody, UT_sore, and UT_fibromyalgia.",
+    "Registration, namespace, definitions, reciprocal exclusions, EN keys, selected release copies, and UT_CORE package dependency are coherent."
+  ],
+  "corrected_findings": [
+    "Removed the prior unsupported claim that no system consumes UT_painImmune; UTCore_PainHook is the exact consumer.",
+    "Removed the part-04 confirmed defect for missing load repair: current-version modData persistence is structurally correct, while pre-marker backward migration is an explicit non-goal.",
+    "Changed description accuracy from defect to proven-correct for current-version characters; remaining uncertainty is execution proof, not a contradicted implementation.",
+    "Updated stale test anchors to run_tests.lua:3048-3056 and narrowed the test gap to PainHook plus current-version save/reload behavior."
+  ],
+  "remaining_gaps": [
+    "No authorized current-game Kahlua execution or current-version save/reload smoke was performed.",
+    "Existing selected tests do not execute PainHook or serialize/reload the marker.",
+    "Only EN localization is evidenced.",
+    "Balance lacks gameplay telemetry or an accepted comparative rubric."
+  ]
+}

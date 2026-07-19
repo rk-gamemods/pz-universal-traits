@@ -18,6 +18,7 @@ UTCore = UTCore or {}
 
 local BASE_CHANCE  = 4   -- percent
 local COOLDOWN_HOURS = 10 / 3600
+local FRACTURE_TIME = 21
 
 -- Parts ordered by priority: legs first (most impactful in PZ)
 local ELIGIBLE_PART_TYPES = {
@@ -30,10 +31,9 @@ local ELIGIBLE_PART_TYPES = {
 }
 
 local function onWeaponHitCharacter(attacker, target, weapon, damage)
-    local player = getPlayer()
-    if not player or target ~= player then return end
+    if not target then return end
 
-    local md = player:getModData()
+    local md = target:getModData()
     local mult = md["UT_fractureMult"]
     if not mult or mult <= 1.0 then return end
 
@@ -47,7 +47,7 @@ local function onWeaponHitCharacter(attacker, target, weapon, damage)
     if ZombRand(100) >= chance then return end
 
     -- Collect non-fractured eligible parts
-    local bd = player:getBodyDamage()
+    local bd = target:getBodyDamage()
     if not bd then return end
 
     local eligible = {}
@@ -62,10 +62,14 @@ local function onWeaponHitCharacter(attacker, target, weapon, damage)
 
     -- Fracture a random eligible part
     local idx = ZombRand(#eligible) + 1
-    eligible[idx]:setFractured(true)
+    eligible[idx]:setFractureTime(FRACTURE_TIME)
     md["UT_fractureCooldownUntil"] = now + COOLDOWN_HOURS
 end
 
 if Events and Events.OnWeaponHitCharacter then
-    Events.OnWeaponHitCharacter.Add(onWeaponHitCharacter)
+    if UTCore._fractureHookHandler then
+        Events.OnWeaponHitCharacter.Remove(UTCore._fractureHookHandler)
+    end
+    UTCore._fractureHookHandler = onWeaponHitCharacter
+    Events.OnWeaponHitCharacter.Add(UTCore._fractureHookHandler)
 end

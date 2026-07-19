@@ -115,7 +115,7 @@ All traits use the `UT_` prefix. The **Registration Format** column indicates th
 
 ### 3.1 Phase 1 — Low Complexity (Data-Driven)
 
-These traits are fully defined via `character_trait_definition` script blocks. They require no runtime Lua — the engine handles XPBoost natively via `XPBoosts = Perk=level` in the script.
+These traits are fully data-driven for the supported new-character path. Wood Splitter grants Axeman declaratively; existing-save migration is explicitly out of scope and existing saves may be invalidated.
 
 | UT ID | Display Name | Cost | Type | Source Mod(s) | Notes |
 |-------|-------------|------|------|---------------|-------|
@@ -204,7 +204,7 @@ These traits are fully defined via `character_trait_definition` script blocks. T
 | **XP Boost — FillerTraits (non-cheat)** | | | | | |
 | UT_trackman | Trackman | 6 | XPBoost | FillerTraits | |
 | UT_cleaver | Cleaver | 4 | XPBoost (LongBlade×1) | FillerTraits | |
-| UT_woodsplitter | Wood Splitter | 4 | XPBoost (Axe×1) | FillerTraits | |
+| UT_woodsplitter | Wood Splitter | **4** | XPBoost (Axe×1) + grants vanilla Axeman | FillerTraits | Accepted new-character-only design, priced at 4 points by `trait-deep-audit/campaign/change-impact/woodsplitter-axeman-balance.json`. Before grants, Wood Splitter is mutually exclusive with Axeman, including Axeman supplied directly or by a profession/job. After a valid Wood Splitter selection, declarative `GrantedTraits = Axeman` intentionally produces Wood Splitter + Axeman; that granted state is not a conflict. Axeman provides Axe-category tree damage ×1.5, axe attack-time result ×0.95, chop speed 1.0 instead of 0.8, and eligibility for the rare pine-tree key ring. Existing-save migration and all legacy-state handling are non-goals; saves may be invalidated. `DisabledInMultiplayer = true` is an exclusion guard, not multiplayer support. Open proof is limited to unexecuted applicable tests and in-game new-character selection/grant behavior. |
 | UT_improviser | Improviser | 4 | XPBoost (Maintenance×1) | FillerTraits | |
 | **Stat Modifier — Simple (No Runtime Logic)** | | | | | |
 | UT_packmule | Pack Mule | 7 | Stat: +carry weight | MoreTraits | |

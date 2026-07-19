@@ -1,12 +1,28 @@
 -- UTCore_WorkSpeedHook.lua
 -- At Events.OnGameBoot, wraps getDuration() on all global TimedAction tables.
--- Reads UT_workSpeedMod (general), UT_readSpeedMod (ISReadABook only), and
--- UT_transferSpeedMult (ISInventoryTransferAction / ISReloadWeaponAction only).
+-- Reads general and action-specific speed modifiers in one central hook.
 -- Modifiers are additive deltas: -0.5 = 50% faster, +0.5 = 50% slower.
 -- UT_transferSpeedMult is a multiplier (0.6 = 40% faster = delta -0.4).
 -- Minimum returned duration is always 1.
 
 UTCore = UTCore or {}
+
+local MEDICAL_ACTION_TYPES = {
+    ISMedicalCheckAction = true,
+    ISApplyBandage = true,
+    ISCleanBurn = true,
+    ISDisinfect = true,
+    ISRemoveBullet = true,
+    ISRemoveGlass = true,
+    ISSplint = true,
+    ISStitch = true,
+}
+
+local MECHANICS_ACTION_TYPES = {
+    ISInstallVehiclePart = true,
+    ISUninstallVehiclePart = true,
+    ISFixVehiclePartAction = true,
+}
 
 -- Apply work/read speed modifiers to a base duration.
 -- timedAction: the TimedAction instance (has .character and .Type fields)
@@ -41,7 +57,20 @@ function UTCore.applyWorkDuration(timedAction, base)
         end
     end
 
-    local totalMod = workMod + readMod + transferMod
+    -- Trait-specific deltas compose additively with the existing general,
+    -- reading, and transfer deltas. Exact Type sets prevent unrelated actions
+    -- from being accelerated merely because their names contain broad keywords.
+    local traitMod = 0
+    if MEDICAL_ACTION_TYPES[timedAction.Type]
+    and UTCore.hasTrait(player, "UniversalTraits:UT_paramedic") then
+        traitMod = traitMod - 0.5
+    end
+    if MECHANICS_ACTION_TYPES[timedAction.Type]
+    and UTCore.hasTrait(player, "UniversalTraits:UT_pitcrew") then
+        traitMod = traitMod - 0.5
+    end
+
+    local totalMod = workMod + readMod + transferMod + traitMod
     if totalMod == 0 then return base end
 
     if UTSmoke and UTSmoke.record then

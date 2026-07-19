@@ -317,6 +317,8 @@ All IDs prefixed `SW`. Weapon specialization tree with mutual exclusivity enforc
 
 **Mutual exclusivity:** All SW weapon traits are set mutually exclusive with each other and with vanilla `Axeman` if present.
 
+**Current Wood Splitter relevance:** UniversalTraits' new-character-only Axeman-alias decision supersedes treating Wood Splitter as an independent Axe-only trait. Before grants, Wood Splitter must exclude Axeman even when a profession/job supplies it; the intentional post-selection Wood Splitter + granted-Axeman state is not a conflict. Granting Axeman inherits all four inseparable vanilla effects: Axe-category tree damage ×1.5, axe attack-time result ×0.95, chop speed 1.0 instead of 0.8, and new-character eligibility for the rare pine-tree key ring.
+
 ---
 
 ### EvolvingTraitsWorld (source: Workshop 2914075159)
@@ -382,6 +384,8 @@ All IDs prefixed `SW`. Weapon specialization tree with mutual exclusivity enforc
 | Axmen | Axmen | 12 | XPBoost (Axe) | Low | Note: misspelling ("Axmen" not "Axeman") |
 | FastHands | Fast Hands | 12 | Stat modifier | Medium | |
 
+> **Current UniversalTraits supersession (2026-07-19):** The `WoodSplitter` row above is historical source-mod evidence only (cost 4, Axe XP only) and is explicitly superseded; it must not be counted as the current `UniversalTraits:UT_woodsplitter` design or as an independent FillerTrait implementation. UniversalTraits retains +1 Axe and uses new-character `GrantedTraits = Axeman`, inheriting vanilla Axeman's 1.5 tree-damage multiplier, 0.95 axe attack-time factor, 1.0 versus 0.8 chop speed, and pine-tree key-ring eligibility. Before grants, Wood Splitter must be mutually exclusive with Axeman, including directly selected and profession/job-supplied Axeman; the intentional post-selection granted pair is not a conflict. The accepted UniversalTraits cost is 4 points; the decision and sensitivity evidence are recorded in `trait-deep-audit/campaign/change-impact/woodsplitter-axeman-balance.json`. The old tree-damage implementation and every existing-save migration, marker/versioning, legacy reconciliation, preservation, retroactive-key-ring, migration-test, and migration-runtime-proof claim are non-goals because saves may be invalidated. Multiplayer support and proof are likewise non-goals. Open proof is limited to new-character selection/grant ordering, profession/job exclusion, and applicable unexecuted tests.
+
 ---
 
 ### Small / Single-Trait Mods
@@ -421,7 +425,7 @@ All IDs prefixed `SW`. Weapon specialization tree with mutual exclusivity enforc
 - MoreTraits core set (XPBoost traits, most stat modifiers) — strip the vanilla re-registers
 - CombatTraits SW weapon specialization tree — clean IDs, well-structured, mutual exclusivity logic is a good pattern to carry forward
 - SomewhatTraits SW-prefixed set — clean IDs, good variety
-- Selected FillerTraits (non-cheat ones: Analgesia, Backpacker, Trackman, Cleaver, WoodSplitter, Improviser, FastHands)
+- Selected FillerTraits (non-cheat ones: Analgesia, Backpacker, Trackman, Cleaver, Improviser, FastHands); the historical independent WoodSplitter entry is superseded by the current UniversalTraits Axeman-alias design described above
 - RPKDrivingSkill's `Driver` trait as a standalone (detach from custom skill system)
 - B42_RainsFirearms' `gunenthusiastRFNGP` — rename ID, consolidate with gun specialist concepts
 

@@ -1,6 +1,6 @@
 -- UT_actionhero.lua
 -- Action Hero: +15% crit chance on equipped weapons when 3+ enemies are nearby.
--- Recalculated every 30 ticks. Bonus removed when enemy count drops below 3.
+-- Recalculated every 30 player-update dispatches. Bonus is always removed when inactive.
 -- Skipped if player has UT_mundane (mundane disables crits).
 
 local TRAIT_ID = "UniversalTraits:UT_actionhero"
@@ -8,42 +8,80 @@ local CRIT_BONUS = 15
 local ENEMY_THRESHOLD = 3
 local ENEMY_RANGE = 10
 
-local function applyCritBonus(weapon, active)
+UTCore._actionHeroState = UTCore._actionHeroState or { trackedWeapons = {} }
+local state = UTCore._actionHeroState
+
+local function getRawCriticalChance(weapon)
+    local displayed = weapon:getCriticalChance()
+    if not weapon:hasSharpness() then return displayed, 1 end
+
+    local sharpness = weapon:getSharpness()
+    if not sharpness or sharpness <= 0 then return nil, nil end
+    return displayed / sharpness, sharpness
+end
+
+local function restoreWeapon(weapon)
+    local tracked = state.trackedWeapons[weapon]
+    if not tracked then return end
+
+    local raw = getRawCriticalChance(weapon)
+    if raw then
+        weapon:setCriticalChance(raw - tracked.appliedRawBonus)
+    end
+    state.trackedWeapons[weapon] = nil
+end
+
+local function boostWeapon(weapon)
     if not weapon or not instanceof(weapon, "HandWeapon") then return end
 
-    local wmd = weapon:getModData()
+    local raw, sharpness = getRawCriticalChance(weapon)
+    if not raw then return end
 
-    if wmd["UT_ahBaseCrit"] == nil then
-        wmd["UT_ahBaseCrit"] = weapon:getCriticalChance()
-    end
+    local tracked = state.trackedWeapons[weapon]
+    local baseRaw = raw - (tracked and tracked.appliedRawBonus or 0)
+    local targetDisplayed = math.min(100, baseRaw * sharpness + CRIT_BONUS)
+    local targetRaw = targetDisplayed / sharpness
+    local appliedRawBonus = targetRaw - baseRaw
 
-    local base = wmd["UT_ahBaseCrit"]
-    local target = active and math.min(100, base + CRIT_BONUS) or base
+    weapon:setCriticalChance(targetRaw)
+    state.trackedWeapons[weapon] = { appliedRawBonus = appliedRawBonus }
+end
 
-    if weapon:getCriticalChance() ~= target then
-        weapon:setCriticalChance(target)
-    end
+local function countNearbyEnemies(player)
+    local ok, count = pcall(function()
+        local list = player:getSpottedList()
+        local nearby = 0
+        for i = 0, list:size() - 1 do
+            local enemy = list:get(i)
+            if not enemy:isDead() and player:DistTo(enemy) <= ENEMY_RANGE then
+                nearby = nearby + 1
+            end
+        end
+        return nearby
+    end)
+    if not ok then return nil end
+    return count
 end
 
 local function onTick(player, tick)
-    -- Mundane disables crits
-    if UTCore.hasTrait(player, "UniversalTraits:UT_mundane") then return end
+    local nearbyCount = countNearbyEnemies(player)
+    local active = nearbyCount ~= nil
+        and nearbyCount >= ENEMY_THRESHOLD
+        and not UTCore.hasTrait(player, "UniversalTraits:UT_mundane")
 
-    -- Build enemy list (lazy in tick context)
-    local enemies, enemyCount = UTCore.getLivingEnemies(tick)
-
-    -- Count living enemies within range
-    local nearbyCount = 0
-    for i = 1, enemyCount do
-        if enemies[i].dist <= ENEMY_RANGE then
-            nearbyCount = nearbyCount + 1
+    local primary = tick.primaryWeapon
+    local secondary = tick.secondaryWeapon
+    local restore = {}
+    for weapon in pairs(state.trackedWeapons) do
+        if not active or (weapon ~= primary and weapon ~= secondary) then
+            restore[#restore + 1] = weapon
         end
     end
+    for i = 1, #restore do restoreWeapon(restore[i]) end
 
-    local active = nearbyCount >= ENEMY_THRESHOLD
-
-    applyCritBonus(tick.primaryWeapon, active)
-    applyCritBonus(tick.secondaryWeapon, active)
+    if not active then return end
+    boostWeapon(primary)
+    if secondary ~= primary then boostWeapon(secondary) end
 end
 
 UTCore.registerTickHandler(TRAIT_ID, onTick, { throttle = 30 })

@@ -1,143 +1,145 @@
 #!/usr/bin/env python3
-"""
-Scan the latest PZ DebugLog for UT-related errors and warnings.
-
-Finds the most recent DebugLog in ~/Zomboid/Logs and reports any errors
-originating from UniversalTraits or UTCore mod files. This is an
-informational check — it never blocks the gate.
-"""
+"""Validate one fresh, complete UT smoke run in a bounded log interval."""
 
 import argparse
 import json
 import re
 import sys
-from datetime import datetime, timedelta, timezone
+from collections import Counter
 from pathlib import Path
 
-DEFAULT_LOGS_ROOT = Path.home() / "Zomboid" / "Logs"
-
-# Patterns that indicate a UT-related error in the log
+MARKER_RE = re.compile(
+    r"\[UT_SMOKE\]\s+run=(?P<run>[A-Za-z0-9_.-]+)\s+"
+    r"challenge=(?P<challenge>[A-Za-z0-9_.-]+)\s+"
+    r"timestamp=(?P<timestamp>\d+)\s+surface=(?P<surface>[^\s]+)"
+)
 UT_FILE_RE = re.compile(r"(UT_\w+\.lua|UTCore_\w+\.lua|UniversalTraits/|UTCore/)")
-ERROR_MARKER_RE = re.compile(r"(RuntimeException|ERROR|FATAL|attempted to call nil|tried to call nil)")
-SMOKE_RE = re.compile(r"\[UT_SMOKE\]\s+scenario=([A-Za-z0-9_.-]+)")
+ERROR_RE = re.compile(r"(RuntimeException|ERROR|FATAL|attempted to call nil|tried to call nil)")
+TRACE_BLOCK_LINES = 12
+TRACE_CONTINUATION_RE = re.compile(r"^\s*(?:$|stack traceback:|at\s|function:|\[|\.\.\.|Caused by:)")
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Scan PZ DebugLog for UT-related errors")
-    parser.add_argument("--smoke-log", type=Path, help="Explicit debug log file to inspect")
-    parser.add_argument("--logs-root", type=Path, default=DEFAULT_LOGS_ROOT,
-                        help=f"Root log directory to search (default: {DEFAULT_LOGS_ROOT})")
-    parser.add_argument("--max-age-hours", type=float,
-                        help="Optional freshness limit for auto-discovered logs")
-    parser.add_argument("--json", dest="json_output", action="store_true",
-                        help="Emit machine-readable JSON")
+    parser = argparse.ArgumentParser(description="Validate a UT smoke-run proof")
+    parser.add_argument("--smoke-log", type=Path, required=True)
+    parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument("--run-id", required=True)
+    parser.add_argument("--challenge", required=True)
+    parser.add_argument("--not-before-ms", type=int, required=True)
+    parser.add_argument("--not-after-ms", type=int, required=True)
+    parser.add_argument("--json", dest="json_output", action="store_true")
     return parser.parse_args()
 
 
-def discover_latest_log(logs_root: Path) -> Path | None:
-    if not logs_root.exists():
-        return None
-    candidates = list(logs_root.rglob("*_DebugLog.txt")) + list(logs_root.rglob("DebugLog.txt"))
-    if not candidates:
-        return None
-    return max(candidates, key=lambda path: path.stat().st_mtime)
+def load_manifest(path: Path) -> Counter:
+    value = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(value, dict):
+        raise ValueError("manifest must be a generated version 2 call manifest")
+    calls = value.get("calls") if isinstance(value, dict) else None
+    if value.get("version") != 2 or value.get("status") != "generated" or not isinstance(calls, list) or not calls:
+        raise ValueError("manifest must be a generated version 2 call manifest")
+    expected = Counter()
+    seen = set()
+    protocol = {}
+    for item in calls:
+        if not isinstance(item, dict) or not isinstance(item.get("surface"), str) \
+                or not item["surface"] or not isinstance(item.get("count"), int) or item["count"] <= 0 \
+                or item.get("evidence") not in {"marker", "protocol"}:
+            raise ValueError("manifest calls must contain a surface, evidence, and positive integer count")
+        if item["surface"] in seen:
+            raise ValueError("manifest contains duplicate call entries")
+        seen.add(item["surface"])
+        if item["evidence"] == "marker":
+            expected[item["surface"]] = item["count"]
+        else:
+            protocol[item["surface"]] = item["count"]
+    if value.get("surfaces") != list(expected):
+        raise ValueError("manifest surfaces do not exactly match calls")
+    marker_count = sum(expected.values())
+    if protocol != {"getTimestampMs": marker_count, "print": marker_count,
+                    "Events.OnGameStart.Add": 1}:
+        raise ValueError("manifest protocol-call multiplicities do not match markers")
+    return expected
 
 
-def scan_log(path: Path) -> list[dict]:
-    """Scan a DebugLog for UT-related errors. Returns a list of error dicts."""
+def find_ut_errors(lines):
     errors = []
-    lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
-
-    i = 0
-    while i < len(lines):
-        line = lines[i]
-
-        # Check if this line mentions a UT file AND looks like an error
-        if UT_FILE_RE.search(line) and ERROR_MARKER_RE.search(line):
-            # Collect the stack trace (indented lines following the error)
-            trace_lines = [line]
-            j = i + 1
-            while j < len(lines) and (lines[j].startswith("    ") or lines[j].startswith("\t")):
-                trace_lines.append(lines[j])
-                j += 1
-
-            # Extract the UT file name from the error
-            file_match = re.search(r"(UT_\w+\.lua|UTCore_\w+\.lua)", line)
-            source_file = file_match.group(1) if file_match else "unknown"
-
-            errors.append({
-                "line_number": i + 1,
-                "source_file": source_file,
-                "message": line.strip(),
-                "trace_length": len(trace_lines),
-            })
-            i = j
-            continue
-
-        i += 1
-
+    pending = []
+    for number, line in enumerate(lines, 1):
+        pending = [(header, remaining - 1) for header, remaining in pending if remaining > 1]
+        same_line = UT_FILE_RE.search(line) and ERROR_RE.search(line)
+        if same_line:
+            errors.append({"line_number": number, "message": line.strip()[:500]})
+        elif UT_FILE_RE.search(line) and pending and TRACE_CONTINUATION_RE.search(line):
+            header, _ = pending[-1]
+            errors.append({"line_number": header, "trace_line_number": number,
+                           "message": line.strip()[:500]})
+            pending.clear()
+        elif pending and not TRACE_CONTINUATION_RE.search(line):
+            pending.clear()
+        if ERROR_RE.search(line) and not UT_FILE_RE.search(line):
+            pending.append((number, TRACE_BLOCK_LINES))
     return errors
 
 
-def scan_smoke_markers(path: Path) -> list[str]:
-    """Scan for [UT_SMOKE] markers (backwards compatibility)."""
-    found = []
-    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
-        match = SMOKE_RE.search(line)
+def validate(log_path: Path, manifest_path: Path, run_id: str, challenge: str,
+             not_before_ms: int, not_after_ms: int) -> dict:
+    if not_before_ms > not_after_ms:
+        raise ValueError("invalid verification interval")
+    expected = load_manifest(manifest_path)
+    lines = log_path.read_text(encoding="utf-8", errors="replace").splitlines()
+    parsed = []
+    malformed = []
+    for number, line in enumerate(lines, 1):
+        match = MARKER_RE.search(line)
         if match:
-            found.append(match.group(1))
-    return sorted(set(found))
+            marker = match.groupdict()
+            marker["timestamp"] = int(marker["timestamp"])
+            marker["line_number"] = number
+            if not_before_ms <= marker["timestamp"] <= not_after_ms:
+                parsed.append(marker)
+        elif "[UT_SMOKE]" in line:
+            malformed.append({"line_number": number, "message": line.strip()[:500]})
+    errors = find_ut_errors(lines)
+
+    foreign = [m for m in parsed if m["run"] != run_id or m["challenge"] != challenge]
+    accepted = [m for m in parsed if m["run"] == run_id and m["challenge"] == challenge]
+    counts = Counter(m["surface"] for m in accepted)
+    expected_set = set(expected)
+    missing = [surface for surface, count in expected.items() if counts[surface] < count]
+    duplicates = sorted(surface for surface, count in counts.items() if count > expected.get(surface, 0))
+    extras = sorted(set(counts) - expected_set)
+    clean = not (foreign or malformed or missing or duplicates or extras or errors)
+    return {
+        "status": "clean" if clean else "failed",
+        "run_id": run_id,
+        "challenge": challenge,
+        "interval": {"not_before_ms": not_before_ms, "not_after_ms": not_after_ms},
+        "expected_count": sum(expected.values()),
+        "observed_count": len(accepted),
+        "missing": missing,
+        "duplicates": duplicates,
+        "extras": extras,
+        "foreign_markers": foreign,
+        "malformed_markers": malformed,
+        "errors": errors,
+    }
 
 
 def main() -> None:
     args = parse_args()
-
-    log_path = args.smoke_log or discover_latest_log(args.logs_root)
-    if log_path is None:
-        output = {"status": "no_log_found", "errors": [], "smoke_markers": []}
-        if args.json_output:
-            print(json.dumps(output, indent=2))
-        else:
-            print("Live session health:  no recent log found")
-        sys.exit(0)  # Informational — never fails
-
-    if args.max_age_hours is not None:
-        mtime = datetime.fromtimestamp(log_path.stat().st_mtime, tz=timezone.utc)
-        if mtime < datetime.now(timezone.utc) - timedelta(hours=args.max_age_hours):
-            output = {"status": "stale_log", "log_file": str(log_path), "errors": [], "smoke_markers": []}
-            if args.json_output:
-                print(json.dumps(output, indent=2))
-            else:
-                print(f"Live session health:  stale log (older than {args.max_age_hours}h)")
-                print(f"Log file: {log_path}")
-            sys.exit(0)  # Informational — never fails
-
-    errors = scan_log(log_path)
-    smoke_markers = scan_smoke_markers(log_path)
-
-    status = "errors_found" if errors else "clean"
-    output = {
-        "status": status,
-        "log_file": str(log_path),
-        "error_count": len(errors),
-        "errors": errors,
-        "smoke_markers": smoke_markers,
-    }
-
+    try:
+        if not args.smoke_log.is_file():
+            raise FileNotFoundError(f"smoke log not found: {args.smoke_log}")
+        result = validate(args.smoke_log, args.manifest, args.run_id, args.challenge,
+                          args.not_before_ms, args.not_after_ms)
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        result = {"status": "invalid_input", "error": str(exc)}
     if args.json_output:
-        print(json.dumps(output, indent=2))
+        print(json.dumps(result, sort_keys=True))
     else:
-        if errors:
-            print(f"Live session health:  {len(errors)} UT errors found")
-        else:
-            print("Live session health:  clean (no UT errors)")
-        print(f"Log file: {log_path}")
-        if smoke_markers:
-            print(f"Smoke markers: {len(smoke_markers)}")
-        for err in errors:
-            print(f"  [{err['source_file']}:{err['line_number']}] {err['message'][:120]}")
-
-    sys.exit(0)  # Always exit 0 — informational only
+        print(f"Smoke proof: {result['status']}")
+    raise SystemExit(0 if result["status"] == "clean" else 1)
 
 
 if __name__ == "__main__":

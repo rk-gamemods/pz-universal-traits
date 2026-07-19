@@ -1,0 +1,417 @@
+{
+  "schema_version": "ut-trait-deep-runtime-trace-v1",
+  "trait_id": "UniversalTraits:UT_albino",
+  "source_snapshot": {
+    "svn_revision": 964,
+    "steam_build_id": 23504596,
+    "target": "Project Zomboid Build 42.0 newest-supported snapshot"
+  },
+  "selected_ids": [
+    "dimension:UniversalTraits:UT_albino:registration",
+    "dimension:UniversalTraits:UT_albino:definition_parser",
+    "dimension:UniversalTraits:UT_albino:namespace",
+    "dimension:UniversalTraits:UT_albino:cost_xp_grants_exclusions",
+    "dimension:UniversalTraits:UT_albino:source_intent",
+    "dimension:UniversalTraits:UT_albino:runtime_path",
+    "dimension:UniversalTraits:UT_albino:numbers",
+    "dimension:UniversalTraits:UT_albino:cadence",
+    "dimension:UniversalTraits:UT_albino:cooldown",
+    "dimension:UniversalTraits:UT_albino:reset_save_load",
+    "dimension:UniversalTraits:UT_albino:java_lua",
+    "dimension:UniversalTraits:UT_albino:kahlua",
+    "dimension:UniversalTraits:UT_albino:events",
+    "dimension:UniversalTraits:UT_albino:stacking_interactions",
+    "dimension:UniversalTraits:UT_albino:multiplayer",
+    "dimension:UniversalTraits:UT_albino:display",
+    "dimension:UniversalTraits:UT_albino:description",
+    "dimension:UniversalTraits:UT_albino:localization",
+    "dimension:UniversalTraits:UT_albino:balance",
+    "dimension:UniversalTraits:UT_albino:performance",
+    "dimension:UniversalTraits:UT_albino:tests",
+    "dimension:UniversalTraits:UT_albino:mocks",
+    "dimension:UniversalTraits:UT_albino:source_release_parity",
+    "dimension:UniversalTraits:UT_albino:packaging"
+  ],
+  "dimension_proofs": [
+    {
+      "id": "dimension:UniversalTraits:UT_albino:registration",
+      "dimension": "registration",
+      "classification": "proven-correct",
+      "positive_path": "UniversalTraits/media/registries.lua:257 assigns CharacterTrait.register(\"UniversalTraits:UT_albino\") to UTTraitsRegistries.UT_albino; CharacterTrait.java:122-131 converts the exact namespaced string to a registry location and registers one CharacterTrait.",
+      "negative_path": "No short, base-default, or differently cased ID is accepted by this row; replacing the string would make the definition/runtime identity fail the exact four-surface equality proved under namespace.",
+      "evidence": [
+        "UniversalTraits/media/registries.lua:257",
+        "PZCodebase/Java/source/zombie/scripting/objects/CharacterTrait.java:122-131"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:definition_parser",
+      "dimension": "definition_parser",
+      "classification": "proven-correct",
+      "positive_path": "UT_character_traits.txt:1779-1788 is one closed character_trait_definition with exact CharacterTrait, cost, UI fields, MP restriction, and one semicolon-list exclusion; CharacterTraitDefinitionScript.java:45-81 parses those keys and resolves namespaced IDs through ResourceLocation.of.",
+      "negative_path": "The block contains no XPBoosts or GrantedTraits, closes before the next definition, and therefore cannot leak following fields into Albino; ResourceLocation.of at lines 27-33 rejects null/empty identity instead of manufacturing this trait.",
+      "evidence": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt:1779-1788",
+        "PZCodebase/Java/source/zombie/scripting/objects/CharacterTraitDefinitionScript.java:45-105",
+        "PZCodebase/Java/source/zombie/scripting/objects/ResourceLocation.java:27-33"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:namespace",
+      "dimension": "namespace",
+      "classification": "proven-correct",
+      "positive_path": "The registration string, definition block ID, CharacterTrait value, and Lua TRAIT_ID are byte-identical UniversalTraits:UT_albino; UIName/UIDescription consistently use the UT_albino stem.",
+      "negative_path": "UniversalTraits:UT_badteeth occurs only as Albino's exclusion target and is not an alias, grant, registration destination, or runtime lookup substitute for UT_albino.",
+      "evidence": [
+        "UniversalTraits/media/registries.lua:257",
+        "UniversalTraits/media/scripts/UT_character_traits.txt:1779-1787",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua:4",
+        "UniversalTraits/media/lua/shared/Translate/EN/UI.json:320-321"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:cost_xp_grants_exclusions",
+      "dimension": "cost_xp_grants_exclusions",
+      "classification": "proven-correct",
+      "positive_path": "The definition gives Cost=-4, omits XPBoosts and GrantedTraits, and names UniversalTraits:UT_badteeth as its sole selection-time exclusion; the selected ledger's deterministic reverse scan records that exact edge as existing and reciprocal.",
+      "negative_path": "No Lua path grants Albino, removes the excluded trait, awards XP, or creates post-selection exclusivity; DisabledInMultiplayer is restriction metadata only and is not evidence of a grant or reciprocal runtime mutation.",
+      "evidence": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt:1781-1787",
+        "final_trait_ledger.json selected UniversalTraits:UT_albino cost_xp_grants_exclusions row",
+        "PZCodebase/Java/source/zombie/scripting/objects/CharacterTraitDefinitionScript.java:54-81,96-105"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:source_intent",
+      "dimension": "source_intent",
+      "classification": "confirmed-defect",
+      "positive_path": "The file header and implementation agree on outdoor daytime adversity: an eligible firing adds stress and fatigue and marks UT_albinoDamage true.",
+      "negative_path": "English intent says prolonged exposure causes real physical harm, yet the first eligible minute acts immediately, no duration accumulator exists, no Health/BodyDamage receiver is called, and the selected trace identifies no consumer of UT_albinoDamage.",
+      "evidence": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua:1-21",
+        "UniversalTraits/media/lua/shared/Translate/EN/UI.json:321",
+        "wave-01-rebuild/part-02.jsonl selected UniversalTraits:UT_albino source_intent row"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:runtime_path",
+      "dimension": "runtime_path",
+      "classification": "confirmed-defect",
+      "positive_path": "EveryOneMinute -> getPlayer -> UTCore.hasTrait -> IsoPlayer.isOutside -> GameTime.getTimeOfDay -> IsoGameCharacter.getStats -> Stats.get/set(STRESS,FATIGUE) -> IsoObject.getModData[UT_albinoDamage] is the complete selected positive path.",
+      "negative_path": "Nil player and absent trait return before all effects; indoor or hour<6/hour>=18 writes only false to the flag. Even on the positive path there is no physical-damage call, so runtime does not fulfill the description's terminal effect.",
+      "evidence": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua:6-23",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:109-136"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:numbers",
+      "dimension": "numbers",
+      "classification": "proven-correct",
+      "positive_path": "For each eligible minute, STRESS' = min(1, STRESS+0.03) and FATIGUE' = min(1, FATIGUE+0.02); CharacterStat.java defines both domains as [0,1], and Stats.set independently clamps again. Time is a 0<=hour<24 clock with inclusion at 6 and exclusion at 18.",
+      "negative_path": "At 5.99 and 18.00 the increments are zero; values already at 1 cannot exceed 1; there is no lower-bound subtraction, health decrement, percentage conversion, random term, or elapsed-time multiplier.",
+      "evidence": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua:11-16",
+        "PZCodebase/Java/source/zombie/GameTime.java:607,655-676,1050-1060",
+        "PZCodebase/Java/source/zombie/characters/CharacterStat.java:16,29,94-95",
+        "PZCodebase/Java/source/zombie/characters/Stats.java:74-82",
+        "UniversalTraits/test/run_tests.lua:3521-3527,3546-3555"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:cadence",
+      "dimension": "cadence",
+      "classification": "confirmed-defect",
+      "positive_path": "GameTime.java:737-739 produces EveryOneMinute with zero arguments once when previousMinuteStamp differs from minutesStamp; the Lua file adds one no-argument handler at load and reevaluates exposure on every produced boundary.",
+      "negative_path": "There is no exposure counter or minimum-duration gate, so one eligible boundary is enough to set the damage-named flag and apply stats, contradicting the copy's 'Prolonged' condition even though the one-minute cadence itself is low frequency.",
+      "evidence": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua:6-23",
+        "PZCodebase/Java/source/zombie/GameTime.java:718-739"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:cooldown",
+      "dimension": "cooldown",
+      "classification": "proven-correct",
+      "positive_path": "No cooldown is designed or encoded: consecutive eligible EveryOneMinute firings each apply the fixed increments, while each ineligible firing recomputes and clears only UT_albinoDamage.",
+      "negative_path": "The true flag is not read before the next increment, no timestamp/tick field exists, and no Remove call suppresses future firings; therefore the flag cannot act as a hidden cooldown latch.",
+      "evidence": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua:6-23"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:reset_save_load",
+      "dimension": "reset_save_load",
+      "classification": "runtime-unproven",
+      "positive_path": "Stats.save/load serializes STRESS and FATIGUE, and IsoMovingObject.save/load serializes a nonempty modData KahluaTable; after reload the permanently registered minute handler would recompute the flag on the next eligible/ineligible boundary.",
+      "negative_path": "Trait absence returns before clearing UT_albinoDamage, so a saved true key can remain stale after current-version trait removal; no actual save/reload, player recreation, or reset trace proves handler execution or key state after load.",
+      "proof_needed": "In BuildID 23504596, save outdoors during 6<=hour<18 with the trait, fully exit, reload, observe persisted STRESS/FATIGUE/key, fire the next minute indoors and outdoors, then repeat after removing the trait and record whether the stale key remains.",
+      "evidence": [
+        "PZCodebase/Java/source/zombie/characters/Stats.java:34-55",
+        "PZCodebase/Java/source/zombie/iso/IsoMovingObject.java:635-640,678-680",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua:7-21"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:java_lua",
+      "dimension": "java_lua",
+      "classification": "runtime-unproven",
+      "positive_path": "Actual receivers and members are: global LuaManager.GlobalObject.getPlayer()->IsoPlayer; CharacterTrait.get(ResourceLocation.of(string)); IsoGameCharacter.hasTrait(CharacterTrait); IsoPlayer.isOutside()->boolean; global getGameTime()->GameTime; GameTime.getTimeOfDay()->float; IsoGameCharacter.getStats()->Stats; Stats.get(CharacterStat)->float; Stats.set(CharacterStat,float)->boolean; IsoObject.getModData()->KahluaTable; KahluaTable string-key assignment.",
+      "negative_path": "The selected Lua invokes no BodyDamage, Health, weather/UV, Java collection, string-key Stats overload, or damage consumer. Static Java signatures prove availability in the snapshot, not successful Kahlua dispatch in a running game.",
+      "proof_needed": "Capture one BuildID 23504596 in-game handler invocation showing receiver classes, successful calls for every listed method, returned hour/stat values, and the resulting KahluaTable entry without a bridge error.",
+      "evidence": [
+        "PZCodebase/Java/source/zombie/Lua/LuaManager.java:3559-3561",
+        "PZCodebase/Java/source/zombie/scripting/objects/CharacterTrait.java:109-110",
+        "PZCodebase/Java/source/zombie/scripting/objects/ResourceLocation.java:27-33",
+        "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:4338-4339,6236-6237",
+        "PZCodebase/Java/source/zombie/characters/IsoPlayer.java:6188-6190",
+        "PZCodebase/Java/source/zombie/GameTime.java:1050-1054",
+        "PZCodebase/Java/source/zombie/characters/Stats.java:74-82",
+        "PZCodebase/Java/source/zombie/iso/IsoObject.java:1015-1020"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:kahlua",
+      "dimension": "kahlua",
+      "classification": "runtime-unproven",
+      "positive_path": "The file uses Kahlua-safe constructs only: local string/function bindings, early returns, colon calls, boolean branches, numeric >=/< and +, math.min, bracketed string-key table assignment, and Events.EveryOneMinute.Add; UTCore.hasTrait adds instanceof, cached Lua tables, nil comparison, and Java static calls.",
+      "negative_path": "It uses no goto, metatable trick, standard-Lua-only module return, require cache assumption, Java list indexing, or method-existence colon syntax. Standard Lua parsing and mocks still cannot establish Kahlua compilation or bridge coercion.",
+      "proof_needed": "After full desktop relaunch on BuildID 23504596, load the shared file through the normal package path and capture no Kahlua syntax/interop error plus one positive and one negative handler execution.",
+      "evidence": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua:1-23",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:109-136"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:events",
+      "dimension": "events",
+      "classification": "runtime-unproven",
+      "positive_path": "Producer signature is EveryOneMinute() with no arguments. On coincident ten-minute boundaries GameTime triggers EveryTenMinutes first at line 732, then EveryOneMinute at line 738, and only afterward stores previousMinuteStamp at line 739; Albino registers at shared-file load and consumes zero arguments.",
+      "negative_path": "The trait never calls Events.EveryOneMinute.Remove. LuaManager's per-load done set prevents duplicate path execution within one LoadDirBase pass, but callback ordering among multiple EveryOneMinute listeners and behavior after repeated world entry were not observed.",
+      "proof_needed": "Trace a full relaunch, new game, save load, and repeated world entry, recording Albino callback count/order at an ordinary minute and a ten-minute boundary, then prove exactly one callback remains registered or identify duplication/removal behavior.",
+      "evidence": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua:6,23",
+        "PZCodebase/Java/source/zombie/GameTime.java:718-739",
+        "PZCodebase/Java/source/zombie/Lua/LuaManager.java:1168-1200"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:stacking_interactions",
+      "dimension": "stacking_interactions",
+      "classification": "runtime-unproven",
+      "positive_path": "Albino's own repeated contributions stack additively by +0.03/+0.02 until each [0,1] cap; its sole selected exclusion is recorded reciprocal, and its one persistent key has a trait-specific name.",
+      "negative_path": "No selected evidence shows another reader of UT_albinoDamage or an Albino-specific composition rule. Effects from concurrent generic Stats writers would be order-sensitive, but other-trait evidence and an all-trait runtime matrix are outside this trace.",
+      "proof_needed": "Run a current-build single-player interaction matrix limited to Albino plus approved co-selectable state/stat writers, recording event order, final capped values, and whether any system consumes UT_albinoDamage; separately verify both selection orders for its declared exclusion.",
+      "evidence": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua:13-20",
+        "final_trait_ledger.json selected UniversalTraits:UT_albino exclusion and stacking rows"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:multiplayer",
+      "dimension": "multiplayer",
+      "classification": "explicit-user-approved-non-goal",
+      "positive_path": "The definition sets DisabledInMultiplayer=true, which CharacterTraitDefinitionScript.java:60-61 parses as restriction metadata for the single-player-only package.",
+      "negative_path": "No claim is made about MP execution, synchronization, enforcement, migration, tests, or documentation; absence of a Lua MP guard is not a defect, and the restriction field does not prove MP support.",
+      "evidence": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt:1781-1783",
+        "PZCodebase/Java/source/zombie/scripting/objects/CharacterTraitDefinitionScript.java:58-61,96-98"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:display",
+      "dimension": "display",
+      "classification": "proven-correct",
+      "positive_path": "UIName=UI_UT_albino resolves exactly to the English display string 'Albino' at UI.json:320.",
+      "negative_path": "UI_UT_albinoDesc is a distinct description key and cannot substitute for the display key; no alternate display alias is referenced by the definition.",
+      "evidence": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt:1785",
+        "UniversalTraits/media/lua/shared/Translate/EN/UI.json:320"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:description",
+      "dimension": "description",
+      "classification": "confirmed-defect",
+      "positive_path": "The words sunlight and outdoor exposure directionally match the implemented outside/daylight gate and adverse stress/fatigue changes.",
+      "negative_path": "'Prolonged' is false because the first eligible minute acts, and 'real physical harm' is false because no health/body-damage API is invoked and the damage-named flag has no selected consumer.",
+      "evidence": [
+        "UniversalTraits/media/lua/shared/Translate/EN/UI.json:321",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua:10-20"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:localization",
+      "dimension": "localization",
+      "classification": "coverage-gap",
+      "positive_path": "Both required English keys exist and the definition references them with exact case and suffix spelling.",
+      "negative_path": "The selected ledger records no non-English locale, and the sole English description carries the confirmed semantic mismatch; key presence alone does not make the localized copy accurate.",
+      "evidence": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt:1785-1786",
+        "UniversalTraits/media/lua/shared/Translate/EN/UI.json:320-321",
+        "final_trait_ledger.json selected UniversalTraits:UT_albino localization row"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:balance",
+      "dimension": "balance",
+      "classification": "runtime-unproven",
+      "positive_path": "The static balance contract is -4 points for +0.03 stress and +0.02 fatigue per eligible outdoor daytime game minute, each capped at 1, with no cooldown or accumulated damage.",
+      "negative_path": "Source arithmetic cannot prove that -4 is fair because actual shelter frequency, daylight exposure, recovery, and player impact were not measured; the misleading physical-harm copy cannot be used as balance evidence.",
+      "proof_needed": "Collect single-player telemetry on eligible minutes, time-to-cap from representative starting values, recovery opportunity, and player consequences, then compare the observed burden with the -4 cost without importing other-trait evidence into this trace.",
+      "evidence": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt:1784",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua:11-16"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:performance",
+      "dimension": "performance",
+      "classification": "proven-correct",
+      "positive_path": "Each minute is O(1): one player lookup, cached trait decision after first resolution, one outside check, one time read, at most two stat reads/two writes, and one modData write; persistent growth is bounded to one key and two cached trait-table entries.",
+      "negative_path": "There is no loop, recursion, history list, allocation proportional to elapsed play, per-frame handler, or growing per-minute state; absent player/trait exits before game-time, stats, and modData work.",
+      "evidence": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua:6-23",
+        "UT_CORE/media/lua/shared/UTCore/UTCore_API.lua:109-135"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:tests",
+      "dimension": "tests",
+      "classification": "coverage-gap",
+      "positive_path": "Named tests 'albino raises stress and fatigue when outdoors during daytime' and 'albino does NOT fire when indoors' assert positive/negative stat direction, while 'day and night traits honor 0..24 clock boundaries' checks Albino at 0,5.99,6,17.99,18,23.99.",
+      "negative_path": "No Albino assertion proves exact +0.03/+0.02, caps, nil/trait-absent returns, flag true/false, first-minute versus prolonged behavior, lack of physical damage, serialization, stale-key cleanup, duplicate registration, or full-relaunch runtime execution.",
+      "evidence": [
+        "UniversalTraits/test/run_tests.lua:3450-3465",
+        "UniversalTraits/test/run_tests.lua:3521-3527,3546-3555"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:mocks",
+      "dimension": "mocks",
+      "classification": "coverage-gap",
+      "positive_path": "MockPlayer resolves CharacterTrait objects, implements hasTrait, getStats, getModData and isOutside; setMockTimeOfDay/getGameTime expose a 0-24 test value; EveryOneMinute Add/Remove/fire dispatches registered functions; CharacterStat STRESS/FATIGUE mocks use [0,1].",
+      "negative_path": "The mocks are Lua tables, do not enforce Java receiver/overload types, do not serialize Stats/modData, do not reproduce GameTime's minute producer ordering, and provide BodyDamage without any Albino expectation, so a mock-only pass cannot prove physical harm or Kahlua lifecycle.",
+      "evidence": [
+        "UniversalTraits/test/UTTestMocks.lua:217-230,259-267,283,366",
+        "UniversalTraits/test/UTTestMocks.lua:1003-1020",
+        "UniversalTraits/test/UTTestMocks.lua:1259-1271",
+        "UniversalTraits/test/UTTestMocks.lua:1547-1556,1563,1573",
+        "UniversalTraits/test/run_tests.lua:605-611"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:source_release_parity",
+      "dimension": "source_release_parity",
+      "classification": "proven-correct",
+      "positive_path": "Source and release/UniversalTraits/42.0 runtime files share SHA-256 deb11a207602ddc5f12a1ba2c19b9774fa746b097442ad6a3651ce414e70530f; the shared registries, definitions, and EN UI source/release pairs also have matching full-file hashes.",
+      "negative_path": "Parity proves only the checked source and in-repository release package; it does not prove a live installed copy, a launched game, or that semantic defects disappear when bytes match.",
+      "evidence": [
+        "runtime source/release SHA-256 deb11a207602ddc5f12a1ba2c19b9774fa746b097442ad6a3651ce414e70530f",
+        "registries source/release SHA-256 251da2a8293dd602deaab47fe03dd435f06c1ae8ecaa03c59307cfae5acc4531",
+        "definitions source/release SHA-256 834bf4bf3d7b350c79c23d8c1f9cd2b68a22be05afd9c3ea1f7c3fa5c8f30fc3",
+        "EN UI source/release SHA-256 f10eb6dc3a2f2e7041f1662c58c9d2a298e25a2827e062e99e89269cc4290fe3"
+      ]
+    },
+    {
+      "id": "dimension:UniversalTraits:UT_albino:packaging",
+      "dimension": "packaging",
+      "classification": "proven-correct",
+      "positive_path": "Source, release root, and release/42.0 mod.info all declare id=UniversalTraits, require=UT_CORE, and versionMin=42.0; the exact runtime file exists under source and release 42.0 shared paths, and LuaManager.LoadDirBase sorts mod files, deduplicates each path, then RunLua loads it.",
+      "negative_path": "The source tree has no legacy compatibility package for this trait, and no independent require loads it when the mod is disabled or UT_CORE is missing; live installation/deployment was forbidden and is not claimed.",
+      "evidence": [
+        "UniversalTraits/mod.info",
+        "UniversalTraits/release/UniversalTraits/mod.info",
+        "UniversalTraits/release/UniversalTraits/42.0/mod.info",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua",
+        "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_albino.lua",
+        "PZCodebase/Java/source/zombie/Lua/LuaManager.java:1112-1200"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "B01-ALB-TIME",
+      "classification": "proven-correct",
+      "severity": "resolved-stale-record",
+      "summary": "The remediation queue's 0.25-0.75 time-scale defect is stale against the selected current source.",
+      "proof": "Current source uses 6<=getTimeOfDay()<18, current GameTime wraps at 24, and the named boundary test asserts 5.99/6/17.99/18 plus 0/23.99.",
+      "negative_path": "The former 0.25-0.75 comparison is absent from the selected current source; no product-code change was made by this trace."
+    },
+    {
+      "finding_id": "UTALB-PHYSICAL-HARM-COPY",
+      "classification": "confirmed-defect",
+      "severity": "high",
+      "summary": "English copy promises prolonged exposure and real physical harm that runtime does not implement.",
+      "proof": "The first eligible minute adds only STRESS/FATIGUE and sets UT_albinoDamage; no duration or Health/BodyDamage call exists and the selected evidence has no flag consumer.",
+      "proof_needed_for_correction": "An approved design decision must choose accurate stress/fatigue copy or implement separately authorized duration and physical-damage behavior, followed by exact regression and current-version save/reload tests."
+    },
+    {
+      "finding_id": "IR0104-ALBINO-CROSS-EXCLUSION",
+      "classification": "coverage-gap",
+      "severity": "medium",
+      "summary": "The selected ledger proves the Albino exclusion edge is reciprocal, but the allowed evidence contains no authoritative rationale for why these identities conflict.",
+      "proof": "Albino's definition declares one exclusion and the selected reverse-scan row records reciprocity; the selected independent-review row says the edge lacks inspected rationale.",
+      "proof_needed": "A user-approved trait design record naming the intended conflict, followed by a two-selection-order character-creation check on the current build."
+    },
+    {
+      "finding_id": "UTALB-RUNTIME-LIFECYCLE",
+      "classification": "runtime-unproven",
+      "severity": "medium",
+      "summary": "Current Kahlua bridge execution, listener multiplicity, and current-version save/reload/reset behavior remain unobserved.",
+      "proof_needed": "One full-exit/relaunch trace covering new game, save, reload, ordinary and ten-minute boundaries, indoor/day/night transitions, trait removal, exact receiver calls, key persistence/cleanup, and callback count."
+    },
+    {
+      "finding_id": "UTALB-TEST-MOCK-GAPS",
+      "classification": "coverage-gap",
+      "severity": "medium",
+      "summary": "Named tests cover directional stats and hour boundaries but omit exact values, caps, flag state, trait absence, persistence, physical-harm absence, and duplicate-listener failure; mocks do not enforce the missing engine contracts.",
+      "proof_needed": "Add Albino-only assertions for every omitted branch and a current-producer/serialization fixture; runtime-only claims still require the in-game lifecycle trace."
+    },
+    {
+      "finding_id": "UTALB-LOCALIZATION-COVERAGE",
+      "classification": "coverage-gap",
+      "severity": "low",
+      "summary": "Only English keys are evidenced, and the English description is semantically defective.",
+      "proof_needed": "Correct the approved English semantics first, then add or explicitly waive each desired locale through the localization owner."
+    }
+  ],
+  "validation": {
+    "selected_id_source": "Bidirectional reconciliation of wave-01-rebuild/part-02.jsonl affected_record_ids against final_trait_ledger.json selected dimension keys for UniversalTraits:UT_albino.",
+    "selected_id_count": 24,
+    "dimension_proof_count": 24,
+    "unique_selected_id_count": 24,
+    "unique_dimension_proof_id_count": 24,
+    "missing_selected_ids": [],
+    "extra_dimension_proof_ids": [],
+    "duplicate_ids": [],
+    "allowed_classifications": [
+      "proven-correct",
+      "confirmed-defect",
+      "coverage-gap",
+      "runtime-unproven",
+      "explicit-user-approved-non-goal"
+    ],
+    "classification_counts": {
+      "proven-correct": 10,
+      "confirmed-defect": 4,
+      "coverage-gap": 3,
+      "runtime-unproven": 6,
+      "explicit-user-approved-non-goal": 1
+    },
+    "finding_count": 6,
+    "runtime_source_release_sha256": "deb11a207602ddc5f12a1ba2c19b9774fa746b097442ad6a3651ce414e70530f",
+    "shared_source_release_hashes": {
+      "registries.lua": "251da2a8293dd602deaab47fe03dd435f06c1ae8ecaa03c59307cfae5acc4531",
+      "UT_character_traits.txt": "834bf4bf3d7b350c79c23d8c1f9cd2b68a22be05afd9c3ea1f7c3fa5c8f30fc3",
+      "Translate/EN/UI.json": "f10eb6dc3a2f2e7041f1662c58c9d2a298e25a2827e062e99e89269cc4290fe3"
+    },
+    "validation_method": "Direct, trait-scoped source reads and exact current PZ symbols only; no tests, commands that execute project code, Git, deployment, live game, GUI, index mutation, or product-code edits.",
+    "runtime_status": "No in-game execution was authorized; all Kahlua, listener-lifecycle, balance, and save/reload observations remain explicitly runtime-unproven where classified.",
+    "non_goals": {
+      "multiplayer_support": true,
+      "backward_save_migration": true,
+      "current_version_save_reload": false
+    }
+  }
+}

@@ -1,46 +1,19 @@
 -- UT_strongnimble.lua
--- Strong & Nimble: never fall when climbing fences or ropes.
--- Monitors the player every tick for a falling state following a climb action
--- and cancels it. Also attempts to hook OnFenceClimb / OnClimbFence for a
--- cleaner interception; both hooks are guarded with pcall.
+-- Strong & Nimble: prevent the stochastic low-fence climb failure.
 
 local TRAIT_ID = "UniversalTraits:UT_strongnimble"
 
-local function tryStopFall(player)
-    if not player or not player.isFalling or not player:isFalling() then return end
-    if player.setbFalling then
-        pcall(function()
-            player:setbFalling(false)
-        end)
-    end
-end
+local function onTick(player)
+    if not player or not player.getVariableBoolean or not player.getVariable
+    or not player.setVariable then return end
 
-local function onTick(player, tick)
-    -- Inspect current action state for climb/fall transitions when the API exists.
-    local actionState = nil
-    if player.getCurrentActionContextStateName then
-        actionState = player:getCurrentActionContextStateName()
+    -- ClimbOverFenceState checks this exact outcome before setbFalling(true).
+    -- Changing only "fall" leaves falling/rope/obstacle/lunge and ordinary
+    -- unsupported-floor falls on their vanilla paths.
+    if player:getVariableBoolean("ClimbingFence")
+    and player:getVariable("ClimbFenceOutcome") == "fall" then
+        player:setVariable("ClimbFenceOutcome", "success")
     end
-    if actionState then
-        local actionName = tostring(actionState):lower()
-        if actionName:find("fall") or actionName:find("climb") or actionName:find("rope") then
-            tryStopFall(player)
-        end
-    end
-
-    -- Catch a falling state even without a labelled action.
-    if player.isFalling and player:isFalling() then
-        tryStopFall(player)
-    end
-end
-
--- Clean fence-climb hooks — guarded so missing events don't error on load.
-local function onFenceClimb(player)
-    if not player then return end
-    if not UTCore or not UTCore.hasTrait(player, TRAIT_ID) then return end
-    tryStopFall(player)
 end
 
 UTCore.registerTickHandler(TRAIT_ID, onTick)
-if Events.OnFenceClimb then Events.OnFenceClimb.Add(onFenceClimb) end
-if Events.OnClimbFence then Events.OnClimbFence.Add(onFenceClimb) end

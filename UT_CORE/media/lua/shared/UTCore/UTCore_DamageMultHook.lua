@@ -1,60 +1,36 @@
 -- UTCore_DamageMultHook.lua
 -- Reads UT_damageMult from player moddata.
--- When the local player takes weapon damage, applies the multiplier to
--- the health deficit: extra = lost_health * (mult - 1.0).
 --
--- Mechanism: OnPlayerUpdate tracks prev_health every tick.
--- OnWeaponHitCharacter fires when a weapon (from any attacker including zombies)
--- hits a character. When target == local player, the health deficit since the
--- last tick is multiplied and applied as an additional reduction.
---
--- mult = 1.5 (glassbody): player loses 50% more health per hit than normal.
--- mult = 1.0: no effect (hook exits early).
---
--- Safety: health is clamped to 0 — does not go below 0.
--- Self-damage (from falls, bleeding) also triggers this hook. Falls give exactly
--- the intended "glass body" experience; bleeding already has its own drain hook.
+-- OnWeaponHitCharacter is raised before the engine applies the weapon hit.
+-- Apply only the extra portion here; the engine applies the original hit after
+-- the event returns.  Using the event's damage avoids folding unrelated health
+-- loss since an earlier update into this hit.
 
 UTCore = UTCore or {}
 
-local function onPlayerUpdate(player, tick)
-    if player:isDead() then return end
-    local md = tick and tick.modData or player:getModData()
-    -- Skip health tracking when damage mult is not active (no glassbody trait)
-    if not md["UT_damageMult"] then return end
-    -- Track health each tick for the hit-detection diff in onWeaponHitCharacter
-    md["UT_dmgPrevHealth"] = player:getHealth()
-end
-
 local function onWeaponHitCharacter(attacker, target, weapon, damage)
     local player = getPlayer()
-    if not player or target ~= player then return end
+    if not player or target ~= player or player:isDead() then return end
 
-    local md = player:getModData()
-    local mult = md["UT_damageMult"]
-    if not mult or mult <= 1.0 then return end
+    local mult = player:getModData()["UT_damageMult"]
+    if type(mult) ~= "number" or mult <= 1.0 then return end
+    if type(damage) ~= "number" or damage ~= damage or damage <= 0 then return end
 
-    local prevHealth = md["UT_dmgPrevHealth"]
-    if prevHealth == nil then return end
+    local health = player:getHealth()
+    if type(health) ~= "number" or health ~= health or health <= 0 then return end
 
-    local curHealth = player:getHealth()
-    if curHealth >= prevHealth then return end  -- no loss this frame
-
-    local lost  = prevHealth - curHealth
-    local extra = lost * (mult - 1.0)
-    player:setHealth(math.max(0, curHealth - extra))
-    -- Update stored health so the next hit starts from the new value
-    md["UT_dmgPrevHealth"] = player:getHealth()
-end
-
-if UTCore.registerCoreHandler then
-    UTCore.registerCoreHandler("DamageMultHook", onPlayerUpdate, { priority = 0 })
-else
-    if Events and Events.OnPlayerUpdate then
-        Events.OnPlayerUpdate.Add(onPlayerUpdate)
-    end
+    -- The event damage is the only loss attributable to this callback. Cap its
+    -- contribution to the health that exists before the engine applies the hit.
+    local attributableDamage = math.min(damage, health)
+    local extra = attributableDamage * (mult - 1.0)
+    player:setHealth(math.max(0, health - extra))
 end
 
 if Events and Events.OnWeaponHitCharacter then
-    Events.OnWeaponHitCharacter.Add(onWeaponHitCharacter)
+    if UTCore._damageMultWeaponHitHandler then
+        Events.OnWeaponHitCharacter.Remove(UTCore._damageMultWeaponHitHandler)
+    end
+
+    UTCore._damageMultWeaponHitHandler = onWeaponHitCharacter
+    Events.OnWeaponHitCharacter.Add(UTCore._damageMultWeaponHitHandler)
 end
