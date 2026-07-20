@@ -1088,6 +1088,203 @@ test("MeleeDelayHook does not apply when no relevant trait is present", function
     assert_eq(p:getModData()["_lastMeleeDelay"], nil, "expected setMeleeDelay not called")
 end)
 
+local function withMeleeDelayTestState(player, fn)
+    local savedWeaponCategory = _G.WeaponCategory
+    local savedUTSmoke = _G.UTSmoke
+    local savedRegistered, savedByKey = {}, {}
+    for key, value in pairs(CharacterTrait._registered) do savedRegistered[key] = value end
+    for key, value in pairs(CharacterTrait._byKey) do savedByKey[key] = value end
+    local savedWeapon = player and player:getPrimaryHandItem() or nil
+    local savedSetMeleeDelay = player and player.setMeleeDelay or nil
+    local savedDelay = player and player:getMeleeDelay() or nil
+    local savedGuard = player and player:getModData()["UT_meleeDelaySet"] or nil
+    local savedLastDelay = player and player:getModData()["_lastMeleeDelay"] or nil
+    _G.UTSmoke = nil
+
+    local ok, err = pcall(fn)
+
+    _G.WeaponCategory = savedWeaponCategory
+    _G.UTSmoke = savedUTSmoke
+    CharacterTrait._registered = savedRegistered
+    CharacterTrait._byKey = savedByKey
+    if player then
+        player.setMeleeDelay = savedSetMeleeDelay
+        player:setPrimaryHandItem(savedWeapon)
+        player:setMeleeDelay(savedDelay)
+        player:getModData()["UT_meleeDelaySet"] = savedGuard
+        player:getModData()["_lastMeleeDelay"] = savedLastDelay
+    end
+    if not ok then error(err, 0) end
+end
+
+test("MeleeDelayHook classifies every WeaponCategory and rejects an adjacent trait", function()
+    withMeleeDelayTestState(nil, function()
+        _G.WeaponCategory = {
+            AXE = {}, BLUNT = {}, SMALL_BLUNT = {},
+            LONG_BLADE = {}, SMALL_BLADE = {}, SPEAR = {},
+        }
+        local cases = {
+            { "AXE",         WeaponCategory.AXE,         "UniversalTraits:UT_axes",         "UniversalTraits:UT_blunts" },
+            { "BLUNT",       WeaponCategory.BLUNT,       "UniversalTraits:UT_long_blunts",  "UniversalTraits:UT_short_blunts" },
+            { "SMALL_BLUNT", WeaponCategory.SMALL_BLUNT, "UniversalTraits:UT_short_blunts", "UniversalTraits:UT_long_blunts" },
+            { "LONG_BLADE",  WeaponCategory.LONG_BLADE,  "UniversalTraits:UT_long_blades",  "UniversalTraits:UT_short_blades" },
+            { "SMALL_BLADE", WeaponCategory.SMALL_BLADE, "UniversalTraits:UT_short_blades", "UniversalTraits:UT_long_blades" },
+            { "SPEAR",       WeaponCategory.SPEAR,       "UniversalTraits:UT_spears",       "UniversalTraits:UT_axes" },
+        }
+
+        for _, case in ipairs(cases) do
+            local weapon = MockWeapon(case[1], nil, false, true, { categories = { case[2] } })
+            local matching = MockPlayer({ case[3] }, { primaryHandItem = weapon, meleeDelay = 20 })
+            local matchingCalls = 0
+            local matchingSetter = matching.setMeleeDelay
+            matching.setMeleeDelay = function(self, value)
+                matchingCalls = matchingCalls + 1
+                return matchingSetter(self, value)
+            end
+
+            UTCore._meleeDelayOnPlayerUpdate(matching)
+            UTCore._meleeDelayOnPlayerUpdate(matching)
+            assert_eq(matching:getMeleeDelay(), 10, case[1] .. " matching trait delay")
+            assert_eq(matchingCalls, 1, case[1] .. " matching trait setter count")
+
+            local nonmatching = MockPlayer({ case[4] }, { primaryHandItem = weapon, meleeDelay = 20 })
+            local nonmatchingCalls = 0
+            local nonmatchingSetter = nonmatching.setMeleeDelay
+            nonmatching.setMeleeDelay = function(self, value)
+                nonmatchingCalls = nonmatchingCalls + 1
+                return nonmatchingSetter(self, value)
+            end
+            UTCore._meleeDelayOnPlayerUpdate(nonmatching)
+            assert_eq(nonmatching:getMeleeDelay(), 20, case[1] .. " adjacent trait must not change delay")
+            assert_eq(nonmatchingCalls, 0, case[1] .. " adjacent trait setter count")
+        end
+    end)
+end)
+
+test("MeleeDelayHook derives one- and two-handed category flags", function()
+    local cases = {
+        { "one-handed", false, "UniversalTraits:UT_onehanded_axes", "UniversalTraits:UT_twohanded_axes" },
+        { "two-handed", true,  "UniversalTraits:UT_twohanded_axes", "UniversalTraits:UT_onehanded_axes" },
+    }
+
+    for _, case in ipairs(cases) do
+        local weapon = MockWeapon(case[1], nil, case[2], true, { categories = { WeaponCategory.AXE } })
+        local matching = MockPlayer({ case[3] }, { primaryHandItem = weapon, meleeDelay = 20 })
+        local matchingCalls = 0
+        local matchingSetter = matching.setMeleeDelay
+        matching.setMeleeDelay = function(self, value)
+            matchingCalls = matchingCalls + 1
+            return matchingSetter(self, value)
+        end
+        UTCore._meleeDelayOnPlayerUpdate(matching)
+        UTCore._meleeDelayOnPlayerUpdate(matching)
+        assert_eq(matching:getMeleeDelay(), 10, case[1] .. " matching handed trait")
+        assert_eq(matchingCalls, 1, case[1] .. " matching handed setter count")
+
+        local nonmatching = MockPlayer({ case[4] }, { primaryHandItem = weapon, meleeDelay = 20 })
+        local nonmatchingCalls = 0
+        local nonmatchingSetter = nonmatching.setMeleeDelay
+        nonmatching.setMeleeDelay = function(self, value)
+            nonmatchingCalls = nonmatchingCalls + 1
+            return nonmatchingSetter(self, value)
+        end
+        UTCore._meleeDelayOnPlayerUpdate(nonmatching)
+        UTCore._meleeDelayOnPlayerUpdate(nonmatching)
+        assert_eq(nonmatching:getMeleeDelay(), 20, case[1] .. " opposite handed trait")
+        assert_eq(nonmatchingCalls, 0, case[1] .. " opposite handed setter count")
+    end
+end)
+
+test("MeleeDelayHook fails closed when weapon category inputs are unavailable", function()
+    local player = MockPlayer({ "UniversalTraits:UT_axes" }, { meleeDelay = 20 })
+    withMeleeDelayTestState(player, function()
+        local effectCalls = 0
+        local setMeleeDelay = player.setMeleeDelay
+        player.setMeleeDelay = function(self, value)
+            effectCalls = effectCalls + 1
+            return setMeleeDelay(self, value)
+        end
+        local cases = {
+            { name = "nil weapon", weapon = nil },
+            { name = "missing category method", weapon = MockWeapon("NoMethod", nil, false, true, { categories = { WeaponCategory.AXE } }) },
+        }
+        cases[2].weapon.isOfWeaponCategory = nil
+
+        for _, case in ipairs(cases) do
+            player:setPrimaryHandItem(case.weapon)
+            setMeleeDelay(player, 20)
+            player:getModData()["UT_meleeDelaySet"] = false
+            UTCore._meleeDelayOnPlayerUpdate(player)
+            assert_eq(player:getMeleeDelay(), 20, case.name .. " delay")
+            assert_eq(player:getModData()["UT_meleeDelaySet"], false, case.name .. " guard")
+            assert_eq(effectCalls, 0, case.name .. " setter count")
+        end
+
+        player:setPrimaryHandItem(MockWeapon("NoEnum", nil, false, true, { categories = { WeaponCategory.AXE } }))
+        setMeleeDelay(player, 20)
+        player:getModData()["UT_meleeDelaySet"] = false
+        _G.WeaponCategory = nil
+        UTCore._meleeDelayOnPlayerUpdate(player)
+        assert_eq(player:getMeleeDelay(), 20, "missing WeaponCategory delay")
+        assert_eq(player:getModData()["UT_meleeDelaySet"], false, "missing WeaponCategory guard")
+        assert_eq(effectCalls, 0, "missing WeaponCategory setter count")
+    end)
+end)
+
+test("MeleeDelayHook accepts a weapon with multiple enum categories", function()
+    local weapon = MockWeapon("AxeSpear", nil, true, true, {
+        categories = { WeaponCategory.AXE, WeaponCategory.SPEAR },
+    })
+    local player = MockPlayer({ "UniversalTraits:UT_spears" }, {
+        primaryHandItem = weapon,
+        meleeDelay = 20,
+    })
+    local setterCalls = 0
+    local setMeleeDelay = player.setMeleeDelay
+    player.setMeleeDelay = function(self, value)
+        setterCalls = setterCalls + 1
+        return setMeleeDelay(self, value)
+    end
+    UTCore._meleeDelayOnPlayerUpdate(player)
+    UTCore._meleeDelayOnPlayerUpdate(player)
+    assert_eq(player:getMeleeDelay(), 10)
+    assert_eq(player:getModData()["UT_meleeDelaySet"], true)
+    assert_eq(setterCalls, 1, "multi-category same-swing setter count")
+end)
+
+test("MeleeDelayHook refreshes cached categories across A-B-A identity swaps", function()
+    local axe = MockWeapon("A", nil, false, true, { categories = { WeaponCategory.AXE } })
+    local spear = MockWeapon("B", nil, true, true, { categories = { WeaponCategory.SPEAR } })
+    local player = MockPlayer({ "UniversalTraits:UT_axes" }, {
+        primaryHandItem = axe,
+        meleeDelay = 20,
+    })
+
+    withMeleeDelayTestState(player, function()
+        UTCore._meleeDelayOnPlayerUpdate(player)
+        assert_eq(player:getMeleeDelay(), 10, "A first swing")
+        assert_eq(player:getModData()["UT_meleeDelaySet"], true, "A first guard")
+
+        player:setMeleeDelay(0)
+        UTCore._meleeDelayOnPlayerUpdate(player)
+        assert_eq(player:getModData()["UT_meleeDelaySet"], false, "A guard reset")
+
+        player:setPrimaryHandItem(spear)
+        player:setMeleeDelay(20)
+        UTCore._meleeDelayOnPlayerUpdate(player)
+        assert_eq(player:getMeleeDelay(), 20, "B must not reuse A categories")
+        assert_eq(player:getModData()["UT_meleeDelaySet"], false, "B guard remains clear")
+
+        player:setMeleeDelay(0)
+        UTCore._meleeDelayOnPlayerUpdate(player)
+        player:setPrimaryHandItem(axe)
+        player:setMeleeDelay(20)
+        UTCore._meleeDelayOnPlayerUpdate(player)
+        assert_eq(player:getMeleeDelay(), 10, "A second swing after B")
+        assert_eq(player:getModData()["UT_meleeDelaySet"], true, "A second guard")
+    end)
+end)
+
 -- Vehicle trait helpers
 test("Vehicle trait registration applies modifiers on vehicle enter", function()
     UTCore._vehicleTraitDefs = {}
