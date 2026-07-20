@@ -38,6 +38,8 @@ OWNED_OUTPUTS = (
     "recurring_pattern_findings.json",
     "campaign_manifest.json",
 )
+TRANSACTION_NAME = ".regenerate_motionsickness-transaction"
+JOURNAL_VERSION = 1
 
 
 def _json_bytes(value: object, *, compact: bool = False) -> bytes:
@@ -48,6 +50,123 @@ def _json_bytes(value: object, *, compact: bool = False) -> bytes:
         separators=(",", ":") if compact else None,
     )
     return (text + "\n").encode("utf-8")
+
+
+def _digest(data: bytes) -> dict[str, object]:
+    return {"sha256": hashlib.sha256(data).hexdigest().upper(), "bytes": len(data)}
+
+
+def _write_durable(path: Path, data: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("wb") as handle:
+        handle.write(data)
+        handle.flush()
+        os.fsync(handle.fileno())
+
+
+def _journal_path(campaign: Path) -> Path:
+    return campaign / TRANSACTION_NAME / "journal.json"
+
+
+def _load_journal(campaign: Path) -> tuple[Path, dict[str, Any]] | None:
+    transaction = campaign / TRANSACTION_NAME
+    if not transaction.exists():
+        return None
+    journal_path = transaction / "journal.json"
+    try:
+        journal = json.loads(journal_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+        raise RuntimeError(
+            f"Motion Sickness recovery required; retained transaction at {transaction}: malformed journal ({error})"
+        ) from error
+    expected_campaign = str(campaign.resolve())
+    if (
+        not isinstance(journal, dict)
+        or journal.get("version") != JOURNAL_VERSION
+        or journal.get("campaign") != expected_campaign
+        or journal.get("owned_outputs") != list(OWNED_OUTPUTS)
+        or not isinstance(journal.get("entries"), list)
+    ):
+        raise RuntimeError(
+            f"Motion Sickness recovery required; retained transaction at {transaction}: foreign or unsupported journal"
+        )
+    entries = journal["entries"]
+    if [entry.get("path") for entry in entries if isinstance(entry, dict)] != journal.get("changed"):
+        raise RuntimeError(
+            f"Motion Sickness recovery required; retained transaction at {transaction}: journal entry mismatch"
+        )
+    if not isinstance(journal.get("changed"), list) or not set(journal["changed"]).issubset(OWNED_OUTPUTS):
+        raise RuntimeError(
+            f"Motion Sickness recovery required; retained transaction at {transaction}: ownership mismatch"
+        )
+    for entry in entries:
+        relative = entry.get("path") if isinstance(entry, dict) else None
+        if (
+            not isinstance(relative, str)
+            or Path(relative).is_absolute()
+            or ".." in Path(relative).parts
+            or relative not in OWNED_OUTPUTS
+            or not isinstance(entry.get("staged"), dict)
+            or not isinstance(entry.get("preimage"), dict)
+            or entry["preimage"].get("exists") not in (True, False)
+        ):
+            raise RuntimeError(
+                f"Motion Sickness recovery required; retained transaction at {transaction}: unsafe journal path or metadata"
+            )
+    return transaction, journal
+
+
+def _matches(path: Path, metadata: dict[str, object]) -> bool:
+    if not path.is_file():
+        return False
+    return _digest(path.read_bytes()) == {
+        "sha256": metadata.get("sha256"),
+        "bytes": metadata.get("bytes"),
+    }
+
+
+def recover_transaction(
+    campaign: Path = CAMPAIGN,
+    replace: Callable[[str | Path, str | Path], None] = os.replace,
+) -> bool:
+    loaded = _load_journal(campaign)
+    if loaded is None:
+        return False
+    transaction, journal = loaded
+    try:
+        for entry in reversed(journal["entries"]):
+            relative = entry["path"]
+            destination = campaign / relative
+            staged_meta = entry["staged"]
+            preimage = entry["preimage"]
+            destination_is_staged = _matches(destination, staged_meta)
+            if preimage["exists"]:
+                if _matches(destination, preimage):
+                    continue
+                backup = transaction / "backups" / relative
+                if not _matches(backup, preimage):
+                    raise RuntimeError(f"backup integrity mismatch for {relative}")
+                if not destination_is_staged:
+                    raise RuntimeError(f"destination is neither staged nor preimage for {relative}")
+                rollback = transaction / "rollback" / relative
+                _write_durable(rollback, backup.read_bytes())
+                replace(rollback, destination)
+                if not _matches(destination, preimage):
+                    raise RuntimeError(f"rollback verification failed for {relative}")
+            else:
+                if not destination.exists():
+                    continue
+                if not destination_is_staged:
+                    raise RuntimeError(f"foreign destination blocks rollback for {relative}")
+                destination.unlink()
+                if destination.exists():
+                    raise RuntimeError(f"rollback deletion failed for {relative}")
+    except BaseException as error:
+        raise RuntimeError(
+            f"Motion Sickness recovery required; retained transaction at {transaction}: {error}"
+        ) from error
+    shutil.rmtree(transaction)
+    return True
 
 
 def _metadata(root: Path, relative: str) -> dict[str, object]:
@@ -256,6 +375,7 @@ def _plan_derived(campaign: Path, plan: dict[str, bytes]) -> None:
 
 
 def build_plan(root: Path = ROOT, campaign: Path = CAMPAIGN) -> dict[str, bytes]:
+    recover_transaction(campaign)
     plan: dict[str, bytes] = {}
     _plan_batch(campaign, plan)
     _plan_review(root, campaign, plan)
@@ -280,6 +400,7 @@ def commit_plan(
     campaign: Path = CAMPAIGN,
     replace: Callable[[str | Path, str | Path], None] = os.replace,
 ) -> list[str]:
+    recover_transaction(campaign, replace=replace)
     if set(plan) != set(OWNED_OUTPUTS):
         raise ValueError("refusing a non-canonical Motion Sickness output set")
     changed = [
@@ -289,39 +410,51 @@ def commit_plan(
     ]
     if not changed:
         return []
-    transaction = Path(tempfile.mkdtemp(prefix=".regenerate_motionsickness-", dir=campaign))
+    transaction = campaign / TRANSACTION_NAME
+    transaction.mkdir()
     staged = transaction / "staged"
     backups = transaction / "backups"
-    promoted: list[str] = []
-    created: set[str] = set()
     try:
+        entries = []
         for relative in changed:
             stage = staged / relative
-            stage.parent.mkdir(parents=True, exist_ok=True)
-            stage.write_bytes(plan[relative])
+            _write_durable(stage, plan[relative])
             current = campaign / relative
             if current.is_file():
                 backup = backups / relative
-                backup.parent.mkdir(parents=True, exist_ok=True)
-                backup.write_bytes(current.read_bytes())
+                preimage_data = current.read_bytes()
+                _write_durable(backup, preimage_data)
+                preimage = {"exists": True, **_digest(preimage_data)}
             else:
-                created.add(relative)
+                preimage = {"exists": False}
+            entries.append({"path": relative, "preimage": preimage, "staged": _digest(plan[relative])})
+        for entry in entries:
+            if not _matches(staged / entry["path"], entry["staged"]):
+                raise RuntimeError(f"staged content verification failed for {entry['path']}")
+        journal = {
+            "version": JOURNAL_VERSION,
+            "campaign": str(campaign.resolve()),
+            "owned_outputs": list(OWNED_OUTPUTS),
+            "changed": changed,
+            "entries": entries,
+        }
+        _write_durable(transaction / "journal.tmp", _json_bytes(journal))
+        os.replace(transaction / "journal.tmp", transaction / "journal.json")
         for relative in changed:
             destination = campaign / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             replace(staged / relative, destination)
-            promoted.append(relative)
+        for entry in entries:
+            if not _matches(campaign / entry["path"], entry["staged"]):
+                raise RuntimeError(f"promotion verification failed for {entry['path']}")
+        shutil.rmtree(transaction)
         return changed
-    except BaseException:
-        for relative in reversed(promoted):
-            destination = campaign / relative
-            if relative in created:
-                destination.unlink(missing_ok=True)
-            else:
-                replace(backups / relative, destination)
+    except Exception:
+        if (transaction / "journal.json").is_file():
+            recover_transaction(campaign, replace=replace)
+        elif transaction.exists():
+            shutil.rmtree(transaction)
         raise
-    finally:
-        shutil.rmtree(transaction, ignore_errors=True)
 
 
 def main() -> int:

@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 74,
-  "total_bytes": 12745986,
+  "total_bytes": 12755348,
   "files": [
     {
       "path": "MASTER_COVERAGE_LEDGER.md",
@@ -369,8 +369,8 @@
       "path": "tests/test_regenerate_motionsickness.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 9361,
-      "sha256": "A9BC4283D1552DCCBC61BE4D97A7ED77DFADCC8B686A221686936C3274869541"
+      "bytes": 12986,
+      "sha256": "722035B96026E395BCD0A36D70B87D7D243AA0AABA0884B11DB036F97CF9C514"
     },
     {
       "path": "tests/test_regenerate_superimmune.py",
@@ -432,8 +432,8 @@
       "path": "tools/regenerate_motionsickness.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 15923,
-      "sha256": "6D1796C1786D8161DA63B03BF27E252D9592BDA7317186CA2E5E864269F4FDC4"
+      "bytes": 21660,
+      "sha256": "FB5CBE1E187A20FB6079CA2C279C0D2F00471F17F20A00A3DC7AF36466EE9EDA"
     },
     {
       "path": "tools/regenerate_scrounger.py",

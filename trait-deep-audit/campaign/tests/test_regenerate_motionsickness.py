@@ -192,6 +192,82 @@ class MotionSicknessGeneratorSafetyTests(unittest.TestCase):
         self.assertEqual(_all_files(self.campaign), before)
         self.assertFalse(any(path.name.startswith(".regenerate_motionsickness-") for path in self.campaign.iterdir()))
 
+    def test_interruption_after_partial_promotion_recovers_on_next_run(self) -> None:
+        plan = GENERATOR.build_plan(self.root, self.campaign)
+        canonical = dict(plan)
+        plan[GENERATOR.OWNED_OUTPUTS[0]] += b" "
+        plan[GENERATOR.OWNED_OUTPUTS[1]] += b" "
+        before = _all_files(self.campaign)
+        calls = 0
+
+        def interrupt(source: str | Path, destination: str | Path) -> None:
+            nonlocal calls
+            calls += 1
+            Path(source).replace(destination)
+            if calls == 2:
+                raise SystemExit("injected interruption")
+
+        with self.assertRaisesRegex(SystemExit, "injected interruption"):
+            GENERATOR.commit_plan(plan, self.campaign, replace=interrupt)
+        transaction = self.campaign / GENERATOR.TRANSACTION_NAME
+        self.assertTrue((transaction / "journal.json").is_file())
+        self.assertNotEqual(_all_files(self.campaign), before)
+
+        self._run()
+        self.assertFalse(transaction.exists())
+        for relative, data in canonical.items():
+            self.assertEqual((self.campaign / relative).read_bytes(), data)
+        self.assertEqual(self._run(), [])
+
+    def test_rollback_replace_failure_retains_recovery_evidence(self) -> None:
+        plan = GENERATOR.build_plan(self.root, self.campaign)
+        plan[GENERATOR.OWNED_OUTPUTS[0]] += b" "
+        plan[GENERATOR.OWNED_OUTPUTS[1]] += b" "
+        calls = 0
+
+        def fail_promotion_and_rollback(source: str | Path, destination: str | Path) -> None:
+            nonlocal calls
+            calls += 1
+            if calls >= 2:
+                raise OSError("persistent replace failure")
+            Path(source).replace(destination)
+
+        with self.assertRaisesRegex(RuntimeError, "recovery required; retained transaction"):
+            GENERATOR.commit_plan(plan, self.campaign, replace=fail_promotion_and_rollback)
+        transaction = self.campaign / GENERATOR.TRANSACTION_NAME
+        self.assertTrue((transaction / "journal.json").is_file())
+        self.assertTrue((transaction / "backups" / GENERATOR.OWNED_OUTPUTS[0]).is_file())
+
+    def test_malformed_and_foreign_journals_fail_closed(self) -> None:
+        transaction = self.campaign / GENERATOR.TRANSACTION_NAME
+        transaction.mkdir()
+        (transaction / "journal.json").write_text("{not-json", encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "malformed journal"):
+            GENERATOR.build_plan(self.root, self.campaign)
+        self.assertTrue(transaction.exists())
+
+        shutil.rmtree(transaction)
+        transaction.mkdir()
+        journal = {
+            "version": GENERATOR.JOURNAL_VERSION,
+            "campaign": str((self.campaign / "foreign").resolve()),
+            "owned_outputs": list(GENERATOR.OWNED_OUTPUTS),
+            "changed": [],
+            "entries": [],
+        }
+        (transaction / "journal.json").write_text(json.dumps(journal), encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "foreign or unsupported journal"):
+            GENERATOR.build_plan(self.root, self.campaign)
+        self.assertTrue(transaction.exists())
+
+        journal["campaign"] = str(self.campaign.resolve())
+        journal["changed"] = ["../escape.json"]
+        journal["entries"] = [{"path": "../escape.json", "preimage": {"exists": False}, "staged": {}}]
+        (transaction / "journal.json").write_text(json.dumps(journal), encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "ownership mismatch"):
+            GENERATOR.build_plan(self.root, self.campaign)
+        self.assertTrue(transaction.exists())
+
     def test_second_pass_is_a_deterministic_fixed_point(self) -> None:
         self._run()
         first = _all_files(self.campaign)
