@@ -136,6 +136,9 @@ def release_blocker_reference_errors(
                 blocker_id_set.add(queue_id)
                 blocker_ids.append(queue_id)
 
+    if blocker_errors:
+        return blocker_errors
+
     queue_errors: list[str] = []
     reference_counts = {queue_id: 0 for queue_id in blocker_ids}
     try:

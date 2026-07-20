@@ -1605,6 +1605,15 @@ class ReleaseBlockerReferenceValidationTests(unittest.TestCase):
             ],
         )
 
+    def test_schema_errors_preempt_missing_queue_id_resolution(self) -> None:
+        blocker = {"identities": [{"queue_ids": ["", "finding:missing"]}]}
+        self.assertEqual(
+            self.validate(blocker, [{"queue_id": "finding:other"}]),
+            [
+                "release_blocker_queue.json identities[0].queue_ids[0] must be a nonempty string"
+            ],
+        )
+
     def test_relevant_duplicates_count_and_unrelated_duplicates_are_ignored(self) -> None:
         blocker = {"identities": [{"queue_ids": ["wanted"]}]}
         self.assertEqual(
