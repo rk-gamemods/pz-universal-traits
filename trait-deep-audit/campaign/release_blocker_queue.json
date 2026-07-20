@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "remediation_queue_sha256": "baaac3347319abf2310758c3b0b23f7f48614bfca2f4efb2797958f0f6cb08f5",
+  "remediation_queue_sha256": "d359362d4533a40feb7713fc449ba1a365daa9f9d26e88264a42b07939542bac",
   "category_label": "release-blocker",
   "classification_scope_statement": "Only the queue rows listed by these reviewed semantic identities are classified as release-blocker; all other rows remain unclassified in the exhaustive ledger.",
   "identities": [
@@ -25,18 +25,6 @@
       ],
       "dependencies": [],
       "evidence_scope": "Motion Sickness calls a nonexistent GameTime method on its runtime path."
-    },
-    {
-      "semantic_identity": "trait:UT_superimmune",
-      "identity_kind": "trait",
-      "status": "open",
-      "priority_reason_code": "infection-state-corruption",
-      "queue_ids": [
-        "finding:B11-SUPERIMMUNE-001",
-        "dimension:UniversalTraits:UT_superimmune:java_lua"
-      ],
-      "dependencies": [],
-      "evidence_scope": "Superimmune writes composite apparent sickness back into zombie infection state."
     },
     {
       "semantic_identity": "trait:UT_immuneresponse",

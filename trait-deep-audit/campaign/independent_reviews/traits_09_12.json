@@ -1845,7 +1845,18 @@
         "RP0912-SAVELOAD-001",
         "RP0912-BALANCE-PERF-001",
         "RP0912-LOCALE-001"
-      ]
+      ],
+      "release_parity": {
+        "source_runtime_sha256": "3341B297183C80E31D6582D6456D980487E50C98189F6A254401EB98BFD1F92A",
+        "release_runtime_sha256": "3341B297183C80E31D6582D6456D980487E50C98189F6A254401EB98BFD1F92A",
+        "state": "proven-correct"
+      },
+      "repair_resolution": {
+        "state": "implemented-and-statically-validated",
+        "finding_id": "B11-SUPERIMMUNE-001",
+        "producer_contract": "EveryOneMinute; underlying CharacterStat.ZOMBIE_INFECTION only",
+        "remaining_proof": "Current-build in-game execution after a full relaunch is unobserved."
+      }
     },
     {
       "accepted_overall_state": "proven-correct",

@@ -40,8 +40,8 @@
     "trait_batches/batch_12.jsonl",
     "translation_audit.json"
   ],
-  "file_count": 68,
-  "total_bytes": 12707005,
+  "file_count": 70,
+  "total_bytes": 12709858,
   "files": [
     {
       "path": "MASTER_COVERAGE_LEDGER.md",
@@ -63,6 +63,13 @@
       "byte_semantics": "utf-8-lf",
       "bytes": 1605,
       "sha256": "0EAACC1F9046114326892FD3C06AB92D332B27C9F9B992606931E5A2BFDAAFDD"
+    },
+    {
+      "path": "change-impact/superimmune-infection-channel-resolution.json",
+      "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 1608,
+      "sha256": "76364182E57915B85073E975FBB396ECF17A82AF7885991E351C96AF228DC496"
     },
     {
       "path": "change-impact/unwavering-copy-resolution.json",
@@ -96,22 +103,22 @@
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2257805,
-      "sha256": "7F106D8B7BFA4C160B3F18FECD506C97B2CCCFEBAE53EC71D0B5819B385BE078"
+      "bytes": 2257874,
+      "sha256": "FEBD0800D35DD1C4BEE3F58813AB4F2FE22D9717437C2DCE1421DEBA98867308"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2081781,
-      "sha256": "347705C618011B6705E288CC18924EF4E418C89E95F11FA116339EBCA94C2D86"
+      "bytes": 2081706,
+      "sha256": "112D76C5E77618B5B84FC60E5AB1CB7B9FD9DC9DAE7CEDCEB7794B18DCD030F3"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1277698,
-      "sha256": "02CEC2C3DC3EC75E5AD605CBD247B8CBF6FBAF6DA28DAB793B55946BDFC56B1A"
+      "bytes": 1277767,
+      "sha256": "990570551858D55398E51C7967170AD4AF03CB000EAB2DD0C3CFD42ADBA0B174"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
@@ -145,8 +152,8 @@
       "path": "independent_reviews/traits_09_12.json",
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
-      "bytes": 112783,
-      "sha256": "130092739648EE4F351D519AC77F606E8DCE1E13420561CB04AD4B11BA5D12B1"
+      "bytes": 113388,
+      "sha256": "27A52A4BB934EDCCD324FC013C7CC1885085D91F474C3E0BEED192C5018C7805"
     },
     {
       "path": "independent_reviews/ut_core_integration.json",
@@ -166,22 +173,22 @@
       "path": "release_blocker_queue.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
-      "bytes": 7253,
-      "sha256": "24F36EF8F32D70E66BBC263BAD366032FF4A4D0F7B806F77E751C6D4321DAFCD"
+      "bytes": 6811,
+      "sha256": "0D121B293BAB39574F24719D02FFCA869A4C366F2F3132BE83058277381A5829"
     },
     {
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2304136,
-      "sha256": "BAAAC3347319ABF2310758C3B0B23F7F48614BFCA2F4EFB2797958F0F6CB08F5"
+      "bytes": 2296718,
+      "sha256": "D359362D4533A40FEB7713FC449BA1A365DAA9F9D26E88264A42B07939542BAC"
     },
     {
       "path": "remediation_summary.json",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
       "bytes": 1211,
-      "sha256": "F68AFFCACB1660011B97F6268D7629E6C8AEAC4836043FEF273BA3ACAF4C460E"
+      "sha256": "50102C4F279121EFF7A7E87C7D3561FA3C1976427B9B02A1F3A48EA16DE84D40"
     },
     {
       "path": "runtime-traces/utcore-wave-01.jsonl",
@@ -408,6 +415,13 @@
       "sha256": "DFCB9BE5E0C72680C5C557153E38298A5D94E6E19E1F342E9450227FDE613B2D"
     },
     {
+      "path": "tools/regenerate_superimmune.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 7988,
+      "sha256": "C9A18B72BC2C3840DFBDFC510E0553E751C2DA2792F79689C2754B9C71C02841"
+    },
+    {
       "path": "tools/regenerate_unwavering.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
@@ -502,8 +516,8 @@
       "path": "trait_batches/batch_11.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 72004,
-      "sha256": "46B75AB40DF0F1939D1B381E7AC16710C8F3C3A793A26B2F9249799150A43362"
+      "bytes": 72453,
+      "sha256": "11FBFE83557FBD93363F41AC740897040804E74E1063367C55A521DA0D2C98F4"
     },
     {
       "path": "trait_batches/batch_12.jsonl",

@@ -47,7 +47,7 @@
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "4F7338C65D9EC8C15B9D3E749A9A82ADB60F09D968265F4E0A09E65660E93326",
     "independent_reviews/traits_05_08.json": "3D1FDF7BFAAB333BF376641982344867344FBB703E86C5AE59D63FB67D9C0D4A",
-    "independent_reviews/traits_09_12.json": "130092739648EE4F351D519AC77F606E8DCE1E13420561CB04AD4B11BA5D12B1",
+    "independent_reviews/traits_09_12.json": "27A52A4BB934EDCCD324FC013C7CC1885085D91F474C3E0BEED192C5018C7805",
     "source_inventory.json": "47781D8C6AE00795C0DD5CFF8F89E295F49826BB57B64DC9DCD6DE6A767941C9",
     "trait_batches/batch_01.jsonl": "4FA9A60E8D86362B22C33D2BD2DC334565EB564071514576AAD0E90F7FF4BB81",
     "trait_batches/batch_02.jsonl": "8B1EAD1B3C9B6C33F0A40B0A78455432E3604F5C5023ECF1585CCE5CC18AAE4D",
@@ -59,7 +59,7 @@
     "trait_batches/batch_08.jsonl": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A",
     "trait_batches/batch_09.jsonl": "FFB64ADB79BEDD95F4F340F169A2BEB7A1158BF4C1E1602538AC75BA65F7D759",
     "trait_batches/batch_10.jsonl": "FD77CC372A742BCDEB66FCB6D26BF9622BA4EC439CDB8E9135CAC22B946F3A44",
-    "trait_batches/batch_11.jsonl": "46B75AB40DF0F1939D1B381E7AC16710C8F3C3A793A26B2F9249799150A43362",
+    "trait_batches/batch_11.jsonl": "11FBFE83557FBD93363F41AC740897040804E74E1063367C55A521DA0D2C98F4",
     "trait_batches/batch_12.jsonl": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47",
     "translation_audit.json": "C2FE574CB0ADB374680882065FFB9E632C12F17752BE9467B43A99F44CD0B6D2"
   },
@@ -78,14 +78,14 @@
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 77,
+      "confirmed-defect": 76,
       "coverage-gap": 12,
-      "runtime-unproven": 84
+      "runtime-unproven": 85
     },
     "dimension_states": {
-      "proven-correct": 2642,
-      "confirmed-defect": 292,
-      "coverage-gap": 817,
+      "proven-correct": 2648,
+      "confirmed-defect": 288,
+      "coverage-gap": 815,
       "runtime-unproven": 1001
     }
   },
@@ -55733,7 +55733,7 @@
     {
       "trait_id": "UniversalTraits:UT_superimmune",
       "batch": "batch_11",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
@@ -55776,37 +55776,31 @@
           ]
         },
         "source_intent": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "exceptional infection resistance"
+            "EveryOneMinute reads and writes only CharacterStat.ZOMBIE_INFECTION, subtracts exactly 2, and floors at zero without deriving state from apparent infection."
           ],
-          "missing_proof": [
-            "No live save was mutated; the current source establishes the counterexample."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "source_intent"
           ]
         },
         "runtime_path": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "OnNewGame flag plus EveryOneMinute reads apparent infection and writes ZOMBIE_INFECTION"
+            "EveryOneMinute reads and writes only CharacterStat.ZOMBIE_INFECTION, subtracts exactly 2, and floors at zero without deriving state from apparent infection."
           ],
-          "missing_proof": [
-            "No live save was mutated; the current source establishes the counterexample."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "runtime_path"
           ]
         },
         "numbers": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "sets infection to max(food sickness,zombie fever,zombie infection)-2"
+            "EveryOneMinute reads and writes only CharacterStat.ZOMBIE_INFECTION, subtracts exactly 2, and floors at zero without deriving state from apparent infection."
           ],
-          "missing_proof": [
-            "No live save was mutated; the current source establishes the counterexample."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "numbers"
           ]
@@ -55836,23 +55830,21 @@
         "reset_save_load": {
           "state": "runtime-unproven",
           "evidence": [
-            "flag persists; minute handler needs no re-registration, but OnNewGame-only flag is absent for preexisting saves"
+            "Same-process dofile reload replaces the prior minute callback and retains one effective registration."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "Full Exit to Desktop and current-build in-game reload are unobserved."
           ],
           "source_dimensions": [
             "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "method/signatures exist; semantics are misused"
+            "EveryOneMinute reads and writes only CharacterStat.ZOMBIE_INFECTION, subtracts exactly 2, and floors at zero without deriving state from apparent infection."
           ],
-          "missing_proof": [
-            "No live save was mutated; the current source establishes the counterexample."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "java_lua"
           ]
@@ -55956,25 +55948,21 @@
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "only seeds ZOMBIE_INFECTION; omits food sickness and fever counterexamples"
+            "EveryOneMinute reads and writes only CharacterStat.ZOMBIE_INFECTION, subtracts exactly 2, and floors at zero without deriving state from apparent infection."
           ],
-          "missing_proof": [
-            "A targeted regression covering this exact dimension is missing or incomplete."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "mock accurately returns max of three stats, but tests do not exercise the dangerous branches"
+            "EveryOneMinute reads and writes only CharacterStat.ZOMBIE_INFECTION, subtracts exactly 2, and floors at zero without deriving state from apparent infection."
           ],
-          "missing_proof": [
-            "A current engine-faithful mock for this exact path is missing or incomplete."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "mocks"
           ]

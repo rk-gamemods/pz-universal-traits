@@ -1,0 +1,42 @@
+{
+  "schema": "ut-superimmune-infection-channel-resolution-v1",
+  "trait_id": "UniversalTraits:UT_superimmune",
+  "finding_id": "B11-SUPERIMMUNE-001",
+  "authority": "pre-campaign UTMods port; upstream More Traits state machine is intentionally not restored",
+  "accepted_intent": {
+    "cost": 10,
+    "reduction": 2,
+    "floor": 0,
+    "cadence": "every in-game minute",
+    "channel": "CharacterStat.ZOMBIE_INFECTION",
+    "scope": "single-player"
+  },
+  "engine_evidence": [
+    "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyDamage.java:1664",
+    "PZCodebase/Java/source/zombie/characters/CharacterStat.java:9"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_superimmune.lua",
+      "sha256": "3341B297183C80E31D6582D6456D980487E50C98189F6A254401EB98BFD1F92A",
+      "bytes": 993
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_superimmune.lua",
+      "sha256": "3341B297183C80E31D6582D6456D980487E50C98189F6A254401EB98BFD1F92A",
+      "bytes": 993
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "1EDC5167D028E3A186603679A84FD4F5B82EEF835DB62E0596376962E7E0B63A",
+      "bytes": 259634
+    }
+  ],
+  "counterexamples": [
+    "food sickness above infection",
+    "zombie fever above infection",
+    "zero infection with nonzero illness"
+  ],
+  "static_validation": "Producer-faithful standard-Lua coverage; source/release byte parity.",
+  "runtime_proof": "unobserved; requires full Exit to Desktop and current-build in-game minute ticks"
+}

@@ -2470,15 +2470,63 @@ test("immunocompromised marks the trait and increases infection over time", func
         "expected infection to increase by 1 (50→51)")
 end)
 
-test("superimmune marks the trait and reduces infection over time", function()
+test("superimmune reduces underlying zombie infection by exactly two", function()
     local player = fireNewGame("UniversalTraits:UT_superimmune")
     player:getStats():set(CharacterStat.ZOMBIE_INFECTION, 50)
     withActivePlayer(player, function()
         Events.EveryOneMinute:fire()
     end)
     assert_eq(player:getModData()["UT_superimmune"], true, "expected superimmune flag")
-    assert_true(math.abs(player:getBodyDamage():getApparentInfectionLevel() - 48) < 0.1,
-        "expected infection to decrease by 2 (50→48)")
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_INFECTION), 48, "expected direct 50→48")
+end)
+
+test("superimmune floors underlying zombie infection at zero", function()
+    local player = MockPlayer({ "UniversalTraits:UT_superimmune" }, { zombieInfection = 1 })
+    withActivePlayer(player, function() Events.EveryOneMinute:fire() end)
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_INFECTION), 0, "expected floor at zero")
+end)
+
+test("superimmune does nothing without the trait", function()
+    local player = MockPlayer({}, { zombieInfection = 50 })
+    withActivePlayer(player, function() Events.EveryOneMinute:fire() end)
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_INFECTION), 50, "expected no mutation")
+end)
+
+test("superimmune ignores higher food sickness and preserves illness channels", function()
+    local player = MockPlayer({ "UniversalTraits:UT_superimmune" }, {
+        zombieInfection = 20, foodSickness = 50, zombieFever = 7,
+    })
+    withActivePlayer(player, function() Events.EveryOneMinute:fire() end)
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_INFECTION), 18, "expected direct infection reduction")
+    assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 50, "expected food sickness unchanged")
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_FEVER), 7, "expected fever unchanged")
+end)
+
+test("superimmune ignores higher fever and preserves illness channels", function()
+    local player = MockPlayer({ "UniversalTraits:UT_superimmune" }, {
+        zombieInfection = 20, foodSickness = 7, zombieFever = 50,
+    })
+    withActivePlayer(player, function() Events.EveryOneMinute:fire() end)
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_INFECTION), 18, "expected direct infection reduction")
+    assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 7, "expected food sickness unchanged")
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_FEVER), 50, "expected fever unchanged")
+end)
+
+test("superimmune does not manufacture infection from nonzero illness", function()
+    local player = MockPlayer({ "UniversalTraits:UT_superimmune" }, {
+        zombieInfection = 0, foodSickness = 50, zombieFever = 40,
+    })
+    withActivePlayer(player, function() Events.EveryOneMinute:fire() end)
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_INFECTION), 0, "expected zero infection unchanged")
+    assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 50, "expected food sickness unchanged")
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_FEVER), 40, "expected fever unchanged")
+end)
+
+test("superimmune same-process reload keeps one minute handler", function()
+    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_superimmune.lua")
+    local player = MockPlayer({ "UniversalTraits:UT_superimmune" }, { zombieInfection = 50 })
+    withActivePlayer(player, function() Events.EveryOneMinute:fire() end)
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_INFECTION), 48, "expected one 2-point reduction")
 end)
 
 test("idealweight doubles calorie burn when overweight", function()
