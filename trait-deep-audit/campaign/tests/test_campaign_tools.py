@@ -359,6 +359,14 @@ class CampaignManifestTests(unittest.TestCase):
 
 
 class WoodSplitterRegeneratorTests(unittest.TestCase):
+    def assertNoTransactionArtifacts(self, campaign: Path) -> None:
+        artifacts = [
+            path for path in campaign.rglob("*")
+            if path.name == WOOD_MODULE.JOURNAL_NAME
+            or path.name.startswith(WOOD_MODULE.TRANSACTION_PREFIX)
+        ]
+        self.assertEqual(artifacts, [])
+
     def test_plan_is_deterministic_and_preserves_unrelated_event_records(self) -> None:
         first = WOOD_MODULE.build_plan()
         second = WOOD_MODULE.build_plan()
@@ -408,7 +416,7 @@ class WoodSplitterRegeneratorTests(unittest.TestCase):
             def fail_once(source: str | Path, target: str | Path) -> None:
                 nonlocal calls
                 calls += 1
-                if calls == 4:
+                if calls == 2:
                     raise OSError("injected replacement failure")
                 os.replace(source, target)
 
@@ -416,6 +424,77 @@ class WoodSplitterRegeneratorTests(unittest.TestCase):
                 WOOD_MODULE.commit_transaction(plan, replace=fail_once)
             after = {relative: (plan.campaign / relative).read_bytes() for relative in WOOD_MODULE.OUTPUTS}
             self.assertEqual(before, after)
+            self.assertNoTransactionArtifacts(plan.campaign)
+
+    def test_fingerprints_are_checkout_line_ending_independent(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = _wood_fixture(Path(directory))
+            lf_plan = WOOD_MODULE.build_plan(root)
+            for relative in (WOOD_MODULE.SOURCE_UI, WOOD_MODULE.RELEASE_UI):
+                path = root / relative
+                path.write_bytes(path.read_bytes().replace(b"\r\n", b"\n").replace(b"\n", b"\r\n"))
+            crlf_plan = WOOD_MODULE.build_plan(root)
+            for relative in ("translation_audit.json", "source_inventory.json", "final_trait_ledger.json"):
+                self.assertEqual(lf_plan.planned[relative], crlf_plan.planned[relative])
+
+    def test_source_inventory_duplicate_missing_extra_and_cross_owned_paths_fail(self) -> None:
+        mutations = (
+            lambda anchors: anchors.append(dict(next(row for row in anchors if row.get("path") == WOOD_MODULE.SOURCE_UI))),
+            lambda anchors: anchors.__setitem__(slice(None), [row for row in anchors if row.get("path") != WOOD_MODULE.SOURCE_UI]),
+            lambda anchors: anchors.append({"path": WOOD_MODULE.RELEASE_UI}),
+        )
+        for mutate in mutations:
+            with self.subTest(mutation=mutate):
+                with tempfile.TemporaryDirectory() as directory:
+                    root = _wood_fixture(Path(directory))
+                    path = root / "trait-deep-audit/campaign/source_inventory.json"
+                    artifact = json.loads(path.read_text(encoding="utf-8"))
+                    mutate(artifact["sources"]["anchors"])
+                    path.write_text(json.dumps(artifact), encoding="utf-8", newline="\n")
+                    before = {relative: (root / "trait-deep-audit/campaign" / relative).read_bytes() for relative in WOOD_MODULE.OUTPUTS}
+                    with self.assertRaisesRegex(ValueError, "ownership|cross-owned"):
+                        WOOD_MODULE.build_plan(root)
+                    after = {relative: (root / "trait-deep-audit/campaign" / relative).read_bytes() for relative in WOOD_MODULE.OUTPUTS}
+                    self.assertEqual(before, after)
+
+    def test_interrupted_promotion_recovers_exact_preimages_idempotently(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = _wood_fixture(Path(directory))
+            master = root / "trait-deep-audit/campaign/MASTER_COVERAGE_LEDGER.md"
+            master.write_text(master.read_text(encoding="utf-8").replace("statically validated", "stale"), encoding="utf-8", newline="\n")
+            plan = WOOD_MODULE.build_plan(root)
+            changed = [relative for relative in WOOD_MODULE.OUTPUTS if plan.planned[relative] != plan.original[relative]]
+            entries = []
+            for relative in changed:
+                target = plan.campaign / relative
+                stage = target.parent / f"{WOOD_MODULE.TRANSACTION_PREFIX}{target.name}.stage"
+                backup = target.parent / f"{WOOD_MODULE.TRANSACTION_PREFIX}{target.name}.backup"
+                WOOD_MODULE._write_durable(stage, plan.planned[relative])
+                WOOD_MODULE._write_durable(backup, plan.original[relative])
+                entries.append({
+                    "relative": relative,
+                    "stage": stage.name,
+                    "backup": backup.name,
+                    "preimage_sha256": WOOD_MODULE._sha256(plan.original[relative]),
+                    "planned_sha256": WOOD_MODULE._sha256(plan.planned[relative]),
+                })
+            journal = plan.campaign / WOOD_MODULE.JOURNAL_NAME
+            WOOD_MODULE._write_durable(journal, WOOD_MODULE._json_bytes({
+                "schema": "regenerate_woodsplitter.transaction.v1",
+                "phase": "promoting",
+                "entries": entries,
+            }, sort_keys=True))
+            first = entries[0]
+            first_target = plan.campaign / first["relative"]
+            os.replace(first_target.parent / first["stage"], first_target)
+
+            self.assertTrue(WOOD_MODULE.recover_transaction(plan.campaign))
+            self.assertFalse(WOOD_MODULE.recover_transaction(plan.campaign))
+            self.assertEqual(
+                {relative: (plan.campaign / relative).read_bytes() for relative in WOOD_MODULE.OUTPUTS},
+                plan.original,
+            )
+            self.assertNoTransactionArtifacts(plan.campaign)
 
     def test_ambiguous_ownership_fails_before_writes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

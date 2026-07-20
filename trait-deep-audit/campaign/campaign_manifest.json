@@ -31,7 +31,7 @@
     "translation_audit.json"
   ],
   "file_count": 61,
-  "total_bytes": 12669349,
+  "total_bytes": 12680203,
   "files": [
     {
       "path": "MASTER_COVERAGE_LEDGER.md",
@@ -67,7 +67,7 @@
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
       "bytes": 2143765,
-      "sha256": "F84AF91E87BDCD00C659A53DDE3993BD6DCFCD624FD761CBF735D54D58E26F91"
+      "sha256": "5D62159832CA7333D4AA24DF81386233DCE6432EDEA0F535BB97B397796200E6"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
@@ -276,8 +276,8 @@
     {
       "path": "tests/test_campaign_tools.py",
       "kind": "regression-test",
-      "bytes": 25315,
-      "sha256": "3D5985C9AC3A97A5B5A8EC36AEC47E9691AAEF47520097D2B49058F860078732"
+      "bytes": 30092,
+      "sha256": "84FF747AF1FD7828B7197E223354141E700BFB6ABB22B38958BB1A86E255CE9D"
     },
     {
       "path": "tools/build_campaign_manifest.py",
@@ -312,8 +312,8 @@
     {
       "path": "tools/regenerate_woodsplitter.py",
       "kind": "deterministic-tool",
-      "bytes": 26385,
-      "sha256": "97CD9A291CDADA695F6AF43ABF7B651A6FC5519ECCD34328751C52CD2497BD74"
+      "bytes": 32464,
+      "sha256": "57C8F09C10B282994AD5B42FBB14EFE7520B8C64C03EFD2786FDC512959B208B"
     },
     {
       "path": "tools/validate_campaign.py",
@@ -396,8 +396,8 @@
     {
       "path": "translation_audit.json",
       "kind": "translation-audit",
-      "bytes": 494907,
-      "sha256": "58AB94886410B3DCE2CDF9F06C66D27662A4F342354C2DDE5A391FA066B2DBF0"
+      "bytes": 494905,
+      "sha256": "89C8338252797F29D2CB327DC46695E8E23CE23CAAE8BDEFD1F7D464A26566FD"
     }
   ]
 }

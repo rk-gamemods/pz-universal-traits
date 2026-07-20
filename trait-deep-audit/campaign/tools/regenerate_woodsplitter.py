@@ -52,6 +52,8 @@ MANIFEST_REFRESH_PATHS = tuple(path for path in OUTPUTS if path != "campaign_man
 )
 SOURCE_UI = "UniversalTraits/media/lua/shared/Translate/EN/UI.json"
 RELEASE_UI = "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json"
+JOURNAL_NAME = ".regenerate_woodsplitter.transaction.json"
+TRANSACTION_PREFIX = ".regenerate_woodsplitter."
 
 
 def _json_bytes(value: Any, *, compact: bool = False, sort_keys: bool = False) -> bytes:
@@ -75,6 +77,11 @@ def _load_jsonl(data: bytes) -> list[dict[str, Any]]:
 
 def _sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest().upper()
+
+
+def _canonical_text_bytes(data: bytes) -> bytes:
+    """Return the checkout-independent UTF-8 representation used by fingerprints."""
+    return data.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n").encode("utf-8")
 
 
 def _exactly_one(rows: list[dict[str, Any]], key: str, value: str, owner: str) -> dict[str, Any]:
@@ -112,14 +119,14 @@ class Plan:
 
 
 def _fingerprint(path: Path) -> dict[str, Any]:
-    data = path.read_bytes()
+    data = _canonical_text_bytes(path.read_bytes())
     text = data.decode("utf-8")
     return {
         "bytes": len(data),
         "sha256": hashlib.sha256(data).hexdigest(),
         "line_endings": {
-            "crlf": text.count("\r\n"),
-            "bare_lf": text.count("\n") - text.count("\r\n"),
+            "crlf": 0,
+            "bare_lf": text.count("\n"),
         },
     }
 
@@ -138,6 +145,16 @@ def _update_fingerprints(value: Any, relative: str, current: dict[str, Any]) -> 
         for child in value:
             count += _update_fingerprints(child, relative, current)
     return count
+
+
+def _path_count(value: Any, relative: str) -> int:
+    if isinstance(value, dict):
+        return int(value.get("path") == relative) + sum(
+            _path_count(child, relative) for child in value.values()
+        )
+    if isinstance(value, list):
+        return sum(_path_count(child, relative) for child in value)
+    return 0
 
 
 def _dimension(state: str, evidence: str, missing: str = "") -> dict[str, Any]:
@@ -237,10 +254,16 @@ def _update_source_records(plan: Plan) -> dict[str, Any]:
     )
     row["terminal_state"] = "runtime-unproven"
     row["terminal_state_reasons"] = ["in-game rendering not observed"]
-    for source_relative in (SOURCE_UI, RELEASE_UI):
-        matches = _update_fingerprints(artifact, source_relative, _fingerprint(plan.root / source_relative))
-        if matches < 1:
-            raise ValueError(f"{relative} fingerprint ownership mismatch: {source_relative}")
+    source_rows = artifact["provenance"]["current_on_disk_sources"]["source"]
+    release_rows = artifact["provenance"]["current_on_disk_sources"]["release"]
+    source_row = _exactly_one(source_rows, "path", SOURCE_UI, f"{relative} source")
+    release_row = _exactly_one(release_rows, "path", RELEASE_UI, f"{relative} release")
+    if any(row.get("path") == RELEASE_UI for row in source_rows):
+        raise ValueError(f"{relative} cross-owned release path in source records")
+    if any(row.get("path") == SOURCE_UI for row in release_rows):
+        raise ValueError(f"{relative} cross-owned source path in release records")
+    source_row.update({key: value for key, value in _fingerprint(plan.root / SOURCE_UI).items() if key in source_row})
+    release_row.update({key: value for key, value in _fingerprint(plan.root / RELEASE_UI).items() if key in release_row})
     plan.write_json(relative, artifact, compact=True)
 
     relative = "independent_reviews/traits_09_12.json"
@@ -258,13 +281,19 @@ def _update_source_records(plan: Plan) -> dict[str, Any]:
 
     relative = "source_inventory.json"
     inventory = plan.json(relative)
-    inventory_matches = 0
-    for source_relative in (SOURCE_UI, RELEASE_UI):
-        inventory_matches += _update_fingerprints(
-            inventory, source_relative, _fingerprint(plan.root / source_relative)
+    source_matches = _path_count(inventory, SOURCE_UI)
+    release_matches = _path_count(inventory, RELEASE_UI)
+    if source_matches != 1 or release_matches != 0:
+        raise ValueError(
+            f"{relative} ownership mismatch: source={source_matches}, release={release_matches}"
         )
-    if inventory_matches < 1:
-        raise ValueError(f"{relative} fingerprint ownership mismatch")
+    anchors = inventory["sources"]["anchors"]
+    source_anchor = _exactly_one(anchors, "path", SOURCE_UI, relative)
+    if any(row.get("path") == RELEASE_UI for row in anchors):
+        raise ValueError(f"{relative} cross-owned release path")
+    source_anchor.update(
+        {key: value for key, value in _fingerprint(plan.root / SOURCE_UI).items() if key in source_anchor}
+    )
     plan.write_json(relative, inventory)
     return review
 
@@ -375,7 +404,9 @@ def _update_derived(plan: Plan, batch: dict[str, Any], review: dict[str, Any]) -
     ):
         if source_relative not in ledger["source_artifact_sha256"]:
             raise ValueError(f"{relative} missing source hash owner: {source_relative}")
-        ledger["source_artifact_sha256"][source_relative] = _sha256(plan.read(source_relative))
+        ledger["source_artifact_sha256"][source_relative] = _sha256(
+            _canonical_text_bytes(plan.read(source_relative))
+        )
     overall_counts = Counter(row["overall_state"] for row in ledger["traits"])
     dimension_counts = Counter(
         detail["state"] for row in ledger["traits"] for detail in row["dimensions"].values()
@@ -492,7 +523,10 @@ def _update_manifest(plan: Plan) -> None:
         matches = [row for row in rows if row["path"] == refresh]
         if len(matches) != 1:
             raise ValueError(f"{relative} ownership mismatch for {refresh}: found {len(matches)}")
-        data = plan.read(refresh) if refresh in plan.planned else (plan.campaign / refresh).read_bytes()
+        raw = plan.read(refresh) if refresh in plan.planned else (plan.campaign / refresh).read_bytes()
+        # The large ledger is already a stable CRLF artifact in both the active and
+        # fresh Windows checkout; other owned text is stored and fingerprinted as LF.
+        data = raw if refresh == "final_trait_ledger.json" else _canonical_text_bytes(raw)
         matches[0]["bytes"] = len(data)
         matches[0]["sha256"] = _sha256(data)
     manifest["file_count"] = len(rows)
@@ -512,65 +546,151 @@ def build_plan(root: Path = ROOT) -> Plan:
     return plan
 
 
+def _confined_transaction_path(campaign: Path, relative: str) -> Path:
+    if relative not in OUTPUTS:
+        raise ValueError(f"transaction contains unowned path: {relative}")
+    path = (campaign / relative).resolve()
+    if path.parent != (campaign / relative).parent.resolve():
+        raise ValueError(f"transaction target escapes campaign: {relative}")
+    return path
+
+
+def _fsync_file(path: Path) -> None:
+    with path.open("r+b") as stream:
+        os.fsync(stream.fileno())
+
+
+def _write_durable(path: Path, data: bytes) -> None:
+    handle, temp_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".write", dir=path.parent)
+    temp = Path(temp_name)
+    try:
+        with os.fdopen(handle, "wb") as stream:
+            stream.write(data)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temp, path)
+        _fsync_file(path)
+    finally:
+        temp.unlink(missing_ok=True)
+
+
+def recover_transaction(campaign: Path) -> bool:
+    """Restore exact preimages from a durable interrupted-transaction journal."""
+    journal_path = campaign / JOURNAL_NAME
+    if not journal_path.exists():
+        return False
+    journal = _load_json(journal_path.read_bytes())
+    if journal.get("schema") != "regenerate_woodsplitter.transaction.v1":
+        raise ValueError("unknown Wood Splitter transaction journal schema")
+    entries = journal.get("entries")
+    if not isinstance(entries, list) or not entries:
+        raise ValueError("invalid Wood Splitter transaction journal entries")
+    relatives = [entry.get("relative") for entry in entries]
+    if len(relatives) != len(set(relatives)):
+        raise ValueError("duplicate paths in Wood Splitter transaction journal")
+
+    phase = journal.get("phase")
+    if phase not in {"promoting", "cleanup"}:
+        raise ValueError("invalid Wood Splitter transaction phase")
+    verified: list[tuple[Path, Path, Path, str, str]] = []
+    for entry in entries:
+        relative = entry.get("relative")
+        if not isinstance(relative, str):
+            raise ValueError("invalid path in Wood Splitter transaction journal")
+        target = _confined_transaction_path(campaign, relative)
+        stage = target.parent / f"{TRANSACTION_PREFIX}{target.name}.stage"
+        backup = target.parent / f"{TRANSACTION_PREFIX}{target.name}.backup"
+        if entry.get("stage") != stage.name or entry.get("backup") != backup.name:
+            raise ValueError(f"transaction artifact mismatch: {relative}")
+        preimage = entry.get("preimage_sha256")
+        planned = entry.get("planned_sha256")
+        if not isinstance(preimage, str) or not isinstance(planned, str):
+            raise ValueError(f"invalid transaction hashes: {relative}")
+        if phase == "promoting":
+            if not backup.is_file():
+                raise ValueError(f"missing transaction preimage: {relative}")
+            if _sha256(backup.read_bytes()) != preimage:
+                raise ValueError(f"transaction preimage hash mismatch: {relative}")
+        verified.append((target, stage, backup, preimage, planned))
+
+    if phase == "promoting":
+        for target, _stage, backup, preimage, _planned in verified:
+            _write_durable(target, backup.read_bytes())
+            if _sha256(target.read_bytes()) != preimage:
+                raise RuntimeError(f"transaction recovery verification failed: {target}")
+    else:
+        for target, _stage, _backup, _preimage, planned in verified:
+            if not target.is_file() or _sha256(target.read_bytes()) != planned:
+                raise RuntimeError(f"committed transaction target hash mismatch: {target}")
+    for _target, stage, backup, _preimage, _planned in verified:
+        stage.unlink(missing_ok=True)
+        backup.unlink(missing_ok=True)
+    journal_path.unlink()
+    return True
+
+
 def commit_transaction(
     plan: Plan,
     replace: Callable[[str | os.PathLike[str], str | os.PathLike[str]], None] = os.replace,
 ) -> list[str]:
-    """Promote all changed outputs, rolling every promoted file back on failure."""
+    """Promote changed outputs using a durable, always-rollback recovery journal."""
+    recover_transaction(plan.campaign)
     changed = [relative for relative in OUTPUTS if plan.planned[relative] != plan.original[relative]]
     if not changed:
         return []
-    staged: dict[str, Path] = {}
-    backups: dict[str, Path] = {}
-    promoted: list[str] = []
-    preserve_backups = False
+    journal_path = plan.campaign / JOURNAL_NAME
+    entries: list[dict[str, str]] = []
     try:
         for relative in changed:
-            path = plan.campaign / relative
-            handle, temp_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".stage", dir=path.parent)
-            temp = Path(temp_name)
-            staged[relative] = temp
-            with os.fdopen(handle, "wb") as stream:
-                stream.write(plan.planned[relative])
-                stream.flush()
-                os.fsync(stream.fileno())
+            path = _confined_transaction_path(plan.campaign, relative)
+            stage = path.parent / f"{TRANSACTION_PREFIX}{path.name}.stage"
+            backup = path.parent / f"{TRANSACTION_PREFIX}{path.name}.backup"
+            if stage.exists() or backup.exists():
+                raise ValueError(f"orphan transaction artifact exists: {relative}")
+            _write_durable(stage, plan.planned[relative])
+            _write_durable(backup, plan.original[relative])
+            entries.append(
+                {
+                    "relative": relative,
+                    "stage": stage.name,
+                    "backup": backup.name,
+                    "preimage_sha256": _sha256(plan.original[relative]),
+                    "planned_sha256": _sha256(plan.planned[relative]),
+                }
+            )
+        _write_durable(
+            journal_path,
+            _json_bytes(
+                {"schema": "regenerate_woodsplitter.transaction.v1", "phase": "promoting", "entries": entries},
+                sort_keys=True,
+            ),
+        )
         for relative in changed:
-            path = plan.campaign / relative
-            backup = staged[relative].with_suffix(".backup")
-            replace(path, backup)
-            backups[relative] = backup
-            try:
-                replace(staged[relative], path)
-            except BaseException:
-                replace(backup, path)
-                backups.pop(relative, None)
-                raise
-            promoted.append(relative)
-        for backup in backups.values():
-            backup.unlink(missing_ok=True)
+            path = _confined_transaction_path(plan.campaign, relative)
+            stage = path.parent / f"{TRANSACTION_PREFIX}{path.name}.stage"
+            replace(stage, path)
+            _fsync_file(path)
+        _write_durable(
+            journal_path,
+            _json_bytes(
+                {"schema": "regenerate_woodsplitter.transaction.v1", "phase": "cleanup", "entries": entries},
+                sort_keys=True,
+            ),
+        )
+        for entry in entries:
+            path = _confined_transaction_path(plan.campaign, entry["relative"])
+            (path.parent / entry["backup"]).unlink()
+        journal_path.unlink()
         return changed
     except BaseException:
-        rollback_errors = []
-        for relative in reversed(promoted):
-            path = plan.campaign / relative
-            backup = backups.get(relative)
-            if backup is None:
-                continue
-            try:
-                path.unlink(missing_ok=True)
-                replace(backup, path)
-            except BaseException as error:  # pragma: no cover - catastrophic filesystem failure
-                rollback_errors.append(f"{relative}: {error}")
-        if rollback_errors:
-            preserve_backups = True
-            raise RuntimeError("transaction rollback incomplete: " + "; ".join(rollback_errors))
+        if journal_path.exists():
+            recover_transaction(plan.campaign)
+        else:
+            for entry in entries:
+                path = _confined_transaction_path(plan.campaign, entry["relative"])
+                (path.parent / entry["stage"]).unlink(missing_ok=True)
+                (path.parent / entry["backup"]).unlink(missing_ok=True)
         raise
-    finally:
-        cleanup_paths = list(staged.values())
-        if not preserve_backups:
-            cleanup_paths.extend(backups.values())
-        for path in cleanup_paths:
-            path.unlink(missing_ok=True)
 
 
 def main() -> int:
@@ -578,6 +698,7 @@ def main() -> int:
     if cli_result is not None:
         return cli_result
     try:
+        recover_transaction(CAMPAIGN)
         plan = build_plan()
         changed = commit_transaction(plan)
     except (OSError, ValueError, KeyError, TypeError, RuntimeError) as error:
