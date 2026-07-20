@@ -40,8 +40,8 @@
     "trait_batches/batch_12.jsonl",
     "translation_audit.json"
   ],
-  "file_count": 70,
-  "total_bytes": 12709858,
+  "file_count": 71,
+  "total_bytes": 12721741,
   "files": [
     {
       "path": "MASTER_COVERAGE_LEDGER.md",
@@ -359,6 +359,13 @@
       "sha256": "FE56FB73D33B7F3724B54C8FFC35E50BF0A50CC8F5B50DBAA595EC1C76761784"
     },
     {
+      "path": "tests/test_regenerate_superimmune.py",
+      "kind": "regression-test",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 8243,
+      "sha256": "53C3D65372A983D310264092A7E4207A4E1E1A1CC7183E3EA57B1D60DBCC63B2"
+    },
+    {
       "path": "tools/build_campaign_manifest.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
@@ -418,8 +425,8 @@
       "path": "tools/regenerate_superimmune.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 7988,
-      "sha256": "C9A18B72BC2C3840DFBDFC510E0553E751C2DA2792F79689C2754B9C71C02841"
+      "bytes": 11628,
+      "sha256": "2464FDE49DC14C75D923563271791829B0AC8FFC277C9F1DF74935BC183BD133"
     },
     {
       "path": "tools/regenerate_unwavering.py",
