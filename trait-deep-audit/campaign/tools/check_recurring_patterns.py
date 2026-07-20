@@ -323,6 +323,29 @@ def scan_translator_confusable_json(
     return {"findings": findings, "errors": []}
 
 
+def canonical_translator_confusable_gate_errors(
+    utmods_root: Path = UTMODS_ROOT,
+    pzcodebase_root: Path = PZCODEBASE_ROOT,
+) -> list[str]:
+    """Return fail-closed gate errors for the canonical English translation pair."""
+    result = scan_translator_confusable_json(
+        utmods_root / "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+        utmods_root
+        / "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+        pzcodebase_root / "Java/source/zombie/core/Translator.java",
+    )
+    errors = [
+        f"Translator confusable scan error [{row['kind']}]: {row['message']}"
+        for row in result["errors"]
+    ]
+    errors.extend(
+        "Translator confusable finding: "
+        f"{row['json_key']} {row['code_point']} at line {row['line']}, column {row['column']}"
+        for row in result["findings"]
+    )
+    return errors
+
+
 def tree_parity(source: Path, release: Path) -> dict[str, list[str]]:
     source_files = {path.relative_to(source).as_posix(): path for path in source.rglob("*") if path.is_file()}
     release_files = {path.relative_to(release).as_posix(): path for path in release.rglob("*") if path.is_file()}

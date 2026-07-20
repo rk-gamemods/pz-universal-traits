@@ -20,6 +20,7 @@ from build_final_trait_ledger import (
 from check_recurring_patterns import (
     OUTPUT_PATH as PATTERN_OUTPUT_PATH,
     build_report,
+    canonical_translator_confusable_gate_errors,
     render_report,
 )
 from build_campaign_manifest import (
@@ -66,6 +67,7 @@ def main() -> int:
             PATTERN_OUTPUT_PATH, expected_patterns, "recurring_pattern_findings.json"
         )
     )
+    errors.extend(canonical_translator_confusable_gate_errors())
 
     expected_dimensions, expected_queue, expected_summary = build_outputs()
     errors.extend(

@@ -58,6 +58,31 @@ WOOD_MODULE = importlib.util.module_from_spec(WOOD_SPEC)
 WOOD_SPEC.loader.exec_module(WOOD_MODULE)
 
 
+PRE_REMEDIATION_TEXT_REPLACEMENTS = (
+    ("fungi - the edible", "fungi — the edible"),
+    ("not reduced - it just hurts", "not reduced — it just hurts"),
+    ("normal - wounds bleed", "normal — wounds bleed"),
+    ("×0.8 (-20 percent)", "×0.8 (−20 percent)"),
+    ("×0.5 (-50 percent)", "×0.5 (−50 percent)"),
+    ("×0.7 (-30 percent)", "×0.7 (−30 percent)"),
+    ("×0.6 (-40 percent)", "×0.6 (−40 percent)"),
+    ("zero - purely a lifestyle trait", "zero — purely a lifestyle trait"),
+    ("slowly - your body needs less food", "slowly — your body needs less food"),
+    (
+        "stress decreases by -0.06 and panic decreases by -0.04",
+        "stress decreases by −0.06 and panic decreases by −0.04",
+    ),
+    (
+        "stress decreases by -0.08 when stress is above 0.6, or -0.03 otherwise",
+        "stress decreases by −0.08 when stress is above 0.6, or −0.03 otherwise",
+    ),
+    (
+        "stress decreases by -0.15 and boredom decreases by -0.2",
+        "stress decreases by −0.15 and boredom decreases by −0.2",
+    ),
+)
+
+
 def _wood_fixture(destination: Path) -> Path:
     root = destination / "UTMods"
     campaign = root / "trait-deep-audit" / "campaign"
@@ -74,6 +99,10 @@ def _wood_fixture(destination: Path) -> Path:
         target = root / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, target)
+        text = target.read_text(encoding="utf-8")
+        for current, pre_remediation in PRE_REMEDIATION_TEXT_REPLACEMENTS:
+            text = text.replace(current, pre_remediation)
+        target.write_text(text, encoding="utf-8", newline="\n")
     return root
 
 
@@ -783,12 +812,34 @@ class RecurringPatternTests(unittest.TestCase):
                 ["invalid-utf8", "missing-file"],
             )
 
-    def test_current_translation_confusable_inventory_is_diagnostic_only(self) -> None:
-        repository_root = CAMPAIGN_ROOT.parents[1]
-        source = repository_root / "UniversalTraits/media/lua/shared/Translate/EN/UI.json"
-        release = repository_root / "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json"
-        authority = repository_root.parent / "PZCodebase/Java/source/zombie/core/Translator.java"
-        result = PATTERN_MODULE.scan_translator_confusable_json(source, release, authority)
+    def test_frozen_pre_remediation_translation_confusable_inventory(self) -> None:
+        inventory = {
+            "UI_UT_mushroomerDesc": "fungi — the edible",
+            "UI_UT_badteethDesc": "not reduced — it just hurts",
+            "UI_UT_heavilybleedingwoundsDesc": "normal — wounds bleed",
+            "UI_UT_mundaneDesc": "×0.8 (−20 percent)",
+            "UI_UT_antigunDesc": "×0.5 (−50 percent)",
+            "UI_UT_flateartherDesc": "×0.7 (−30 percent)",
+            "UI_UT_ludditeDesc": "×0.6 (−40 percent)",
+            "UI_UT_owlpersonDesc": "zero — purely a lifestyle trait",
+            "UI_UT_larkpersonDesc": "zero — purely a lifestyle trait",
+            "UI_UT_asceticDesc": "slowly — your body needs less food",
+            "UI_UT_optimistDesc": "−0.06 and −0.04",
+            "UI_UT_mstoptimistDesc": "−0.08 or −0.03",
+            "UI_UT_maniacDesc": "−0.15 and −0.2",
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            authority = self.write_translator_fixture(root)
+            raw = (json.dumps(inventory, ensure_ascii=False) + "\n").encode("utf-8")
+            source = root / "source.json"
+            release = root / "release.json"
+            source.write_bytes(raw)
+            release.write_bytes(raw)
+            result = PATTERN_MODULE.scan_translator_confusable_json(
+                source, release, authority
+            )
+
         self.assertEqual(result["errors"], [])
         self.assertEqual(len(result["findings"]), 16)
         self.assertEqual(len({row["json_key"] for row in result["findings"]}), 13)
@@ -797,6 +848,59 @@ class RecurringPatternTests(unittest.TestCase):
              for code_point in ("U+2014", "U+2212")},
             {"U+2014": 6, "U+2212": 10},
         )
+
+    def test_current_translation_confusable_inventory_is_zero_and_gate_passes(self) -> None:
+        repository_root = CAMPAIGN_ROOT.parents[1]
+        source = (
+            repository_root
+            / "UniversalTraits/media/lua/shared/Translate/EN/UI.json"
+        )
+        release = (
+            repository_root
+            / "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json"
+        )
+        authority = repository_root.parent / "PZCodebase/Java/source/zombie/core/Translator.java"
+        result = PATTERN_MODULE.scan_translator_confusable_json(source, release, authority)
+        self.assertEqual(result["errors"], [])
+        self.assertEqual(result["findings"], [])
+        self.assertEqual(PATTERN_MODULE.canonical_translator_confusable_gate_errors(), [])
+
+    def test_translator_confusable_gate_fails_for_one_reintroduced_character(self) -> None:
+        for rejected in ("—", "−"):
+            with self.subTest(rejected=rejected), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                source = (
+                    root / "UniversalTraits/media/lua/shared/Translate/EN/UI.json"
+                )
+                release = (
+                    root
+                    / "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json"
+                )
+                source.parent.mkdir(parents=True)
+                release.parent.mkdir(parents=True)
+                raw = (
+                    json.dumps(
+                        {"key": f"safe {rejected} unsafe"}, ensure_ascii=False
+                    )
+                    + "\n"
+                ).encode("utf-8")
+                source.write_bytes(raw)
+                release.write_bytes(raw)
+                pzcodebase = root / "PZCodebase"
+                authority = pzcodebase / "Java/source/zombie/core/Translator.java"
+                authority.parent.mkdir(parents=True)
+                authority.write_text(
+                    "public final class Translator {\n"
+                    f"{self.translator_declaration(self.translator_code_points())}"
+                    "}\n",
+                    encoding="utf-8",
+                )
+
+                errors = PATTERN_MODULE.canonical_translator_confusable_gate_errors(
+                    root, pzcodebase
+                )
+                self.assertEqual(len(errors), 1)
+                self.assertIn("Translator confusable finding", errors[0])
 
     def test_unwavering_translation_is_ascii_safe_and_release_identical(self) -> None:
         repository_root = CAMPAIGN_ROOT.parents[1]
