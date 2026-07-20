@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 65,
-  "total_bytes": 12638396,
+  "total_bytes": 12651787,
   "files": [
     {
       "path": "MASTER_COVERAGE_LEDGER.md",
@@ -341,8 +341,8 @@
       "path": "tests/test_campaign_tools.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 32739,
-      "sha256": "681CAFB6CA6779B10CC6A663187DB125725A64EC3E6377C7FFF2D968B77215BC"
+      "bytes": 39556,
+      "sha256": "5DA468615EE55F2E2203D2C16D3769D5DBBAB799769711D8BE6177A2F64EE461"
     },
     {
       "path": "tools/build_campaign_manifest.py",
@@ -376,8 +376,8 @@
       "path": "tools/check_recurring_patterns.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 12209,
-      "sha256": "BA3F12BC45B5890F12224BC300B87CE36115F682652EA41D57203744D8EAEFD7"
+      "bytes": 18783,
+      "sha256": "085F357BC1E8215BDC43AEB26E96D5D4527479D66FA52A85BBFAF3FCF4597E4E"
     },
     {
       "path": "tools/regenerate_actionhero.py",

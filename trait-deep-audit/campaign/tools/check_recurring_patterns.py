@@ -6,6 +6,7 @@ import hashlib
 import json
 import re
 import sys
+import unicodedata
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
@@ -123,6 +124,171 @@ def translator_mutated_percent_keys(ui_json_path: Path) -> list[str]:
         if rendered != value:
             affected.append(key)
     return sorted(affected)
+
+
+def scan_translator_confusable_json(
+    source_path: Path,
+    release_path: Path,
+    authority_path: Path,
+) -> dict[str, list[dict[str, Any]]]:
+    """Diagnose literal Translator-rejected characters without changing files.
+
+    Offsets are zero-based UTF-8 byte offsets. Lines and columns are one-based.
+    Source and release must be byte-identical, so each successful finding describes
+    the same occurrence on both sides rather than double-counting it.
+    """
+    rejected_code_points = (
+        0x2019, 0x2018, 0x02BC, 0x02B9, 0x2032, 0x201C, 0x201D, 0x201F,
+        0x2033, 0x2013, 0x2014, 0x2212, 0x2010, 0x2011, 0x0430, 0x0435,
+        0x043E, 0x0440, 0x0441, 0x0443, 0x0445, 0x0456, 0x0458, 0x0455,
+        0x051D, 0x03F3, 0x2170, 0x2174, 0x2179, 0x217C, 0x217D, 0x217E,
+        0x217F, 0x200B, 0x200C, 0x200D, 0xFEFF, 0x200E, 0x200F, 0x202A,
+        0x202B, 0x202C, 0x202D, 0x202E,
+    )
+    errors: list[dict[str, Any]] = []
+
+    def error(kind: str, path: Path, message: str, **details: Any) -> None:
+        errors.append(
+            {
+                "kind": kind,
+                "canonical_file": _relative(path.resolve()),
+                "message": message,
+                **details,
+            }
+        )
+
+    try:
+        authority_bytes = authority_path.read_bytes()
+    except FileNotFoundError:
+        error("missing-authority", authority_path, "Translator authority file is missing")
+        return {"findings": [], "errors": errors}
+    except OSError as exc:
+        error("authority-read-error", authority_path, str(exc))
+        return {"findings": [], "errors": errors}
+    try:
+        authority_text = authority_bytes.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        error("invalid-authority-utf8", authority_path, str(exc), byte_offset=exc.start)
+        return {"findings": [], "errors": errors}
+
+    inventory_match = re.search(
+        r"LOOKALIKE_CHARS\s*=\s*new\s+char\[\]\s*\{(?P<body>.*?)\};",
+        authority_text,
+        re.DOTALL,
+    )
+    if inventory_match is None:
+        error("missing-authority-inventory", authority_path, "LOOKALIKE_CHARS inventory is missing")
+        return {"findings": [], "errors": errors}
+    authority_code_points = tuple(
+        int(value, 16)
+        for value in re.findall(r"'\\u([0-9A-Fa-f]{4})'", inventory_match.group("body"))
+    )
+    if authority_code_points != rejected_code_points or len(set(authority_code_points)) != 44:
+        error(
+            "authority-inventory-mismatch",
+            authority_path,
+            "Build 42.19 LOOKALIKE_CHARS does not match the frozen 44-code-point inventory",
+            expected_count=44,
+            actual_count=len(authority_code_points),
+            actual_unique_count=len(set(authority_code_points)),
+        )
+        return {"findings": [], "errors": errors}
+
+    decoded: dict[str, tuple[Path, bytes, str]] = {}
+    for side, path in (("source", source_path), ("release", release_path)):
+        try:
+            raw = path.read_bytes()
+        except FileNotFoundError:
+            error("missing-file", path, f"{side} English translation JSON is missing", side=side)
+            continue
+        except OSError as exc:
+            error("file-read-error", path, str(exc), side=side)
+            continue
+        try:
+            text = raw.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            error("invalid-utf8", path, str(exc), side=side, byte_offset=exc.start)
+            continue
+        try:
+            parsed = json.loads(text)
+        except json.JSONDecodeError as exc:
+            error(
+                "invalid-json",
+                path,
+                exc.msg,
+                side=side,
+                byte_offset=len(text[: exc.pos].encode("utf-8")),
+                line=exc.lineno,
+                column=exc.colno,
+            )
+            continue
+        if not isinstance(parsed, dict):
+            error("invalid-json-shape", path, "English translation JSON must be an object", side=side)
+            continue
+        decoded[side] = (path, raw, text)
+
+    if errors:
+        return {"findings": [], "errors": sorted(errors, key=lambda row: (row["kind"], row["canonical_file"]))}
+    if decoded["source"][1] != decoded["release"][1]:
+        error(
+            "source-release-parity-mismatch",
+            source_path,
+            "source and release English translation JSON bytes differ",
+            release_file=_relative(release_path.resolve()),
+        )
+        return {"findings": [], "errors": errors}
+
+    text = decoded["source"][2]
+    key_spans: list[tuple[int, int, str]] = []
+    current_key: str | None = None
+    string_pattern = re.compile(r'"(?:\\.|[^"\\])*"')
+    for token in string_pattern.finditer(text):
+        tail = text[token.end() :]
+        try:
+            value = json.loads(token.group())
+        except json.JSONDecodeError:
+            continue
+        if tail.lstrip().startswith(":"):
+            current_key = value if isinstance(value, str) else None
+            if current_key is not None:
+                key_spans.append((token.start(), token.end(), current_key))
+        elif current_key is not None:
+            key_spans.append((token.start(), token.end(), current_key))
+            current_key = None
+
+    rejected = set(rejected_code_points)
+    findings = []
+    for character_offset, character in enumerate(text):
+        code_point = ord(character)
+        if code_point not in rejected:
+            continue
+        json_key = next(
+            (key for start, end, key in key_spans if start < character_offset < end),
+            None,
+        )
+        last_newline = text.rfind("\n", 0, character_offset)
+        findings.append(
+            {
+                "canonical_file": _relative(source_path.resolve()),
+                "release_file": _relative(release_path.resolve()),
+                "source_release_side": "source-and-release",
+                "json_key": json_key,
+                "code_point": f"U+{code_point:04X}",
+                "unicode_name": unicodedata.name(character, "UNKNOWN"),
+                "raw_character": character,
+                "byte_offset": len(text[:character_offset].encode("utf-8")),
+                "line": text.count("\n", 0, character_offset) + 1,
+                "column": character_offset - last_newline,
+            }
+        )
+    findings.sort(
+        key=lambda row: (
+            row["canonical_file"],
+            row["byte_offset"],
+            row["code_point"],
+        )
+    )
+    return {"findings": findings, "errors": []}
 
 
 def tree_parity(source: Path, release: Path) -> dict[str, list[str]]:

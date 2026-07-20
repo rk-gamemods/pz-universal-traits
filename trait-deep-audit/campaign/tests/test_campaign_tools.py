@@ -576,6 +576,129 @@ class WoodSplitterRegeneratorTests(unittest.TestCase):
 
 
 class RecurringPatternTests(unittest.TestCase):
+    TRANSLATOR_CODE_POINTS = (
+        0x2019, 0x2018, 0x02BC, 0x02B9, 0x2032, 0x201C, 0x201D, 0x201F,
+        0x2033, 0x2013, 0x2014, 0x2212, 0x2010, 0x2011, 0x0430, 0x0435,
+        0x043E, 0x0440, 0x0441, 0x0443, 0x0445, 0x0456, 0x0458, 0x0455,
+        0x051D, 0x03F3, 0x2170, 0x2174, 0x2179, 0x217C, 0x217D, 0x217E,
+        0x217F, 0x200B, 0x200C, 0x200D, 0xFEFF, 0x200E, 0x200F, 0x202A,
+        0x202B, 0x202C, 0x202D, 0x202E,
+    )
+
+    def write_translator_fixture(self, root: Path) -> Path:
+        authority = root / "Translator.java"
+        entries = ",\n".join(f"        '\\u{code_point:04x}'" for code_point in self.TRANSLATOR_CODE_POINTS)
+        authority.write_text(
+            "public final class Translator {\n"
+            "    public static final char[] LOOKALIKE_CHARS = new char[]{\n"
+            f"{entries}\n"
+            "    };\n"
+            "}\n",
+            encoding="utf-8",
+        )
+        return authority
+
+    def test_translator_confusable_scan_covers_all_authority_characters_and_raw_order(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            authority = self.write_translator_fixture(root)
+            literal = "".join(chr(code_point) for code_point in self.TRANSLATOR_CODE_POINTS)
+            raw = ('{"all":"' + literal + '","escaped":"\\u2014",'
+                   '"allowed":"ASCII controls: \\n \\t; café Ω"}\n').encode("utf-8")
+            source = root / "source.json"
+            release = root / "release.json"
+            source.write_bytes(raw)
+            release.write_bytes(raw)
+
+            first = PATTERN_MODULE.scan_translator_confusable_json(source, release, authority)
+            second = PATTERN_MODULE.scan_translator_confusable_json(source, release, authority)
+            self.assertEqual(first, second)
+            self.assertEqual(first["errors"], [])
+            self.assertEqual(len(first["findings"]), 44)
+            self.assertEqual(
+                [row["code_point"] for row in first["findings"]],
+                [f"U+{code_point:04X}" for code_point in self.TRANSLATOR_CODE_POINTS],
+            )
+            self.assertTrue(all(row["json_key"] == "all" for row in first["findings"]))
+            self.assertTrue(all(row["source_release_side"] == "source-and-release" for row in first["findings"]))
+
+    def test_translator_confusable_scan_reports_duplicates_and_utf8_coordinates(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            authority = self.write_translator_fixture(root)
+            raw = '{\n  "key": "café—x—"\n}\n'.encode("utf-8")
+            source = root / "source.json"
+            release = root / "release.json"
+            source.write_bytes(raw)
+            release.write_bytes(raw)
+
+            result = PATTERN_MODULE.scan_translator_confusable_json(source, release, authority)
+            self.assertEqual(result["errors"], [])
+            self.assertEqual(len(result["findings"]), 2)
+            expected_offsets = [index for index in range(len(raw)) if raw.startswith("—".encode("utf-8"), index)]
+            self.assertEqual([row["byte_offset"] for row in result["findings"]], expected_offsets)
+            self.assertEqual([row["line"] for row in result["findings"]], [2, 2])
+            self.assertEqual([row["column"] for row in result["findings"]], [15, 17])
+            self.assertEqual([row["json_key"] for row in result["findings"]], ["key", "key"])
+
+    def test_translator_confusable_scan_fails_closed_for_invalid_inputs_and_parity(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            authority = self.write_translator_fixture(root)
+            source = root / "source.json"
+            release = root / "release.json"
+            valid = b'{"key":"safe"}\n'
+            source.write_bytes(valid)
+            release.write_bytes(valid)
+
+            cases = []
+            cases.append((root / "missing-authority.java", source, release, "missing-authority"))
+            empty_authority = root / "empty-authority.java"
+            empty_authority.write_text("class Translator {}\n", encoding="utf-8")
+            cases.append((empty_authority, source, release, "missing-authority-inventory"))
+            mismatched_authority = root / "mismatched-authority.java"
+            mismatched_authority.write_text(
+                authority.read_text(encoding="utf-8").replace("'\\u2019'", "'\\u2018'", 1),
+                encoding="utf-8",
+            )
+            cases.append(
+                (mismatched_authority, source, release, "authority-inventory-mismatch")
+            )
+            missing_source = root / "missing.json"
+            cases.append((authority, missing_source, release, "missing-file"))
+            invalid_utf8 = root / "invalid-utf8.json"
+            invalid_utf8.write_bytes(b'{"key":"\xff"}')
+            cases.append((authority, invalid_utf8, release, "invalid-utf8"))
+            invalid_json = root / "invalid-json.json"
+            invalid_json.write_text('{"key":', encoding="utf-8")
+            cases.append((authority, invalid_json, release, "invalid-json"))
+            mismatch = root / "mismatch.json"
+            mismatch.write_bytes(b'{"key":"different"}\n')
+            cases.append((authority, source, mismatch, "source-release-parity-mismatch"))
+
+            for authority_case, source_case, release_case, expected_kind in cases:
+                with self.subTest(expected_kind=expected_kind):
+                    result = PATTERN_MODULE.scan_translator_confusable_json(
+                        source_case, release_case, authority_case
+                    )
+                    self.assertEqual(result["findings"], [])
+                    self.assertIn(expected_kind, {row["kind"] for row in result["errors"]})
+
+    def test_current_translation_confusable_inventory_is_diagnostic_only(self) -> None:
+        repository_root = CAMPAIGN_ROOT.parents[1]
+        source = repository_root / "UniversalTraits/media/lua/shared/Translate/EN/UI.json"
+        release = repository_root / "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json"
+        authority = repository_root.parent / "PZCodebase/Java/source/zombie/core/Translator.java"
+        result = PATTERN_MODULE.scan_translator_confusable_json(source, release, authority)
+        self.assertEqual(result["errors"], [])
+        self.assertEqual(len(result["findings"]), 16)
+        self.assertEqual(len({row["json_key"] for row in result["findings"]}), 13)
+        self.assertEqual(
+            {code_point: sum(row["code_point"] == code_point for row in result["findings"])
+             for code_point in ("U+2014", "U+2212")},
+            {"U+2014": 6, "U+2212": 10},
+        )
+
     def test_unwavering_translation_is_ascii_safe_and_release_identical(self) -> None:
         repository_root = CAMPAIGN_ROOT.parents[1]
         source_path = (
