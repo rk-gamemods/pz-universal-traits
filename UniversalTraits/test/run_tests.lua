@@ -4013,61 +4013,99 @@ local function firePlayerUpdates(player, count)
     for _ = 1, count do Events.OnPlayerUpdate:fire(player) end
 end
 
+local function rebuildFor(player)
+    Events.OnCreatePlayer:fire(0, player)
+end
+
+local function updatesToNextMotionCadence()
+    local remainder = UTCore.getMockDispatchTickCount() % 60
+    return remainder == 0 and 60 or 60 - remainder
+end
+
+local function findMotionSicknessRegistrations()
+    local found = {}
+    for i = 1, #UTCore._tickHandlers do
+        local handler = UTCore._tickHandlers[i]
+        if handler.id == MOTION_SICKNESS_ID then found[#found + 1] = handler end
+    end
+    return found
+end
+
 test("motionsickness has one dispatch-managed vehicle-aware registration", function()
-    local handler = UTCore._tickHandlers[MOTION_SICKNESS_ID]
-    assert_true(handler ~= nil, "motionsickness handler should be registered")
+    local registrations = findMotionSicknessRegistrations()
+    assert_eq(#registrations, 1, "motionsickness should register exactly once")
+    local handler = registrations[1]
     assert_eq(handler.id, MOTION_SICKNESS_ID, "registration id")
     assert_eq(handler.opts.vehicleAware, true, "registration should be vehicle-aware")
     assert_eq(handler.opts.throttle, 60, "dispatcher should own the 60-update cadence")
 end)
+test("motionsickness real dofile loader path is idempotent", function()
+    local before = UTCore.getTickHandlerCount()
+    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_motionsickness.lua")
+    assert_eq(UTCore.getTickHandlerCount(), before,
+        "re-evaluating the production file must not append another handler")
+    assert_eq(#findMotionSicknessRegistrations(), 1,
+        "repeated production-file evaluation must leave one effective handler")
+end)
 test("motionsickness first update is safe and has no effect before cadence", function()
     local p = MockPlayer({ MOTION_SICKNESS_ID }, { vehicle = MockVehicle(), stress = 0.0 })
+    rebuildFor(p)
+    local beforeCadence = updatesToNextMotionCadence() - 1
+    firePlayerUpdates(p, beforeCadence)
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.0, "updates before cadence should not apply stress")
     Events.OnPlayerUpdate:fire(p)
-    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.0, "first update should not apply stress")
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.01, "cadence update should apply stress")
 end)
 test("motionsickness applies exactly 0.01 to driver and passenger on cadence", function()
     local driver = MockPlayer({ MOTION_SICKNESS_ID },
         { vehicle = MockVehicle(), driving = true, stress = 0.0 })
-    firePlayerUpdates(driver, 59)
-    assert_eq(driver:getStats():get(CharacterStat.STRESS), 0.0, "driver: no effect before update 60")
-    Events.OnPlayerUpdate:fire(driver)
+    rebuildFor(driver)
+    firePlayerUpdates(driver, updatesToNextMotionCadence())
     assert_eq(driver:getStats():get(CharacterStat.STRESS), 0.01, "driver: exact cadence effect")
 
-    UTCore._mockTickCount = 0
     local passenger = MockPlayer({ MOTION_SICKNESS_ID },
         { vehicle = MockVehicle(), driving = false, stress = 0.0 })
-    firePlayerUpdates(passenger, 60)
+    rebuildFor(passenger)
+    firePlayerUpdates(passenger, updatesToNextMotionCadence())
     assert_eq(passenger:getStats():get(CharacterStat.STRESS), 0.01, "passenger: exact cadence effect")
 end)
 test("motionsickness repeats cadence and caps stress at 1.0", function()
     local p = MockPlayer({ MOTION_SICKNESS_ID }, { vehicle = MockVehicle(), stress = 0.985 })
-    firePlayerUpdates(p, 60)
+    rebuildFor(p)
+    firePlayerUpdates(p, updatesToNextMotionCadence())
     assert_eq(p:getStats():get(CharacterStat.STRESS), 0.995, "first cadence should add exactly 0.01")
     firePlayerUpdates(p, 60)
     assert_eq(p:getStats():get(CharacterStat.STRESS), 1, "second cadence should cap at 1.0")
 end)
 test("motionsickness skips on foot and without the trait", function()
     local onFoot = MockPlayer({ MOTION_SICKNESS_ID }, { stress = 0.0 })
-    firePlayerUpdates(onFoot, 60)
+    rebuildFor(onFoot)
+    firePlayerUpdates(onFoot, updatesToNextMotionCadence())
     assert_eq(onFoot:getStats():get(CharacterStat.STRESS), 0.0, "no stress on foot")
 
-    UTCore._mockTickCount = 0
     local noTrait = MockPlayer({}, { vehicle = MockVehicle(), stress = 0.0 })
-    firePlayerUpdates(noTrait, 60)
+    rebuildFor(noTrait)
+    firePlayerUpdates(noTrait, updatesToNextMotionCadence())
     assert_eq(noTrait:getStats():get(CharacterStat.STRESS), 0.0, "no stress without trait")
 end)
-test("motionsickness cadence resets on dispatcher rebuild and honors trait removal", function()
+test("motionsickness rebuild preserves cadence and snapshots trait removal", function()
     local p = MockPlayer({ MOTION_SICKNESS_ID }, { vehicle = MockVehicle(), stress = 0.0 })
-    firePlayerUpdates(p, 59)
-    UTCore._mockTickCount = 0 -- new central dispatcher after save/load rebuild
-    firePlayerUpdates(p, 59)
-    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.0, "rebuild should restart cadence")
+    rebuildFor(p)
+    local untilCadence = updatesToNextMotionCadence()
+    firePlayerUpdates(p, untilCadence - 1)
+    rebuildFor(p)
     Events.OnPlayerUpdate:fire(p)
-    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.01, "rebuilt dispatcher should apply on update 60")
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.01,
+        "active-array rebuild must not reset the shared dispatcher cadence")
 
     p:getCharacterTraits():remove(CharacterTrait.get(ResourceLocation.of(MOTION_SICKNESS_ID)))
     firePlayerUpdates(p, 60)
-    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.01, "removed trait should stop future effects")
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.02,
+        "trait removal must not affect the active snapshot before rebuild")
+    rebuildFor(p)
+    firePlayerUpdates(p, 60)
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.02,
+        "trait removal must stop effects after the production recheck point")
 end)
 
 test("vehophobic raises panic and stress when driving (past cooldown)", function()

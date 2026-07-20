@@ -548,13 +548,80 @@ UTCore.diagLog              = UTCore.diagLog or function(source, event, data) en
 -- ============================================================
 -- Tick Dispatch mock  (mirrors UTCore_TickDispatch.lua)
 -- ============================================================
--- Stores registered handlers so trait dofile() calls succeed and tests
--- can fire individual handlers with a mock tick context.
+-- Production registration is ordered append-only. Active membership is a
+-- snapshot rebuilt on OnCreatePlayer; it is not rechecked on every tick.
 UTCore._tickHandlers = UTCore._tickHandlers or {}
+UTCore._activeTickHandlers = nil
+UTCore._activeTickPlayer = nil
 
 UTCore.registerTickHandler = function(traitId, fn, opts)
     opts = opts or {}
-    UTCore._tickHandlers[traitId] = { id = traitId, fn = fn, opts = opts, _offset = 0 }
+    UTCore._tickHandlers[#UTCore._tickHandlers + 1] = {
+        id = traitId, fn = fn, opts = opts, _offset = 0,
+    }
+end
+
+UTCore.getTickHandlerCount = function()
+    return #UTCore._tickHandlers
+end
+
+UTCore.rebuildActiveHandlers = function(player)
+    local light, heavy = {}, {}
+    for i = 1, #UTCore._tickHandlers do
+        local h = UTCore._tickHandlers[i]
+        local match = false
+        if h.opts.anyTrait then
+            for _, tid in ipairs(h.opts.anyTrait) do
+                if UTCore.hasTrait(player, tid) then match = true; break end
+            end
+        else
+            match = UTCore.hasTrait(player, h.id)
+        end
+        if match then
+            local target = h.opts.heavy == true and heavy or light
+            target[#target + 1] = h
+        end
+    end
+
+    local lightGroups = {}
+    for i = 1, #light do
+        local h = light[i]
+        local throttle = h.opts.throttle or 0
+        h._offset = 0
+        if throttle > 0 then
+            lightGroups[throttle] = lightGroups[throttle] or {}
+            local group = lightGroups[throttle]
+            group[#group + 1] = h
+        end
+    end
+    for throttle, group in pairs(lightGroups) do
+        for i = 1, #group do
+            group[i]._offset = math.floor((i - 1) * throttle / #group)
+        end
+    end
+
+    if #heavy > 0 then
+        local minThrottle = math.huge
+        for i = 1, #heavy do
+            local throttle = heavy[i].opts.throttle or 0
+            if throttle > 0 and throttle < minThrottle then minThrottle = throttle end
+        end
+        if minThrottle == math.huge then minThrottle = 30 end
+        for i = 1, #heavy do
+            heavy[i]._offset = #heavy > 1
+                and math.floor((i - 1) * minThrottle / #heavy) or 0
+        end
+    end
+
+    local active = {}
+    for i = 1, #light do active[#active + 1] = light[i] end
+    for i = 1, #heavy do active[#active + 1] = heavy[i] end
+    UTCore._activeTickHandlers = active
+    UTCore._activeTickPlayer = player
+end
+
+UTCore.getActiveHandlerCount = function()
+    return UTCore._activeTickHandlers and #UTCore._activeTickHandlers or 0
 end
 
 -- Lazy enemy list accessor (mirrors UTCore.getLivingEnemies in real dispatch)
@@ -562,8 +629,10 @@ UTCore.getLivingEnemies = function(tick)
     return tick.livingEnemies or {}, tick.livingEnemyCount or 0
 end
 
--- Mock tick counter for throttle enforcement
-UTCore._mockTickCount = 0
+-- Like production's _tickCount, this is shared by every player and survives
+-- active-array rebuilds. Tests can observe it to align cadence, not reset it.
+local _mockDispatchTickCount = 0
+UTCore.getMockDispatchTickCount = function() return _mockDispatchTickCount end
 
 -- Build a mock tick context from a MockPlayer (mirrors buildTickContext in dispatch).
 -- Tests call: local tick = UTCore.buildMockTickContext(player)
@@ -671,7 +740,10 @@ end
 -- Convenience: fire a single registered tick handler for a player.
 -- Returns the tick context used, for assertion purposes.
 UTCore.fireTickHandler = function(traitId, player)
-    local h = UTCore._tickHandlers[traitId]
+    local h = nil
+    for i = 1, #UTCore._tickHandlers do
+        if UTCore._tickHandlers[i].id == traitId then h = UTCore._tickHandlers[i]; break end
+    end
     if not h then error("No tick handler registered for " .. tostring(traitId)) end
     local tick = UTCore.buildMockTickContext(player)
     h.fn(player, tick)
@@ -866,7 +938,14 @@ if not _G.Events.OnCreatePlayer then
     local _createPlayerHandlers = {}
     _G.Events.OnCreatePlayer = {
         Add  = function(fn) table.insert(_createPlayerHandlers, fn) end,
-        fire = function(...) fireHandlers(_G.Events.OnCreatePlayer, _createPlayerHandlers, ...) end,
+        fire = function(...)
+            local args = { ... }
+            if args[1] == _G.Events.OnCreatePlayer then table.remove(args, 1) end
+            if UTCore and UTCore.rebuildActiveHandlers then
+                UTCore.rebuildActiveHandlers(args[2])
+            end
+            for _, fn in ipairs(_createPlayerHandlers) do fn(table.unpack(args)) end
+        end,
     }
 end
 
@@ -903,12 +982,16 @@ if not _G.Events.OnPlayerUpdate then
             for _, fn in ipairs(_updateHandlers) do
                 fn(player)
             end
-            -- Fire tick-dispatch handlers (mirrors centralDispatch)
+            -- Fire the production-style active snapshot in append order.
             if player and UTCore and UTCore._tickHandlers and UTCore.buildMockTickContext then
-                UTCore._mockTickCount = UTCore._mockTickCount + 1
-                local tc = UTCore._mockTickCount
+                _mockDispatchTickCount = _mockDispatchTickCount + 1
+                local tc = _mockDispatchTickCount
                 local tick = UTCore.buildMockTickContext(player)
-                for _, h in pairs(UTCore._tickHandlers) do
+                local handlers = UTCore._activeTickPlayer == player
+                    and UTCore._activeTickHandlers or UTCore._tickHandlers
+                if handlers then
+                for i = 1, #handlers do
+                    local h = handlers[i]
                     -- Throttle gate (mirrors dispatch throttle check)
                     local throttle = h.opts and h.opts.throttle
                     if throttle and throttle > 1 then
@@ -918,23 +1001,28 @@ if not _G.Events.OnPlayerUpdate then
                         end
                     end
                     do
-                    -- Trait gate: check anyTrait array or single id
-                    local hasTrait = false
-                    if h.opts and h.opts.anyTrait then
-                        for _, tid in ipairs(h.opts.anyTrait) do
-                            if UTCore.hasTrait(player, tid) then hasTrait = true; break end
+                    local shouldRun = true
+                    -- Before this player has an active snapshot, production uses
+                    -- the full registry and performs the trait gate at dispatch.
+                    if UTCore._activeTickPlayer ~= player then
+                        shouldRun = false
+                        if h.opts and h.opts.anyTrait then
+                            for _, tid in ipairs(h.opts.anyTrait) do
+                                if UTCore.hasTrait(player, tid) then shouldRun = true; break end
+                            end
+                        else
+                            shouldRun = UTCore.hasTrait(player, h.id)
                         end
-                    else
-                        hasTrait = UTCore.hasTrait(player, h.id)
                     end
                     -- Vehicle gate
                     local vehicleAware = h.opts and h.opts.vehicleAware
-                    if not vehicleAware and tick.vehicle then hasTrait = false end
+                    shouldRun = shouldRun and (vehicleAware or not tick.vehicle)
                     -- Dead gate
-                    if player.isDead and player:isDead() then hasTrait = false end
-                    if hasTrait then h.fn(player, tick) end
+                    if player.isDead and player:isDead() then shouldRun = false end
+                    if shouldRun then h.fn(player, tick) end
                     end
                     ::continueTick::
+                end
                 end
             end
         end,

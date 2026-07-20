@@ -10,4 +10,7 @@ local function onTick(_player, tick)
     end
 end
 
-UTCore.registerTickHandler(TRAIT_ID, onTick, { vehicleAware = true, throttle = 60 })
+if not UTCore._motionSicknessTickRegistered then
+    UTCore.registerTickHandler(TRAIT_ID, onTick, { vehicleAware = true, throttle = 60 })
+    UTCore._motionSicknessTickRegistered = true
+end
