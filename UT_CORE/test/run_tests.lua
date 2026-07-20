@@ -369,6 +369,130 @@ test("applySpawnStats sets panic via stats", function()
 end)
 
 -- registerPeriodicHandler
+local function withPeriodicHandlerSandbox(eventsValue, listenerLists, fn)
+    local originalEvents = _G.Events
+    local originalRegistry = UTCore._periodicHandlers
+    local snapshots = {}
+    for index, listeners in ipairs(listenerLists or {}) do
+        snapshots[index] = {}
+        for itemIndex, listener in ipairs(listeners) do
+            snapshots[index][itemIndex] = listener
+        end
+    end
+
+    _G.Events = eventsValue
+    UTCore._periodicHandlers = {}
+    local ok, err = pcall(fn, UTCore._periodicHandlers)
+
+    for index, listeners in ipairs(listenerLists or {}) do
+        for itemIndex = #listeners, 1, -1 do
+            listeners[itemIndex] = nil
+        end
+        for itemIndex, listener in ipairs(snapshots[index]) do
+            listeners[itemIndex] = listener
+        end
+    end
+    UTCore._periodicHandlers = originalRegistry
+    _G.Events = originalEvents
+
+    if not ok then error(err, 0) end
+end
+
+local function assertPeriodicRegistrationError(eventsValue, expectedMessage, listenerLists)
+    withPeriodicHandlerSandbox(eventsValue, listenerLists, function(registry)
+        registry.preexisting = "unchanged"
+        local ok, err = pcall(
+            UTCore.registerPeriodicHandler,
+            "negative_contract_trait",
+            "MissingEvent",
+            function() end
+        )
+        assert_eq(UTCore._periodicHandlers, registry, "failed registration must preserve registry identity")
+        assert_eq(ok, false, "registration must reject an invalid event contract")
+        err = tostring(err)
+        assert_eq(err:sub(-#expectedMessage), expectedMessage, "unexpected registration error")
+        assert_eq(registry.preexisting, "unchanged", "existing registry state must remain unchanged")
+        assert_eq(registry["negative_contract_trait::MissingEvent"], nil, "failed registration must not create an entry")
+        for _, listeners in ipairs(listenerLists or {}) do
+            assert_eq(#listeners, 1, "failed registration must not mutate event listeners")
+            assert_eq(listeners[1], "preexisting", "failed registration must preserve existing listeners")
+        end
+    end)
+end
+
+test("registerPeriodicHandler rejects an unavailable event before mutation", function()
+    assertPeriodicRegistrationError(
+        {},
+        "UTCore periodic handler event is unavailable: MissingEvent"
+    )
+end)
+
+test("registerPeriodicHandler rejects missing Events before mutation", function()
+    assertPeriodicRegistrationError(
+        nil,
+        "UTCore periodic handler Events table is unavailable"
+    )
+end)
+
+test("registerPeriodicHandler rejects non-table Events before mutation", function()
+    assertPeriodicRegistrationError(
+        "not an event table",
+        "UTCore periodic handler Events table is unavailable"
+    )
+end)
+
+test("registerPeriodicHandler rejects a non-table named event before mutation", function()
+    assertPeriodicRegistrationError(
+        { MissingEvent = "not an event" },
+        "UTCore periodic handler event is unavailable: MissingEvent"
+    )
+end)
+
+test("registerPeriodicHandler rejects non-callable Add before mutation", function()
+    local listeners = { "preexisting" }
+    assertPeriodicRegistrationError(
+        { MissingEvent = { Add = true, Remove = function() end } },
+        "UTCore periodic handler event Add is not callable: MissingEvent",
+        { listeners }
+    )
+end)
+
+test("registerPeriodicHandler rejects non-callable Remove before mutation", function()
+    local listeners = { "preexisting" }
+    assertPeriodicRegistrationError(
+        {
+            MissingEvent = {
+                Add = function(listener) listeners[#listeners + 1] = listener end,
+                Remove = true,
+            },
+        },
+        "UTCore periodic handler event Remove is not callable: MissingEvent",
+        { listeners }
+    )
+end)
+
+test("registerPeriodicHandler accepts a complete event contract", function()
+    local listeners = { "preexisting" }
+    local event = {
+        Add = function(listener) listeners[#listeners + 1] = listener end,
+        Remove = function(listener)
+            for index, existing in ipairs(listeners) do
+                if existing == listener then
+                    table.remove(listeners, index)
+                    return
+                end
+            end
+        end,
+    }
+    withPeriodicHandlerSandbox({ TestEvent = event }, { listeners }, function(registry)
+        local registered = UTCore.registerPeriodicHandler("success_contract_trait", "TestEvent", function() end)
+        assert_eq(registered, true)
+        assert_true(registry["success_contract_trait::TestEvent"] ~= nil)
+        assert_eq(#listeners, 2)
+        assert_eq(type(listeners[2]), "function")
+    end)
+end)
+
 test("registerPeriodicHandler stores handler", function()
     UTCore._periodicHandlers = {}
     UTCore.registerPeriodicHandler("test_trait", "EveryOneMinute", function(player) end)
