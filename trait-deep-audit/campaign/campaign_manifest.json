@@ -1,6 +1,16 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "inventory_type": "closed-world campaign content manifest",
+  "byte_contract": {
+    "text": "utf-8-lf",
+    "text_suffixes": [
+      ".json",
+      ".jsonl",
+      ".md",
+      ".py"
+    ],
+    "other": "raw"
+  },
   "required_artifacts": [
     "MASTER_COVERAGE_LEDGER.md",
     "dimension_ledger_rows.jsonl",
@@ -31,371 +41,432 @@
     "translation_audit.json"
   ],
   "file_count": 61,
-  "total_bytes": 12680203,
+  "total_bytes": 12622586,
   "files": [
     {
       "path": "MASTER_COVERAGE_LEDGER.md",
       "kind": "master-ledger",
+      "byte_semantics": "utf-8-lf",
       "bytes": 30650,
       "sha256": "0854871CEC3BD7BAF6F2BCE1A9C8EF136E2768BFB97B4A83BAFEEBF5DD7ADEA0"
     },
     {
       "path": "change-impact/woodsplitter-axeman-alias-resolution.json",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 17752,
       "sha256": "62911A31D51A733D115B239135AB69437770D751E567752FC6EE17095D4010D7"
     },
     {
       "path": "change-impact/woodsplitter-axeman-alias.json",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 23535,
       "sha256": "1CD7522841BD4434A43ACA6D00176D1487A8628FEBE755D6B8FAFF09BBFE1CCF"
     },
     {
       "path": "change-impact/woodsplitter-axeman-balance.json",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 17190,
       "sha256": "8C17A7342F1F51CCE8A947D220427FE6E2E10AB56A706BC5436728B35FD128D1"
     },
     {
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
+      "byte_semantics": "utf-8-lf",
       "bytes": 2257680,
       "sha256": "32BBCB64524C40FB3666D267A4416AEF45874B81CE418EE128CAFB66E00A0C53"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
-      "bytes": 2143765,
-      "sha256": "5D62159832CA7333D4AA24DF81386233DCE6432EDEA0F535BB97B397796200E6"
+      "byte_semantics": "utf-8-lf",
+      "bytes": 2081760,
+      "sha256": "2A657B23E5759C7F0BCD96BADF0088C6DB4808380A8152ADA823596B4E1B42ED"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
+      "byte_semantics": "utf-8-lf",
       "bytes": 1277539,
       "sha256": "B2177DF489961BD20CD5EACBD7573A50852EDE4B46A8C34617E4FC9CC7BF9027"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
       "kind": "independent-review",
+      "byte_semantics": "utf-8-lf",
       "bytes": 174167,
       "sha256": "5B4129F3ABB759950685D0A975368BA6B9FEE2D757DF58FA4936D1333D7D8660"
     },
     {
       "path": "independent_reviews/toolchain_semantic_impact.json",
       "kind": "independent-review",
+      "byte_semantics": "utf-8-lf",
       "bytes": 180835,
       "sha256": "DBBA83DA1A80A07F93387A60B2D8123D36BC70D010EAAD587438AEF497760CBA"
     },
     {
       "path": "independent_reviews/traits_01_04.json",
       "kind": "independent-review",
+      "byte_semantics": "utf-8-lf",
       "bytes": 667700,
       "sha256": "4F7338C65D9EC8C15B9D3E749A9A82ADB60F09D968265F4E0A09E65660E93326"
     },
     {
       "path": "independent_reviews/traits_05_08.json",
       "kind": "independent-review",
+      "byte_semantics": "utf-8-lf",
       "bytes": 251531,
       "sha256": "D042BBCD575D70897788E1598054972D118246E3CABF7F738072A71B8E955B82"
     },
     {
       "path": "independent_reviews/traits_09_12.json",
       "kind": "independent-review",
+      "byte_semantics": "utf-8-lf",
       "bytes": 112884,
       "sha256": "F41976727FEA3F56102EC97431C5852AC9E8BEB69E2BD009AB00BDBF1485E665"
     },
     {
       "path": "independent_reviews/ut_core_integration.json",
       "kind": "independent-review",
+      "byte_semantics": "utf-8-lf",
       "bytes": 174180,
       "sha256": "5BC6ED5BF08290BB21DF7EB84910B5C1A2B571B2FADE1DF960C06E5E011B14D1"
     },
     {
       "path": "recurring_pattern_findings.json",
       "kind": "recurring-pattern-report",
+      "byte_semantics": "utf-8-lf",
       "bytes": 2717,
       "sha256": "EE0E70DA0AB468C00966CB13C6629886FD4038FEFB1C48FB152EC59F295A1358"
     },
     {
       "path": "release_blocker_queue.json",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 8385,
       "sha256": "C04AABABF84F4B0E2F64F4DCB5F6A8C2D645E0CFC215131588FD6E2D1B374CFF"
     },
     {
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
+      "byte_semantics": "utf-8-lf",
       "bytes": 2333330,
       "sha256": "E9744544362CD337FFC8E58EAE980818122BE1348F2550B7D996FF701308950C"
     },
     {
       "path": "remediation_summary.json",
       "kind": "remediation-queue",
+      "byte_semantics": "utf-8-lf",
       "bytes": 1184,
       "sha256": "E0A31D583AAB7C1831DC5BC8FC8DC05F0F991E2312DCBEA09A8F91AF402D083D"
     },
     {
       "path": "runtime-traces/utcore-wave-01.jsonl",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 22628,
       "sha256": "E12A36E67BB9C2875309CF2B68DCF23F4F66DB116736A600412E2E3F0A8E3D1E"
     },
     {
       "path": "runtime-traces/utcore-wave-02.jsonl",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 22919,
       "sha256": "D54C15EC2DAF7E77CBCA5B45C4EFA2E36E25F9526532E0B7B5E1167B02652B6C"
     },
     {
       "path": "runtime-traces/wave-01-rebuild/part-01.jsonl",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 54826,
       "sha256": "7ED231E5D026C73A29DC53B061C8CAE35F2D563163452764848F9BABC5E44360"
     },
     {
       "path": "runtime-traces/wave-01-rebuild/part-02.jsonl",
       "kind": "campaign-artifact",
-      "bytes": 36635,
-      "sha256": "67E01464656CA3B0DCF11E9810439CA9B1C4792AE21702405391555A6DCAF4AE"
+      "byte_semantics": "utf-8-lf",
+      "bytes": 36632,
+      "sha256": "26CA8141E2E8C9051527152EB91DD4A6371AB7622388F410E3DDA0564AC88F3D"
     },
     {
       "path": "runtime-traces/wave-01-rebuild/part-03.jsonl",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 29395,
       "sha256": "94F99041B148B261529CDADA7850D5A833ABE4AE5B403944AD83E016F836E275"
     },
     {
       "path": "runtime-traces/wave-01-rebuild/part-04.jsonl",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 90761,
       "sha256": "0AB46EA12DF26F6E20AB05EFBC4F99BE4F26AAFC0000BC479E6A496422F852C9"
     },
     {
       "path": "runtime-traces/wave-01-single/UT_accmetabolism-resolution.json",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 2668,
       "sha256": "F8F11A1E0BDB85DC1A293FE45C12E06927D1CC04AB8A746EEF2CB5C52D63AC6D"
     },
     {
       "path": "runtime-traces/wave-01-single/UT_accmetabolism.json",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 24903,
       "sha256": "1E20E23ACCC0975B1AA52A8626BBE793C47E3A63E751044AE55FA3F036BB3E9E"
     },
     {
       "path": "runtime-traces/wave-01-single/UT_acrophobic.json",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 22008,
       "sha256": "1323052A550DDE860BB86276E138CBF5EEE3B8AC12C7B232DCFAF28E932BD7A6"
     },
     {
       "path": "runtime-traces/wave-01-single/UT_actionhero.json",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 7625,
       "sha256": "64470428BC59EC164AA5C613D11993A1F8FA8DD1206C12135932FF4EEBE65EE5"
     },
     {
       "path": "runtime-traces/wave-01-single/UT_adaptivemetabolism.json",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 32408,
       "sha256": "1B61F0226CAE10B379547B2CC2CEB70FFCD72F6FA5DD99AC80A4E85BD84ED1E4"
     },
     {
       "path": "runtime-traces/wave-01-single/UT_addictedtocaffeine-resolution.json",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 1547,
       "sha256": "CC9079F46EF6706DD72BF8381C1442836BDA5659C3E1F086F2152F2B736606F7"
     },
     {
       "path": "runtime-traces/wave-01-single/UT_addictedtocaffeine.json",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 5208,
       "sha256": "CDB4E3ABCB5BB2D531AAE125587D06CDD0F91A38C5CE25C9D8F828E6E8635EF3"
     },
     {
       "path": "runtime-traces/wave-01-single/UT_albino.json",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 30498,
       "sha256": "1A51EC7B38B050B571CE42696E6CBDF75AF0A0BF2C3F971E46FC66D528ACBF27"
     },
     {
       "path": "runtime-traces/wave-01-single/UT_alcoholic_I.json",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 28029,
       "sha256": "8A9F202BEC5FBF3418F733D3114137A6B58E3DD938F6B5C91AE9326865A460C3"
     },
     {
       "path": "runtime-traces/wave-01-single/UT_alcoholic_II.json",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 26585,
       "sha256": "7FDC783404577A6F9FD2F3BE418F079C57CA36AD1F4DDD2C3F36AA533386C958"
     },
     {
       "path": "runtime-traces/wave-01-single/UT_alcoholic_III.json",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 12614,
       "sha256": "1156E8C6F19A37C1EF2B068840360720AA83FE967D332CC5CDB8150BC992EA85"
     },
     {
       "path": "runtime-traces/wave-01-single/UT_amateurelectrician.json",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 12925,
       "sha256": "A5A7AD937231E6445EE74BA41A3DB88930B4E908B583E2CCA09107C8FF8B98EB"
     },
     {
       "path": "runtime-traces/wave-01-single/UT_analgesia.json",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 22503,
       "sha256": "55382DF6085C4EAA7A3C96D9E014DE255892C3D9B02318F598A6564AA4C758D7"
     },
     {
       "path": "runtime-traces/wave-01.jsonl",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 312546,
       "sha256": "1E13CDE0C9BE979C469D160C517017FB31DCC719D8856CE810363EA97636FAB0"
     },
     {
       "path": "runtime-traces/wave-02.jsonl",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 34998,
       "sha256": "6FB483E8DAB0915A9FEC029A0AE947F9414E2D3CB10801E5A2CFB87D64B69378"
     },
     {
       "path": "runtime-traces/wave-03.jsonl",
       "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
       "bytes": 78187,
       "sha256": "536051F0197D1EE8FEE3D0C7EC77F92A8FA717DC0F3D35F9809581D5E1A31C35"
     },
     {
       "path": "source_inventory.json",
       "kind": "source-inventory",
+      "byte_semantics": "utf-8-lf",
       "bytes": 230054,
       "sha256": "47781D8C6AE00795C0DD5CFF8F89E295F49826BB57B64DC9DCD6DE6A767941C9"
     },
     {
       "path": "tests/test_campaign_tools.py",
       "kind": "regression-test",
-      "bytes": 30092,
-      "sha256": "84FF747AF1FD7828B7197E223354141E700BFB6ABB22B38958BB1A86E255CE9D"
+      "byte_semantics": "utf-8-lf",
+      "bytes": 32754,
+      "sha256": "28C3F529130CC46B76B4628AB5DDAC83DCAFF8ECCF0552D8D7E91C8FDA5E52AD"
     },
     {
       "path": "tools/build_campaign_manifest.py",
       "kind": "deterministic-tool",
-      "bytes": 4795,
-      "sha256": "E3D704D43874E2E04D5DD250BB7D6B475F25070FBCC399A087E72737C37F1B13"
+      "byte_semantics": "utf-8-lf",
+      "bytes": 6084,
+      "sha256": "6D83B850A4104E01736CEC4A1559BE67C7DC34AC3235912C951BACF98D04A097"
     },
     {
       "path": "tools/build_final_trait_ledger.py",
       "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
       "bytes": 19927,
       "sha256": "B96A6A1F16057B977E7B328A864F770EC4E23B945FFC1DEE1431D297BB040CE5"
     },
     {
       "path": "tools/build_remediation_queue.py",
       "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
       "bytes": 16828,
       "sha256": "894789AA73D25A0A9E34C190BCE4FE6198DBDDE1B424295E51F03D5A26B0D568"
     },
     {
       "path": "tools/campaign_cli.py",
       "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
       "bytes": 601,
       "sha256": "CEF27239D1EED7381B8C6ED1A27CD1BA22376E9834245500EC154CD28F0CA7AD"
     },
     {
       "path": "tools/check_recurring_patterns.py",
       "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
       "bytes": 12209,
       "sha256": "BA3F12BC45B5890F12224BC300B87CE36115F682652EA41D57203744D8EAEFD7"
     },
     {
       "path": "tools/regenerate_woodsplitter.py",
       "kind": "deterministic-tool",
-      "bytes": 32464,
-      "sha256": "57C8F09C10B282994AD5B42FBB14EFE7520B8C64C03EFD2786FDC512959B208B"
+      "byte_semantics": "utf-8-lf",
+      "bytes": 32904,
+      "sha256": "7CDCEFBE85E5E6919B9B3BADEB27AC6174CC9DEA933E5003D2B478A0DFC723B9"
     },
     {
       "path": "tools/validate_campaign.py",
       "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
       "bytes": 4947,
       "sha256": "21091862A8F3EE9A9DDC90ED679C19BDB5B68C6A77C53325C8BC4C8038FB596D"
     },
     {
       "path": "trait_batches/batch_01.jsonl",
       "kind": "trait-batch",
+      "byte_semantics": "utf-8-lf",
       "bytes": 121393,
       "sha256": "4FA9A60E8D86362B22C33D2BD2DC334565EB564071514576AAD0E90F7FF4BB81"
     },
     {
       "path": "trait_batches/batch_02.jsonl",
       "kind": "trait-batch",
+      "byte_semantics": "utf-8-lf",
       "bytes": 112243,
       "sha256": "8B1EAD1B3C9B6C33F0A40B0A78455432E3604F5C5023ECF1585CCE5CC18AAE4D"
     },
     {
       "path": "trait_batches/batch_03.jsonl",
       "kind": "trait-batch",
+      "byte_semantics": "utf-8-lf",
       "bytes": 108726,
       "sha256": "33481D2A1F6227C331C16BA8B5CCB006099D07A15649099B8EC0627887679337"
     },
     {
       "path": "trait_batches/batch_04.jsonl",
       "kind": "trait-batch",
+      "byte_semantics": "utf-8-lf",
       "bytes": 109920,
       "sha256": "2A7857094C09D1CAD329C8DC2BDA2B96DE56FD6A6AF0866F323D7D6B3C377217"
     },
     {
       "path": "trait_batches/batch_05.jsonl",
       "kind": "trait-batch",
+      "byte_semantics": "utf-8-lf",
       "bytes": 92013,
       "sha256": "2146BF05002A28EC9D01FD93F1DE4E0532F4769896EF382652E6A02167F3CF6A"
     },
     {
       "path": "trait_batches/batch_06.jsonl",
       "kind": "trait-batch",
+      "byte_semantics": "utf-8-lf",
       "bytes": 106365,
       "sha256": "5B8992F62051687AEB85158F9D498E7AAF130443609881BC1DFE1C77C25BB3D3"
     },
     {
       "path": "trait_batches/batch_07.jsonl",
       "kind": "trait-batch",
+      "byte_semantics": "utf-8-lf",
       "bytes": 86251,
       "sha256": "6BFC2D4966C29749BFF856067ABD0EB3B3F3E6E53E37E72A4A4FE271BE9E892C"
     },
     {
       "path": "trait_batches/batch_08.jsonl",
       "kind": "trait-batch",
+      "byte_semantics": "utf-8-lf",
       "bytes": 163637,
       "sha256": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A"
     },
     {
       "path": "trait_batches/batch_09.jsonl",
       "kind": "trait-batch",
+      "byte_semantics": "utf-8-lf",
       "bytes": 78499,
       "sha256": "FFB64ADB79BEDD95F4F340F169A2BEB7A1158BF4C1E1602538AC75BA65F7D759"
     },
     {
       "path": "trait_batches/batch_10.jsonl",
       "kind": "trait-batch",
+      "byte_semantics": "utf-8-lf",
       "bytes": 111518,
       "sha256": "2FFE37D42F2DC928789EAE78A16880F4A283BAFB1D735113BB8D25ADE3A90F10"
     },
     {
       "path": "trait_batches/batch_11.jsonl",
       "kind": "trait-batch",
+      "byte_semantics": "utf-8-lf",
       "bytes": 72004,
       "sha256": "46B75AB40DF0F1939D1B381E7AC16710C8F3C3A793A26B2F9249799150A43362"
     },
     {
       "path": "trait_batches/batch_12.jsonl",
       "kind": "trait-batch",
+      "byte_semantics": "utf-8-lf",
       "bytes": 83372,
       "sha256": "C1DCBAE0CC6F81B838D0DEF75F35187E606E392B5D79C253B0FC0C3945436A8B"
     },
     {
       "path": "translation_audit.json",
       "kind": "translation-audit",
+      "byte_semantics": "utf-8-lf",
       "bytes": 494905,
       "sha256": "89C8338252797F29D2CB327DC46695E8E23CE23CAAE8BDEFD1F7D464A26566FD"
     }

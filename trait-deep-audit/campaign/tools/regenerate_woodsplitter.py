@@ -11,6 +11,13 @@ from pathlib import Path
 from typing import Any, Callable
 
 from campaign_cli import no_arg_command
+from build_campaign_manifest import (
+    CANONICAL_TEXT_SEMANTICS,
+    MANIFEST_SCHEMA_VERSION,
+    RAW_BYTE_SEMANTICS,
+    TEXT_ARTIFACT_SUFFIXES,
+    artifact_metadata,
+)
 from build_final_trait_ledger import normalize_dimensions, normalize_state
 from build_remediation_queue import (
     build_dimension_rows,
@@ -523,14 +530,27 @@ def _update_manifest(plan: Plan) -> None:
         matches = [row for row in rows if row["path"] == refresh]
         if len(matches) != 1:
             raise ValueError(f"{relative} ownership mismatch for {refresh}: found {len(matches)}")
-        raw = plan.read(refresh) if refresh in plan.planned else (plan.campaign / refresh).read_bytes()
-        # The large ledger is already a stable CRLF artifact in both the active and
-        # fresh Windows checkout; other owned text is stored and fingerprinted as LF.
-        data = raw if refresh == "final_trait_ledger.json" else _canonical_text_bytes(raw)
-        matches[0]["bytes"] = len(data)
-        matches[0]["sha256"] = _sha256(data)
-    manifest["file_count"] = len(rows)
-    manifest["total_bytes"] = sum(row["bytes"] for row in rows)
+    for index, row in enumerate(rows):
+        artifact = plan.campaign / row["path"]
+        raw = plan.read(row["path"]) if row["path"] in plan.planned else artifact.read_bytes()
+        rows[index] = {
+            "path": row["path"],
+            "kind": row["kind"],
+            **artifact_metadata(artifact, raw),
+        }
+    manifest = {
+        "schema_version": MANIFEST_SCHEMA_VERSION,
+        "inventory_type": manifest["inventory_type"],
+        "byte_contract": {
+            "text": CANONICAL_TEXT_SEMANTICS,
+            "text_suffixes": sorted(TEXT_ARTIFACT_SUFFIXES),
+            "other": RAW_BYTE_SEMANTICS,
+        },
+        "required_artifacts": manifest["required_artifacts"],
+        "file_count": len(rows),
+        "total_bytes": sum(row["bytes"] for row in rows),
+        "files": rows,
+    }
     plan.write_json(relative, manifest)
 
 

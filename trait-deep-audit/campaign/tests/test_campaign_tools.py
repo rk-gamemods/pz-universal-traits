@@ -60,16 +60,14 @@ WOOD_SPEC.loader.exec_module(WOOD_MODULE)
 def _wood_fixture(destination: Path) -> Path:
     root = destination / "UTMods"
     campaign = root / "trait-deep-audit" / "campaign"
-    for relative in WOOD_MODULE.OUTPUTS:
-        source = CAMPAIGN_ROOT / relative
-        target = campaign / relative
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, target)
+    shutil.copytree(
+        CAMPAIGN_ROOT,
+        campaign,
+        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+    )
     for relative in (
         WOOD_MODULE.SOURCE_UI,
         WOOD_MODULE.RELEASE_UI,
-        "trait-deep-audit/campaign/tools/regenerate_woodsplitter.py",
-        "trait-deep-audit/campaign/tests/test_campaign_tools.py",
     ):
         source = CAMPAIGN_ROOT.parents[1] / relative
         target = root / relative
@@ -324,6 +322,38 @@ class NormalizationTests(unittest.TestCase):
 
 
 class CampaignManifestTests(unittest.TestCase):
+    def test_text_metadata_and_total_are_line_ending_independent(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            lf = b'{\n  "value": "same"\n}\n'
+            crlf = lf.replace(b"\n", b"\r\n")
+            path = root / "artifact.json"
+            path.write_bytes(lf)
+            lf_manifest = MANIFEST_MODULE.build_manifest(root, required_artifacts=())
+            path.write_bytes(crlf)
+            crlf_manifest = MANIFEST_MODULE.build_manifest(root, required_artifacts=())
+            self.assertEqual(lf_manifest["files"], crlf_manifest["files"])
+            self.assertEqual(lf_manifest["total_bytes"], crlf_manifest["total_bytes"])
+            self.assertEqual(lf_manifest["files"][0]["byte_semantics"], "utf-8-lf")
+
+    def test_raw_artifacts_keep_raw_byte_semantics_and_content_changes_are_detected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            text = root / "artifact.json"
+            binary = root / "artifact.bin"
+            text.write_bytes(b'{"value":1}\n')
+            binary.write_bytes(b"\x00\r\n\xff")
+            first = MANIFEST_MODULE.build_manifest(root, required_artifacts=())
+            text.write_bytes(b'{"value":2}\n')
+            binary.write_bytes(b"\x00\n\xff")
+            second = MANIFEST_MODULE.build_manifest(root, required_artifacts=())
+            first_rows = {row["path"]: row for row in first["files"]}
+            second_rows = {row["path"]: row for row in second["files"]}
+            self.assertNotEqual(first_rows["artifact.json"]["sha256"], second_rows["artifact.json"]["sha256"])
+            self.assertEqual(first_rows["artifact.bin"]["byte_semantics"], "raw")
+            self.assertNotEqual(first_rows["artifact.bin"]["bytes"], second_rows["artifact.bin"]["bytes"])
+            self.assertNotEqual(first_rows["artifact.bin"]["sha256"], second_rows["artifact.bin"]["sha256"])
+
     def test_manifest_is_closed_world_and_deterministic(self) -> None:
         first = MANIFEST_MODULE.render_manifest(MANIFEST_MODULE.build_manifest())
         second = MANIFEST_MODULE.render_manifest(MANIFEST_MODULE.build_manifest())
@@ -391,6 +421,20 @@ class WoodSplitterRegeneratorTests(unittest.TestCase):
             [row for row in recurring_before["findings"] if row["id"] != WOOD_MODULE.PATTERN_ID],
             [row for row in recurring_after["findings"] if row["id"] != WOOD_MODULE.PATTERN_ID],
         )
+
+    def test_fresh_lf_and_crlf_checkouts_are_fixed_points_on_both_runs(self) -> None:
+        for ending in (b"\n", b"\r\n"):
+            with self.subTest(ending=ending), tempfile.TemporaryDirectory() as directory:
+                root = _wood_fixture(Path(directory))
+                campaign = root / "trait-deep-audit" / "campaign"
+                for path in campaign.rglob("*"):
+                    if path.is_file() and path.suffix.lower() in MANIFEST_MODULE.TEXT_ARTIFACT_SUFFIXES:
+                        canonical = MANIFEST_MODULE.canonical_artifact_bytes(path)
+                        path.write_bytes(canonical.replace(b"\n", ending))
+                first = WOOD_MODULE.commit_transaction(WOOD_MODULE.build_plan(root))
+                second = WOOD_MODULE.commit_transaction(WOOD_MODULE.build_plan(root))
+                self.assertEqual(first, [])
+                self.assertEqual(second, [])
 
     def test_commit_failure_rolls_back_every_owned_output(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

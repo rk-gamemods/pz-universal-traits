@@ -13,6 +13,10 @@ from campaign_cli import no_arg_command
 
 CAMPAIGN_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_PATH = CAMPAIGN_ROOT / "campaign_manifest.json"
+MANIFEST_SCHEMA_VERSION = "1.1.0"
+TEXT_ARTIFACT_SUFFIXES = frozenset({".json", ".jsonl", ".md", ".py"})
+CANONICAL_TEXT_SEMANTICS = "utf-8-lf"
+RAW_BYTE_SEMANTICS = "raw"
 REQUIRED_ARTIFACTS = (
     "MASTER_COVERAGE_LEDGER.md",
     "dimension_ledger_rows.jsonl",
@@ -76,6 +80,29 @@ def campaign_files(root: Path) -> list[Path]:
     return sorted(files, key=lambda item: item.relative_to(root).as_posix())
 
 
+def artifact_byte_semantics(path: Path) -> str:
+    """Return the explicit byte contract used for one artifact type."""
+    return CANONICAL_TEXT_SEMANTICS if path.suffix.lower() in TEXT_ARTIFACT_SUFFIXES else RAW_BYTE_SEMANTICS
+
+
+def canonical_artifact_bytes(path: Path, content: bytes | None = None) -> bytes:
+    """Return bytes hashed by the manifest, independent of text checkout EOLs."""
+    raw = path.read_bytes() if content is None else content
+    if artifact_byte_semantics(path) == RAW_BYTE_SEMANTICS:
+        return raw
+    return raw.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n").encode("utf-8")
+
+
+def artifact_metadata(path: Path, content: bytes | None = None) -> dict[str, object]:
+    """Return the versioned manifest metadata for one text or raw artifact."""
+    canonical = canonical_artifact_bytes(path, content)
+    return {
+        "byte_semantics": artifact_byte_semantics(path),
+        "bytes": len(canonical),
+        "sha256": hashlib.sha256(canonical).hexdigest().upper(),
+    }
+
+
 def build_manifest(
     root: Path = CAMPAIGN_ROOT,
     required_artifacts: Iterable[str] = REQUIRED_ARTIFACTS,
@@ -89,19 +116,22 @@ def build_manifest(
     rows = []
     for path in campaign_files(root):
         relative = path.relative_to(root).as_posix()
-        content = path.read_bytes()
         rows.append(
             {
                 "path": relative,
                 "kind": file_kind(relative),
-                "bytes": len(content),
-                "sha256": hashlib.sha256(content).hexdigest().upper(),
+                **artifact_metadata(path),
             }
         )
 
     return {
-        "schema_version": "1.0.0",
+        "schema_version": MANIFEST_SCHEMA_VERSION,
         "inventory_type": "closed-world campaign content manifest",
+        "byte_contract": {
+            "text": CANONICAL_TEXT_SEMANTICS,
+            "text_suffixes": sorted(TEXT_ARTIFACT_SUFFIXES),
+            "other": RAW_BYTE_SEMANTICS,
+        },
         "required_artifacts": list(required),
         "file_count": len(rows),
         "total_bytes": sum(row["bytes"] for row in rows),
