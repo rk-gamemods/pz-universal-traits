@@ -421,3 +421,6 @@ locale-fallback, and profiler proofs retain exact `runtime-unproven` validation 
 
 No product source, balance, translation, release, live mod, PZCodebase baseline, deployment, game
 runtime, commit, push, or publication was changed by this campaign.
+
+<!-- WOODSPLITTER-CORRECTION -->
+- UniversalTraits:UT_woodsplitter is statically validated; in-game selection, save/reload, rendered EN, and key-ring occurrence remain runtime-unproven.

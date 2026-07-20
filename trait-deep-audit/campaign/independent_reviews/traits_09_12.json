@@ -2419,13 +2419,13 @@
       ]
     },
     {
-      "accepted_overall_state": "confirmed-defect",
+      "accepted_overall_state": "runtime-unproven",
       "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:16",
       "cross_finding_ids": [
         "IR0912-FINDING-STATE-001",
         "IR0912-LOCALIZATION-001"
       ],
-      "independent_state": "confirmed-defect",
+      "independent_state": "runtime-unproven",
       "omission_disposition": "none beyond referenced cross-trait findings",
       "omissions": [],
       "rejected_accepted_finding_ids": [],
@@ -2435,10 +2435,10 @@
       ],
       "trait_id": "UniversalTraits:UT_woodsplitter",
       "unresolved_runtime_proof_ids": [
-        "RP0912-KAHLUA-001",
-        "RP0912-SAVELOAD-001",
-        "RP0912-BALANCE-PERF-001",
-        "RP0912-LOCALE-001"
+        "woodsplitter-new-character",
+        "woodsplitter-save-reload",
+        "woodsplitter-rendered-en",
+        "woodsplitter-key-ring"
       ]
     }
   ],

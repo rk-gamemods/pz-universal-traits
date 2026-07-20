@@ -13,108 +13,12 @@
     "source_release_media_parity": true
   },
   "summary": {
-    "findings": 7,
-    "unknown_event_names": 5,
-    "literal_percent_keys": 56,
-    "source_release_drift_files": 4
+    "findings": 2,
+    "unknown_event_names": 0,
+    "literal_percent_keys": 1,
+    "source_release_drift_files": 1
   },
   "findings": [
-    {
-      "id": "RP-EVENT-UNKNOWN-ONACTIONADDED",
-      "state": "confirmed-defect",
-      "severity": "high",
-      "confidence": "high",
-      "title": "Runtime registers event OnActionAdded absent from the current engine event registry",
-      "anchors": [
-        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_paramedic.lua:58",
-        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_pitcrew.lua:58"
-      ],
-      "affected_surfaces": [
-        "event-lifecycle",
-        "runtime",
-        "tests"
-      ],
-      "reproduction_evidence": "The current PZCodebase event registry contains 270 names but not OnActionAdded; UTMods registers it at 2 call site(s).",
-      "missing_proof": "",
-      "recommended_correction": "Use the current engine event name and contract, or implement an explicit project-owned event producer.",
-      "smallest_regression_test": "Build the engine event set and assert OnActionAdded is registered before any Events.OnActionAdded.Add call is accepted."
-    },
-    {
-      "id": "RP-EVENT-UNKNOWN-ONCLIMBFENCE",
-      "state": "confirmed-defect",
-      "severity": "high",
-      "confidence": "high",
-      "title": "Runtime registers event OnClimbFence absent from the current engine event registry",
-      "anchors": [
-        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_strongnimble.lua:46"
-      ],
-      "affected_surfaces": [
-        "event-lifecycle",
-        "runtime",
-        "tests"
-      ],
-      "reproduction_evidence": "The current PZCodebase event registry contains 270 names but not OnClimbFence; UTMods registers it at 1 call site(s).",
-      "missing_proof": "",
-      "recommended_correction": "Use the current engine event name and contract, or implement an explicit project-owned event producer.",
-      "smallest_regression_test": "Build the engine event set and assert OnClimbFence is registered before any Events.OnClimbFence.Add call is accepted."
-    },
-    {
-      "id": "RP-EVENT-UNKNOWN-ONFENCECLIMB",
-      "state": "confirmed-defect",
-      "severity": "high",
-      "confidence": "high",
-      "title": "Runtime registers event OnFenceClimb absent from the current engine event registry",
-      "anchors": [
-        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_strongnimble.lua:45"
-      ],
-      "affected_surfaces": [
-        "event-lifecycle",
-        "runtime",
-        "tests"
-      ],
-      "reproduction_evidence": "The current PZCodebase event registry contains 270 names but not OnFenceClimb; UTMods registers it at 1 call site(s).",
-      "missing_proof": "",
-      "recommended_correction": "Use the current engine event name and contract, or implement an explicit project-owned event producer.",
-      "smallest_regression_test": "Build the engine event set and assert OnFenceClimb is registered before any Events.OnFenceClimb.Add call is accepted."
-    },
-    {
-      "id": "RP-EVENT-UNKNOWN-ONFISHCAUGHT",
-      "state": "confirmed-defect",
-      "severity": "high",
-      "confidence": "high",
-      "title": "Runtime registers event OnFishCaught absent from the current engine event registry",
-      "anchors": [
-        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_wildsman.lua:25"
-      ],
-      "affected_surfaces": [
-        "event-lifecycle",
-        "runtime",
-        "tests"
-      ],
-      "reproduction_evidence": "The current PZCodebase event registry contains 270 names but not OnFishCaught; UTMods registers it at 1 call site(s).",
-      "missing_proof": "",
-      "recommended_correction": "Use the current engine event name and contract, or implement an explicit project-owned event producer.",
-      "smallest_regression_test": "Build the engine event set and assert OnFishCaught is registered before any Events.OnFishCaught.Add call is accepted."
-    },
-    {
-      "id": "RP-EVENT-UNKNOWN-ONTREECHOPPED",
-      "state": "confirmed-defect",
-      "severity": "high",
-      "confidence": "high",
-      "title": "Runtime registers event OnTreeChopped absent from the current engine event registry",
-      "anchors": [
-        "UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_woodsplitter.lua:32"
-      ],
-      "affected_surfaces": [
-        "event-lifecycle",
-        "runtime",
-        "tests"
-      ],
-      "reproduction_evidence": "The current PZCodebase event registry contains 270 names but not OnTreeChopped; UTMods registers it at 1 call site(s).",
-      "missing_proof": "",
-      "recommended_correction": "Use the current engine event name and contract, or implement an explicit project-owned event producer.",
-      "smallest_regression_test": "Build the engine event set and assert OnTreeChopped is registered before any Events.OnTreeChopped.Add call is accepted."
-    },
     {
       "id": "RP-PACKAGE-PARITY-UniversalTraits",
       "state": "confirmed-defect",
@@ -129,7 +33,7 @@
         "packaging",
         "release-parity"
       ],
-      "reproduction_evidence": "content_mismatch=['lua/shared/UniversalTraits/UT_SmokePings.lua', 'lua/shared/UniversalTraits/traits/UT_antique.lua', 'lua/shared/UniversalTraits/traits/UT_scrounger.lua', 'scripts/UT_character_traits.txt']",
+      "reproduction_evidence": "content_mismatch=['lua/shared/UniversalTraits/UT_SmokePings.lua']",
       "missing_proof": "",
       "recommended_correction": "Regenerate the release tree only through the authorized deployment workflow after product fixes and passing tests.",
       "smallest_regression_test": "Hash every relative source/release media file and require empty missing, extra, and content-mismatch sets."
@@ -141,14 +45,14 @@
       "confidence": "high",
       "title": "Translator preprocessing mutates literal percent signs in English descriptions",
       "anchors": [
-        "UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI.json (keys: UI_UT_actionheroDesc, UI_UT_adaptivemetabolismDesc, UI_UT_antigunDesc, UI_UT_antiqueDesc, UI_UT_asceticDesc, UI_UT_axesDesc, UI_UT_burnedDesc, UI_UT_cleaverDesc, UI_UT_driverDesc, UI_UT_durabilityDesc, UI_UT_evasiveDesc, UI_UT_fastDesc, UI_UT_fasthandsDesc, UI_UT_flateartherDesc, UI_UT_gimpDesc, UI_UT_glassbodyDesc, UI_UT_gordaniteDesc, UI_UT_gourmandDesc, UI_UT_heavilybleedingwoundsDesc, UI_UT_idealweightDesc, UI_UT_improviserDesc, UI_UT_indefatigableDesc, UI_UT_ironliverDesc, UI_UT_leadfootDesc, UI_UT_long_bladesDesc, UI_UT_long_bluntsDesc, UI_UT_ludditeDesc, UI_UT_lurcherDesc, UI_UT_martialDesc, UI_UT_mundaneDesc, UI_UT_naturalDesc, UI_UT_noodlelegsDesc, UI_UT_onehanded_axesDesc, UI_UT_onehanded_bladesDesc, UI_UT_onehanded_bluntsDesc, UI_UT_pacerDesc, UI_UT_paramedicDesc, UI_UT_photographicmemoryDesc, UI_UT_pitcrewDesc, UI_UT_prospearDesc, UI_UT_quickworkerDesc, UI_UT_restfulsleeperDesc, UI_UT_scroungerDesc, UI_UT_sharpshooterDesc, UI_UT_short_bladesDesc, UI_UT_short_bluntsDesc, UI_UT_slackDesc, UI_UT_slowworkerDesc, UI_UT_sorelegsDesc, UI_UT_thickbloodDesc, UI_UT_twohanded_axesDesc, UI_UT_twohanded_bladesDesc, UI_UT_twohanded_bluntsDesc, UI_UT_unwaveringDesc, UI_UT_weaklybleedingwoundsDesc, UI_UT_wildsmanDesc)"
+        "UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI.json (keys: UI_UT_woodsplitterDesc)"
       ],
       "affected_surfaces": [
         "description",
         "localization",
         "runtime"
       ],
-      "reproduction_evidence": "Applying the current two-step Translator replacement changes 56 no-argument descriptions.",
+      "reproduction_evidence": "Applying the current two-step Translator replacement changes 1 no-argument descriptions.",
       "missing_proof": "",
       "recommended_correction": "Encode literal percent signs using the Translator-safe representation verified for this game build.",
       "smallest_regression_test": "Load every flagged key through the current Translator path without format arguments and compare the rendered text byte-for-byte with intended copy."
@@ -164,10 +68,7 @@
       "missing_in_release": [],
       "extra_in_release": [],
       "content_mismatch": [
-        "lua/shared/UniversalTraits/UT_SmokePings.lua",
-        "lua/shared/UniversalTraits/traits/UT_antique.lua",
-        "lua/shared/UniversalTraits/traits/UT_scrounger.lua",
-        "scripts/UT_character_traits.txt"
+        "lua/shared/UniversalTraits/UT_SmokePings.lua"
       ]
     }
   }

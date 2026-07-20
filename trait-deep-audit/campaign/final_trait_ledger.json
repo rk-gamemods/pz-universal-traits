@@ -47,7 +47,7 @@
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "4F7338C65D9EC8C15B9D3E749A9A82ADB60F09D968265F4E0A09E65660E93326",
     "independent_reviews/traits_05_08.json": "D042BBCD575D70897788E1598054972D118246E3CABF7F738072A71B8E955B82",
-    "independent_reviews/traits_09_12.json": "7FCBDB6750959B0137174F375BAFA81E7330736449EDAEC9B2600677FDFC9A8E",
+    "independent_reviews/traits_09_12.json": "F41976727FEA3F56102EC97431C5852AC9E8BEB69E2BD009AB00BDBF1485E665",
     "source_inventory.json": "47781D8C6AE00795C0DD5CFF8F89E295F49826BB57B64DC9DCD6DE6A767941C9",
     "trait_batches/batch_01.jsonl": "4FA9A60E8D86362B22C33D2BD2DC334565EB564071514576AAD0E90F7FF4BB81",
     "trait_batches/batch_02.jsonl": "8B1EAD1B3C9B6C33F0A40B0A78455432E3604F5C5023ECF1585CCE5CC18AAE4D",
@@ -60,8 +60,8 @@
     "trait_batches/batch_09.jsonl": "FFB64ADB79BEDD95F4F340F169A2BEB7A1158BF4C1E1602538AC75BA65F7D759",
     "trait_batches/batch_10.jsonl": "2FFE37D42F2DC928789EAE78A16880F4A283BAFB1D735113BB8D25ADE3A90F10",
     "trait_batches/batch_11.jsonl": "46B75AB40DF0F1939D1B381E7AC16710C8F3C3A793A26B2F9249799150A43362",
-    "trait_batches/batch_12.jsonl": "807C099B09F2B4E23BBF3EEB6BF40C05F7AD0C81EA5A438CD7903AD463FEEC12",
-    "translation_audit.json": "BC16195EDEA83B435C2A005F01C2940F5EB25C4AF21F7E142AC501AC462DFD8B"
+    "trait_batches/batch_12.jsonl": "C1DCBAE0CC6F81B838D0DEF75F35187E606E392B5D79C253B0FC0C3945436A8B",
+    "translation_audit.json": "58AB94886410B3DCE2CDF9F06C66D27662A4F342354C2DDE5A391FA066B2DBF0"
   },
   "counts": {
     "traits": 198,
@@ -71,22 +71,22 @@
     "independent_review_findings": 118,
     "independent_review_states": {
       "accepted": 71,
-      "confirmed-defect": 41,
+      "confirmed-defect": 40,
       "coverage-gap": 19,
       "needs-correction": 63,
-      "runtime-unproven": 4
+      "runtime-unproven": 5
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 81,
+      "confirmed-defect": 80,
       "coverage-gap": 11,
-      "runtime-unproven": 81
+      "runtime-unproven": 82
     },
     "dimension_states": {
-      "proven-correct": 2607,
-      "confirmed-defect": 325,
-      "coverage-gap": 822,
-      "runtime-unproven": 998
+      "proven-correct": 2617,
+      "confirmed-defect": 314,
+      "coverage-gap": 820,
+      "runtime-unproven": 1001
     }
   },
   "independent_review_findings": [
@@ -61725,12 +61725,12 @@
     {
       "trait_id": "UniversalTraits:UT_woodsplitter",
       "batch": "batch_12",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
           "evidence": [
-            "exact registration at line 114"
+            "namespaced registration remains exact and unique"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61740,7 +61740,7 @@
         "definition_parser": {
           "state": "proven-correct",
           "evidence": [
-            "complete block at 874-883"
+            "definition parses cost, XP boost, grant, exclusion, and MP guard"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61750,7 +61750,7 @@
         "namespace": {
           "state": "proven-correct",
           "evidence": [
-            "exact ID consistent"
+            "Wood Splitter remains namespaced; unqualified Axeman resolves to base:axeman"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61760,7 +61760,7 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "cost 3; Axe +1; no grants/exclusions; Axe exists"
+            "cost 4; Axe=1; GrantedTraits=Axeman; MutuallyExclusiveTraits=Axeman"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61768,9 +61768,9 @@
           ]
         },
         "source_intent": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "description promises double tree damage; runtime uses nonexistent event and wrong tree method names"
+            "declarative Wood Splitter reuses vanilla Axeman without custom runtime behavior"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61778,19 +61778,21 @@
           ]
         },
         "runtime_path": {
-          "state": "confirmed-defect",
+          "state": "runtime-unproven",
           "evidence": [
-            "unused OnNewGame flag plus guarded OnTreeChopped handler; current engine exposes OnWeaponHitTree instead"
+            "comment-only trait Lua; behavior is vanilla Axeman granted by the definition"
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "No in-game new-character run."
+          ],
           "source_dimensions": [
             "runtime_path"
           ]
         },
         "numbers": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "extra damage axeLevel+1 is not equal to vanilla weapon.getTreeDamage and therefore would not generally double damage even if called"
+            "vanilla anchors prove tree damage x1.5, attack time x0.95, and general axe combat speed 1.0 versus 0.8"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61798,9 +61800,9 @@
           ]
         },
         "cadence": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "OnTreeChopped has no current declaration/trigger; handler never runs"
+            "no custom cadence or periodic handler"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61818,19 +61820,21 @@
           ]
         },
         "reset_save_load": {
-          "state": "confirmed-defect",
+          "state": "runtime-unproven",
           "evidence": [
-            "UT_woodsplitterActive persists but is never consumed"
+            "no custom state, migration, or save hook"
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current save/reload unverified in game."
+          ],
           "source_dimensions": [
             "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "IsoTree exposes getHealth/setHealth, not getHp/setHp; real hit uses WeaponHit(owner,weapon) and weapon.getTreeDamage"
+            "no custom Java-Lua calls; parser and vanilla consumers are source-anchored"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61838,9 +61842,9 @@
           ]
         },
         "kahlua": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "file compiles, but guarded nonexistent event prevents registration and real IsoTree lacks guarded methods"
+            "comment-only Lua contains no executable Kahlua behavior"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61848,9 +61852,9 @@
           ]
         },
         "events": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "current event is OnWeaponHitTree(owner,weapon); OnTreeChopped is absent"
+            "no custom event registration"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61858,13 +61862,11 @@
           ]
         },
         "stacking_interactions": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "vanilla Axeman multiplies tree damage 1.5 before subtracting; intended interaction is undefined"
+            "one set-like Axeman grant; selection exclusions prevent separate stacking"
           ],
-          "missing_proof": [
-            "No contract/test defines composition with Axeman, weapon treeDamage, or other mods."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "stacking_interactions"
           ]
@@ -61872,7 +61874,7 @@
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "DisabledInMultiplayer=true"
+            "DisabledInMultiplayer=true; MP support remains a non-goal"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61882,7 +61884,7 @@
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "UI resolves to Wood Splitter"
+            "English display resolves to Wood Splitter"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61890,9 +61892,9 @@
           ]
         },
         "description": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "only +1 Axe works; double tree damage is unreachable and numerically mismatched"
+            "copy separates tree damage, attack time, general axe speed, key ring, and grant/non-stacking"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61900,23 +61902,23 @@
           ]
         },
         "localization": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "EN pair present; other locales absent"
+            "EN source/release pair is present and byte-identical; EN-only policy is unchanged"
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Rendered English not observed in game."
+          ],
           "source_dimensions": [
             "localization"
           ]
         },
         "balance": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "cost 3 prices +1 Axe plus dead double-damage effect"
+            "accepted cost 4 is preserved without revisiting balance"
           ],
-          "missing_proof": [
-            "No balance benchmark exists for the corrected effect."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "balance"
           ]
@@ -61924,7 +61926,7 @@
         "performance": {
           "state": "proven-correct",
           "evidence": [
-            "dead guarded event and one-time flag write impose negligible work"
+            "comment-only Lua adds no runtime work"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61932,9 +61934,9 @@
           ]
         },
         "tests": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "only assigned test asserts the unused modData flag; no damage test fires any handler"
+            "fixture covers alias, profession/direct exclusion, grant, profession switching, and repopulation"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61942,9 +61944,9 @@
           ]
         },
         "mocks": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "mock fabricates OnTreeChopped and MockTree getHp/setHp, neither matching current engine"
+            "no fabricated tree event or fake tree receiver is used"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61954,7 +61956,7 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "assigned source/release surfaces match"
+            "English source and release descriptions are byte-identical"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61964,7 +61966,7 @@
         "packaging": {
           "state": "proven-correct",
           "evidence": [
-            "runtime is packaged"
+            "42.0 release counterpart is present; deployment is out of scope"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61976,13 +61978,12 @@
         "B12-WOODSPLITTER-001"
       ],
       "unknowns": [
-        "A supported way to access the struck IsoTree from the current event was not selected within audit-only scope.",
-        "No in-game tree-hit run was supplied."
+        "In-game selection, save/reload, rendered EN, and key-ring occurrence remain unverified."
       ],
-      "translation_terminal_state": "coverage-gap",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_09_12.json",
-        "review_state": "confirmed-defect",
+        "review_state": "runtime-unproven",
         "omission_finding_ids": [],
         "cross_finding_ids": [
           "IR0912-FINDING-STATE-001",
@@ -61993,10 +61994,10 @@
         ],
         "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [
-          "RP0912-KAHLUA-001",
-          "RP0912-SAVELOAD-001",
-          "RP0912-BALANCE-PERF-001",
-          "RP0912-LOCALE-001"
+          "woodsplitter-new-character",
+          "woodsplitter-save-reload",
+          "woodsplitter-rendered-en",
+          "woodsplitter-key-ring"
         ]
       }
     }

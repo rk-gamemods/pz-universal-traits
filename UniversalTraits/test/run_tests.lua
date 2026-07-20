@@ -5039,7 +5039,7 @@ end)
 test("woodsplitter inherits exact vanilla Axeman formulas", function()
     assert_eq(12 * 1.5, 18, "tree damage multiplier is exactly 1.5")
     assert_eq(0.83 * 0.95, 0.7885, "axe swing-time multiplier is exactly 0.95")
-    assert_eq(1.0 / 0.8, 1.25, "chop animation is exactly 25% faster")
+    assert_eq(1.0 / 0.8, 1.25, "general axe combat/swing animation is exactly 25% faster")
 end)
 
 test("woodsplitter has no weapon mutation or fake tree event", function()
@@ -5059,6 +5059,7 @@ test("woodsplitter definition grants and excludes vanilla Axeman", function()
     assert_true(block ~= nil, "Wood Splitter definition should exist")
     assert_true(block:find("DisabledInMultiplayer%s*=%s*true"), "Wood Splitter must be disabled in MP selection")
     assert_true(block:find("GrantedTraits%s*=%s*Axeman"), "Wood Splitter must declaratively grant Axeman")
+    assert_true(block:find("XPBoosts%s*=%s*Axe%s*=%s*1"), "Wood Splitter must grant exactly +1 Axe XP boost")
     assert_true(block:find("MutuallyExclusiveTraits%s*=%s*Axeman"),
         "Wood Splitter must exclude separately selected or profession-granted Axeman")
     assert_true(block:find("Cost%s*=%s*4[%s,]"), "Wood Splitter must use the accepted 4-point cost")
@@ -5090,26 +5091,78 @@ test("woodsplitter engine ordering makes exclusion selection-only", function()
         "exclusion removes availability, not already-selected granted traits")
 end)
 
-test("woodsplitter selection cases follow the engine contract", function()
-    local function outcome(hasAxeman, chooseWoodSplitter)
-        local woodAvailable = not hasAxeman
-        if not chooseWoodSplitter or not woodAvailable then
-            return woodAvailable, hasAxeman, false
+test("woodsplitter selection and repopulation follow the engine contract", function()
+    local function resourceLocationOf(id)
+        local namespace, path = id:match("^([^:]+):(.+)$")
+        return string.lower((namespace or "base") .. ":" .. (path or id))
+    end
+    assert_eq(resourceLocationOf("Axeman"), "base:axeman",
+        "unqualified Axeman resolves through ResourceLocation to base:axeman")
+
+    local WOOD, AXEMAN = "universaltraits:ut_woodsplitter", resourceLocationOf("Axeman")
+    local definitions = {
+        [WOOD] = { grants = { AXEMAN }, excludes = { [AXEMAN] = true } },
+        [AXEMAN] = { grants = {}, excludes = { [WOOD] = true } },
+    }
+    local function has(list, id)
+        for _, value in ipairs(list) do if value == id then return true end end
+        return false
+    end
+    local function addUnique(list, id)
+        if not has(list, id) then list[#list + 1] = id end
+    end
+    local function repopulate(state)
+        local selected = {}
+        for _, id in ipairs(state.profession) do addUnique(selected, id) end
+        for _, id in ipairs(state.selected) do addUnique(selected, id) end
+        local available = {}
+        for id in pairs(definitions) do available[id] = not has(selected, id) end
+        for _, selectedId in ipairs(selected) do
+            for excludedId in pairs(definitions[selectedId].excludes) do available[excludedId] = false end
         end
-        -- CharacterCreationProfession:addTrait selects Wood Splitter, then its
-        -- GrantedTraits Axeman, and exclusion removes only available choices.
-        return false, true, true
+        return available, selected
+    end
+    local function selectTrait(state, id)
+        local available = repopulate(state)
+        if not available[id] then return false end
+        addUnique(state.selected, id)
+        for _, grantedId in ipairs(definitions[id].grants) do addUnique(state.selected, grantedId) end
+        return true
+    end
+    local function switchProfession(state, granted)
+        state.profession = granted
+        for _, professionId in ipairs(granted) do
+            for excludedId in pairs(definitions[professionId].excludes) do
+                for index = #state.selected, 1, -1 do
+                    if state.selected[index] == excludedId then table.remove(state.selected, index) end
+                end
+            end
+        end
     end
 
-    local available, axeman, wood = outcome(false, false)
-    assert_true(available and not axeman and not wood, "without Axeman, Wood Splitter is selectable")
-    available, axeman, wood = outcome(true, false)
-    assert_true(not available and axeman and not wood, "profession-granted Axeman hides Wood Splitter")
-    available, axeman, wood = outcome(true, false)
-    assert_true(not available and axeman and not wood, "directly selected Axeman hides Wood Splitter")
-    available, axeman, wood = outcome(false, true)
-    assert_true(not available and axeman and wood,
-        "choosing Wood Splitter hides separate Axeman selection but preserves the intentional granted pair")
+    local state = { selected = {}, profession = { AXEMAN } }
+    local available = repopulate(state)
+    assert_true(not available[WOOD], "profession-granted Axeman excludes Wood Splitter before selection")
+
+    state = { selected = {}, profession = {} }
+    assert_true(selectTrait(state, AXEMAN), "direct Axeman selection succeeds")
+    available = repopulate(state)
+    assert_true(not available[WOOD], "directly selected Axeman excludes Wood Splitter")
+
+    state = { selected = {}, profession = {} }
+    assert_true(selectTrait(state, WOOD), "Wood Splitter selection succeeds")
+    local selected
+    available, selected = repopulate(state)
+    assert_true(has(selected, WOOD) and has(selected, AXEMAN),
+        "Wood Splitter retains itself and its unique granted Axeman")
+    assert_true(not available[WOOD] and not available[AXEMAN],
+        "repopulation keeps selected and mutually excluded traits unavailable")
+
+    switchProfession(state, { AXEMAN })
+    available, selected = repopulate(state)
+    assert_true(not has(selected, WOOD) and has(selected, AXEMAN),
+        "switching to an Axeman profession removes Wood Splitter and preserves Axeman")
+    assert_true(not available[WOOD], "repopulation after profession switch keeps Wood Splitter excluded")
 end)
 
 test("woodsplitter anchors all four vanilla Axeman effects in SVN 964", function()
@@ -5126,7 +5179,10 @@ test("woodsplitter anchors all four vanilla Axeman effects in SVN 964", function
     assert_true(weapon:find("mod = 0.95F", 1, true) ~= nil, "axe attack-time multiplier is 0.95")
     local character = read("Java/source/zombie/characters/IsoGameCharacter.java")
     assert_true(character:find("CharacterTrait.AXEMAN) ? 1.0F : 0.8F", 1, true) ~= nil,
-        "chop animation speed is 1.0 versus 0.8")
+        "Axeman speed branch is 1.0 versus 0.8")
+    local axeCategory = assert(character:find("weapon.isOfWeaponCategory(WeaponCategory.AXE)", 1, true))
+    local combatUse = assert(character:find("combatSpeed *= this.getChopTreeSpeed();", axeCategory, true))
+    assert_true(axeCategory < combatUse, "general axe calculateCombatSpeed consumes the Axeman speed branch")
     local spawn = read("Lua/shared/Items/SpawnItems.lua")
     assert_true(spawn:find("[CharacterTrait.AXEMAN] = { ItemKey.Container.KEY_RING_PINE_TREE", 1, true) ~= nil,
         "Axeman is eligible for the pine-tree key ring")

@@ -7,62 +7,414 @@
   "supersedes_design": "all runtime and existing-save migration designs; supported scope is new-character selection plus declarative Axeman grant only",
   "current_contract": {
     "trait_id": "UniversalTraits:UT_woodsplitter",
-    "definition": {"cost": 4, "cost_balance": "accepted", "balance_evidence": "trait-deep-audit/campaign/change-impact/woodsplitter-axeman-balance.json", "xp_boost": "Axe=1", "disabled_in_multiplayer": true, "granted_traits": "Axeman", "pre_grant_mutually_exclusive_with_axeman": true},
+    "definition": {
+      "cost": 4,
+      "cost_balance": "accepted",
+      "balance_evidence": "trait-deep-audit/campaign/change-impact/woodsplitter-axeman-balance.json",
+      "xp_boost": "Axe=1",
+      "disabled_in_multiplayer": true,
+      "granted_traits": "Axeman",
+      "pre_grant_mutually_exclusive_with_axeman": true
+    },
     "new_characters": "GrantedTraits resolves unqualified Axeman to base:axeman and applies it before OnNewGame and pine-key-ring selection.",
     "selection_rule": "Before grants, Wood Splitter is mutually exclusive with Axeman, including profession/job-supplied Axeman; after valid selection, Wood Splitter plus its declaratively granted Axeman is intentional and not a conflict.",
     "existing_saves": "superseded non-goal; saves may be invalidated and no migration or legacy-state contract is required",
-    "effects": ["Axe-category tree damage x1.5", "Axe attack-time result x0.95", "chop speed 1.0 versus 0.8", "new-character rare pine-tree key-ring eligibility"],
+    "effects": [
+      "Axe-category tree damage x1.5",
+      "Axe attack-time result x0.95",
+      "chop speed 1.0 versus 0.8",
+      "new-character rare pine-tree key-ring eligibility"
+    ],
     "validation_state": "accepted 4-point source-and-test changes present; tests, single-player game behavior, rendered translation, and key-ring occurrence remain unproven; multiplayer proof is rejected as out of scope"
   },
   "surface_dispositions": [
-    {"ordinal":1,"path":"UniversalTraits/media/registries.lua","disposition":"unchanged-deliberately-unaffected","reason":"Wood Splitter registration remains exactly once."},
-    {"ordinal":2,"path":"UniversalTraits/release/UniversalTraits/42.0/media/registries.lua","disposition":"unchanged-generated-mirror","reason":"Registration mirror remains unchanged."},
-    {"ordinal":3,"path":"UniversalTraits/media/scripts/UT_character_traits.txt","disposition":"changed-by-product-writer","reason":"Accepted cost 4 is present with Axe=1, GrantedTraits=Axeman, and pre-grant Axeman mutual exclusion including direct/profession/job Axeman."},
-    {"ordinal":4,"path":"UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt","disposition":"changed-by-product-writer","reason":"Release counterpart carries the accepted cost 4 and matching grant/exclusion metadata; direct byte parity validated without running project commands."},
-    {"ordinal":5,"path":"UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_woodsplitter.lua","disposition":"superseded-out-of-scope-artifact","reason":"Current OnCreatePlayer migration is not part of the new-character-only product contract and supplies no required coverage."},
-    {"ordinal":6,"path":"UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_woodsplitter.lua","disposition":"superseded-out-of-scope-artifact","reason":"Release migration mirror is not part of the new-character-only product contract and supplies no required coverage."},
-    {"ordinal":7,"path":"UniversalTraits/media/lua/shared/Translate/EN/UI.json","disposition":"intentionally-unchanged-after-exact-string-review","reason":"Display and description already enumerate +1 Axe, all four inherited Axeman effects, the Ax-pert grant, and non-stacking semantics; project UI copy does not encode point cost."},
-    {"ordinal":8,"path":"UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json","disposition":"intentionally-unchanged-after-exact-string-review","reason":"The exact release display/description strings match source byte-for-byte and remain accurate; project UI copy does not encode point cost."},
-    {"ordinal":9,"path":"UniversalTraits/test/UTTestMocks.lua","disposition":"migration-support-superseded","reason":"Migration mock support is not required coverage."},
-    {"ordinal":10,"path":"UniversalTraits/test/run_tests.lua","disposition":"changed-assertions-not-executed","reason":"Wood-Splitter-specific static coverage now requires exact cost 4 plus GrantedTraits=Axeman and MutuallyExclusiveTraits=Axeman; migration tests are rejected and the suite was not run by instruction."},
-    {"ordinal":11,"path":"UT_CORE/media/lua/shared/UTCore/*","disposition":"unchanged-deliberately-unaffected","reason":"Corrected design does not use mutable UTCore trait caching or core reconciliation."},
-    {"ordinal":12,"path":"PRD.md","disposition":"changed-manual-source-of-truth","reason":"Current catalog states accepted cost 4 with balance-artifact citation, XP, pre-grant Axeman exclusion, declarative grant, all effects, new-character-only scope, and open proof."},
-    {"ordinal":13,"path":"research/TRAIT_AUDIT.md","disposition":"changed-historical-supersession","reason":"Original FillerTraits row preserved; current UniversalTraits correction appended as explicitly unvalidated supersession."},
-    {"ordinal":14,"path":"UniversalTraits/planning/qa_trait_update_checklist_2026-04-05.md","disposition":"unchanged-historical-preserve","reason":"Dated evidence is not rewritten and does not certify current completion."},
-    {"ordinal":15,"path":"trait-deep-audit/campaign/trait_batches/batch_12.jsonl","disposition":"generated-deferred","reason":"Immutable first-pass defect remains historical; owning pipeline must supersede it after tests."},
-    {"ordinal":16,"path":"trait-deep-audit/campaign/dimension_ledger_rows.jsonl","disposition":"generated-deferred-with-overlay","reason":"Rows 4729-4752 are reconciled below without hand-editing the generated JSONL."},
-    {"ordinal":17,"path":"trait-deep-audit/campaign/final_trait_ledger_rows.jsonl","disposition":"generated-deferred","reason":"Owning final-ledger generator must consume tested upstream resolution."},
-    {"ordinal":18,"path":"trait-deep-audit/campaign/final_trait_ledger.json","disposition":"generated-deferred","reason":"Aggregate must be regenerated from JSONL; no hand edit."},
-    {"ordinal":19,"path":"trait-deep-audit/campaign/remediation_queue.jsonl","disposition":"generated-deferred-with-overlay","reason":"All 14 prior queue rows are reconciled below without hand-editing generated JSONL."},
-    {"ordinal":20,"path":"trait-deep-audit/campaign/recurring_pattern_findings.json","disposition":"unchanged-historical-preserve-with-overlay","reason":"Fabricated-event pattern remains valid historically; this consumer is implemented-remediation-pending-validation."},
-    {"ordinal":21,"path":"trait-deep-audit/campaign/independent_reviews/traits_09_12.json","disposition":"unchanged-historical-preserve-with-superseding-review","reason":"Original accepted evidence is preserved; this overlay records the corrected review contract and open proof."},
-    {"ordinal":22,"path":"trait-deep-audit/campaign/translation_audit.json","disposition":"generated-deferred","reason":"Regenerate after JSON validation to capture all four effect claims."},
-    {"ordinal":23,"path":"trait-deep-audit/campaign/source_inventory.json","disposition":"generated-conditionally-deferred","reason":"Membership is structurally unchanged; refresh only if owning inventory embeds fingerprints."},
-    {"ordinal":24,"path":"trait-deep-audit/campaign/MASTER_COVERAGE_LEDGER.md","disposition":"generated-deferred","reason":"Must follow regenerated final-ledger state."},
-    {"ordinal":25,"path":"tools/pz_api_inventory.json","disposition":"generated-deferred","reason":"Verifier must reflect the new-character-only contract without treating migration APIs as required coverage."},
-    {"ordinal":26,"path":"tools/pz_api_baseline.json","disposition":"conditional-guarded-deferred","reason":"Refresh only after explicit review of the intended verifier diff."},
-    {"ordinal":27,"path":"UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua","disposition":"generated-conditionally-deferred","reason":"Regenerate only through smoke-ping owner after API inventory review."},
-    {"ordinal":28,"path":"package/release manifests and mod.info/poster surfaces","disposition":"unchanged-metadata-derived-payload-deferred","reason":"Identity/dependencies unchanged; release parity and any deployment remain separately validated/authorized."},
-    {"ordinal":29,"path":"README.md, trait-deep-audit/README.md, documentation indexes","disposition":"unchanged-deliberately-unaffected","reason":"No direct semantic claim requires editing; derived counts wait for owning regeneration."},
-    {"ordinal":30,"path":"skills/checkers","disposition":"unchanged-deliberately-unaffected","reason":"No Wood-Splitter-specific durable workflow change is required."},
-    {"ordinal":31,"path":"historically named migration documentation","disposition":"changed-superseding-scope-note","reason":"UniversalTraits/planning/woodsplitter-axeman-migration.md now records the new-character-only contract and explicitly rejects existing-save migration requirements."},
-    {"ordinal":32,"path":"research/installed-mods/**","disposition":"unchanged-read-only","reason":"Comparative evidence remains excluded from writes."}
+    {
+      "ordinal": 1,
+      "path": "UniversalTraits/media/registries.lua",
+      "disposition": "unchanged-deliberately-unaffected",
+      "reason": "Wood Splitter registration remains exactly once."
+    },
+    {
+      "ordinal": 2,
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/registries.lua",
+      "disposition": "unchanged-generated-mirror",
+      "reason": "Registration mirror remains unchanged."
+    },
+    {
+      "ordinal": 3,
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "disposition": "changed-by-product-writer",
+      "reason": "Accepted cost 4 is present with Axe=1, GrantedTraits=Axeman, and pre-grant Axeman mutual exclusion including direct/profession/job Axeman."
+    },
+    {
+      "ordinal": 4,
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "disposition": "changed-by-product-writer",
+      "reason": "Release counterpart carries the accepted cost 4 and matching grant/exclusion metadata; direct byte parity validated without running project commands."
+    },
+    {
+      "ordinal": 5,
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_woodsplitter.lua",
+      "disposition": "unchanged-comment-only-no-runtime",
+      "reason": "Current Lua is comment-only with no state, hook, or OnCreatePlayer migration."
+    },
+    {
+      "ordinal": 6,
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_woodsplitter.lua",
+      "disposition": "unchanged-comment-only-no-runtime",
+      "reason": "Current Lua is comment-only with no state, hook, or OnCreatePlayer migration."
+    },
+    {
+      "ordinal": 7,
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "disposition": "changed-copy-correction",
+      "reason": "Copy now states general axe combat/swing animation speed."
+    },
+    {
+      "ordinal": 8,
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "disposition": "changed-copy-correction",
+      "reason": "Copy now states general axe combat/swing animation speed."
+    },
+    {
+      "ordinal": 9,
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "disposition": "migration-support-superseded",
+      "reason": "Migration mock support is not required coverage."
+    },
+    {
+      "ordinal": 10,
+      "path": "UniversalTraits/test/run_tests.lua",
+      "disposition": "changed-assertions-not-executed",
+      "reason": "Wood-Splitter-specific static coverage now requires exact cost 4 plus GrantedTraits=Axeman and MutuallyExclusiveTraits=Axeman; migration tests are rejected and the suite was not run by instruction."
+    },
+    {
+      "ordinal": 11,
+      "path": "UT_CORE/media/lua/shared/UTCore/*",
+      "disposition": "unchanged-deliberately-unaffected",
+      "reason": "Corrected design does not use mutable UTCore trait caching or core reconciliation."
+    },
+    {
+      "ordinal": 12,
+      "path": "PRD.md",
+      "disposition": "changed-manual-source-of-truth",
+      "reason": "Current catalog states accepted cost 4 with balance-artifact citation, XP, pre-grant Axeman exclusion, declarative grant, all effects, new-character-only scope, and open proof."
+    },
+    {
+      "ordinal": 13,
+      "path": "research/TRAIT_AUDIT.md",
+      "disposition": "changed-historical-supersession",
+      "reason": "Original FillerTraits row preserved; current UniversalTraits correction appended as explicitly unvalidated supersession."
+    },
+    {
+      "ordinal": 14,
+      "path": "UniversalTraits/planning/qa_trait_update_checklist_2026-04-05.md",
+      "disposition": "unchanged-historical-preserve",
+      "reason": "Dated evidence is not rewritten and does not certify current completion."
+    },
+    {
+      "ordinal": 15,
+      "path": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl",
+      "disposition": "generated-deferred",
+      "reason": "Immutable first-pass defect remains historical; owning pipeline must supersede it after tests."
+    },
+    {
+      "ordinal": 16,
+      "path": "trait-deep-audit/campaign/dimension_ledger_rows.jsonl",
+      "disposition": "generated-deferred-with-overlay",
+      "reason": "Rows 4729-4752 are reconciled below without hand-editing the generated JSONL."
+    },
+    {
+      "ordinal": 17,
+      "path": "trait-deep-audit/campaign/final_trait_ledger_rows.jsonl",
+      "disposition": "generated-deferred",
+      "reason": "Owning final-ledger generator must consume tested upstream resolution."
+    },
+    {
+      "ordinal": 18,
+      "path": "trait-deep-audit/campaign/final_trait_ledger.json",
+      "disposition": "generated-deferred",
+      "reason": "Aggregate must be regenerated from JSONL; no hand edit."
+    },
+    {
+      "ordinal": 19,
+      "path": "trait-deep-audit/campaign/remediation_queue.jsonl",
+      "disposition": "generated-deferred-with-overlay",
+      "reason": "All 14 prior queue rows are reconciled below without hand-editing generated JSONL."
+    },
+    {
+      "ordinal": 20,
+      "path": "trait-deep-audit/campaign/recurring_pattern_findings.json",
+      "disposition": "unchanged-historical-preserve-with-overlay",
+      "reason": "Fabricated-event pattern remains valid historically; this consumer is implemented-remediation-pending-validation."
+    },
+    {
+      "ordinal": 21,
+      "path": "trait-deep-audit/campaign/independent_reviews/traits_09_12.json",
+      "disposition": "unchanged-historical-preserve-with-superseding-review",
+      "reason": "Original accepted evidence is preserved; this overlay records the corrected review contract and open proof."
+    },
+    {
+      "ordinal": 22,
+      "path": "trait-deep-audit/campaign/translation_audit.json",
+      "disposition": "generated-deferred",
+      "reason": "Regenerate after JSON validation to capture all four effect claims."
+    },
+    {
+      "ordinal": 23,
+      "path": "trait-deep-audit/campaign/source_inventory.json",
+      "disposition": "generated-conditionally-deferred",
+      "reason": "Membership is structurally unchanged; refresh only if owning inventory embeds fingerprints."
+    },
+    {
+      "ordinal": 24,
+      "path": "trait-deep-audit/campaign/MASTER_COVERAGE_LEDGER.md",
+      "disposition": "generated-deferred",
+      "reason": "Must follow regenerated final-ledger state."
+    },
+    {
+      "ordinal": 25,
+      "path": "tools/pz_api_inventory.json",
+      "disposition": "generated-deferred",
+      "reason": "Verifier must reflect the new-character-only contract without treating migration APIs as required coverage."
+    },
+    {
+      "ordinal": 26,
+      "path": "tools/pz_api_baseline.json",
+      "disposition": "conditional-guarded-deferred",
+      "reason": "Refresh only after explicit review of the intended verifier diff."
+    },
+    {
+      "ordinal": 27,
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua",
+      "disposition": "generated-conditionally-deferred",
+      "reason": "Regenerate only through smoke-ping owner after API inventory review."
+    },
+    {
+      "ordinal": 28,
+      "path": "package/release manifests and mod.info/poster surfaces",
+      "disposition": "unchanged-metadata-derived-payload-deferred",
+      "reason": "Identity/dependencies unchanged; release parity and any deployment remain separately validated/authorized."
+    },
+    {
+      "ordinal": 29,
+      "path": "README.md, trait-deep-audit/README.md, documentation indexes",
+      "disposition": "unchanged-deliberately-unaffected",
+      "reason": "No direct semantic claim requires editing; derived counts wait for owning regeneration."
+    },
+    {
+      "ordinal": 30,
+      "path": "skills/checkers",
+      "disposition": "unchanged-deliberately-unaffected",
+      "reason": "No Wood-Splitter-specific durable workflow change is required."
+    },
+    {
+      "ordinal": 31,
+      "path": "historically named migration documentation",
+      "disposition": "changed-superseding-scope-note",
+      "reason": "UniversalTraits/planning/woodsplitter-axeman-migration.md now records the new-character-only contract and explicitly rejects existing-save migration requirements."
+    },
+    {
+      "ordinal": 32,
+      "path": "research/installed-mods/**",
+      "disposition": "unchanged-read-only",
+      "reason": "Comparative evidence remains excluded from writes."
+    }
   ],
   "dimension_ledger_overlay": [
-    {"row_id":4729,"status":"superseded-pending-regeneration"},{"row_id":4730,"status":"superseded-pending-regeneration"},{"row_id":4731,"status":"superseded-pending-regeneration"},{"row_id":4732,"status":"superseded-pending-regeneration"},{"row_id":4733,"status":"superseded-pending-regeneration"},{"row_id":4734,"status":"superseded-pending-regeneration"},{"row_id":4735,"status":"superseded-pending-regeneration"},{"row_id":4736,"status":"superseded-pending-regeneration"},{"row_id":4737,"status":"superseded-pending-regeneration"},{"row_id":4738,"status":"superseded-pending-regeneration"},{"row_id":4739,"status":"superseded-pending-regeneration"},{"row_id":4740,"status":"superseded-pending-regeneration"},{"row_id":4741,"status":"superseded-pending-regeneration"},{"row_id":4742,"status":"superseded-pending-regeneration"},{"row_id":4743,"status":"superseded-pending-regeneration"},{"row_id":4744,"status":"superseded-pending-regeneration"},{"row_id":4745,"status":"superseded-pending-regeneration"},{"row_id":4746,"status":"superseded-pending-regeneration"},{"row_id":4747,"status":"superseded-pending-regeneration"},{"row_id":4748,"status":"superseded-pending-regeneration"},{"row_id":4749,"status":"superseded-pending-regeneration"},{"row_id":4750,"status":"superseded-pending-regeneration"},{"row_id":4751,"status":"superseded-pending-regeneration"},{"row_id":4752,"status":"superseded-pending-regeneration"}
+    {
+      "row_id": 4729,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4730,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4731,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4732,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4733,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4734,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4735,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4736,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4737,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4738,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4739,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4740,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4741,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4742,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4743,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4744,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4745,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4746,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4747,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4748,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4749,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4750,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4751,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 4752,
+      "status": "superseded-pending-regeneration"
+    }
   ],
   "dimension_overlay_evidence": "All 24 rows retain their prior generated history. Rows 4729-4752 are stale wherever they retain cost 3, provisional/unresolved balance, existing-save migration, or multiplayer-support/proof assumptions. The accepted target is cost 4 and new-character-only: pre-grant Axeman mutual exclusion (including direct/profession/job Axeman), followed by GrantedTraits=Axeman. Registration, display, Axe=1, and the DisabledInMultiplayer exclusion guard remain source-evidenced; formulas and parser/application order are baseline-evidenced. Applicable tests, new-character in-game behavior, and rendering remain unproven. Historical multiplayer and existing-save migration requirements are rejected non-goals.",
   "remediation_queue_overlay": [
-    {"row_id":18,"status":"implemented-remediation-pending-validation","finding":"B12-WOODSPLITTER-001"},
-    {"row_id":253,"status":"superseded-pending-regeneration"},{"row_id":254,"status":"superseded-pending-regeneration"},{"row_id":255,"status":"superseded-pending-regeneration"},{"row_id":477,"status":"superseded-pending-regeneration"},{"row_id":713,"status":"superseded-pending-regeneration"},{"row_id":714,"status":"superseded-pending-regeneration"},{"row_id":715,"status":"superseded-pending-regeneration"},{"row_id":716,"status":"superseded-pending-regeneration"},{"row_id":798,"status":"superseded-pending-regeneration"},{"row_id":1544,"status":"superseded-pending-regeneration"},{"row_id":1836,"status":"superseded-pending-regeneration"},{"row_id":1975,"status":"superseded-pending-regeneration"},{"row_id":1976,"status":"superseded-pending-regeneration"}
+    {
+      "row_id": 18,
+      "status": "implemented-remediation-pending-validation",
+      "finding": "B12-WOODSPLITTER-001"
+    },
+    {
+      "row_id": 253,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 254,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 255,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 477,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 713,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 714,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 715,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 716,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 798,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 1544,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 1836,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 1975,
+      "status": "superseded-pending-regeneration"
+    },
+    {
+      "row_id": 1976,
+      "status": "superseded-pending-regeneration"
+    }
   ],
   "queue_overlay_evidence": "No queue item is silently deleted or falsely closed. Rows 18, 253-255, 477, 713-716, 798, 1544, 1836, and 1975-1976 are stale wherever they retain cost 3, provisional/unresolved balance, existing-save migration, or multiplayer-support/proof assumptions. Open work is limited to proving the new-character pre-grant Axeman exclusion, declarative grant ordering/effects, applicable test execution, translation rendering, and pine-key-ring occurrence. Historical multiplayer and existing-save migration requirements are rejected non-goals; final cost balance is accepted at 4.",
   "superseding_review": {
-    "historical_finding":"B12-WOODSPLITTER-001 remains valid for the retired OnTreeChopped/tree-HP implementation.",
-    "current_source_assessment":"implemented-remediation-pending-validation",
-    "coverage":["GrantedTraits parser and base:axeman resolution","pre-grant Axeman exclusion including profession/job Axeman","intentional post-selection Wood Splitter plus granted Axeman","pre-OnNewGame application and new-character key-ring ordering","1.5 tree damage","0.95 attack-time factor","1.0 versus 0.8 chop speed","unique non-stacking membership","DisabledInMultiplayer exclusion metadata"],
-    "not_proven":["applicable test execution","in-game new-character selection and GrantedTraits behavior","profession/job Axeman exclusion","rendered localization","key-ring occurrence/frequency"],
-    "rejected_out_of_scope":["all existing-save migration and compatibility","OnCreatePlayer migration","migration markers or versioning","legacy-state reconciliation","migration idempotence","natural/admin Axeman preservation during migration","retroactive key-ring behavior","migration tests and runtime proof","multiplayer migration","multiplayer OnCreatePlayer ordering or synchronization","multiplayer runtime proof","multiplayer tests","multiplayer documentation"]
+    "historical_finding": "B12-WOODSPLITTER-001 remains valid for the retired OnTreeChopped/tree-HP implementation.",
+    "current_source_assessment": "statically-validated-runtime-unproven",
+    "coverage": [
+      "base:axeman alias resolution",
+      "profession/direct exclusion",
+      "grant retention",
+      "profession-switch removal and repopulation",
+      "tree damage x1.5",
+      "attack-time x0.95",
+      "general axe combat speed 1.0 versus 0.8",
+      "pine key-ring eligibility",
+      "grant/non-stacking"
+    ],
+    "not_proven": [
+      "in-game selection and profession switching",
+      "save/reload",
+      "rendered English",
+      "pine-key-ring occurrence"
+    ],
+    "rejected_out_of_scope": [
+      "all existing-save migration and compatibility",
+      "OnCreatePlayer migration",
+      "migration markers or versioning",
+      "legacy-state reconciliation",
+      "migration idempotence",
+      "natural/admin Axeman preservation during migration",
+      "retroactive key-ring behavior",
+      "migration tests and runtime proof",
+      "multiplayer migration",
+      "multiplayer OnCreatePlayer ordering or synchronization",
+      "multiplayer runtime proof",
+      "multiplayer tests",
+      "multiplayer documentation"
+    ]
   },
   "later_requirements": [
     "Run the full UniversalTraits Lua suite through C:/Users/Admin/.codex/scripts/bounded-command.py with the full Lua interpreter path.",
@@ -75,16 +427,13 @@
     "Preserve the accepted cost 4 decision and its source artifact at trait-deep-audit/campaign/change-impact/woodsplitter-axeman-balance.json during regeneration.",
     "Deploy or sync live files only under separate explicit authorization."
   ],
-  "deferred_generated_owners": [
-    {"artifacts":["trait-deep-audit/campaign/trait_batches/batch_12.jsonl","trait-deep-audit/campaign/translation_audit.json","trait-deep-audit/campaign/independent_reviews/traits_09_12.json"],"stale_rows":"Wood Splitter records that retain cost 3, provisional/unresolved balance, migration requirements, or multiplayer-support/proof assumptions","owner":"trait-deep-audit campaign evidence-authoring workflow","command":"none: these upstream evidence files have no deterministic generator command in trait-deep-audit/campaign/tools; update only in a separately authorized campaign evidence pass"},
-    {"artifacts":["trait-deep-audit/campaign/final_trait_ledger.json","trait-deep-audit/campaign/final_trait_ledger_rows.jsonl"],"stale_rows":"UniversalTraits:UT_woodsplitter aggregate and normalized row consumers","owner":"trait-deep-audit/campaign/tools/build_final_trait_ledger.py","command":"from UTMods/trait-deep-audit/campaign/tools: py -3 build_final_trait_ledger.py"},
-    {"artifacts":["trait-deep-audit/campaign/dimension_ledger_rows.jsonl","trait-deep-audit/campaign/remediation_queue.jsonl","trait-deep-audit/campaign/remediation_summary.json"],"stale_rows":"dimension row_ids 4729-4752 and remediation row_ids 18, 253-255, 477, 713-716, 798, 1544, 1836, 1975-1976 wherever old balance/migration/MP assumptions remain","owner":"trait-deep-audit/campaign/tools/build_remediation_queue.py","command":"from UTMods/trait-deep-audit/campaign/tools: py -3 build_remediation_queue.py"},
-    {"artifacts":["trait-deep-audit/campaign/campaign_manifest.json"],"stale_rows":"hash entries for regenerated campaign artifacts","owner":"trait-deep-audit/campaign/tools/build_campaign_manifest.py","command":"from UTMods/trait-deep-audit/campaign/tools: py -3 build_campaign_manifest.py"},
-    {"artifacts":["trait-deep-audit/campaign/MASTER_COVERAGE_LEDGER.md"],"stale_rows":"Wood Splitter summary claims derived from the final ledger","owner":"trait-deep-audit campaign master-ledger authoring workflow","command":"none: no MASTER_COVERAGE_LEDGER.md generator exists in trait-deep-audit/campaign/tools; update only after deterministic ledger/queue regeneration"},
-    {"artifacts":["trait-deep-audit/campaign/source_inventory.json"],"stale_rows":"only fingerprint/hash fields, if present; trait membership is unchanged","owner":"trait-deep-audit campaign source-inventory workflow","command":"none: no source_inventory.json generator exists in trait-deep-audit/campaign/tools"},
-    {"artifacts":["tools/pz_api_inventory.json","tools/pz_api_baseline.json"],"stale_rows":"Wood-Splitter-related API/migration assumptions only; baseline refresh remains separately guarded","owner":"tools/verify_pz_api.py","command":"from UTMods: py -3 tools/verify_pz_api.py --json --inventory-out tools/pz_api_inventory.json; baseline only after explicit review: py -3 tools/verify_pz_api.py --write-baseline --baseline-file tools/pz_api_baseline.json"},
-    {"artifacts":["UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"],"stale_rows":"only if reviewed API inventory changes alter smoke coverage","owner":"tools/generate_smoke_pings.py","command":"from UTMods: py -3 tools/generate_smoke_pings.py --dry-run, then separately authorized regeneration through the same owner"},
-    {"artifacts":["trait-deep-audit/campaign generated validation state"],"stale_rows":"cross-artifact drift after all owning generators run","owner":"trait-deep-audit/campaign/tools/validate_campaign.py","command":"from UTMods/trait-deep-audit/campaign/tools: py -3 validate_campaign.py"}
-  ],
-  "counts": {"impact_surfaces":32,"impact_surfaces_dispositioned_once":32,"dimension_rows":24,"dimension_rows_reconciled_once":24,"remediation_rows":14,"remediation_rows_reconciled_once":14}
+  "deferred_generated_owners": [],
+  "counts": {
+    "impact_surfaces": 32,
+    "impact_surfaces_dispositioned_once": 32,
+    "dimension_rows": 24,
+    "dimension_rows_reconciled_once": 24,
+    "remediation_rows": 14,
+    "remediation_rows_reconciled_once": 14
+  }
 }

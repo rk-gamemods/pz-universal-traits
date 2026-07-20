@@ -152,7 +152,7 @@
     "UI_UT_cleaver": "Cleaver",
     "UI_UT_cleaverDesc": "+1 to Long Blade skill. Long blade attacks have +10 percent critical hit chance.",
     "UI_UT_woodsplitter": "Wood Splitter",
-    "UI_UT_woodsplitterDesc": "+1 to Axe skill. Axe-category weapons deal 50% more damage to trees and have 5% lower swing time, and tree-chopping animations are 25% faster. Eligible for the rare pine-tree key ring. Grants Ax-pert and does not stack with it.",
+    "UI_UT_woodsplitterDesc": "+1 to Axe skill. Axe-category weapons deal 50% more damage to trees and have 5% lower swing time, and general axe combat/swing animations are 25% faster. Eligible for the rare pine-tree key ring. Grants Ax-pert and does not stack with it.",
     "UI_UT_improviser": "Improviser",
     "UI_UT_improviserDesc": "+1 to Maintenance skill. Equipped weapons degrade 50 percent slower.",
     "UI_UT_packmule": "Pack Mule",

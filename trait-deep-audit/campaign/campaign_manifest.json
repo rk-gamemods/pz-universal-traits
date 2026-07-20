@@ -30,32 +30,50 @@
     "trait_batches/batch_12.jsonl",
     "translation_audit.json"
   ],
-  "file_count": 34,
-  "total_bytes": 11612619,
+  "file_count": 61,
+  "total_bytes": 12586952,
   "files": [
     {
       "path": "MASTER_COVERAGE_LEDGER.md",
       "kind": "master-ledger",
-      "bytes": 30463,
-      "sha256": "F30AD45E2A53C782EE13F5743F6AFFCCCCF88EF40DB1AE0B4D3ABFAF2EAC321A"
+      "bytes": 30650,
+      "sha256": "0854871CEC3BD7BAF6F2BCE1A9C8EF136E2768BFB97B4A83BAFEEBF5DD7ADEA0"
+    },
+    {
+      "path": "change-impact/woodsplitter-axeman-alias-resolution.json",
+      "kind": "campaign-artifact",
+      "bytes": 17752,
+      "sha256": "62911A31D51A733D115B239135AB69437770D751E567752FC6EE17095D4010D7"
+    },
+    {
+      "path": "change-impact/woodsplitter-axeman-alias.json",
+      "kind": "campaign-artifact",
+      "bytes": 23535,
+      "sha256": "1CD7522841BD4434A43ACA6D00176D1487A8628FEBE755D6B8FAFF09BBFE1CCF"
+    },
+    {
+      "path": "change-impact/woodsplitter-axeman-balance.json",
+      "kind": "campaign-artifact",
+      "bytes": 17190,
+      "sha256": "8C17A7342F1F51CCE8A947D220427FE6E2E10AB56A706BC5436728B35FD128D1"
     },
     {
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
-      "bytes": 2257648,
-      "sha256": "832F90D87CD0FC65D20738060A67D473E704A2C9A2999EF1A34981CAD17222FF"
+      "bytes": 2257680,
+      "sha256": "32BBCB64524C40FB3666D267A4416AEF45874B81CE418EE128CAFB66E00A0C53"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
-      "bytes": 2081847,
-      "sha256": "CF9E7883195407ABA182C958361AC6AA1CF60DB0027AFAB0AB5ADA88B92999C6"
+      "bytes": 2081760,
+      "sha256": "D0DDE802F0D72A120599EE9F432E4D10198F02C8AEF0D0566CEACDD8A718488B"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
-      "bytes": 1277642,
-      "sha256": "829A08A7DD22AC22A59E93E41C99574D739ABE91CB79980F91BF3087FBDD0973"
+      "bytes": 1277539,
+      "sha256": "B2177DF489961BD20CD5EACBD7573A50852EDE4B46A8C34617E4FC9CC7BF9027"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
@@ -84,8 +102,8 @@
     {
       "path": "independent_reviews/traits_09_12.json",
       "kind": "independent-review",
-      "bytes": 112865,
-      "sha256": "7FCBDB6750959B0137174F375BAFA81E7330736449EDAEC9B2600677FDFC9A8E"
+      "bytes": 112884,
+      "sha256": "F41976727FEA3F56102EC97431C5852AC9E8BEB69E2BD009AB00BDBF1485E665"
     },
     {
       "path": "independent_reviews/ut_core_integration.json",
@@ -96,20 +114,158 @@
     {
       "path": "recurring_pattern_findings.json",
       "kind": "recurring-pattern-report",
-      "bytes": 9045,
-      "sha256": "6C3799C19A65EFD287C035EBF17820F1BED6C67C7B781C52DB8562DC7D7B23DD"
+      "bytes": 2717,
+      "sha256": "EE0E70DA0AB468C00966CB13C6629886FD4038FEFB1C48FB152EC59F295A1358"
+    },
+    {
+      "path": "release_blocker_queue.json",
+      "kind": "campaign-artifact",
+      "bytes": 8385,
+      "sha256": "C04AABABF84F4B0E2F64F4DCB5F6A8C2D645E0CFC215131588FD6E2D1B374CFF"
     },
     {
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
-      "bytes": 2350114,
-      "sha256": "3EE21FDAA44BF817F58EA789471F578B791E440CC719860960FFE7BBA94E4998"
+      "bytes": 2333330,
+      "sha256": "E9744544362CD337FFC8E58EAE980818122BE1348F2550B7D996FF701308950C"
     },
     {
       "path": "remediation_summary.json",
       "kind": "remediation-queue",
-      "bytes": 1183,
-      "sha256": "E4D1163D70E2922DDEE3AD04F5198074F58EA3947EE00680F4D0C2E602DAE095"
+      "bytes": 1184,
+      "sha256": "E0A31D583AAB7C1831DC5BC8FC8DC05F0F991E2312DCBEA09A8F91AF402D083D"
+    },
+    {
+      "path": "runtime-traces/utcore-wave-01.jsonl",
+      "kind": "campaign-artifact",
+      "bytes": 22628,
+      "sha256": "E12A36E67BB9C2875309CF2B68DCF23F4F66DB116736A600412E2E3F0A8E3D1E"
+    },
+    {
+      "path": "runtime-traces/utcore-wave-02.jsonl",
+      "kind": "campaign-artifact",
+      "bytes": 22919,
+      "sha256": "D54C15EC2DAF7E77CBCA5B45C4EFA2E36E25F9526532E0B7B5E1167B02652B6C"
+    },
+    {
+      "path": "runtime-traces/wave-01-rebuild/part-01.jsonl",
+      "kind": "campaign-artifact",
+      "bytes": 54826,
+      "sha256": "7ED231E5D026C73A29DC53B061C8CAE35F2D563163452764848F9BABC5E44360"
+    },
+    {
+      "path": "runtime-traces/wave-01-rebuild/part-02.jsonl",
+      "kind": "campaign-artifact",
+      "bytes": 36635,
+      "sha256": "67E01464656CA3B0DCF11E9810439CA9B1C4792AE21702405391555A6DCAF4AE"
+    },
+    {
+      "path": "runtime-traces/wave-01-rebuild/part-03.jsonl",
+      "kind": "campaign-artifact",
+      "bytes": 29395,
+      "sha256": "94F99041B148B261529CDADA7850D5A833ABE4AE5B403944AD83E016F836E275"
+    },
+    {
+      "path": "runtime-traces/wave-01-rebuild/part-04.jsonl",
+      "kind": "campaign-artifact",
+      "bytes": 90761,
+      "sha256": "0AB46EA12DF26F6E20AB05EFBC4F99BE4F26AAFC0000BC479E6A496422F852C9"
+    },
+    {
+      "path": "runtime-traces/wave-01-single/UT_accmetabolism-resolution.json",
+      "kind": "campaign-artifact",
+      "bytes": 2372,
+      "sha256": "C8B9765A8536D6081C8C4F4BDFFC7E08D15BD4CC605015060E8A7EA782C03487"
+    },
+    {
+      "path": "runtime-traces/wave-01-single/UT_accmetabolism.json",
+      "kind": "campaign-artifact",
+      "bytes": 25411,
+      "sha256": "6142A3DEDE3075921D387AE1195F0494E8587E90A39D7066CDBAAFB7B43E1153"
+    },
+    {
+      "path": "runtime-traces/wave-01-single/UT_acrophobic.json",
+      "kind": "campaign-artifact",
+      "bytes": 22008,
+      "sha256": "1323052A550DDE860BB86276E138CBF5EEE3B8AC12C7B232DCFAF28E932BD7A6"
+    },
+    {
+      "path": "runtime-traces/wave-01-single/UT_actionhero.json",
+      "kind": "campaign-artifact",
+      "bytes": 7625,
+      "sha256": "64470428BC59EC164AA5C613D11993A1F8FA8DD1206C12135932FF4EEBE65EE5"
+    },
+    {
+      "path": "runtime-traces/wave-01-single/UT_adaptivemetabolism.json",
+      "kind": "campaign-artifact",
+      "bytes": 32408,
+      "sha256": "1B61F0226CAE10B379547B2CC2CEB70FFCD72F6FA5DD99AC80A4E85BD84ED1E4"
+    },
+    {
+      "path": "runtime-traces/wave-01-single/UT_addictedtocaffeine-resolution.json",
+      "kind": "campaign-artifact",
+      "bytes": 1547,
+      "sha256": "CC9079F46EF6706DD72BF8381C1442836BDA5659C3E1F086F2152F2B736606F7"
+    },
+    {
+      "path": "runtime-traces/wave-01-single/UT_addictedtocaffeine.json",
+      "kind": "campaign-artifact",
+      "bytes": 5208,
+      "sha256": "CDB4E3ABCB5BB2D531AAE125587D06CDD0F91A38C5CE25C9D8F828E6E8635EF3"
+    },
+    {
+      "path": "runtime-traces/wave-01-single/UT_albino.json",
+      "kind": "campaign-artifact",
+      "bytes": 30498,
+      "sha256": "1A51EC7B38B050B571CE42696E6CBDF75AF0A0BF2C3F971E46FC66D528ACBF27"
+    },
+    {
+      "path": "runtime-traces/wave-01-single/UT_alcoholic_I.json",
+      "kind": "campaign-artifact",
+      "bytes": 28029,
+      "sha256": "8A9F202BEC5FBF3418F733D3114137A6B58E3DD938F6B5C91AE9326865A460C3"
+    },
+    {
+      "path": "runtime-traces/wave-01-single/UT_alcoholic_II.json",
+      "kind": "campaign-artifact",
+      "bytes": 26585,
+      "sha256": "7FDC783404577A6F9FD2F3BE418F079C57CA36AD1F4DDD2C3F36AA533386C958"
+    },
+    {
+      "path": "runtime-traces/wave-01-single/UT_alcoholic_III.json",
+      "kind": "campaign-artifact",
+      "bytes": 12614,
+      "sha256": "1156E8C6F19A37C1EF2B068840360720AA83FE967D332CC5CDB8150BC992EA85"
+    },
+    {
+      "path": "runtime-traces/wave-01-single/UT_amateurelectrician.json",
+      "kind": "campaign-artifact",
+      "bytes": 12925,
+      "sha256": "A5A7AD937231E6445EE74BA41A3DB88930B4E908B583E2CCA09107C8FF8B98EB"
+    },
+    {
+      "path": "runtime-traces/wave-01-single/UT_analgesia.json",
+      "kind": "campaign-artifact",
+      "bytes": 22503,
+      "sha256": "55382DF6085C4EAA7A3C96D9E014DE255892C3D9B02318F598A6564AA4C758D7"
+    },
+    {
+      "path": "runtime-traces/wave-01.jsonl",
+      "kind": "campaign-artifact",
+      "bytes": 312546,
+      "sha256": "1E13CDE0C9BE979C469D160C517017FB31DCC719D8856CE810363EA97636FAB0"
+    },
+    {
+      "path": "runtime-traces/wave-02.jsonl",
+      "kind": "campaign-artifact",
+      "bytes": 34998,
+      "sha256": "6FB483E8DAB0915A9FEC029A0AE947F9414E2D3CB10801E5A2CFB87D64B69378"
+    },
+    {
+      "path": "runtime-traces/wave-03.jsonl",
+      "kind": "campaign-artifact",
+      "bytes": 78187,
+      "sha256": "536051F0197D1EE8FEE3D0C7EC77F92A8FA717DC0F3D35F9809581D5E1A31C35"
     },
     {
       "path": "source_inventory.json",
@@ -120,8 +276,8 @@
     {
       "path": "tests/test_campaign_tools.py",
       "kind": "regression-test",
-      "bytes": 15342,
-      "sha256": "3CC4900A4F3FE2A670B22586A875B9D97031CCB0B52A6314E896557DB5D40731"
+      "bytes": 19211,
+      "sha256": "FB587DF7373B0298C883A823D215DE7A455AA3EEA3F9AD3364EFD21343D96810"
     },
     {
       "path": "tools/build_campaign_manifest.py",
@@ -138,8 +294,8 @@
     {
       "path": "tools/build_remediation_queue.py",
       "kind": "deterministic-tool",
-      "bytes": 14564,
-      "sha256": "75C3E4C36A3477005E7A8E838D8F378D347C7A626C8F075B733811C794AE1500"
+      "bytes": 16828,
+      "sha256": "894789AA73D25A0A9E34C190BCE4FE6198DBDDE1B424295E51F03D5A26B0D568"
     },
     {
       "path": "tools/campaign_cli.py",
@@ -152,6 +308,12 @@
       "kind": "deterministic-tool",
       "bytes": 12209,
       "sha256": "BA3F12BC45B5890F12224BC300B87CE36115F682652EA41D57203744D8EAEFD7"
+    },
+    {
+      "path": "tools/regenerate_woodsplitter.py",
+      "kind": "deterministic-tool",
+      "bytes": 11885,
+      "sha256": "6A374D6B883F75AF2CF3A285A97B172424400BFFAE5B49FD2E9B70B9F0635E6A"
     },
     {
       "path": "tools/validate_campaign.py",
@@ -228,14 +390,14 @@
     {
       "path": "trait_batches/batch_12.jsonl",
       "kind": "trait-batch",
-      "bytes": 83872,
-      "sha256": "807C099B09F2B4E23BBF3EEB6BF40C05F7AD0C81EA5A438CD7903AD463FEEC12"
+      "bytes": 83372,
+      "sha256": "C1DCBAE0CC6F81B838D0DEF75F35187E606E392B5D79C253B0FC0C3945436A8B"
     },
     {
       "path": "translation_audit.json",
       "kind": "translation-audit",
-      "bytes": 494519,
-      "sha256": "BC16195EDEA83B435C2A005F01C2940F5EB25C4AF21F7E142AC501AC462DFD8B"
+      "bytes": 494907,
+      "sha256": "58AB94886410B3DCE2CDF9F06C66D27662A4F342354C2DDE5A391FA066B2DBF0"
     }
   ]
 }
