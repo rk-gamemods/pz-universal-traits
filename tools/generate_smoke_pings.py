@@ -13,13 +13,14 @@ DEFAULT_INVENTORY = SCRIPT_DIR / "pz_api_inventory.json"
 DEFAULT_OUTPUT = ROOT / "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
 SAFE_METHOD_PREFIXES = ("get", "is", "has", "num", "size")
 RECEIVER_EXPRESSIONS = {
-    "CharacterStat": "CharacterStat.ENDURANCE",
+    "ENDURANCE": "CharacterStat.ENDURANCE",
     "player": "player", "character": "player", "attacker": "player", "target": "player",
     "stats": "_stats", "bodyDamage": "_bd", "bd": "_bd", "nutrition": "_nutrition",
     "inv": "_inv", "inventory": "_inv", "container": "_inv", "pack": "_inv",
     "wornItems": "_wornItems", "square": "_square", "sq": "_square",
     "cm": "_cm", "gt": "_gt", "spottedList": "_parts",
 }
+RECEIVER_SURFACES = {"ENDURANCE": "CharacterStat"}
 GLOBAL_RECEIVERS = {"ISEatFoodAction", "ISDrinkFluidAction", "ISFitnessAction"}
 SETUP_CALLS = (
     ("getPlayer", "    local player = getPlayer()"),
@@ -92,7 +93,8 @@ def build_plan(inventory, allowlist):
 
 
 def runtime_calls(emitted):
-    return [surface for surface, _ in SETUP_CALLS] + [f"{r}.{m}" for r, m in sorted(emitted)]
+    return [surface for surface, _ in SETUP_CALLS] + [
+        f"{RECEIVER_SURFACES.get(r, r)}.{m}" for r, m in sorted(emitted)]
 
 
 def call_manifest(emitted):
@@ -129,7 +131,7 @@ def generate_lua(emitted):
     for surface, expression in SETUP_CALLS:
         lines.extend([expression, f"    mark('{surface}')"])
     for receiver, method in emitted:
-        key = f"{receiver}.{method}"
+        key = f"{RECEIVER_SURFACES.get(receiver, receiver)}.{method}"
         if receiver in GLOBAL_RECEIVERS:
             lines.extend([
                 f"    if type({receiver}) ~= 'table' then error('{receiver} is missing or not a table') end",
