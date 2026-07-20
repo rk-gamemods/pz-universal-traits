@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "remediation_queue_sha256": "c57b4474329d9b714f7511e2d24a9d7ebf65d7786e8d8b96126f1f02a37a273f",
+  "remediation_queue_sha256": "ebc426d29b4bd90e16ce4041c6a3ab3a5b8d5024d929e407ad40879a1a90c7f8",
   "category_label": "release-blocker",
   "classification_scope_statement": "Only the queue rows listed by these reviewed semantic identities are classified as release-blocker; all other rows remain unclassified in the exhaustive ledger.",
   "identities": [
@@ -25,20 +25,6 @@
       ],
       "dependencies": [],
       "evidence_scope": "Motion Sickness calls a nonexistent GameTime method on its runtime path."
-    },
-    {
-      "semantic_identity": "trait:UT_scrounger-runtime",
-      "identity_kind": "trait",
-      "status": "open",
-      "priority_reason_code": "invalid-runtime-contract",
-      "queue_ids": [
-        "finding:B10-SCROUNGER-001",
-        "dimension:UniversalTraits:UT_scrounger:events",
-        "dimension:UniversalTraits:UT_scrounger:java_lua",
-        "dimension:UniversalTraits:UT_scrounger:kahlua"
-      ],
-      "dependencies": [],
-      "evidence_scope": "Scrounger inventory refresh uses the wrong callback, player, and collection contracts."
     },
     {
       "semantic_identity": "trait:UT_superimmune",
@@ -171,19 +157,6 @@
       ],
       "dependencies": [],
       "evidence_scope": "Antique source and packaged release differ on the container-add API and package parity."
-    },
-    {
-      "semantic_identity": "package:UT_scrounger",
-      "identity_kind": "package",
-      "status": "open",
-      "priority_reason_code": "trait-package-parity-drift",
-      "queue_ids": [
-        "finding:B10-SCROUNGER-002",
-        "dimension:UniversalTraits:UT_scrounger:packaging",
-        "dimension:UniversalTraits:UT_scrounger:source_release_parity"
-      ],
-      "dependencies": [],
-      "evidence_scope": "Scrounger release packaging retains stale unsupported behavior and differs from source."
     },
     {
       "semantic_identity": "package:UniversalTraits-release-reconciliation",

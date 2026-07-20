@@ -47,7 +47,7 @@
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "4F7338C65D9EC8C15B9D3E749A9A82ADB60F09D968265F4E0A09E65660E93326",
     "independent_reviews/traits_05_08.json": "D042BBCD575D70897788E1598054972D118246E3CABF7F738072A71B8E955B82",
-    "independent_reviews/traits_09_12.json": "AE50D38C8FA77C886041A487F8D2A9E72A1B22EE96FC8A4B77A63E3A4D3728B9",
+    "independent_reviews/traits_09_12.json": "130092739648EE4F351D519AC77F606E8DCE1E13420561CB04AD4B11BA5D12B1",
     "source_inventory.json": "47781D8C6AE00795C0DD5CFF8F89E295F49826BB57B64DC9DCD6DE6A767941C9",
     "trait_batches/batch_01.jsonl": "4FA9A60E8D86362B22C33D2BD2DC334565EB564071514576AAD0E90F7FF4BB81",
     "trait_batches/batch_02.jsonl": "8B1EAD1B3C9B6C33F0A40B0A78455432E3604F5C5023ECF1585CCE5CC18AAE4D",
@@ -58,10 +58,10 @@
     "trait_batches/batch_07.jsonl": "6BFC2D4966C29749BFF856067ABD0EB3B3F3E6E53E37E72A4A4FE271BE9E892C",
     "trait_batches/batch_08.jsonl": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A",
     "trait_batches/batch_09.jsonl": "FFB64ADB79BEDD95F4F340F169A2BEB7A1158BF4C1E1602538AC75BA65F7D759",
-    "trait_batches/batch_10.jsonl": "2FFE37D42F2DC928789EAE78A16880F4A283BAFB1D735113BB8D25ADE3A90F10",
+    "trait_batches/batch_10.jsonl": "FD77CC372A742BCDEB66FCB6D26BF9622BA4EC439CDB8E9135CAC22B946F3A44",
     "trait_batches/batch_11.jsonl": "46B75AB40DF0F1939D1B381E7AC16710C8F3C3A793A26B2F9249799150A43362",
     "trait_batches/batch_12.jsonl": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47",
-    "translation_audit.json": "984BE8A843175A0EEB02B29D8C77932070717AFDE0E3E27540FD47DB26624A6B"
+    "translation_audit.json": "C2FE574CB0ADB374680882065FFB9E632C12F17752BE9467B43A99F44CD0B6D2"
   },
   "counts": {
     "traits": 198,
@@ -71,22 +71,22 @@
     "independent_review_findings": 118,
     "independent_review_states": {
       "accepted": 71,
-      "confirmed-defect": 39,
-      "coverage-gap": 19,
+      "confirmed-defect": 38,
+      "coverage-gap": 20,
       "needs-correction": 63,
       "runtime-unproven": 6
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 79,
-      "coverage-gap": 11,
+      "confirmed-defect": 78,
+      "coverage-gap": 12,
       "runtime-unproven": 83
     },
     "dimension_states": {
-      "proven-correct": 2624,
-      "confirmed-defect": 309,
-      "coverage-gap": 818,
-      "runtime-unproven": 1001
+      "proven-correct": 2638,
+      "confirmed-defect": 297,
+      "coverage-gap": 817,
+      "runtime-unproven": 1000
     }
   },
   "independent_review_findings": [
@@ -48259,12 +48259,12 @@
     {
       "trait_id": "UniversalTraits:UT_scrounger",
       "batch": "batch_10",
-      "overall_state": "confirmed-defect",
+      "overall_state": "coverage-gap",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
           "evidence": [
-            "One namespaced registration exists at registries.lua:93."
+            "One namespaced Scrounger registration exists and matches the definition/runtime ID."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48274,7 +48274,7 @@
         "definition_parser": {
           "state": "proven-correct",
           "evidence": [
-            "Complete definition at lines 687-697; current engine CharacterTraitDefinitionScript parser accepts all fields."
+            "The isolated balanced Scrounger definition block parses with one immediate opening brace."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48284,7 +48284,7 @@
         "namespace": {
           "state": "proven-correct",
           "evidence": [
-            "Registration, CharacterTrait, Lua TRAIT_ID, UI keys use UniversalTraits:UT_scrounger consistently."
+            "Registration, CharacterTrait, runtime TRAIT_ID, and UI keys consistently identify Scrounger."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48292,19 +48292,21 @@
           ]
         },
         "cost_xp_grants_exclusions": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "Cost 3; XPBoosts PlantScavenging=1; no grants or exclusions; no reverse exclusions."
+            "The isolated definition proves exactly Cost = 3 and XPBoosts = PlantScavenging=1, with no Scrounger exclusions; these values are current configuration, not accepted product intent."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "User decision evidence is still required before treating Cost 3, PlantScavenging=1, or the absence of exclusions as accepted design intent."
+          ],
           "source_dimensions": [
-            "cost_xp_grants_exclusions_reverse_exclusions"
+            "cost_xp_grants_exclusions"
           ]
         },
         "source_intent": {
           "state": "proven-correct",
           "evidence": [
-            "Current Lua comment promises one permanent 30% roll per world container and duplication of one existing item."
+            "Current runtime and English copy agree on one permanent 30 percent roll per world container and duplication of one existing item."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48312,9 +48314,9 @@
           ]
         },
         "runtime_path": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Per-trait Lua uses OnRefreshInventoryWindowContainers; UTCore.hasTrait; Java ItemContainer and global sendAddItemToContainer."
+            "The end-phase inventory refresh callback resolves the page player, traverses Lua backpacks, and processes eligible world containers."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48324,7 +48326,7 @@
         "numbers": {
           "state": "proven-correct",
           "evidence": [
-            "30% roll; one randomly selected existing item; +1 PlantScavenging; permanent UT_scroungerRolled flag."
+            "Regression coverage proves the 30 percent boundary, exactly one duplicated zero-based Java-list item, and the current +1 PlantScavenging definition value."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48332,9 +48334,9 @@
           ]
         },
         "cadence": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Inventory refresh event fires in four UI states; source does not gate state."
+            "Only the inventory refresh end phase may inspect and roll; begin, beforeFloor, and buttonsAdded are rejected."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48344,7 +48346,7 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
-            "No timed cooldown; one-roll gate is persistent container modData."
+            "There is no timed cooldown; a permanent container modData flag enforces one inspection roll."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48354,19 +48356,19 @@
         "reset_save_load": {
           "state": "runtime-unproven",
           "evidence": [
-            "Container modData flag is intended to persist; no reset path."
+            "Source and regression tests prove the persistent UT_scroungerRolled gate and no reset path."
           ],
           "missing_proof": [
-            "Exercise new-character creation, save, full exit and reload, and dynamic trait removal and re-addition where applicable; verify cited persisted keys or item mutations reset correctly."
+            "No in-game save, full exit, and reload proof was accepted; verify persistence in the current game runtime."
           ],
           "source_dimensions": [
             "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Engine event supplies (inventoryPage,state), self.backpacks is a Lua table, ItemContainer items is a zero-based Java list, and sendAddItemToContainer(ItemContainer,InventoryItem) exists."
+            "The callback treats backpacks as a 1-based Lua array and item collections as zero-based Java lists, and uses the verified global container-sync call."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48374,9 +48376,9 @@
           ]
         },
         "kahlua": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Code uses valid method-existence syntax and Java zero-based item indexing, but applies Java size/get to a Lua table."
+            "Focused standard-Lua regression coverage exercises the corrected callback contracts without unsupported method guards or collection calls."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48384,9 +48386,9 @@
           ]
         },
         "events": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Always registered at file load; current callback cannot receive the expected player parameter."
+            "Trait-local event registration is idempotent across repeated module loads and the callback gates player and trait presence."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48394,9 +48396,9 @@
           ]
         },
         "stacking_interactions": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "World-container flag prevents multiple Scrounger characters from rolling independently on the same container."
+            "The permanent world-container flag deterministically prevents a second Scrounger roll on the same container."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48404,13 +48406,11 @@
           ]
         },
         "multiplayer": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Definition disables trait in multiplayer; callback nevertheless calls transmitModData/network sync paths."
+            "Multiplayer support is outside UTMods product scope; no multiplayer behavior or proof is claimed."
           ],
-          "missing_proof": [
-            "Create and exercise the trait in a Build 42 multiplayer session and verify availability, authority, synchronization, and network-visible effects."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "multiplayer"
           ]
@@ -48418,7 +48418,7 @@
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "EN display name is Scrounger."
+            "The current English display name is Scrounger and source/release copies are byte-identical."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48426,9 +48426,9 @@
           ]
         },
         "description": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "EN describes the 30% extra-item effect but omits +1 PlantScavenging."
+            "The current English copy states +1 Plant Scavenging and the 30 percent first-open additional-item behavior, with exact source/release parity."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48436,21 +48436,19 @@
           ]
         },
         "localization": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Both EN keys exist; source inventory reports EN as the only locale."
+            "English is the product translation surface in scope for this accepted Scrounger reconciliation; no additional locale claim is made."
           ],
-          "missing_proof": [
-            "Inventory both assigned UI keys in every supported non-English locale and run the localization completeness check."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "localization_absent_locales"
           ]
         },
         "balance": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Intended effect can duplicate any existing item and is shared per container; in practice engine contract prevents it."
+            "The audited artifact accurately records the unchanged current mechanic and numbers without accepting Cost, XP, or exclusions as intended balance."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48458,9 +48456,9 @@
           ]
         },
         "performance": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Intended callback scans every visible backpack on each of four refresh phases; no state gate."
+            "The callback gates to the end phase, exits for ineligible players/containers, and permanently avoids repeat rolls per container."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48468,21 +48466,19 @@
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Catalog consistency covers the ID; no dedicated Scrounger behavior test was found."
+            "Commit 9d838fe6975dff360b8a0ea9463d9e0ee9a4d2ad contains the exact isolated Scrounger definition regression; direct suite 7/7 and full UniversalTraits suite 427/427 passed."
           ],
-          "missing_proof": [
-            "Add and run the smallest regression test named by the associated finding or unknown."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Mock event accepts arbitrary arguments and does not encode the engine's fixed two-argument trigger; no Lua-table backpacks contract test."
+            "Focused fixtures encode the two-argument event, four phases, Lua-array backpacks, zero-based Java items, player/trait gates, and idempotent registration."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48490,9 +48486,9 @@
           ]
         },
         "source_release_parity": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Definition/UI/registration match; release Lua differs at line 31 (release uses inv:addItemOnServer, source uses sendAddItemToContainer)."
+            "Current runtime, definition, and English source/release files are byte-identical for the accepted Scrounger surfaces."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48500,9 +48496,9 @@
           ]
         },
         "packaging": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Source and release both package the Lua file, but package behavior is stale and release method is not in the current engine symbol surface."
+            "The current release package contains byte-identical Scrounger runtime, definition, and English evidence; deployment/live state is not claimed."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -48516,13 +48512,13 @@
         "B10-SCROUNGER-003"
       ],
       "unknowns": [
-        "Actual in-game error/log manifestation was not captured.",
-        "Server authority behavior after a corrected callback remains unproven."
+        "In-game save/full-exit/reload persistence remains runtime-unproven.",
+        "Cost 3, PlantScavenging=1, and the absence of exclusions remain user-decision evidence rather than accepted product intent."
       ],
-      "translation_terminal_state": "confirmed-defect",
+      "translation_terminal_state": "proven-correct",
       "independent_review": {
         "artifact": "independent_reviews/traits_09_12.json",
-        "review_state": "confirmed-defect",
+        "review_state": "coverage-gap",
         "omission_finding_ids": [],
         "cross_finding_ids": [
           "IR0912-FINDING-STATE-001",
@@ -48536,10 +48532,7 @@
         ],
         "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [
-          "RP0912-KAHLUA-001",
-          "RP0912-SAVELOAD-001",
-          "RP0912-BALANCE-PERF-001",
-          "RP0912-LOCALE-001"
+          "RP0912-SAVELOAD-001"
         ]
       }
     },

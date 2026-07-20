@@ -266,7 +266,7 @@ def _first_pass_findings(campaign_root: Path) -> list[dict[str, Any]]:
                 rows.append(
                     {
                         **finding,
-                        "state": "confirmed-defect",
+                        "state": finding.get("resolution_state", "confirmed-defect"),
                         "trait_id": trait["trait_id"],
                         "source_artifact": f"trait_batches/{path.name}",
                     }
