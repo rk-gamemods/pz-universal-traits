@@ -104,7 +104,6 @@
       "status": "open",
       "priority_reason_code": "unknown-engine-event",
       "queue_ids": [
-        "finding:RP-EVENT-UNKNOWN-ONACTIONADDED",
         "dimension:UniversalTraits:UT_paramedic:events",
         "dimension:UniversalTraits:UT_pitcrew:events"
       ],

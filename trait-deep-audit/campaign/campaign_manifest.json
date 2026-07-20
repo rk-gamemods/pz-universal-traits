@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 65,
-  "total_bytes": 12683133,
+  "total_bytes": 12702316,
   "files": [
     {
       "path": "MASTER_COVERAGE_LEDGER.md",
@@ -159,8 +159,8 @@
       "path": "release_blocker_queue.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
-      "bytes": 8385,
-      "sha256": "DB3B7FC455A6FD9B455C0E3AEC651197EA013924EC34E750D6A7ED63BAB3F3A9"
+      "bytes": 8335,
+      "sha256": "6C2DBDE2CF27E9762BF4AC917E3B895E60724F4B39F539129C82EC40CD290664"
     },
     {
       "path": "remediation_queue.jsonl",
@@ -341,8 +341,8 @@
       "path": "tests/test_campaign_tools.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 66093,
-      "sha256": "365935967682C01249DDABD0462DB62897D0160F17F4E4F7567FFA541274358F"
+      "bytes": 79128,
+      "sha256": "CEAB6727820985D91E037ACE77F038C67F8B3A7AC84621A62121B1C05C42C668"
     },
     {
       "path": "tools/build_campaign_manifest.py",
@@ -404,8 +404,8 @@
       "path": "tools/validate_campaign.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 5061,
-      "sha256": "30FFE6C176BE87EC334708E9925C5D49E4C160A43780CAC8EC64729D0D159501"
+      "bytes": 11259,
+      "sha256": "66B69CF681BCC0BEFEAF799FE122CC490E3D2BC6AFB6A6AA8000020F35F1D51E"
     },
     {
       "path": "trait_batches/batch_01.jsonl",
