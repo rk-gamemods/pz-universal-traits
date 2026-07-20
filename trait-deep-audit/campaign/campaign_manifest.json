@@ -31,7 +31,7 @@
     "translation_audit.json"
   ],
   "file_count": 61,
-  "total_bytes": 12669561,
+  "total_bytes": 12669349,
   "files": [
     {
       "path": "MASTER_COVERAGE_LEDGER.md",
@@ -174,14 +174,14 @@
     {
       "path": "runtime-traces/wave-01-single/UT_accmetabolism-resolution.json",
       "kind": "campaign-artifact",
-      "bytes": 2372,
-      "sha256": "C8B9765A8536D6081C8C4F4BDFFC7E08D15BD4CC605015060E8A7EA782C03487"
+      "bytes": 2668,
+      "sha256": "F8F11A1E0BDB85DC1A293FE45C12E06927D1CC04AB8A746EEF2CB5C52D63AC6D"
     },
     {
       "path": "runtime-traces/wave-01-single/UT_accmetabolism.json",
       "kind": "campaign-artifact",
-      "bytes": 25411,
-      "sha256": "6142A3DEDE3075921D387AE1195F0494E8587E90A39D7066CDBAAFB7B43E1153"
+      "bytes": 24903,
+      "sha256": "1E20E23ACCC0975B1AA52A8626BBE793C47E3A63E751044AE55FA3F036BB3E9E"
     },
     {
       "path": "runtime-traces/wave-01-single/UT_acrophobic.json",

@@ -165,18 +165,16 @@
       "exact_proof_needed": "An in-game profiler capture on BuildID 23504596 measuring handler and UTCore.hasTrait cost and confirming no unexpected allocation or callback multiplication across reloads."
     },
     "tests": {
-      "classification": "coverage-gap",
-      "proof": "Current direct run_tests.lua bytes at lines 3333-3338 still assert only positive hunger/thirst movement. Shared test ownership belongs to Action Hero, so this task did not write the file.",
-      "positive_path": "The existing test detects a total failure to increase either stat.",
-      "negative_path": "It still accepts wrong positive deltas and does not cover caps, nil player, absent trait, nil Stats, callback replacement, or the deterministic current-version reload model.",
-      "exact_proof_needed": "Action Hero owner should add the exact focused assertions proposed in this task handoff; a standard-Lua model remains distinct from BuildID runtime proof."
+      "classification": "proven-correct",
+      "proof": "Current direct run_tests.lua bytes at lines 2543-2631 cover exact +0.05/+0.03 deltas with a narrow 1e-6 absolute tolerance, independent exact caps at 1, absent-trait/nil-player/nil-Stats guards, repeated evaluation with one exact callback count, one retained delta, and a deterministic current-version Stats round-trip model. The corrected oracle accepts the observed binary floating results 0.43000000000000005 for expected 0.43 and 0.32999999999999996 for expected 0.33 without weakening integral assertions.",
+      "positive_path": "One EveryTenMinutes dispatch produces hunger 0.45 and thirst 0.53 from 0.40/0.50; repeated evaluation retains one callback and produces one 0.05/0.03 delta.",
+      "negative_path": "Absent trait, nil player, and nil Stats do not write or error; independent cap cases retain exact equality at 1 while the uncapped companion stat is checked within 1e-6."
     },
     "mocks": {
-      "classification": "coverage-gap",
-      "proof": "Current direct UTTestMocks.lua bytes still provide generic Stats get/set and an EveryTenMinutes Add/Remove/fire surface, but no handler-count accessor or nil-Stats player option. Shared mock ownership belongs to Action Hero, so this task did not write the file.",
-      "positive_path": "Existing withActivePlayer and Stats storage support the current positive-path assertion.",
-      "negative_path": "Without trait-focused nil-Stats and handler-count surfaces, the missing guard and duplicate callback contract cannot be asserted deterministically.",
-      "exact_proof_needed": "Action Hero owner should add only the proposed nilStats player option, no-payload EveryTenMinutes fire contract, and handlerCount accessor; mock results must not be claimed as live proof."
+      "classification": "proven-correct",
+      "proof": "Current direct UTTestMocks.lua bytes provide generic Stats get/set, nilStats construction, withActivePlayer nil-player control, and EveryTenMinutes Add/Remove/fire/_handlerCount surfaces used by the focused assertions.",
+      "positive_path": "The shared mock dispatches the owned callback with no payload and exposes the resulting HUNGER/THIRST values plus exact handler count.",
+      "negative_path": "The nilStats option and nil active-player control exercise both early-return guards without manufacturing a Stats receiver or event payload."
     },
     "source_release_parity": {
       "classification": "proven-correct",
@@ -192,21 +190,6 @@
     }
   },
   "findings": [
-    {
-      "finding_id": "UT-ACC-TEST-FIDELITY",
-      "classification": "coverage-gap",
-      "dimension_ids": [
-        "tests",
-        "mocks"
-      ],
-      "summary": "Shared focused tests still lack exact values, caps, negative guards, callback replacement, and deterministic reload modeling; proposed assertions are deferred to the Action Hero owner.",
-      "anchors": [
-        "UniversalTraits/test/run_tests.lua:3333-3338",
-        "UniversalTraits/test/UTTestMocks.lua:85-112",
-        "UniversalTraits/test/UTTestMocks.lua:1274-1284",
-        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_accmetabolism.lua:6-24"
-      ]
-    },
     {
       "finding_id": "UT-ACC-LOCALIZATION",
       "classification": "coverage-gap",
@@ -243,9 +226,9 @@
       "duplicate_ids": []
     },
     "classification_counts": {
-      "proven-correct": 9,
+      "proven-correct": 11,
       "confirmed-defect": 1,
-      "coverage-gap": 3,
+      "coverage-gap": 1,
       "runtime-unproven": 10,
       "explicit-user-approved-non-goal": 1
     },
@@ -276,10 +259,10 @@
       "UniversalTraits/release/UniversalTraits/poster.png",
       "UniversalTraits/release/UniversalTraits/42.0/poster.png"
     ],
-    "commands_tests_git_deploy_runtime": "not performed by instruction; shared tests/mocks not written due Action Hero ownership",
+    "commands_tests_git_deploy_runtime": "Standard-Lua full suite run through bounded-command.py: 419 passed, 1 known unrelated Wildsman precision failure; all focused Accelerated Metabolism assertions passed. Campaign validation and Git checks are recorded in the committed correction.",
     "index_mutation": "not performed",
     "other_trait_evidence": "not read or analyzed",
     "backward_save_migration": "explicit-user-approved-non-goal",
-    "current_version_save_reload": "deterministic standard-Lua model proposed for shared owner; BuildID 23504596 save/reload remains runtime-unproven"
+    "current_version_save_reload": "deterministic standard-Lua model passes; BuildID 23504596 live save/reload remains runtime-unproven"
   }
 }

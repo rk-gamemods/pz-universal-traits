@@ -27,6 +27,11 @@ end
 local function assert_eq(a, b, msg)
     if a ~= b then error((msg or "") .. " expected=" .. tostring(b) .. " got=" .. tostring(a), 2) end
 end
+local function assert_close(a, b, tolerance, msg)
+    if math.abs(a - b) > tolerance then
+        error((msg or "") .. " expected=" .. tostring(b) .. " got=" .. tostring(a), 2)
+    end
+end
 local function assert_true(v, msg)
     if not v then error(msg or "expected true, got false", 2) end
 end
@@ -2532,6 +2537,7 @@ end)
 
 local ACC_METABOLISM_ID = "UniversalTraits:UT_accmetabolism"
 local ACC_METABOLISM_PATH = base .. "../media/lua/shared/UniversalTraits/traits/UT_accmetabolism.lua"
+local ACC_METABOLISM_TOLERANCE = 1e-6
 dofile(ACC_METABOLISM_PATH)
 
 test("accmetabolism one dispatch adds exactly hunger +0.05 and thirst +0.03", function()
@@ -2539,9 +2545,9 @@ test("accmetabolism one dispatch adds exactly hunger +0.05 and thirst +0.03", fu
     withActivePlayer(player, function()
         Events.EveryTenMinutes:fire()
     end)
-    assert_eq(player:getStats():get(CharacterStat.HUNGER), 0.45,
+    assert_close(player:getStats():get(CharacterStat.HUNGER), 0.45, ACC_METABOLISM_TOLERANCE,
         "one dispatch should add exactly 0.05 hunger")
-    assert_eq(player:getStats():get(CharacterStat.THIRST), 0.53,
+    assert_close(player:getStats():get(CharacterStat.THIRST), 0.53, ACC_METABOLISM_TOLERANCE,
         "one dispatch should add exactly 0.03 thirst")
 end)
 
@@ -2552,14 +2558,14 @@ test("accmetabolism caps hunger and thirst independently at one", function()
     end)
     assert_eq(hungerCaps:getStats():get(CharacterStat.HUNGER), 1,
         "hunger should cap independently at one")
-    assert_eq(hungerCaps:getStats():get(CharacterStat.THIRST), 0.43,
+    assert_close(hungerCaps:getStats():get(CharacterStat.THIRST), 0.43, ACC_METABOLISM_TOLERANCE,
         "thirst should still receive its exact delta when hunger caps")
 
     local thirstCaps = MockPlayer({ ACC_METABOLISM_ID }, { hunger = 0.40, thirst = 0.99 })
     withActivePlayer(thirstCaps, function()
         Events.EveryTenMinutes:fire()
     end)
-    assert_eq(thirstCaps:getStats():get(CharacterStat.HUNGER), 0.45,
+    assert_close(thirstCaps:getStats():get(CharacterStat.HUNGER), 0.45, ACC_METABOLISM_TOLERANCE,
         "hunger should still receive its exact delta when thirst caps")
     assert_eq(thirstCaps:getStats():get(CharacterStat.THIRST), 1,
         "thirst should cap independently at one")
@@ -2570,9 +2576,9 @@ test("accmetabolism guards no trait, no player, and nil Stats", function()
     withActivePlayer(withoutTrait, function()
         Events.EveryTenMinutes:fire()
     end)
-    assert_eq(withoutTrait:getStats():get(CharacterStat.HUNGER), 0.40,
+    assert_close(withoutTrait:getStats():get(CharacterStat.HUNGER), 0.40, ACC_METABOLISM_TOLERANCE,
         "hunger should remain unchanged without the trait")
-    assert_eq(withoutTrait:getStats():get(CharacterStat.THIRST), 0.50,
+    assert_close(withoutTrait:getStats():get(CharacterStat.THIRST), 0.50, ACC_METABOLISM_TOLERANCE,
         "thirst should remain unchanged without the trait")
 
     withActivePlayer(nil, function()
@@ -2596,9 +2602,9 @@ test("accmetabolism repeated module evaluation leaves one callback and one delta
     withActivePlayer(player, function()
         Events.EveryTenMinutes:fire()
     end)
-    assert_eq(player:getStats():get(CharacterStat.HUNGER), 0.25,
+    assert_close(player:getStats():get(CharacterStat.HUNGER), 0.25, ACC_METABOLISM_TOLERANCE,
         "one retained callback should add one hunger delta")
-    assert_eq(player:getStats():get(CharacterStat.THIRST), 0.33,
+    assert_close(player:getStats():get(CharacterStat.THIRST), 0.33, ACC_METABOLISM_TOLERANCE,
         "one retained callback should add one thirst delta")
 end)
 
@@ -2616,9 +2622,9 @@ test("accmetabolism deterministic current-version Stats round-trip model", funct
     withActivePlayer(afterRoundTrip, function()
         Events.EveryTenMinutes:fire()
     end)
-    assert_eq(afterRoundTrip:getStats():get(CharacterStat.HUNGER), 0.45,
+    assert_close(afterRoundTrip:getStats():get(CharacterStat.HUNGER), 0.45, ACC_METABOLISM_TOLERANCE,
         "modeled current-version Stats round-trip should retain hunger before one delta")
-    assert_eq(afterRoundTrip:getStats():get(CharacterStat.THIRST), 0.53,
+    assert_close(afterRoundTrip:getStats():get(CharacterStat.THIRST), 0.53, ACC_METABOLISM_TOLERANCE,
         "modeled current-version Stats round-trip should retain thirst before one delta")
 end)
 
