@@ -922,6 +922,7 @@ function MockZombie(opts)
     local _y = opts.y or 0
     local _z = opts.z or 0
     local _dead = opts.dead or false
+    local _attackedBy = opts.attackedBy
     return {
         _mockType           = "IsoZombie",
         isAlwaysKnockedDown = function(self) return false end,
@@ -939,6 +940,8 @@ function MockZombie(opts)
         getX                = function(self) return _x end,
         getY                = function(self) return _y end,
         getZ                = function(self) return _z end,
+        getAttackedBy       = function(self) return _attackedBy end,
+        setAttackedBy       = function(self, attacker) _attackedBy = attacker end,
     }
 end
 
@@ -1733,7 +1736,13 @@ if not _G.Events.OnZombieDead then
     local _handlers = {}
     _G.Events.OnZombieDead = {
         Add  = function(fn) table.insert(_handlers, fn) end,
+        Remove = function(fn)
+            for index = #_handlers, 1, -1 do
+                if _handlers[index] == fn then table.remove(_handlers, index) end
+            end
+        end,
         fire = function(...) fireHandlers(_G.Events.OnZombieDead, _handlers, ...) end,
+        getHandlerCount = function() return #_handlers end,
     }
 end
 

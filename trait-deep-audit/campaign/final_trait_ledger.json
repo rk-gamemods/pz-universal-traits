@@ -46,7 +46,7 @@
   },
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "4F7338C65D9EC8C15B9D3E749A9A82ADB60F09D968265F4E0A09E65660E93326",
-    "independent_reviews/traits_05_08.json": "D042BBCD575D70897788E1598054972D118246E3CABF7F738072A71B8E955B82",
+    "independent_reviews/traits_05_08.json": "3D1FDF7BFAAB333BF376641982344867344FBB703E86C5AE59D63FB67D9C0D4A",
     "independent_reviews/traits_09_12.json": "130092739648EE4F351D519AC77F606E8DCE1E13420561CB04AD4B11BA5D12B1",
     "source_inventory.json": "47781D8C6AE00795C0DD5CFF8F89E295F49826BB57B64DC9DCD6DE6A767941C9",
     "trait_batches/batch_01.jsonl": "4FA9A60E8D86362B22C33D2BD2DC334565EB564071514576AAD0E90F7FF4BB81",
@@ -54,7 +54,7 @@
     "trait_batches/batch_03.jsonl": "33481D2A1F6227C331C16BA8B5CCB006099D07A15649099B8EC0627887679337",
     "trait_batches/batch_04.jsonl": "2A7857094C09D1CAD329C8DC2BDA2B96DE56FD6A6AF0866F323D7D6B3C377217",
     "trait_batches/batch_05.jsonl": "2146BF05002A28EC9D01FD93F1DE4E0532F4769896EF382652E6A02167F3CF6A",
-    "trait_batches/batch_06.jsonl": "5B8992F62051687AEB85158F9D498E7AAF130443609881BC1DFE1C77C25BB3D3",
+    "trait_batches/batch_06.jsonl": "741A6D18C586BAD9E97B83FFDED5B287C7770ADCAC47C0D0E796F9D6B19A909E",
     "trait_batches/batch_07.jsonl": "6BFC2D4966C29749BFF856067ABD0EB3B3F3E6E53E37E72A4A4FE271BE9E892C",
     "trait_batches/batch_08.jsonl": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A",
     "trait_batches/batch_09.jsonl": "FFB64ADB79BEDD95F4F340F169A2BEB7A1158BF4C1E1602538AC75BA65F7D759",
@@ -78,15 +78,15 @@
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 78,
+      "confirmed-defect": 77,
       "coverage-gap": 12,
-      "runtime-unproven": 83
+      "runtime-unproven": 84
     },
     "dimension_states": {
-      "proven-correct": 2638,
-      "confirmed-defect": 297,
+      "proven-correct": 2642,
+      "confirmed-defect": 292,
       "coverage-gap": 817,
-      "runtime-unproven": 1000
+      "runtime-unproven": 1001
     }
   },
   "independent_review_findings": [
@@ -30604,7 +30604,7 @@
     {
       "trait_id": "UniversalTraits:UT_maniac",
       "batch": "batch_06",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
@@ -30667,12 +30667,12 @@
           ]
         },
         "runtime_path": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Cost 4; base:hemophobic exclusion; intended kill reward stress -.15 boredom -.2; registration, definition, EN, tests, and assigned release evidence inspected."
+            "Build 42 producer passes exactly one dead IsoZombie; the handler validates it, resolves getAttackedBy(), requires IsoPlayer and Maniac, and applies clamped -0.15 stress/-0.20 boredom."
           ],
           "missing_proof": [
-            "real engine-signature invocation succeeds"
+            "none"
           ],
           "source_dimensions": [
             "runtime_shared_script_only_path"
@@ -30715,24 +30715,24 @@
           ]
         },
         "reset_save_load": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "Cost 4; base:hemophobic exclusion; intended kill reward stress -.15 boredom -.2; registration, definition, EN, tests, and assigned release evidence inspected."
+            "Same-process dofile reload replaces the prior event callback and retains one registration."
           ],
           "missing_proof": [
-            "none"
+            "Full Exit to Desktop and current-build in-game reload are unobserved."
           ],
           "source_dimensions": [
             "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Cost 4; base:hemophobic exclusion; intended kill reward stress -.15 boredom -.2; registration, definition, EN, tests, and assigned release evidence inspected."
+            "Build 42 producer passes exactly one dead IsoZombie; the handler validates it, resolves getAttackedBy(), requires IsoPlayer and Maniac, and applies clamped -0.15 stress/-0.20 boredom."
           ],
           "missing_proof": [
-            "real engine-signature invocation succeeds"
+            "none"
           ],
           "source_dimensions": [
             "java_lua"
@@ -30751,12 +30751,12 @@
           ]
         },
         "events": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Cost 4; base:hemophobic exclusion; intended kill reward stress -.15 boredom -.2; registration, definition, EN, tests, and assigned release evidence inspected."
+            "Build 42 producer passes exactly one dead IsoZombie; the handler validates it, resolves getAttackedBy(), requires IsoPlayer and Maniac, and applies clamped -0.15 stress/-0.20 boredom."
           ],
           "missing_proof": [
-            "real engine-signature invocation succeeds"
+            "none"
           ],
           "source_dimensions": [
             "event_lifecycle"
@@ -30847,24 +30847,24 @@
           ]
         },
         "tests": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Cost 4; base:hemophobic exclusion; intended kill reward stress -.15 boredom -.2; registration, definition, EN, tests, and assigned release evidence inspected."
+            "Build 42 producer passes exactly one dead IsoZombie; the handler validates it, resolves getAttackedBy(), requires IsoPlayer and Maniac, and applies clamped -0.15 stress/-0.20 boredom."
           ],
           "missing_proof": [
-            "real engine-signature invocation succeeds"
+            "none"
           ],
           "source_dimensions": [
             "tests_mocks"
           ]
         },
         "mocks": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Cost 4; base:hemophobic exclusion; intended kill reward stress -.15 boredom -.2; registration, definition, EN, tests, and assigned release evidence inspected."
+            "Build 42 producer passes exactly one dead IsoZombie; the handler validates it, resolves getAttackedBy(), requires IsoPlayer and Maniac, and applies clamped -0.15 stress/-0.20 boredom."
           ],
           "missing_proof": [
-            "real engine-signature invocation succeeds"
+            "none"
           ],
           "source_dimensions": [
             "tests_mocks"

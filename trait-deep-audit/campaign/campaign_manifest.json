@@ -40,8 +40,8 @@
     "trait_batches/batch_12.jsonl",
     "translation_audit.json"
   ],
-  "file_count": 66,
-  "total_bytes": 12703205,
+  "file_count": 68,
+  "total_bytes": 12707005,
   "files": [
     {
       "path": "MASTER_COVERAGE_LEDGER.md",
@@ -56,6 +56,13 @@
       "byte_semantics": "utf-8-lf",
       "bytes": 3448,
       "sha256": "33316213D1EC9D4D293C5A615356DB126D2C555B7F40C2547248063B29826C33"
+    },
+    {
+      "path": "change-impact/maniac-onzombiedead-resolution.json",
+      "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 1605,
+      "sha256": "0EAACC1F9046114326892FD3C06AB92D332B27C9F9B992606931E5A2BFDAAFDD"
     },
     {
       "path": "change-impact/unwavering-copy-resolution.json",
@@ -89,22 +96,22 @@
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2257876,
-      "sha256": "42AFA4CF874C90591024BCF523012E6B35215777490622D6C7865A7FD3B8206D"
+      "bytes": 2257805,
+      "sha256": "7F106D8B7BFA4C160B3F18FECD506C97B2CCCFEBAE53EC71D0B5819B385BE078"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2081852,
-      "sha256": "CD8095132D12B7DB67B900F2A8281F932F7707A25BBEF0185EC68E9A8D8A4733"
+      "bytes": 2081781,
+      "sha256": "347705C618011B6705E288CC18924EF4E418C89E95F11FA116339EBCA94C2D86"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1277769,
-      "sha256": "393F54B7E87ED7A14BA69BBFCBDDBC57E7AAD83271D16930895C9B1B0945DC79"
+      "bytes": 1277698,
+      "sha256": "02CEC2C3DC3EC75E5AD605CBD247B8CBF6FBAF6DA28DAB793B55946BDFC56B1A"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
@@ -131,8 +138,8 @@
       "path": "independent_reviews/traits_05_08.json",
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
-      "bytes": 251531,
-      "sha256": "D042BBCD575D70897788E1598054972D118246E3CABF7F738072A71B8E955B82"
+      "bytes": 251827,
+      "sha256": "3D1FDF7BFAAB333BF376641982344867344FBB703E86C5AE59D63FB67D9C0D4A"
     },
     {
       "path": "independent_reviews/traits_09_12.json",
@@ -160,21 +167,21 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 7253,
-      "sha256": "B5727D05A13058C0F2661532599BA4C506B67D076B509518CE0ECFD14D05B0F4"
+      "sha256": "24F36EF8F32D70E66BBC263BAD366032FF4A4D0F7B806F77E751C6D4321DAFCD"
     },
     {
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2309553,
-      "sha256": "EBC426D29B4BD90E16CE4041C6A3AB3A5B8D5024D929E407AD40879A1A90C7F8"
+      "bytes": 2304136,
+      "sha256": "BAAAC3347319ABF2310758C3B0B23F7F48614BFCA2F4EFB2797958F0F6CB08F5"
     },
     {
       "path": "remediation_summary.json",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
       "bytes": 1211,
-      "sha256": "CADF3AC029BD9095857C4719EE644CBF6D481D567604DC799F56530DDEBCB103"
+      "sha256": "F68AFFCACB1660011B97F6268D7629E6C8AEAC4836043FEF273BA3ACAF4C460E"
     },
     {
       "path": "runtime-traces/utcore-wave-01.jsonl",
@@ -387,6 +394,13 @@
       "sha256": "8367B3181DE3C937AA4B21F7A9AF3647ACD5C30B506CCA1CE54059B13D898ADE"
     },
     {
+      "path": "tools/regenerate_maniac.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 7216,
+      "sha256": "9B1ED695D9C54F82D011EF41E3750CFDD0E40CAC499BFD9959821C38969FAC51"
+    },
+    {
       "path": "tools/regenerate_scrounger.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
@@ -453,8 +467,8 @@
       "path": "trait_batches/batch_06.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 106365,
-      "sha256": "5B8992F62051687AEB85158F9D498E7AAF130443609881BC1DFE1C77C25BB3D3"
+      "bytes": 106678,
+      "sha256": "741A6D18C586BAD9E97B83FFDED5B287C7770ADCAC47C0D0E796F9D6B19A909E"
     },
     {
       "path": "trait_batches/batch_07.jsonl",

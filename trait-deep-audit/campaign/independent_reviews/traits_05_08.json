@@ -2060,11 +2060,17 @@
         "UniversalTraits/release/UniversalTraits/42.0/media"
       ],
       "release_parity": {
-        "source_runtime_sha256": "721AEA8E5A759F7E93B7A5A5529F59481AC5EBF6290A2BD2D2DA7ECA83E623F9",
-        "release_runtime_sha256": "721AEA8E5A759F7E93B7A5A5529F59481AC5EBF6290A2BD2D2DA7ECA83E623F9",
+        "source_runtime_sha256": "20768839A1E0864B63A0625DC5B5CBED5C5FDABE584397515DED4CA45AB7C853",
+        "release_runtime_sha256": "20768839A1E0864B63A0625DC5B5CBED5C5FDABE584397515DED4CA45AB7C853",
         "state": "proven-correct"
       },
-      "omissions": []
+      "omissions": [],
+      "repair_resolution": {
+        "state": "implemented-and-statically-validated",
+        "finding_id": "UT6-MANIAC-EVENT",
+        "producer_contract": "OnZombieDead(dead IsoZombie)",
+        "remaining_proof": "Current-build in-game execution after a full relaunch is unobserved."
+      }
     },
     {
       "trait_id": "UniversalTraits:UT_marathonrunner",

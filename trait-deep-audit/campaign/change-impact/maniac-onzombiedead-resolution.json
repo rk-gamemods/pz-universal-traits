@@ -1,0 +1,44 @@
+{
+  "schema": "ut-maniac-onzombiedead-resolution-v1",
+  "trait_id": "UniversalTraits:UT_maniac",
+  "finding_id": "UT6-MANIAC-EVENT",
+  "accepted_intent": {
+    "cost": 4,
+    "stress_reduction": 0.15,
+    "boredom_reduction": 0.2,
+    "floor": 0,
+    "cadence": "once per qualifying zombie death",
+    "cooldown": null,
+    "rng": null,
+    "scope": "single-player"
+  },
+  "producer_evidence": [
+    "PZCodebase/Java/source/zombie/characters/IsoZombie.java:5436",
+    "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6647",
+    "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:7145"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_maniac.lua",
+      "sha256": "20768839A1E0864B63A0625DC5B5CBED5C5FDABE584397515DED4CA45AB7C853",
+      "bytes": 746
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_maniac.lua",
+      "sha256": "20768839A1E0864B63A0625DC5B5CBED5C5FDABE584397515DED4CA45AB7C853",
+      "bytes": 746
+    },
+    {
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "sha256": "78C072EE18B64D571DD5073321ED937B78D3BEF8EBB54160C901F74D3FA16994",
+      "bytes": 76317
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "AC627F0654A5E091CD35A51C07E951A00B7A594A9F45933062060AD63483DD5A",
+      "bytes": 256726
+    }
+  ],
+  "static_validation": "Producer-accurate standard-Lua coverage; source/release byte parity.",
+  "runtime_proof": "unobserved; requires full Exit to Desktop and current-build in-game kills"
+}
