@@ -13,14 +13,14 @@
 -- Item type strings that count as caffeine sources (case-insensitive substring match)
 local CAFFEINE_KEYWORDS = { "Coffee", "EnergyDrink", "Espresso", "Cola", "ChocolateCoffeeBeans" }
 
--- Item type strings that count as medications (treated as pills/injectables)
--- Beta blockers are explicitly excluded per design intent.
-local MEDICATION_KEYWORDS = {
-    "Antibiotics", "Painkiller", "SleepingTablet", "Antidepressant",
-    "NauseaReducer", "Multivitamin", "Vitamin", "Codeine", "Aspirin",
-    "Antibiotic",
+-- Exact InventoryItem:getType() identities for current vanilla medications.
+local MEDICATION_TYPES = {
+    Pills = true,
+    PillsAntiDep = true,
+    PillsBeta = true,
+    PillsSleepingTablets = true,
+    PillsVitamins = true,
 }
-local EXCLUDED_MEDICATION_KEYWORDS = { "BetaBlocker" }
 
 local function containsAny(str, keywords)
     if not str then return false end
@@ -39,8 +39,12 @@ end
 local function isMedicationItem(item)
     if not item then return false end
     local t = tostring(item:getType())
-    if containsAny(t, EXCLUDED_MEDICATION_KEYWORDS) then return false end
-    return containsAny(t, MEDICATION_KEYWORDS)
+    return MEDICATION_TYPES[t] == true
+end
+
+local function isAntivaxxerMedicationItem(item)
+    if not isMedicationItem(item) then return false end
+    return tostring(item:getType()) ~= "PillsBeta"
 end
 
 -- Checks whether an item is actual food (not a medication that happens to be eaten)
@@ -117,7 +121,7 @@ local function applyEatEffects(character, item, percentage)
     end
 
     -- UT_antivaxxer: stress spike when taking medication
-    if isMedicationItem(item) and UTCore.hasTrait(character, "UniversalTraits:UT_antivaxxer") then
+    if isAntivaxxerMedicationItem(item) and UTCore.hasTrait(character, "UniversalTraits:UT_antivaxxer") then
         pcall(function()
             local stats = character:getStats()
             stats:set(CharacterStat.STRESS, math.min(1, stats:get(CharacterStat.STRESS) + 0.20))

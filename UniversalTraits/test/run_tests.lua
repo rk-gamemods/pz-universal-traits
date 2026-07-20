@@ -2739,12 +2739,24 @@ test("allergic does not spike on failed roll", function()
 end)
 
 test("allergic does not trigger for medication items", function()
+    local medicationTypes = {
+        "Pills", "PillsAntiDep", "PillsBeta", "PillsSleepingTablets", "PillsVitamins",
+    }
+    for _, itemType in ipairs(medicationTypes) do
+        local player = MockPlayer({ "UniversalTraits:UT_allergic" })
+        setMockZombRandSequence({ 0 })  -- guaranteed roll but item is medication
+        ISEatFoodAction.perform({ character = player, item = MockItem(itemType) })
+        assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 0,
+            itemType .. " must be medication, not food")
+    end
+end)
+
+test("allergic treats a near-miss pill type as ordinary food", function()
     local player = MockPlayer({ "UniversalTraits:UT_allergic" })
-    setMockZombRandSequence({ 0 })  -- guaranteed roll but item is medication
-    local action = { character = player, item = MockItem("Antibiotics") }
-    ISEatFoodAction.perform(action)
-    assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 0,
-        "no food sickness when item is medication (not food)")
+    setMockZombRandSequence({ 0 })
+    ISEatFoodAction.perform({ character = player, item = MockItem("PillsVitaminsExtra") })
+    assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 20,
+        "near-miss type must not be classified as medication")
 end)
 
 test("allergic does not affect player without the trait", function()
@@ -2758,18 +2770,20 @@ end)
 
 -- ─── UT_ItemConsumptionHooks: UT_antivaxxer ───────────────────────────────────
 
-test("antivaxxer adds stress when medication eaten", function()
-    local player = MockPlayer({ "UniversalTraits:UT_antivaxxer" }, { stress = 0.0 })
-    local action = { character = player, item = MockItem("Painkiller") }
-    ISEatFoodAction.perform(action)
-    local stress = player:getStats():get(CharacterStat.STRESS)
-    assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.20,
-        "stress should be +0.20 when medication consumed")
+test("antivaxxer adds stress for each intended vanilla medication", function()
+    local medicationTypes = { "Pills", "PillsAntiDep", "PillsSleepingTablets", "PillsVitamins" }
+    for _, itemType in ipairs(medicationTypes) do
+        local player = MockPlayer({ "UniversalTraits:UT_antivaxxer" }, { stress = 0.0 })
+        ISEatFoodAction.perform({ character = player, item = MockItem(itemType) })
+        local stress = player:getStats():get(CharacterStat.STRESS)
+        assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.20,
+            itemType .. " should add 0.20 stress")
+    end
 end)
 
 test("antivaxxer skips beta blocker", function()
     local player = MockPlayer({ "UniversalTraits:UT_antivaxxer" }, { stress = 0.0 })
-    local action = { character = player, item = MockItem("BetaBlocker") }
+    local action = { character = player, item = MockItem("PillsBeta") }
     ISEatFoodAction.perform(action)
     assert_eq(player:getStats():get(CharacterStat.STRESS), 0.0,
         "beta blocker should not trigger antivaxxer stress")
@@ -2777,7 +2791,7 @@ end)
 
 test("antivaxxer does not affect player without the trait", function()
     local player = MockPlayer({}, { stress = 0.0 })
-    local action = { character = player, item = MockItem("Painkiller") }
+    local action = { character = player, item = MockItem("Pills") }
     ISEatFoodAction.perform(action)
     assert_eq(player:getStats():get(CharacterStat.STRESS), 0.0,
         "non-antivaxxer player unaffected")
@@ -3118,12 +3132,16 @@ end)
 
 -- ===== UT_pillsallergy behavioral tests (hook in UT_ItemConsumptionHooks.lua) =====
 
-test("pillsallergy adds sickness 15 when medication consumed", function()
-    local player = MockPlayer({ "UniversalTraits:UT_pillsallergy" })
-    local action = { character = player, item = MockItem("Painkiller") }
-    ISEatFoodAction.perform(action)
-    assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 15,
-        "food sickness should be +15 after medication consumed with pillsallergy")
+test("pillsallergy dispatches for every vanilla medication type", function()
+    local medicationTypes = {
+        "Pills", "PillsAntiDep", "PillsBeta", "PillsSleepingTablets", "PillsVitamins",
+    }
+    for _, itemType in ipairs(medicationTypes) do
+        local player = MockPlayer({ "UniversalTraits:UT_pillsallergy" })
+        ISEatFoodAction.perform({ character = player, item = MockItem(itemType) })
+        assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 15,
+            itemType .. " should add 15 food sickness")
+    end
 end)
 
 test("pillsallergy does not trigger on non-medication food", function()
@@ -3134,9 +3152,17 @@ test("pillsallergy does not trigger on non-medication food", function()
         "no sickness when non-medication item consumed with pillsallergy")
 end)
 
+test("pillsallergy does not trigger on a near-miss medication type", function()
+    local player = MockPlayer({ "UniversalTraits:UT_pillsallergy" })
+    local action = { character = player, item = MockItem("PillsAntiDepCopy") }
+    ISEatFoodAction.perform(action)
+    assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 0,
+        "near-miss type must not dispatch pillsallergy")
+end)
+
 test("pillsallergy does not affect player without the trait", function()
     local player = MockPlayer({})
-    local action = { character = player, item = MockItem("Painkiller") }
+    local action = { character = player, item = MockItem("Pills") }
     ISEatFoodAction.perform(action)
     assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 0,
         "no sickness when player lacks pillsallergy trait")
