@@ -330,6 +330,27 @@ class CampaignManifestTests(unittest.TestCase):
 
 
 class RecurringPatternTests(unittest.TestCase):
+    def test_unwavering_translation_is_ascii_safe_and_release_identical(self) -> None:
+        repository_root = CAMPAIGN_ROOT.parents[1]
+        source_path = (
+            repository_root
+            / "UniversalTraits/media/lua/shared/Translate/EN/UI.json"
+        )
+        release_path = (
+            repository_root
+            / "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json"
+        )
+        source_bytes = source_path.read_bytes()
+        source_ui = json.loads(source_bytes)
+
+        self.assertNotIn("\u2014", source_ui["UI_UT_unwaveringDesc"])
+        self.assertEqual(
+            source_ui["UI_UT_unwaveringDesc"],
+            "Fear never really got its hooks into you. Panic resistance is increased "
+            "by 40 percent; panic events have 40 percent less impact.",
+        )
+        self.assertEqual(source_bytes, release_path.read_bytes())
+
     def test_event_argument_inversion_and_fractional_clock_are_detected(self) -> None:
         source = """
 local function onHit(attacker, weapon, target)

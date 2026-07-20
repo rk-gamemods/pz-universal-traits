@@ -240,7 +240,7 @@
     "UI_UT_snorer": "Snorer",
     "UI_UT_snorerDesc": "You rattle the walls when you sleep. Noise output while sleeping is doubled (×2.0 noise multiplier), attracting nearby zombies.",
     "UI_UT_unwavering": "Unwavering",
-    "UI_UT_unwaveringDesc": "Fear never really got its hooks into you. Panic resistance is increased by 40 percent — panic events have 40 percent less impact.",
+    "UI_UT_unwaveringDesc": "Fear never really got its hooks into you. Panic resistance is increased by 40 percent; panic events have 40 percent less impact.",
     "UI_UT_idealweight": "Ideal Weight",
     "UI_UT_idealweightDesc": "You are in peak physical condition. Carry weight is increased by +1 and fatigue rate is reduced to 85 percent of normal.",
     "UI_UT_mundane": "Mundane",
