@@ -4254,6 +4254,19 @@ test("butterfingers source and release runtime stay byte-identical", function()
         "source and release Butterfingers files must match")
 end)
 
+test("motionsickness source and release runtime stay byte-identical", function()
+    local function readAll(path)
+        local file = assert(io.open(path, "rb"))
+        local content = file:read("*a")
+        file:close()
+        return content
+    end
+    local relative = "lua/shared/UniversalTraits/traits/UT_motionsickness.lua"
+    assert_eq(readAll(base .. "../media/" .. relative),
+        readAll(base .. "../release/UniversalTraits/42.0/media/" .. relative),
+        "source and release Motion Sickness files must match")
+end)
+
 local function updatesToNextMotionCadence()
     local remainder = UTCore.getMockDispatchTickCount() % 60
     return remainder == 0 and 60 or 60 - remainder
