@@ -17,6 +17,7 @@
     "cleanup_order": "Every unregister invokes teardown before removing the handler or active snapshot entry.",
     "restoration": "Teardown, trait deactivation, Mundane suppression, invalid/dead player, swap, and unequip restore every tracked weapon by identity.",
     "mock_contract": "Focused dispatch invokes every registered matching handler, so duplicates cannot be hidden by first-match dispatch.",
+    "central_dispatch_coverage": "UT_CORE integration tests drive the registered production OnPlayerUpdate dispatcher for nil and dead players, prove observable teardown restoration with stable handler counts, and use teardown sentinels to make either call-site bypass fail.",
     "persistence_boundary": "No UT_ahBaseCrit modData is read or written; current-version in-game save/reload remains unproven."
   },
   "files": [
@@ -47,8 +48,18 @@
     },
     {
       "path": "UniversalTraits/test/run_tests.lua",
-      "sha256": "604417b36b6784dbef0573746a62e273eff1ac1a90dcfa4fb8960b1cc06ff611",
-      "bytes": 253889
+      "sha256": "47e31a10ae7ac33163f28316db788b8e9f4d1dccd8233f8ee4579c4254047962",
+      "bytes": 254039
+    },
+    {
+      "path": "UT_CORE/test/UTCoreMocks.lua",
+      "sha256": "9d7a3c910cf4c8a056ecbe4cd55da664098e8718f9dce519456e44793b5beb66",
+      "bytes": 21430
+    },
+    {
+      "path": "UT_CORE/test/run_tests.lua",
+      "sha256": "93e3704488291b8c9b803def4d074165cf0c43c340981855425c234bcd577723",
+      "bytes": 98287
     }
   ],
   "validation_contract": [

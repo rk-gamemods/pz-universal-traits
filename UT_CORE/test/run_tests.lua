@@ -36,7 +36,9 @@ dofile(base .. "../media/lua/shared/UTCore/UTCore_SleepQualityHook.lua")
 dofile(base .. "../media/lua/shared/UTCore/UTCore_ThermalRegulationHook.lua")
 
 local passed, failed = 0, 0
+local testFilter = os.getenv("UT_CORE_TEST_FILTER")
 local function test(name, fn)
+    if testFilter and not name:find(testFilter, 1, true) then return end
     local ok, err = pcall(fn)
     if ok then
         print("PASS  " .. name)
@@ -63,6 +65,85 @@ end
 _G.test = test
 _G.assert_eq = assert_eq
 _G.assert_true = assert_true
+
+local function withDispatchTeardownHandler(testId, player, fn)
+    local baseHandlerCount = UTCore.getTickHandlerCount()
+    local eventHandlerCount = Events.OnPlayerUpdate._handlerCount()
+    local state = { restored = false, teardownCount = 0, reason = nil }
+
+    UTCore.registerTickHandler(testId, function() end, {
+        teardown = function(reason)
+            state.restored = true
+            state.teardownCount = state.teardownCount + 1
+            state.reason = reason
+        end,
+    })
+    Events.OnCreatePlayer.fire(0, player)
+
+    local ok, err = pcall(function()
+        assert_eq(UTCore.getTickHandlerCount(), baseHandlerCount + 1,
+            "test handler should be registered exactly once")
+        assert_eq(UTCore.getActiveHandlerCount(), 1,
+            "test handler should be the only active trait handler")
+        assert_eq(Events.OnPlayerUpdate._handlerCount(), eventHandlerCount,
+            "activating a trait handler must not register another event callback")
+        fn(state, eventHandlerCount)
+    end)
+
+    UTCore.unregisterTickHandler(testId, "test-cleanup")
+    if not ok then error(err, 0) end
+    assert_eq(UTCore.getTickHandlerCount(), baseHandlerCount,
+        "test cleanup should restore the registered handler count")
+end
+
+test("TickDispatch nil player tears down active handler state through registered event", function()
+    local traitId = "UniversalTraits:UT_test_dispatch_nil_teardown"
+    local player = MockPlayer({ traitId })
+    withDispatchTeardownHandler(traitId, player, function(state, eventHandlerCount)
+        Events.OnPlayerUpdate.fire(nil)
+        assert_true(state.restored, "nil-player dispatch should restore handler-owned state")
+        assert_eq(state.teardownCount, 1, "nil-player dispatch should teardown exactly once")
+        assert_eq(state.reason, "invalid-player", "nil-player teardown reason")
+        assert_eq(UTCore.getActiveHandlerCount(), 1,
+            "nil-player teardown should preserve the active handler snapshot")
+        assert_eq(Events.OnPlayerUpdate._handlerCount(), eventHandlerCount,
+            "nil-player teardown must preserve central callback registration")
+    end)
+end)
+
+test("TickDispatch dead player tears down active handler state through registered event", function()
+    local traitId = "UniversalTraits:UT_test_dispatch_dead_teardown"
+    local player = MockPlayer({ traitId }, { dead = true })
+    withDispatchTeardownHandler(traitId, player, function(state, eventHandlerCount)
+        Events.OnPlayerUpdate.fire(player)
+        assert_true(state.restored, "dead-player dispatch should restore handler-owned state")
+        assert_eq(state.teardownCount, 1, "dead-player dispatch should teardown exactly once")
+        assert_eq(state.reason, "invalid-player", "dead-player teardown reason")
+        assert_eq(UTCore.getActiveHandlerCount(), 1,
+            "dead-player teardown should preserve the active handler snapshot")
+        assert_eq(Events.OnPlayerUpdate._handlerCount(), eventHandlerCount,
+            "dead-player teardown must preserve central callback registration")
+    end)
+end)
+
+local function assertDispatchRequiresTeardown(player, label)
+    local original = UTCore.teardownActiveTickHandlers
+    local sentinel = label .. " teardown sentinel"
+    UTCore.teardownActiveTickHandlers = function() error(sentinel, 0) end
+    local ok, err = pcall(Events.OnPlayerUpdate.fire, player)
+    UTCore.teardownActiveTickHandlers = original
+    assert_eq(ok, false, label .. " dispatch must call the production teardown boundary")
+    assert_true(tostring(err):find(sentinel, 1, true) ~= nil,
+        label .. " dispatch should propagate the teardown sentinel")
+end
+
+test("TickDispatch nil-player call-site sensitivity", function()
+    assertDispatchRequiresTeardown(nil, "nil-player")
+end)
+
+test("TickDispatch dead-player call-site sensitivity", function()
+    assertDispatchRequiresTeardown(MockPlayer({}, { dead = true }), "dead-player")
+end)
 
 -- hasTrait
 test("hasTrait returns true when player has trait", function()

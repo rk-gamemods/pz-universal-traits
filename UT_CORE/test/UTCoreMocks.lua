@@ -210,7 +210,7 @@ function MockPlayer(traits, opts)
         getVehicle           = function(self) return _vehicle end,
         setDriving           = function(self, v) _driving = v end,
         setVehicle           = function(self, v) _vehicle = v end,
-        isDead               = function(self) return false end,
+        isDead               = function(self) return opts.dead == true end,
         getInventory         = function(self) return _inventory end,
         isOutside            = function(self) return _outside end,
         isMoving             = function(self) return _moving end,
@@ -300,6 +300,7 @@ local function _makeEventTable()
         fire   = function(...)
             for _, fn in ipairs(handlers) do fn(...) end
         end,
+        _handlerCount = function() return #handlers end,
     }
 end
 

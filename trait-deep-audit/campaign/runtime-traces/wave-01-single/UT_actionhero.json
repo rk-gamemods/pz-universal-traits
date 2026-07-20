@@ -149,8 +149,10 @@
       "UniversalTraits/test/UTTestMocks.lua"
     ],
     "direct_byte_hashes": {
-      "UniversalTraits/test/run_tests.lua": "604417b36b6784dbef0573746a62e273eff1ac1a90dcfa4fb8960b1cc06ff611",
-      "UniversalTraits/test/UTTestMocks.lua": "e7d552fe83ca5bbfdfad0ff326c01fe99fad49a3431a6a7479a45a0fc7f04b96"
+      "UniversalTraits/test/run_tests.lua": "47e31a10ae7ac33163f28316db788b8e9f4d1dccd8233f8ee4579c4254047962",
+      "UniversalTraits/test/UTTestMocks.lua": "e7d552fe83ca5bbfdfad0ff326c01fe99fad49a3431a6a7479a45a0fc7f04b96",
+      "UT_CORE/test/run_tests.lua": "93e3704488291b8c9b803def4d074165cf0c43c340981855425c234bcd577723",
+      "UT_CORE/test/UTCoreMocks.lua": "9d7a3c910cf4c8a056ecbe4cd55da664098e8718f9dce519456e44793b5beb66"
     },
     "focused_anchors": [
       "UniversalTraits/test/run_tests.lua:727-1025",
@@ -164,6 +166,7 @@
       "list/size/get/isDead/DistTo atomic failures",
       "all-handler mock dispatch, handler counts, duplicate load/reload",
       "cleanup before removal, trait deactivation, invalid-player teardown",
+      "registered production dispatcher nil/dead teardown with restoration and call-site sensitivity",
       "no stale UT_ahBaseCrit modData assumption"
     ]
   },

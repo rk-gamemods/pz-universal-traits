@@ -22,6 +22,8 @@ CORE = "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua"
 CORE_RELEASE = "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_TickDispatch.lua"
 MOCKS = "UniversalTraits/test/UTTestMocks.lua"
 TESTS = "UniversalTraits/test/run_tests.lua"
+CORE_MOCKS = "UT_CORE/test/UTCoreMocks.lua"
+CORE_TESTS = "UT_CORE/test/run_tests.lua"
 
 
 def metadata(relative: str) -> dict[str, object]:
@@ -66,9 +68,13 @@ def build_resolution() -> dict[str, object]:
             "cleanup_order": "Every unregister invokes teardown before removing the handler or active snapshot entry.",
             "restoration": "Teardown, trait deactivation, Mundane suppression, invalid/dead player, swap, and unequip restore every tracked weapon by identity.",
             "mock_contract": "Focused dispatch invokes every registered matching handler, so duplicates cannot be hidden by first-match dispatch.",
+            "central_dispatch_coverage": "UT_CORE integration tests drive the registered production OnPlayerUpdate dispatcher for nil and dead players, prove observable teardown restoration with stable handler counts, and use teardown sentinels to make either call-site bypass fail.",
             "persistence_boundary": "No UT_ahBaseCrit modData is read or written; current-version in-game save/reload remains unproven.",
         },
-        "files": [metadata(path) for path in (RUNTIME, RUNTIME_RELEASE, CORE, CORE_RELEASE, MOCKS, TESTS)],
+        "files": [metadata(path) for path in (
+            RUNTIME, RUNTIME_RELEASE, CORE, CORE_RELEASE,
+            MOCKS, TESTS, CORE_MOCKS, CORE_TESTS,
+        )],
         "validation_contract": [
             "focused Action Hero tests",
             "UT_CORE suite",
@@ -99,6 +105,8 @@ def update_trace() -> dict[str, object]:
     trace["test_plan"]["direct_byte_hashes"] = {
         TESTS: metadata(TESTS)["sha256"],
         MOCKS: metadata(MOCKS)["sha256"],
+        CORE_TESTS: metadata(CORE_TESTS)["sha256"],
+        CORE_MOCKS: metadata(CORE_MOCKS)["sha256"],
     }
     trace["test_plan"]["focused_anchors"] = [
         "UniversalTraits/test/run_tests.lua:727-1025",
@@ -110,6 +118,7 @@ def update_trace() -> dict[str, object]:
         "list/size/get/isDead/DistTo atomic failures",
         "all-handler mock dispatch, handler counts, duplicate load/reload",
         "cleanup before removal, trait deactivation, invalid-player teardown",
+        "registered production dispatcher nil/dead teardown with restoration and call-site sensitivity",
         "no stale UT_ahBaseCrit modData assumption",
     ]
     trace["validation"]["commands_or_tests_run"] = [

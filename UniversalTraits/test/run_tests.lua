@@ -13,7 +13,9 @@ dofile(base .. "../media/registries.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/UT_MET.lua")
 
 local passed, failed = 0, 0
+local testFilter = os.getenv("UNIVERSAL_TRAITS_TEST_FILTER")
 local function test(name, fn)
+    if testFilter and not name:lower():find(testFilter:lower(), 1, true) then return end
     UTCore._mockTickCount = 0   -- reset dispatch tick counter per test
     local ok, err = pcall(fn)
     if ok then
