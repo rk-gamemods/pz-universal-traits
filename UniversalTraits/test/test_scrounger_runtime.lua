@@ -1,5 +1,43 @@
 local M = {}
 
+local function extract_unique_trait_definition(text, traitName)
+    local traitId = "UniversalTraits:UT_" .. traitName:lower()
+    local header = "character_trait_definition " .. traitId
+    local headerStart
+    local searchFrom = 1
+    local headerCount = 0
+
+    while true do
+        local found = text:find(header, searchFrom, true)
+        if not found then break end
+        headerCount = headerCount + 1
+        headerStart = found
+        searchFrom = found + #header
+    end
+    assert(headerCount == 1, traitName .. " must have exactly one definition header")
+
+    local headerEnd = headerStart + #header
+    local openingOffset = text:sub(headerEnd):find("^%s*{")
+    assert(openingOffset ~= nil, traitName .. " definition must have an immediate opening brace")
+    local opening = headerEnd + openingOffset - 1
+    local depth = 0
+
+    for index = opening, #text do
+        local character = text:sub(index, index)
+        if character == "{" then
+            depth = depth + 1
+        elseif character == "}" then
+            depth = depth - 1
+            assert(depth >= 0, traitName .. " definition has an unmatched closing brace")
+            if depth == 0 then
+                return text:sub(headerStart, index)
+            end
+        end
+    end
+
+    error(traitName .. " definition has no balanced closing brace", 2)
+end
+
 function M.run(test, assert_eq, assert_true, base)
     local runtimePath = base .. "../media/lua/shared/UniversalTraits/traits/UT_scrounger.lua"
 
@@ -163,8 +201,53 @@ function M.run(test, assert_eq, assert_true, base)
         local release = read(base .. "../release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_scrounger.lua")
         assert_eq(release, source, "runtime source/release parity")
         local scripts = read(base .. "../media/scripts/UT_character_traits.txt")
-        assert_true(scripts:find("Cost = 3,", 1, true) ~= nil)
-        assert_true(scripts:find("XPBoosts = PlantScavenging=1,", 1, true) ~= nil)
+        local releaseScripts = read(base .. "../release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt")
+        assert_eq(releaseScripts, scripts, "definition source/release parity")
+
+        local function count_literal(text, literal)
+            local count = 0
+            local searchFrom = 1
+            while true do
+                local found = text:find(literal, searchFrom, true)
+                if not found then return count end
+                count = count + 1
+                searchFrom = found + #literal
+            end
+        end
+
+        local function assert_scrounger_definition(text)
+            local block = extract_unique_trait_definition(text, "Scrounger")
+            assert_eq(count_literal(block, "Cost = 3,"), 1, "Scrounger must have exactly one Cost = 3")
+            assert_eq(count_literal(block, "XPBoosts = PlantScavenging=1,"), 1,
+                "Scrounger must have exactly one PlantScavenging XP boost")
+        end
+
+        assert_scrounger_definition(scripts)
+
+        local misleadingFixture = [[
+character_trait_definition UniversalTraits:UT_scrounger
+{
+    Cost = 4,
+}
+character_trait_definition UniversalTraits:UT_other
+{
+    Cost = 3,
+    XPBoosts = PlantScavenging=1,
+}
+]]
+        local acceptedMisleadingFixture = pcall(assert_scrounger_definition, misleadingFixture)
+        assert_true(not acceptedMisleadingFixture,
+            "Scrounger assertions must ignore expected literals from another trait")
+
+        local missingHeaderAccepted = pcall(extract_unique_trait_definition, "", "Scrounger")
+        assert_true(not missingHeaderAccepted, "missing Scrounger definition must be rejected")
+        local duplicateHeaderAccepted = pcall(extract_unique_trait_definition,
+            scripts .. "\n" .. extract_unique_trait_definition(scripts, "Scrounger"), "Scrounger")
+        assert_true(not duplicateHeaderAccepted, "duplicate Scrounger definitions must be rejected")
+        local malformedAccepted = pcall(extract_unique_trait_definition,
+            "character_trait_definition UniversalTraits:UT_scrounger\nCost = 3,", "Scrounger")
+        assert_true(not malformedAccepted, "malformed Scrounger definition must be rejected")
+
         local expected = '"UI_UT_scroungerDesc": "+1 to Plant Scavenging. When opening a container for the first time, 30 percent chance to find an additional item."'
         local uiSource = read(base .. "../media/lua/shared/Translate/EN/UI.json")
         local uiRelease = read(base .. "../release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json")
