@@ -36,11 +36,52 @@ from build_remediation_queue import (
 )
 
 
+RELEASE_BLOCKER_PATH = CAMPAIGN_ROOT / "release_blocker_queue.json"
+
+
 def generated_artifact_errors(path: Path, expected: str, label: str) -> list[str]:
     if not path.exists():
         return [f"{label} is missing"]
     if path.read_text(encoding="utf-8") != expected:
         return [f"{label} is stale or nondeterministic"]
+    return []
+
+
+def release_blocker_link_errors(
+    release_blocker_path: Path, remediation_queue_path: Path
+) -> list[str]:
+    try:
+        release_blocker_text = release_blocker_path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return ["release_blocker_queue.json is missing"]
+    except OSError:
+        return ["release_blocker_queue.json is unreadable"]
+
+    try:
+        release_blocker = json.loads(release_blocker_text)
+    except json.JSONDecodeError:
+        return ["release_blocker_queue.json is malformed JSON"]
+    if not isinstance(release_blocker, dict):
+        return ["release_blocker_queue.json must contain a JSON object"]
+    if "remediation_queue_sha256" not in release_blocker:
+        return ["release_blocker_queue.json is missing remediation_queue_sha256"]
+
+    digest = release_blocker["remediation_queue_sha256"]
+    if not (
+        isinstance(digest, str)
+        and len(digest) == 64
+        and all(character in "0123456789abcdef" for character in digest)
+    ):
+        return ["release_blocker_queue.json has invalid remediation_queue_sha256"]
+
+    try:
+        remediation_queue_bytes = remediation_queue_path.read_bytes()
+    except FileNotFoundError:
+        return ["remediation_queue.jsonl is missing"]
+    except OSError:
+        return ["remediation_queue.jsonl is unreadable"]
+    if hashlib.sha256(remediation_queue_bytes).hexdigest() != digest:
+        return ["release_blocker_queue.json remediation_queue_sha256 does not match remediation_queue.jsonl exact bytes"]
     return []
 
 
@@ -82,6 +123,7 @@ def main() -> int:
             QUEUE_OUTPUT_PATH, expected_queue, "remediation_queue.jsonl"
         )
     )
+    errors.extend(release_blocker_link_errors(RELEASE_BLOCKER_PATH, QUEUE_OUTPUT_PATH))
     errors.extend(
         generated_artifact_errors(
             SUMMARY_OUTPUT_PATH, expected_summary, "remediation_summary.json"

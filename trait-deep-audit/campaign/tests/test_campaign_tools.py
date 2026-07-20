@@ -1377,5 +1377,133 @@ end
             )
 
 
+class ReleaseBlockerLinkValidationTests(unittest.TestCase):
+    def write_blocker(self, path: Path, digest: object) -> None:
+        path.write_text(
+            json.dumps({"remediation_queue_sha256": digest}), encoding="utf-8"
+        )
+
+    def test_exact_raw_crlf_digest_is_a_non_mutating_fixed_point(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            blocker = root / "release_blocker_queue.json"
+            queue = root / "remediation_queue.jsonl"
+            queue_bytes = b'{"id":"first"}\r\n {"id":"second"} \r\n'
+            queue.write_bytes(queue_bytes)
+            self.write_blocker(blocker, hashlib.sha256(queue_bytes).hexdigest())
+            before = {path: path.read_bytes() for path in (blocker, queue)}
+
+            self.assertEqual(
+                VALIDATOR_MODULE.release_blocker_link_errors(blocker, queue), []
+            )
+            self.assertEqual(
+                {path: path.read_bytes() for path in (blocker, queue)}, before
+            )
+
+    def test_smallest_one_byte_mismatch_fails_without_mutation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            blocker = root / "release_blocker_queue.json"
+            queue = root / "remediation_queue.jsonl"
+            self.write_blocker(blocker, hashlib.sha256(b"a").hexdigest())
+            queue.write_bytes(b"b")
+            before = {path: path.read_bytes() for path in (blocker, queue)}
+
+            self.assertEqual(
+                VALIDATOR_MODULE.release_blocker_link_errors(blocker, queue),
+                [
+                    "release_blocker_queue.json remediation_queue_sha256 does not match remediation_queue.jsonl exact bytes"
+                ],
+            )
+            self.assertEqual(
+                {path: path.read_bytes() for path in (blocker, queue)}, before
+            )
+
+    def test_missing_and_unreadable_artifacts_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            blocker = root / "release_blocker_queue.json"
+            queue = root / "remediation_queue.jsonl"
+            self.assertEqual(
+                VALIDATOR_MODULE.release_blocker_link_errors(blocker, queue),
+                ["release_blocker_queue.json is missing"],
+            )
+
+            blocker.write_text("{}", encoding="utf-8")
+            with mock.patch.object(Path, "read_text", side_effect=OSError("denied")):
+                self.assertEqual(
+                    VALIDATOR_MODULE.release_blocker_link_errors(blocker, queue),
+                    ["release_blocker_queue.json is unreadable"],
+                )
+
+            self.write_blocker(blocker, hashlib.sha256(b"queue").hexdigest())
+            blocker_before = blocker.read_bytes()
+            self.assertEqual(
+                VALIDATOR_MODULE.release_blocker_link_errors(blocker, queue),
+                ["remediation_queue.jsonl is missing"],
+            )
+            with mock.patch.object(Path, "read_bytes", side_effect=OSError("denied")):
+                self.assertEqual(
+                    VALIDATOR_MODULE.release_blocker_link_errors(blocker, queue),
+                    ["remediation_queue.jsonl is unreadable"],
+                )
+            self.assertEqual(blocker.read_bytes(), blocker_before)
+
+    def test_malformed_and_non_object_blockers_fail_closed(self) -> None:
+        cases = (
+            (b"{", ["release_blocker_queue.json is malformed JSON"]),
+            (b"[]", ["release_blocker_queue.json must contain a JSON object"]),
+        )
+        for raw, expected in cases:
+            with self.subTest(raw=raw), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                blocker = root / "release_blocker_queue.json"
+                queue = root / "remediation_queue.jsonl"
+                blocker.write_bytes(raw)
+                queue.write_bytes(b"queue")
+                before = {path: path.read_bytes() for path in (blocker, queue)}
+                self.assertEqual(
+                    VALIDATOR_MODULE.release_blocker_link_errors(blocker, queue),
+                    expected,
+                )
+                self.assertEqual(
+                    {path: path.read_bytes() for path in (blocker, queue)}, before
+                )
+
+    def test_missing_and_invalid_digests_fail_closed(self) -> None:
+        invalid_cases = (
+            None,
+            1,
+            "A" * 64,
+            "a" * 63,
+            "a" * 65,
+            "g" * 64,
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            blocker = root / "release_blocker_queue.json"
+            queue = root / "remediation_queue.jsonl"
+            queue.write_bytes(b"queue")
+            blocker.write_text("{}", encoding="utf-8")
+            self.assertEqual(
+                VALIDATOR_MODULE.release_blocker_link_errors(blocker, queue),
+                ["release_blocker_queue.json is missing remediation_queue_sha256"],
+            )
+
+            for digest in invalid_cases:
+                with self.subTest(digest=digest):
+                    self.write_blocker(blocker, digest)
+                    before = {path: path.read_bytes() for path in (blocker, queue)}
+                    self.assertEqual(
+                        VALIDATOR_MODULE.release_blocker_link_errors(blocker, queue),
+                        [
+                            "release_blocker_queue.json has invalid remediation_queue_sha256"
+                        ],
+                    )
+                    self.assertEqual(
+                        {path: path.read_bytes() for path in (blocker, queue)}, before
+                    )
+
+
 if __name__ == "__main__":
     unittest.main()
