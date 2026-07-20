@@ -5,11 +5,14 @@
 
 local TRAIT_ID = "UniversalTraits:UT_scrounger"
 
-local function onContainerUpdate(inventoryPage, state, player)
+local function onContainerUpdate(inventoryPage, state)
+    if state ~= "end" then return end
+
+    local player = inventoryPage and getSpecificPlayer(inventoryPage.player)
+    if not player then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
 
-    for j = 0, inventoryPage.backpacks:size() - 1 do
-        local bp = inventoryPage.backpacks:get(j)
+    for _, bp in ipairs(inventoryPage.backpacks or {}) do
         if bp and bp.inventory then
             local inv = bp.inventory
             local containerObj = inv.getParent and inv:getParent()
@@ -39,4 +42,8 @@ local function onContainerUpdate(inventoryPage, state, player)
     end
 end
 
-Events.OnRefreshInventoryWindowContainers.Add(onContainerUpdate)
+UTScroungerRuntime = UTScroungerRuntime or {}
+if not UTScroungerRuntime.registered then
+    Events.OnRefreshInventoryWindowContainers.Add(onContainerUpdate)
+    UTScroungerRuntime.registered = true
+end

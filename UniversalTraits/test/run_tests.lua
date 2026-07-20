@@ -5061,5 +5061,7 @@ test("woodsplitter anchors all four vanilla Axeman effects in SVN 964", function
         "Axeman is eligible for the pine-tree key ring")
 end)
 
+dofile(base .. "test_scrounger_runtime.lua").run(test, assert_eq, assert_true, base)
+
 print(string.format("\n%d passed, %d failed", passed, failed))
 if failed > 0 then os.exit(1) end

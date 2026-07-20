@@ -118,7 +118,7 @@
     "UI_UT_scrapper": "Scrapper",
     "UI_UT_scrapperDesc": "You see value in broken machinery and scrap. Start at Metalworking level 1, Maintenance level 1, and Blacksmithing level 1.",
     "UI_UT_scrounger": "Scrounger",
-    "UI_UT_scroungerDesc": "When opening a container for the first time, 30 percent chance to find an additional item.",
+    "UI_UT_scroungerDesc": "+1 to Plant Scavenging. When opening a container for the first time, 30 percent chance to find an additional item.",
     "UI_UT_natural": "Natural",
     "UI_UT_naturalDesc": "+1 to Cooking skill. Movement speed +10 percent, reduced by 2 percent per clothing item worn (minimum 0 percent; bonus cannot go negative).",
     "UI_UT_wildsman": "Wildsman",
