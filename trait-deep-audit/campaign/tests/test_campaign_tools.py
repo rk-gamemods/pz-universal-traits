@@ -802,19 +802,42 @@ class WoodSplitterRegeneratorTests(unittest.TestCase):
             [row for row in recurring_after["findings"] if row["id"] != WOOD_MODULE.PATTERN_ID],
         )
 
-    def test_fresh_lf_and_crlf_checkouts_are_fixed_points_on_both_runs(self) -> None:
+    def test_lf_is_fixed_point_and_crlf_queue_link_repairs_once_then_reaches_fixed_point(self) -> None:
         for ending in (b"\n", b"\r\n"):
             with self.subTest(ending=ending), tempfile.TemporaryDirectory() as directory:
                 root = _wood_fixture(Path(directory))
                 campaign = root / "trait-deep-audit" / "campaign"
+                WOOD_MODULE.commit_transaction(WOOD_MODULE.build_plan(root))
                 for path in campaign.rglob("*"):
                     if path.is_file() and path.suffix.lower() in MANIFEST_MODULE.TEXT_ARTIFACT_SUFFIXES:
                         canonical = MANIFEST_MODULE.canonical_artifact_bytes(path)
                         path.write_bytes(canonical.replace(b"\n", ending))
                 first = WOOD_MODULE.commit_transaction(WOOD_MODULE.build_plan(root))
+                if ending == b"\n":
+                    self.assertEqual(first, [])
+                    continue
+
+                queue_bytes = (campaign / "remediation_queue.jsonl").read_bytes()
+                self.assertIn(b"\r\n", queue_bytes)
+                self.assertNotIn(b"\n", queue_bytes.replace(b"\r\n", b""))
+                self.assertEqual(
+                    first,
+                    ["release_blocker_queue.json", "campaign_manifest.json"],
+                )
+                blocker_path = campaign / "release_blocker_queue.json"
+                manifest_path = campaign / "campaign_manifest.json"
+                blocker = json.loads(blocker_path.read_bytes())
+                self.assertEqual(
+                    blocker["remediation_queue_sha256"],
+                    hashlib.sha256(queue_bytes).hexdigest(),
+                )
+                first_blocker_bytes = blocker_path.read_bytes()
+                first_manifest_bytes = manifest_path.read_bytes()
+
                 second = WOOD_MODULE.commit_transaction(WOOD_MODULE.build_plan(root))
-                self.assertEqual(first, [])
                 self.assertEqual(second, [])
+                self.assertEqual(blocker_path.read_bytes(), first_blocker_bytes)
+                self.assertEqual(manifest_path.read_bytes(), first_manifest_bytes)
 
     def test_commit_failure_rolls_back_every_owned_output(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
