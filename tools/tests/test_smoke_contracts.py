@@ -174,6 +174,11 @@ class CheckerTests(unittest.TestCase):
         self.assertEqual(result["extras"], ["other.x"])
         self.assertEqual(result["missing"], ["missing.x"])
 
+    def test_unexpected_surface_is_extra_not_duplicate(self):
+        result = self.check([self.marker(), self.marker("other.x")])
+        self.assertEqual(result["duplicates"], [])
+        self.assertEqual(result["extras"], ["other.x"])
+
     def test_missing_inputs_and_malformed_manifest_fail(self):
         with tempfile.TemporaryDirectory() as temp:
             log, manifest = Path(temp) / "log", Path(temp) / "manifest"

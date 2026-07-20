@@ -107,7 +107,8 @@ def validate(log_path: Path, manifest_path: Path, run_id: str, challenge: str,
     counts = Counter(m["surface"] for m in accepted)
     expected_set = set(expected)
     missing = [surface for surface, count in expected.items() if counts[surface] < count]
-    duplicates = sorted(surface for surface, count in counts.items() if count > expected.get(surface, 0))
+    duplicates = sorted(surface for surface, count in counts.items()
+                        if surface in expected_set and count > expected[surface])
     extras = sorted(set(counts) - expected_set)
     clean = not (foreign or malformed or missing or duplicates or extras or errors)
     return {
