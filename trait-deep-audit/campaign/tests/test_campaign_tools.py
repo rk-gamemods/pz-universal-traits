@@ -6,6 +6,7 @@ import importlib.util
 import json
 import hashlib
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -576,23 +577,42 @@ class WoodSplitterRegeneratorTests(unittest.TestCase):
 
 
 class RecurringPatternTests(unittest.TestCase):
-    TRANSLATOR_CODE_POINTS = (
-        0x2019, 0x2018, 0x02BC, 0x02B9, 0x2032, 0x201C, 0x201D, 0x201F,
-        0x2033, 0x2013, 0x2014, 0x2212, 0x2010, 0x2011, 0x0430, 0x0435,
-        0x043E, 0x0440, 0x0441, 0x0443, 0x0445, 0x0456, 0x0458, 0x0455,
-        0x051D, 0x03F3, 0x2170, 0x2174, 0x2179, 0x217C, 0x217D, 0x217E,
-        0x217F, 0x200B, 0x200C, 0x200D, 0xFEFF, 0x200E, 0x200F, 0x202A,
-        0x202B, 0x202C, 0x202D, 0x202E,
-    )
+    def translator_code_points(self) -> tuple[int, ...]:
+        authority = (
+            CAMPAIGN_ROOT.parents[1].parent
+            / "PZCodebase/Java/source/zombie/core/Translator.java"
+        )
+        text = authority.read_text(encoding="utf-8")
+        match = re.search(
+            r"public\s+static\s+final\s+char\[\]\s+LOOKALIKE_CHARS\s*=\s*"
+            r"new\s+char\[\]\s*\{(?P<body>.*?)\};",
+            text,
+            re.DOTALL,
+        )
+        self.assertIsNotNone(match, "Build 42.19 Translator.java authority is malformed")
+        assert match is not None
+        values = tuple(
+            int(value, 16)
+            for value in re.findall(r"'\\u([0-9A-Fa-f]{4})'", match.group("body"))
+        )
+        self.assertEqual(len(values), 44)
+        self.assertEqual(len(set(values)), 44)
+        return values
 
-    def write_translator_fixture(self, root: Path) -> Path:
-        authority = root / "Translator.java"
-        entries = ",\n".join(f"        '\\u{code_point:04x}'" for code_point in self.TRANSLATOR_CODE_POINTS)
-        authority.write_text(
-            "public final class Translator {\n"
+    @staticmethod
+    def translator_declaration(code_points: tuple[int, ...]) -> str:
+        entries = ",\n".join(f"        '\\u{code_point:04x}'" for code_point in code_points)
+        return (
             "    public static final char[] LOOKALIKE_CHARS = new char[]{\n"
             f"{entries}\n"
             "    };\n"
+        )
+
+    def write_translator_fixture(self, root: Path) -> Path:
+        authority = root / "Translator.java"
+        authority.write_text(
+            "public final class Translator {\n"
+            f"{self.translator_declaration(self.translator_code_points())}"
             "}\n",
             encoding="utf-8",
         )
@@ -602,7 +622,8 @@ class RecurringPatternTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             authority = self.write_translator_fixture(root)
-            literal = "".join(chr(code_point) for code_point in self.TRANSLATOR_CODE_POINTS)
+            code_points = self.translator_code_points()
+            literal = "".join(chr(code_point) for code_point in code_points)
             raw = ('{"all":"' + literal + '","escaped":"\\u2014",'
                    '"allowed":"ASCII controls: \\n \\t; café Ω"}\n').encode("utf-8")
             source = root / "source.json"
@@ -617,7 +638,7 @@ class RecurringPatternTests(unittest.TestCase):
             self.assertEqual(len(first["findings"]), 44)
             self.assertEqual(
                 [row["code_point"] for row in first["findings"]],
-                [f"U+{code_point:04X}" for code_point in self.TRANSLATOR_CODE_POINTS],
+                [f"U+{code_point:04X}" for code_point in code_points],
             )
             self.assertTrue(all(row["json_key"] == "all" for row in first["findings"]))
             self.assertTrue(all(row["source_release_side"] == "source-and-release" for row in first["findings"]))
@@ -683,6 +704,84 @@ class RecurringPatternTests(unittest.TestCase):
                     )
                     self.assertEqual(result["findings"], [])
                     self.assertIn(expected_kind, {row["kind"] for row in result["errors"]})
+
+    def test_translator_authority_declaration_cardinality_and_inventory_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "source.json"
+            release = root / "release.json"
+            source.write_bytes(b'{"key":"safe"}\n')
+            release.write_bytes(source.read_bytes())
+            code_points = self.translator_code_points()
+            valid = self.translator_declaration(code_points)
+            malformed = "    public static final char[] LOOKALIKE_CHARS = notAnArray;\n"
+            swapped = (code_points[1], code_points[0], *code_points[2:])
+            cases = (
+                ("zero", "class Translator {}\n", "missing-authority-inventory"),
+                ("one-valid", f"class Translator {{\n{valid}}}\n", None),
+                ("one-malformed", f"class Translator {{\n{malformed}}}\n", "malformed-authority-inventory"),
+                ("duplicate-valid", f"class Translator {{\n{valid}{valid}}}\n", "multiple-authority-inventories"),
+                ("valid-malformed", f"class Translator {{\n{valid}{malformed}}}\n", "multiple-authority-inventories"),
+                ("malformed-valid", f"class Translator {{\n{malformed}{valid}}}\n", "multiple-authority-inventories"),
+                (
+                    "duplicate-code-point",
+                    f"class Translator {{\n{self.translator_declaration(code_points + (code_points[0],))}}}\n",
+                    "authority-inventory-mismatch",
+                ),
+                (
+                    "wrong-count",
+                    f"class Translator {{\n{self.translator_declaration(code_points[:-1])}}}\n",
+                    "authority-inventory-mismatch",
+                ),
+                (
+                    "wrong-content",
+                    f"class Translator {{\n{self.translator_declaration((0x0041, *code_points[1:]))}}}\n",
+                    "authority-inventory-mismatch",
+                ),
+                (
+                    "wrong-order",
+                    f"class Translator {{\n{self.translator_declaration(swapped)}}}\n",
+                    "authority-inventory-mismatch",
+                ),
+            )
+
+            for name, text, expected_kind in cases:
+                with self.subTest(name=name):
+                    authority = root / f"{name}.java"
+                    authority.write_text(text, encoding="utf-8")
+                    first = PATTERN_MODULE.scan_translator_confusable_json(
+                        source, release, authority
+                    )
+                    second = PATTERN_MODULE.scan_translator_confusable_json(
+                        source, release, authority
+                    )
+                    self.assertEqual(first, second)
+                    self.assertEqual(first["findings"], [])
+                    self.assertEqual(
+                        [row["kind"] for row in first["errors"]],
+                        [] if expected_kind is None else [expected_kind],
+                    )
+
+    def test_translator_confusable_errors_have_deterministic_order(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            authority = self.write_translator_fixture(root)
+            missing_source = root / "missing.json"
+            invalid_release = root / "invalid.json"
+            invalid_release.write_bytes(b'{"key":"\xff"}')
+
+            first = PATTERN_MODULE.scan_translator_confusable_json(
+                missing_source, invalid_release, authority
+            )
+            second = PATTERN_MODULE.scan_translator_confusable_json(
+                missing_source, invalid_release, authority
+            )
+            self.assertEqual(first, second)
+            self.assertEqual(first["findings"], [])
+            self.assertEqual(
+                [row["kind"] for row in first["errors"]],
+                ["invalid-utf8", "missing-file"],
+            )
 
     def test_current_translation_confusable_inventory_is_diagnostic_only(self) -> None:
         repository_root = CAMPAIGN_ROOT.parents[1]

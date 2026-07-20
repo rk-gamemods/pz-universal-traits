@@ -171,17 +171,49 @@ def scan_translator_confusable_json(
         error("invalid-authority-utf8", authority_path, str(exc), byte_offset=exc.start)
         return {"findings": [], "errors": errors}
 
-    inventory_match = re.search(
-        r"LOOKALIKE_CHARS\s*=\s*new\s+char\[\]\s*\{(?P<body>.*?)\};",
-        authority_text,
+    declaration_starts = list(
+        re.finditer(r"\bchar\s*\[\s*\]\s+LOOKALIKE_CHARS\b", authority_text)
+    )
+    if not declaration_starts:
+        error("missing-authority-inventory", authority_path, "LOOKALIKE_CHARS inventory is missing")
+        return {"findings": [], "errors": errors}
+    if len(declaration_starts) != 1:
+        error(
+            "multiple-authority-inventories",
+            authority_path,
+            "Translator authority must contain exactly one LOOKALIKE_CHARS declaration",
+            declaration_count=len(declaration_starts),
+        )
+        return {"findings": [], "errors": errors}
+
+    inventory_match = re.match(
+        r"char\s*\[\s*\]\s+LOOKALIKE_CHARS\s*=\s*new\s+char\s*\[\s*\]\s*"
+        r"\{(?P<body>.*?)\}\s*;",
+        authority_text[declaration_starts[0].start() :],
         re.DOTALL,
     )
     if inventory_match is None:
-        error("missing-authority-inventory", authority_path, "LOOKALIKE_CHARS inventory is missing")
+        error(
+            "malformed-authority-inventory",
+            authority_path,
+            "LOOKALIKE_CHARS declaration is malformed",
+        )
+        return {"findings": [], "errors": errors}
+
+    inventory_body = inventory_match.group("body")
+    if re.fullmatch(
+        r"\s*(?:'\\u[0-9A-Fa-f]{4}'(?:\s*,\s*'\\u[0-9A-Fa-f]{4}')*\s*,?)?\s*",
+        inventory_body,
+    ) is None:
+        error(
+            "malformed-authority-inventory",
+            authority_path,
+            "LOOKALIKE_CHARS declaration contains malformed entries",
+        )
         return {"findings": [], "errors": errors}
     authority_code_points = tuple(
         int(value, 16)
-        for value in re.findall(r"'\\u([0-9A-Fa-f]{4})'", inventory_match.group("body"))
+        for value in re.findall(r"'\\u([0-9A-Fa-f]{4})'", inventory_body)
     )
     if authority_code_points != rejected_code_points or len(set(authority_code_points)) != 44:
         error(
