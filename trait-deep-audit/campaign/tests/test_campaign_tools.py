@@ -189,6 +189,97 @@ class ResolutionRecordTests(unittest.TestCase):
                     )
 
 
+class ReleaseBlockerQueueDigestTests(unittest.TestCase):
+    def test_updates_from_exact_raw_bytes_and_is_idempotent(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            queue_path = root / "remediation_queue.jsonl"
+            release_blocker_path = root / "release_blocker_queue.json"
+            queue_bytes = b'{"queue_id":"one"}\r\n'
+            queue_path.write_bytes(queue_bytes)
+            release_blocker_path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "1.0",
+                        "remediation_queue_sha256": "0" * 64,
+                        "identities": [],
+                    },
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+                newline="\n",
+            )
+
+            QUEUE_MODULE.update_release_blocker_queue_sha256(
+                queue_path, release_blocker_path
+            )
+            first = release_blocker_path.read_bytes()
+            self.assertEqual(
+                json.loads(first)["remediation_queue_sha256"],
+                hashlib.sha256(queue_bytes).hexdigest(),
+            )
+
+            QUEUE_MODULE.update_release_blocker_queue_sha256(
+                queue_path, release_blocker_path
+            )
+            self.assertEqual(release_blocker_path.read_bytes(), first)
+
+    def test_one_byte_queue_mutation_changes_digest(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            queue_path = root / "remediation_queue.jsonl"
+            release_blocker_path = root / "release_blocker_queue.json"
+            queue_path.write_bytes(b"a")
+            release_blocker_path.write_text(
+                '{"remediation_queue_sha256":"' + "0" * 64 + '"}\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+            QUEUE_MODULE.update_release_blocker_queue_sha256(
+                queue_path, release_blocker_path
+            )
+            first_digest = json.loads(release_blocker_path.read_bytes())[
+                "remediation_queue_sha256"
+            ]
+
+            queue_path.write_bytes(b"b")
+            QUEUE_MODULE.update_release_blocker_queue_sha256(
+                queue_path, release_blocker_path
+            )
+            second_digest = json.loads(release_blocker_path.read_bytes())[
+                "remediation_queue_sha256"
+            ]
+            self.assertNotEqual(first_digest, second_digest)
+            self.assertEqual(second_digest, hashlib.sha256(b"b").hexdigest())
+
+    def test_rejects_malformed_json_and_missing_or_malformed_field(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            queue_path = root / "remediation_queue.jsonl"
+            release_blocker_path = root / "release_blocker_queue.json"
+            queue_path.write_bytes(b"queue\n")
+            cases = (
+                ("malformed-json", "{"),
+                ("non-object", "[]\n"),
+                ("missing-field", "{}\n"),
+                ("malformed-field", '{"remediation_queue_sha256":"ABC"}\n'),
+            )
+            for name, release_blocker_text in cases:
+                with self.subTest(name=name):
+                    release_blocker_path.write_text(
+                        release_blocker_text,
+                        encoding="utf-8",
+                        newline="\n",
+                    )
+                    before = release_blocker_path.read_bytes()
+                    with self.assertRaises((json.JSONDecodeError, ValueError)):
+                        QUEUE_MODULE.update_release_blocker_queue_sha256(
+                            queue_path, release_blocker_path
+                        )
+                    self.assertEqual(release_blocker_path.read_bytes(), before)
+
+
 class NormalizationTests(unittest.TestCase):
     def test_legacy_states_map_to_terminal_vocabulary(self) -> None:
         self.assertEqual(MODULE.normalize_state("proven"), "proven-correct")

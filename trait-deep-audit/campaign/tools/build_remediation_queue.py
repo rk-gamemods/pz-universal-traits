@@ -195,6 +195,29 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest().upper()
 
 
+def update_release_blocker_queue_sha256(
+    queue_path: Path, release_blocker_path: Path
+) -> None:
+    """Update the release-blocker queue digest from the queue's exact raw bytes."""
+    queue_digest = hashlib.sha256(queue_path.read_bytes()).hexdigest()
+    release_blocker = json.loads(release_blocker_path.read_text(encoding="utf-8"))
+    if not isinstance(release_blocker, dict):
+        raise ValueError("release-blocker queue must be a JSON object")
+    existing_digest = release_blocker.get("remediation_queue_sha256")
+    if not isinstance(existing_digest, str) or not re.fullmatch(
+        r"[0-9a-f]{64}", existing_digest
+    ):
+        raise ValueError(
+            "remediation_queue_sha256 must be exactly 64 lowercase hexadecimal characters"
+        )
+    release_blocker["remediation_queue_sha256"] = queue_digest
+    release_blocker_path.write_text(
+        json.dumps(release_blocker, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
