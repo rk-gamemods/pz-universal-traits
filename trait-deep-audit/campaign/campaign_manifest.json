@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 65,
-  "total_bytes": 12663280,
+  "total_bytes": 12683133,
   "files": [
     {
       "path": "MASTER_COVERAGE_LEDGER.md",
@@ -160,7 +160,7 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 8385,
-      "sha256": "C04AABABF84F4B0E2F64F4DCB5F6A8C2D645E0CFC215131588FD6E2D1B374CFF"
+      "sha256": "DB3B7FC455A6FD9B455C0E3AEC651197EA013924EC34E750D6A7ED63BAB3F3A9"
     },
     {
       "path": "remediation_queue.jsonl",
@@ -341,8 +341,8 @@
       "path": "tests/test_campaign_tools.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 48888,
-      "sha256": "2EB7C2E5FB59EEC64F13C23C44595E27C5DBA29D2BC7AA132C36965172FE6FDA"
+      "bytes": 66093,
+      "sha256": "365935967682C01249DDABD0462DB62897D0160F17F4E4F7567FFA541274358F"
     },
     {
       "path": "tools/build_campaign_manifest.py",
@@ -362,8 +362,8 @@
       "path": "tools/build_remediation_queue.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 16828,
-      "sha256": "894789AA73D25A0A9E34C190BCE4FE6198DBDDE1B424295E51F03D5A26B0D568"
+      "bytes": 17825,
+      "sha256": "518934A246ED9F899E70B1216B6FCD3CE5BAAED2460E328D977EECB9A8FA7E8B"
     },
     {
       "path": "tools/campaign_cli.py",
@@ -390,15 +390,15 @@
       "path": "tools/regenerate_unwavering.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 8862,
-      "sha256": "D4EEEE21E592F1A16A901EAF5D8C813D92FEFAECC0977BF05BCAD5660B65B7EE"
+      "bytes": 9901,
+      "sha256": "CA42BCF546B31081486F20BDE733FF92C2FB817B206726FC9FEBED9A8A5AF073"
     },
     {
       "path": "tools/regenerate_woodsplitter.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 33212,
-      "sha256": "AD5C92C79CF938F4F1D103960362718595D920BE7AF742526B7C5C4FBDBB2D6D"
+      "bytes": 33824,
+      "sha256": "0F46CDE06DF050810FC6E2D525DE5A81CFB4E9641FCCC6226B0FA98CC6E74828"
     },
     {
       "path": "tools/validate_campaign.py",
