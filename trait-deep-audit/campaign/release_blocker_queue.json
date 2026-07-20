@@ -1,0 +1,218 @@
+{
+  "schema_version": "1.0",
+  "remediation_queue_sha256": "3ee21fdaa44bf817f58ea789471f578b791e440cc719860960ffe7bba94e4998",
+  "category_label": "release-blocker",
+  "classification_scope_statement": "Only the queue rows listed by these reviewed semantic identities are classified as release-blocker; all other rows remain unclassified in the exhaustive ledger.",
+  "identities": [
+    {
+      "semantic_identity": "translator-load:Unwavering",
+      "identity_kind": "translator-load",
+      "status": "open",
+      "priority_reason_code": "translator-load-failure",
+      "queue_ids": [
+        "finding:IR0912-UNICODE-001"
+      ],
+      "dependencies": [],
+      "evidence_scope": "Unwavering translation text contains a character rejected by the Translator load guard."
+    },
+    {
+      "semantic_identity": "trait:UT_motionsickness",
+      "identity_kind": "trait",
+      "status": "open",
+      "priority_reason_code": "invalid-runtime-api",
+      "queue_ids": [
+        "finding:IR0508-OM-012"
+      ],
+      "dependencies": [],
+      "evidence_scope": "Motion Sickness calls a nonexistent GameTime method on its runtime path."
+    },
+    {
+      "semantic_identity": "trait:UT_scrounger-runtime",
+      "identity_kind": "trait",
+      "status": "open",
+      "priority_reason_code": "invalid-runtime-contract",
+      "queue_ids": [
+        "finding:B10-SCROUNGER-001",
+        "dimension:UniversalTraits:UT_scrounger:events",
+        "dimension:UniversalTraits:UT_scrounger:java_lua",
+        "dimension:UniversalTraits:UT_scrounger:kahlua"
+      ],
+      "dependencies": [],
+      "evidence_scope": "Scrounger inventory refresh uses the wrong callback, player, and collection contracts."
+    },
+    {
+      "semantic_identity": "trait:UT_superimmune",
+      "identity_kind": "trait",
+      "status": "open",
+      "priority_reason_code": "infection-state-corruption",
+      "queue_ids": [
+        "finding:B11-SUPERIMMUNE-001",
+        "dimension:UniversalTraits:UT_superimmune:java_lua"
+      ],
+      "dependencies": [],
+      "evidence_scope": "Superimmune writes composite apparent sickness back into zombie infection state."
+    },
+    {
+      "semantic_identity": "trait:UT_immuneresponse",
+      "identity_kind": "trait",
+      "status": "open",
+      "priority_reason_code": "infection-state-corruption",
+      "queue_ids": [
+        "finding:B05-IMMUNERESP-001"
+      ],
+      "dependencies": [],
+      "evidence_scope": "Immune Response can promote non-zombie sickness into zombie infection state."
+    },
+    {
+      "semantic_identity": "trait:UT_immunocompromised",
+      "identity_kind": "trait",
+      "status": "open",
+      "priority_reason_code": "infection-state-corruption",
+      "queue_ids": [
+        "finding:B05-IMMUNOCOMP-001"
+      ],
+      "dependencies": [],
+      "evidence_scope": "Immunocompromised can promote food sickness or fever into zombie infection state."
+    },
+    {
+      "semantic_identity": "shared-hook:UTCore_FractureHook",
+      "identity_kind": "shared-hook",
+      "status": "open",
+      "priority_reason_code": "invalid-shared-event-contract",
+      "queue_ids": [
+        "finding:B02-UT_brittle-01",
+        "dimension:UniversalTraits:UT_brittle:events"
+      ],
+      "dependencies": [],
+      "evidence_scope": "The shared fracture hook uses the wrong OnWeaponHitCharacter argument order for Brittle."
+    },
+    {
+      "semantic_identity": "trait:UT_glassbody-hit-handler",
+      "identity_kind": "trait",
+      "status": "open",
+      "priority_reason_code": "invalid-hit-handler-contract",
+      "queue_ids": [
+        "dimension:UniversalTraits:UT_glassbody:events",
+        "dimension:UniversalTraits:UT_glassbody:java_lua"
+      ],
+      "dependencies": [],
+      "evidence_scope": "Glass Body hit handling has confirmed event and Java-Lua contract defects."
+    },
+    {
+      "semantic_identity": "event-registry:timed-action-added",
+      "identity_kind": "event-registry",
+      "status": "open",
+      "priority_reason_code": "unknown-engine-event",
+      "queue_ids": [
+        "finding:RP-EVENT-UNKNOWN-ONACTIONADDED",
+        "dimension:UniversalTraits:UT_paramedic:events",
+        "dimension:UniversalTraits:UT_pitcrew:events"
+      ],
+      "dependencies": [],
+      "evidence_scope": "Paramedic and Pit Crew register OnActionAdded, which is absent from the current event registry."
+    },
+    {
+      "semantic_identity": "shared-hook:item-consumption-wrapper-lifecycle",
+      "identity_kind": "shared-hook",
+      "status": "open",
+      "priority_reason_code": "stacking-wrapper-lifecycle",
+      "queue_ids": [
+        "finding:IR0104-ALLERGIC-HOOK-STACK",
+        "finding:IR0104-ANTIVAXXER-HOOK-STACK",
+        "finding:IR0104-GORDANITE-HOOK-STACK",
+        "finding:IR0104-ADDICTEDTOCAFFEINE-HOOK-STACK",
+        "finding:XTF0104-ITEM-CONSUMPTION-WRAPPERS",
+        "dimension:UniversalTraits:UT_pillsallergy:events"
+      ],
+      "dependencies": [],
+      "evidence_scope": "Shared item-consumption wrappers for affected callers stack across repeated startup or world-entry lifecycles."
+    },
+    {
+      "semantic_identity": "trait:UT_anorexy",
+      "identity_kind": "trait",
+      "status": "open",
+      "priority_reason_code": "unbounded-hot-path-handler",
+      "queue_ids": [
+        "finding:B01-ANO-PERF"
+      ],
+      "dependencies": [],
+      "evidence_scope": "Anorexy performs food-edge detection every player tick without throttling or a direct consumption hook."
+    },
+    {
+      "semantic_identity": "package:Bouncer-I",
+      "identity_kind": "package",
+      "status": "open",
+      "priority_reason_code": "source-release-perk-drift",
+      "queue_ids": [
+        "finding:IR0104-BOUNCER_I-SOURCE-RELEASE-PERK"
+      ],
+      "dependencies": [],
+      "evidence_scope": "Bouncer I source and release definitions disagree on the medical XP perk."
+    },
+    {
+      "semantic_identity": "package:Bouncer-II",
+      "identity_kind": "package",
+      "status": "open",
+      "priority_reason_code": "source-release-perk-drift",
+      "queue_ids": [
+        "finding:IR0104-BOUNCER_II-SOURCE-RELEASE-PERK"
+      ],
+      "dependencies": [],
+      "evidence_scope": "Bouncer II source and release definitions disagree on the medical XP perk."
+    },
+    {
+      "semantic_identity": "package:UT_antique",
+      "identity_kind": "package",
+      "status": "open",
+      "priority_reason_code": "trait-package-parity-drift",
+      "queue_ids": [
+        "finding:B01-ANT-PARITY",
+        "dimension:UniversalTraits:UT_antique:packaging",
+        "dimension:UniversalTraits:UT_antique:source_release_parity"
+      ],
+      "dependencies": [],
+      "evidence_scope": "Antique source and packaged release differ on the container-add API and package parity."
+    },
+    {
+      "semantic_identity": "package:UT_scrounger",
+      "identity_kind": "package",
+      "status": "open",
+      "priority_reason_code": "trait-package-parity-drift",
+      "queue_ids": [
+        "finding:B10-SCROUNGER-002",
+        "dimension:UniversalTraits:UT_scrounger:packaging",
+        "dimension:UniversalTraits:UT_scrounger:source_release_parity"
+      ],
+      "dependencies": [],
+      "evidence_scope": "Scrounger release packaging retains stale unsupported behavior and differs from source."
+    },
+    {
+      "semantic_identity": "package:UniversalTraits-release-reconciliation",
+      "identity_kind": "package",
+      "status": "open",
+      "priority_reason_code": "release-tree-reconciliation",
+      "queue_ids": [
+        "finding:RP-PACKAGE-PARITY-UniversalTraits",
+        "finding:XTF0104-SOURCE-RELEASE-DRIFT"
+      ],
+      "dependencies": [
+        "translator-load:Unwavering",
+        "trait:UT_motionsickness",
+        "trait:UT_scrounger-runtime",
+        "trait:UT_superimmune",
+        "trait:UT_immuneresponse",
+        "trait:UT_immunocompromised",
+        "shared-hook:UTCore_FractureHook",
+        "trait:UT_glassbody-hit-handler",
+        "event-registry:timed-action-added",
+        "shared-hook:item-consumption-wrapper-lifecycle",
+        "trait:UT_anorexy",
+        "package:Bouncer-I",
+        "package:Bouncer-II",
+        "package:UT_antique",
+        "package:UT_scrounger"
+      ],
+      "evidence_scope": "Reconcile the UniversalTraits release tree after all reviewed runtime, source, and package outputs that affect release are complete."
+    }
+  ]
+}
