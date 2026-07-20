@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import sys
 from collections import Counter
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 from campaign_cli import no_arg_command
@@ -128,6 +129,66 @@ QUEUE_LIST_COLUMNS = frozenset(
         "reproduction_evidence",
     }
 )
+
+
+def make_resolution_record(
+    queue_id: str,
+    commit_sha: str,
+    task_id: str,
+    changed_paths: list[str],
+    validation_artifacts: list[str],
+    resolution_evidence: str,
+) -> dict[str, Any]:
+    """Return one canonical, self-contained remediation resolution record."""
+
+    def require_explicit_text(name: str, value: str) -> str:
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"{name} must be a non-empty string")
+        return value
+
+    def canonical_paths(name: str, values: list[str]) -> list[str]:
+        if not isinstance(values, list) or not values:
+            raise ValueError(f"{name} must be a non-empty list")
+        for value in values:
+            if not isinstance(value, str) or not value.strip():
+                raise ValueError(f"{name} contains a blank path")
+            path = PurePosixPath(value)
+            if (
+                value != value.strip()
+                or "\\" in value
+                or path.is_absolute()
+                or re.match(r"^[A-Za-z]:", value)
+                or value in {".", ".."}
+                or ".." in path.parts
+                or str(path) != value
+            ):
+                raise ValueError(
+                    f"{name} paths must be repository-relative canonical POSIX paths"
+                )
+        if len(values) != len(set(values)):
+            raise ValueError(f"{name} contains duplicate paths")
+        return sorted(values)
+
+    queue_id = require_explicit_text("queue_id", queue_id)
+    task_id = require_explicit_text("task_id", task_id)
+    resolution_evidence = require_explicit_text(
+        "resolution_evidence", resolution_evidence
+    )
+    if not isinstance(commit_sha, str) or not re.fullmatch(
+        r"[0-9a-fA-F]{40}", commit_sha
+    ):
+        raise ValueError("commit_sha must be exactly 40 hexadecimal characters")
+
+    return {
+        "queue_id": queue_id,
+        "commit_sha": commit_sha.lower(),
+        "task_id": task_id,
+        "changed_paths": canonical_paths("changed_paths", changed_paths),
+        "validation_artifacts": canonical_paths(
+            "validation_artifacts", validation_artifacts
+        ),
+        "resolution_evidence": resolution_evidence,
+    }
 
 
 def _sha256(path: Path) -> str:

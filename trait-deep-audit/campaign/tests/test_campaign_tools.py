@@ -49,6 +49,89 @@ QUEUE_MODULE = importlib.util.module_from_spec(QUEUE_SPEC)
 QUEUE_SPEC.loader.exec_module(QUEUE_MODULE)
 
 
+class ResolutionRecordTests(unittest.TestCase):
+    def test_builds_canonical_resolution_record(self) -> None:
+        record = QUEUE_MODULE.make_resolution_record(
+            "finding:AUDIT-001",
+            "ABCDEF0123456789ABCDEF0123456789ABCDEF01",
+            "task-123",
+            ["z/file.py", "a/file.py"],
+            ["reports/test.json", "reports/diff.txt"],
+            "Focused and campaign-tool tests passed.",
+        )
+        self.assertEqual(
+            tuple(record),
+            (
+                "queue_id",
+                "commit_sha",
+                "task_id",
+                "changed_paths",
+                "validation_artifacts",
+                "resolution_evidence",
+            ),
+        )
+        self.assertEqual(
+            record["commit_sha"], "abcdef0123456789abcdef0123456789abcdef01"
+        )
+        self.assertEqual(record["changed_paths"], ["a/file.py", "z/file.py"])
+        self.assertEqual(
+            record["validation_artifacts"],
+            ["reports/diff.txt", "reports/test.json"],
+        )
+
+    def test_rejects_missing_or_invalid_scalar_values(self) -> None:
+        valid = {
+            "queue_id": "queue-1",
+            "commit_sha": "a" * 40,
+            "task_id": "task-1",
+            "changed_paths": ["src/file.py"],
+            "validation_artifacts": ["reports/test.txt"],
+            "resolution_evidence": "Tests passed.",
+        }
+        for name, value in (
+            ("queue_id", ""),
+            ("task_id", "   "),
+            ("resolution_evidence", ""),
+            ("commit_sha", "a" * 39),
+            ("commit_sha", "g" * 40),
+        ):
+            with self.subTest(name=name, value=value):
+                arguments = {**valid, name: value}
+                with self.assertRaises(ValueError):
+                    QUEUE_MODULE.make_resolution_record(**arguments)
+
+    def test_rejects_noncanonical_or_duplicate_paths(self) -> None:
+        invalid_paths = (
+            [],
+            [""],
+            ["/absolute/file.py"],
+            ["C:/absolute/file.py"],
+            ["parent/../file.py"],
+            ["windows\\file.py"],
+            ["duplicate.py", "duplicate.py"],
+        )
+        for paths in invalid_paths:
+            with self.subTest(paths=paths):
+                with self.assertRaises(ValueError):
+                    QUEUE_MODULE.make_resolution_record(
+                        "queue-1",
+                        "a" * 40,
+                        "task-1",
+                        paths,
+                        ["reports/test.txt"],
+                        "Tests passed.",
+                    )
+                with self.assertRaises(ValueError):
+                    QUEUE_MODULE.make_resolution_record(
+                        "queue-1",
+                        "a" * 40,
+                        "task-1",
+                        ["src/file.py"],
+                        paths,
+                        "Tests passed.",
+                    )
+
+
 class NormalizationTests(unittest.TestCase):
     def test_legacy_states_map_to_terminal_vocabulary(self) -> None:
         self.assertEqual(MODULE.normalize_state("proven"), "proven-correct")
