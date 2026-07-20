@@ -85,6 +85,104 @@ def release_blocker_link_errors(
     return []
 
 
+def release_blocker_reference_errors(
+    release_blocker_path: Path, remediation_queue_path: Path
+) -> list[str]:
+    try:
+        release_blocker_text = release_blocker_path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return ["release_blocker_queue.json is missing"]
+    except (OSError, UnicodeError):
+        return ["release_blocker_queue.json is unreadable UTF-8"]
+
+    try:
+        release_blocker = json.loads(release_blocker_text)
+    except json.JSONDecodeError:
+        return ["release_blocker_queue.json is malformed JSON"]
+    if not isinstance(release_blocker, dict):
+        return ["release_blocker_queue.json must contain a JSON object"]
+
+    blocker_errors: list[str] = []
+    blocker_ids: list[str] = []
+    blocker_id_set: set[str] = set()
+    if "identities" not in release_blocker:
+        blocker_errors.append("release_blocker_queue.json is missing identities")
+        identities: object = []
+    else:
+        identities = release_blocker["identities"]
+        if not isinstance(identities, list):
+            blocker_errors.append("release_blocker_queue.json identities must be a list")
+            identities = []
+
+    for identity_index, identity in enumerate(identities):
+        identity_label = f"release_blocker_queue.json identities[{identity_index}]"
+        if not isinstance(identity, dict):
+            blocker_errors.append(f"{identity_label} must be a JSON object")
+            continue
+        if "queue_ids" not in identity:
+            blocker_errors.append(f"{identity_label} is missing queue_ids")
+            continue
+        queue_ids = identity["queue_ids"]
+        if not isinstance(queue_ids, list):
+            blocker_errors.append(f"{identity_label}.queue_ids must be a list")
+            continue
+        for queue_id_index, queue_id in enumerate(queue_ids):
+            if not isinstance(queue_id, str) or not queue_id.strip():
+                blocker_errors.append(
+                    f"{identity_label}.queue_ids[{queue_id_index}] must be a nonempty string"
+                )
+                continue
+            if queue_id not in blocker_id_set:
+                blocker_id_set.add(queue_id)
+                blocker_ids.append(queue_id)
+
+    queue_errors: list[str] = []
+    reference_counts = {queue_id: 0 for queue_id in blocker_ids}
+    try:
+        with remediation_queue_path.open("r", encoding="utf-8", newline="") as queue_file:
+            for line_number, line in enumerate(queue_file, start=1):
+                line_label = f"remediation_queue.jsonl line {line_number}"
+                if not line.strip():
+                    queue_errors.append(f"{line_label} is blank")
+                    continue
+                try:
+                    row = json.loads(line)
+                except json.JSONDecodeError:
+                    queue_errors.append(f"{line_label} is malformed JSON")
+                    continue
+                if not isinstance(row, dict):
+                    queue_errors.append(f"{line_label} must contain a JSON object")
+                    continue
+                if "queue_id" not in row:
+                    queue_errors.append(f"{line_label} is missing queue_id")
+                    continue
+                queue_id = row["queue_id"]
+                if not isinstance(queue_id, str) or not queue_id.strip():
+                    queue_errors.append(
+                        f"{line_label} queue_id must be a nonempty string"
+                    )
+                    continue
+                if queue_id in reference_counts:
+                    reference_counts[queue_id] += 1
+    except FileNotFoundError:
+        return blocker_errors + ["remediation_queue.jsonl is missing"]
+    except (OSError, UnicodeError):
+        return blocker_errors + ["remediation_queue.jsonl is unreadable UTF-8"]
+
+    reference_errors: list[str] = []
+    for queue_id in blocker_ids:
+        count = reference_counts[queue_id]
+        if count == 0:
+            reference_errors.append(
+                f"release blocker queue_id {queue_id!r} is missing from remediation_queue.jsonl"
+            )
+        elif count > 1:
+            reference_errors.append(
+                f"release blocker queue_id {queue_id!r} occurs {count} times in remediation_queue.jsonl"
+            )
+    return blocker_errors + queue_errors + reference_errors
+
+
 def main() -> int:
     cli_result = no_arg_command(
         sys.argv,
@@ -124,6 +222,9 @@ def main() -> int:
         )
     )
     errors.extend(release_blocker_link_errors(RELEASE_BLOCKER_PATH, QUEUE_OUTPUT_PATH))
+    errors.extend(
+        release_blocker_reference_errors(RELEASE_BLOCKER_PATH, QUEUE_OUTPUT_PATH)
+    )
     errors.extend(
         generated_artifact_errors(
             SUMMARY_OUTPUT_PATH, expected_summary, "remediation_summary.json"

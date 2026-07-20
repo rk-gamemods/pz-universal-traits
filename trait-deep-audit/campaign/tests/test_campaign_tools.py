@@ -1505,5 +1505,139 @@ class ReleaseBlockerLinkValidationTests(unittest.TestCase):
                     )
 
 
+class ReleaseBlockerReferenceValidationTests(unittest.TestCase):
+    def validate(self, blocker: object, queue_lines: list[object]) -> list[str]:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            blocker_path = root / "release_blocker_queue.json"
+            queue_path = root / "remediation_queue.jsonl"
+            blocker_path.write_text(json.dumps(blocker), encoding="utf-8")
+            queue_path.write_text(
+                "".join(
+                    line if isinstance(line, str) else json.dumps(line) + "\n"
+                    for line in queue_lines
+                ),
+                encoding="utf-8",
+            )
+            return VALIDATOR_MODULE.release_blocker_reference_errors(
+                blocker_path, queue_path
+            )
+
+    def test_valid_reference_and_fixed_point_byte_preservation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            blocker = root / "release_blocker_queue.json"
+            queue = root / "remediation_queue.jsonl"
+            blocker.write_bytes(
+                b'{"identities":[{"queue_ids":["finding:one"]}]}\r\n'
+            )
+            queue.write_bytes(b'{"queue_id":"finding:one"}\r\n')
+            before = {path: path.read_bytes() for path in (blocker, queue)}
+            self.assertEqual(
+                VALIDATOR_MODULE.release_blocker_reference_errors(blocker, queue),
+                [],
+            )
+            self.assertEqual(
+                {path: path.read_bytes() for path in (blocker, queue)}, before
+            )
+
+    def test_correct_stored_digest_does_not_hide_missing_reference(self) -> None:
+        queue_bytes = b'{"queue_id":"other"}\n'
+        blocker = {
+            "remediation_queue_sha256": hashlib.sha256(queue_bytes).hexdigest(),
+            "identities": [{"queue_ids": ["finding:missing"]}],
+        }
+        self.assertEqual(
+            self.validate(blocker, [queue_bytes.decode("utf-8")]),
+            [
+                "release blocker queue_id 'finding:missing' is missing from remediation_queue.jsonl"
+            ],
+        )
+
+    def test_blocker_structure_errors_follow_document_order(self) -> None:
+        self.assertEqual(
+            self.validate([], []),
+            ["release_blocker_queue.json must contain a JSON object"],
+        )
+        self.assertEqual(
+            self.validate({}, []),
+            ["release_blocker_queue.json is missing identities"],
+        )
+        self.assertEqual(
+            self.validate({"identities": {}}, []),
+            ["release_blocker_queue.json identities must be a list"],
+        )
+        blocker = {
+            "identities": [
+                None,
+                {},
+                {"queue_ids": {}},
+                {"queue_ids": ["", "  ", 7, "valid"]},
+            ]
+        }
+        self.assertEqual(
+            self.validate(blocker, [{"queue_id": "valid"}]),
+            [
+                "release_blocker_queue.json identities[0] must be a JSON object",
+                "release_blocker_queue.json identities[1] is missing queue_ids",
+                "release_blocker_queue.json identities[2].queue_ids must be a list",
+                "release_blocker_queue.json identities[3].queue_ids[0] must be a nonempty string",
+                "release_blocker_queue.json identities[3].queue_ids[1] must be a nonempty string",
+                "release_blocker_queue.json identities[3].queue_ids[2] must be a nonempty string",
+            ],
+        )
+
+    def test_jsonl_row_errors_follow_line_order(self) -> None:
+        blocker = {"identities": [{"queue_ids": []}]}
+        self.assertEqual(
+            self.validate(
+                blocker,
+                ["\n", "{\n", "[]\n", "{}\n", '{"queue_id":""}\n', '{"queue_id":"  "}\n', '{"queue_id":3}\n'],
+            ),
+            [
+                "remediation_queue.jsonl line 1 is blank",
+                "remediation_queue.jsonl line 2 is malformed JSON",
+                "remediation_queue.jsonl line 3 must contain a JSON object",
+                "remediation_queue.jsonl line 4 is missing queue_id",
+                "remediation_queue.jsonl line 5 queue_id must be a nonempty string",
+                "remediation_queue.jsonl line 6 queue_id must be a nonempty string",
+                "remediation_queue.jsonl line 7 queue_id must be a nonempty string",
+            ],
+        )
+
+    def test_relevant_duplicates_count_and_unrelated_duplicates_are_ignored(self) -> None:
+        blocker = {"identities": [{"queue_ids": ["wanted"]}]}
+        self.assertEqual(
+            self.validate(
+                blocker,
+                [
+                    {"queue_id": "wanted"},
+                    {"queue_id": "unrelated"},
+                    {"queue_id": "wanted"},
+                    {"queue_id": "unrelated"},
+                ],
+            ),
+            [
+                "release blocker queue_id 'wanted' occurs 2 times in remediation_queue.jsonl"
+            ],
+        )
+
+    def test_multiple_missing_ids_preserve_first_occurrence_order(self) -> None:
+        blocker = {
+            "identities": [
+                {"queue_ids": ["second", "first", "second"]},
+                {"queue_ids": ["third"]},
+            ]
+        }
+        self.assertEqual(
+            self.validate(blocker, []),
+            [
+                "release blocker queue_id 'second' is missing from remediation_queue.jsonl",
+                "release blocker queue_id 'first' is missing from remediation_queue.jsonl",
+                "release blocker queue_id 'third' is missing from remediation_queue.jsonl",
+            ],
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
