@@ -28,6 +28,11 @@ DOCUMENTED_OMISSIONS = {
         "Removed obsolete OnActionAdded call sites; there is no current B42 getMaxTime contract "
         "and no stable action receiver at OnGameStart."
     ),
+    "chr.isAlwaysKnockedDown": (
+        "Removed obsolete pcall-based zombie discriminator because probing non-zombie objects "
+        "logged Java RuntimeExceptions; current code uses instanceof(chr, 'IsoZombie'), and "
+        "there is no stable IsoZombie receiver at OnGameStart."
+    ),
 }
 SETUP_CALLS = (
     ("getPlayer", "    local player = getPlayer()"),

@@ -32,6 +32,43 @@ def inventory():
 
 
 class GeneratorTests(unittest.TestCase):
+    def test_chr_is_always_knocked_down_is_exactly_omitted_and_generation_is_fixed_point(self):
+        zombie_inventory = {
+            "unique_surfaces": [{
+                "receiver": "chr", "method": "isAlwaysKnockedDown",
+                "verification_kind": "method_call", "status": "SKIP",
+            }],
+            "call_sites": [{
+                "receiver": "chr", "method": "isAlwaysKnockedDown", "arg_count": 0,
+                "relative_file": "UTCore_ZombieCollisionHook.lua", "status": "SKIP",
+            }],
+        }
+        omission_reason = (
+            "Removed obsolete pcall-based zombie discriminator because probing non-zombie objects "
+            "logged Java RuntimeExceptions; current code uses instanceof(chr, 'IsoZombie'), and "
+            "there is no stable IsoZombie receiver at OnGameStart."
+        )
+        with mock.patch.dict(generator.DOCUMENTED_OMISSIONS, {}, clear=True):
+            with self.assertRaisesRegex(ValueError, "chr.isAlwaysKnockedDown"):
+                generator.build_plan(zombie_inventory, {})
+
+        emitted, omitted = generator.build_plan(zombie_inventory, {})
+        self.assertEqual(emitted, [])
+        self.assertEqual(omitted, {"chr.isAlwaysKnockedDown": omission_reason})
+
+        with tempfile.TemporaryDirectory() as temp:
+            inventory_path = Path(temp) / "inventory.json"
+            inventory_path.write_text(json.dumps(zombie_inventory), encoding="utf-8")
+            first_source, first_report = generator.generate(inventory_path, None)
+            second_source, second_report = generator.generate(inventory_path, None)
+        self.assertEqual((first_source, first_report), (second_source, second_report))
+        self.assertEqual(first_report["omitted"], {"chr.isAlwaysKnockedDown": omission_reason})
+        self.assertNotIn("isAlwaysKnockedDown", first_source)
+        self.assertNotIn("mark('chr.isAlwaysKnockedDown')", first_source)
+        self.assertNotIn("chr.isAlwaysKnockedDown", first_report["surfaces"])
+        with self.assertRaisesRegex(ValueError, "allowlist contains ineligible surfaces: unused.getValue"):
+            generator.build_plan(zombie_inventory, {"unused.getValue": "must remain rejected"})
+
     def test_action_get_max_time_is_exactly_omitted_without_receiver_emission(self):
         action_inventory = {
             "unique_surfaces": [{
