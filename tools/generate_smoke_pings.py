@@ -22,6 +22,12 @@ RECEIVER_EXPRESSIONS = {
 }
 RECEIVER_SURFACES = {"ENDURANCE": "CharacterStat"}
 GLOBAL_RECEIVERS = {"ISEatFoodAction", "ISDrinkFluidAction", "ISFitnessAction"}
+DOCUMENTED_OMISSIONS = {
+    "action.getMaxTime": (
+        "Removed obsolete OnActionAdded call sites; there is no current B42 getMaxTime contract "
+        "and no stable action receiver at OnGameStart."
+    ),
+}
 SETUP_CALLS = (
     ("getPlayer", "    local player = getPlayer()"),
     ("player.getStats", "    local _stats = player:getStats()"),
@@ -80,7 +86,9 @@ def build_plan(inventory, allowlist):
     emitted, omitted = set(), {}
     for receiver, method in sorted(eligible):
         key = f"{receiver}.{method}"
-        if key in allowlist:
+        if key in DOCUMENTED_OMISSIONS:
+            omitted[key] = DOCUMENTED_OMISSIONS[key]
+        elif key in allowlist:
             omitted[key] = allowlist[key]
         elif receiver in RECEIVER_EXPRESSIONS or receiver in GLOBAL_RECEIVERS:
             emitted.add((receiver, method))

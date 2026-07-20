@@ -32,6 +32,35 @@ def inventory():
 
 
 class GeneratorTests(unittest.TestCase):
+    def test_action_get_max_time_is_exactly_omitted_without_receiver_emission(self):
+        action_inventory = {
+            "unique_surfaces": [{
+                "receiver": "action", "method": "getMaxTime",
+                "verification_kind": "method_call", "status": "SKIP",
+            }],
+            "call_sites": [
+                {"receiver": "action", "method": "getMaxTime", "arg_count": 0,
+                 "relative_file": "first.lua", "status": "SKIP"},
+                {"receiver": "action", "method": "getMaxTime", "arg_count": 0,
+                 "relative_file": "second.lua", "status": "SKIP"},
+            ],
+        }
+        with mock.patch.dict(generator.DOCUMENTED_OMISSIONS, {}, clear=True):
+            with self.assertRaisesRegex(ValueError, "action.getMaxTime"):
+                generator.build_plan(action_inventory, {})
+
+        with tempfile.TemporaryDirectory() as temp:
+            source_path = Path(temp) / "inventory.json"
+            source_path.write_text(json.dumps(action_inventory), encoding="utf-8")
+            source, report = generator.generate(source_path, None)
+        self.assertEqual(report["omitted"], {
+            "action.getMaxTime": generator.DOCUMENTED_OMISSIONS["action.getMaxTime"],
+        })
+        self.assertNotIn("action:getMaxTime", source)
+        self.assertNotIn("mark('action.getMaxTime')", source)
+        with self.assertRaisesRegex(ValueError, "allowlist contains ineligible surfaces: unused.getValue"):
+            generator.build_plan(action_inventory, {"unused.getValue": "must remain rejected"})
+
     def test_character_stat_endurance_renders_verified_maximum_value_ping(self):
         verifier_inventory = {"unique_surfaces": [{
             "surface_name": "CharacterStat", "receiver": "ENDURANCE", "method": "getMaximumValue",
