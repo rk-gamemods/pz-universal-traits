@@ -329,6 +329,67 @@ test("applyBleedRate stores multiplier in moddata", function()
     assert_eq(p:getModData()["UT_bleedMult"], 1.5)
 end)
 
+local function makeBleedDrainEventPlayer(multiplier)
+    local calls = {}
+    local bodyDamage = {
+        AddGeneralHealth = function(_, amount)
+            calls[#calls + 1] = { method = "AddGeneralHealth", amount = amount }
+        end,
+        ReduceGeneralHealth = function(_, amount)
+            calls[#calls + 1] = { method = "ReduceGeneralHealth", amount = amount }
+        end,
+    }
+    local player = {
+        getModData = function()
+            return { UT_bleedDrainMult = multiplier }
+        end,
+        getBodyDamage = function()
+            return bodyDamage
+        end,
+    }
+    return player, calls
+end
+
+test("OnPlayerGetDamage applies exact finite bleed-drain adjustments", function()
+    local cases = {
+        { multiplier = 0.5, method = "AddGeneralHealth", amount = 5.0 },
+        { multiplier = 2.0, method = "ReduceGeneralHealth", amount = 10.0 },
+    }
+
+    for _, case in ipairs(cases) do
+        local player, calls = makeBleedDrainEventPlayer(case.multiplier)
+        local ok, err = pcall(Events.OnPlayerGetDamage.fire, player, "BLEEDING", 10.0)
+        assert_eq(ok, true, "finite event call must not error: " .. tostring(err))
+        assert_eq(#calls, 1, "finite multiplier must make exactly one health adjustment")
+        assert_eq(calls[1].method, case.method)
+        assert_eq(calls[1].amount, case.amount)
+    end
+end)
+
+test("OnPlayerGetDamage rejects non-finite damage and invalid multipliers", function()
+    local nan = 0 / 0
+    local cases = {
+        { name = "nonnumber damage", damage = "10", multiplier = 0.5 },
+        { name = "NaN damage", damage = nan, multiplier = 0.5 },
+        { name = "positive infinite damage", damage = math.huge, multiplier = 0.5 },
+        { name = "negative infinite damage", damage = -math.huge, multiplier = 0.5 },
+        { name = "nonnumber multiplier", damage = 10.0, multiplier = "0.5" },
+        { name = "NaN multiplier", damage = 10.0, multiplier = nan },
+        { name = "positive infinite multiplier", damage = 10.0, multiplier = math.huge },
+        { name = "negative infinite multiplier", damage = 10.0, multiplier = -math.huge },
+        { name = "negative multiplier", damage = 10.0, multiplier = -0.5 },
+        { name = "identity multiplier", damage = 10.0, multiplier = 1.0 },
+        { name = "overflow-produced infinite adjustment", damage = 1e308, multiplier = 1e308 },
+    }
+
+    for _, case in ipairs(cases) do
+        local player, calls = makeBleedDrainEventPlayer(case.multiplier)
+        local ok, err = pcall(Events.OnPlayerGetDamage.fire, player, "BLEEDING", case.damage)
+        assert_eq(ok, true, case.name .. " must not error: " .. tostring(err))
+        assert_eq(#calls, 0, case.name .. " must not call a health adjustment")
+    end
+end)
+
 -- applyXPMultiplier
 test("applyXPMultiplier stores in moddata", function()
     local p = MockPlayer()
