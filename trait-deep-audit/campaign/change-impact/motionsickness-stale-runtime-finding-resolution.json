@@ -1,0 +1,36 @@
+{
+  "schema": "ut-motionsickness-stale-runtime-finding-resolution-v1",
+  "trait_id": "UniversalTraits:UT_motionsickness",
+  "closed_finding_id": "IR0508-OM-012",
+  "preserved_finding_id": "UT6-MOTION-DESC",
+  "resolution": {
+    "state": "closed-stale-finding",
+    "reason": "The reviewed invalid GameTime.getTicks call is absent from current source and release runtime.",
+    "current_contract": "central tick dispatcher; vehicleAware=true; throttle=60; +0.01 STRESS while in a vehicle; cap 1",
+    "semantic_change": "none"
+  },
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_motionsickness.lua",
+      "sha256": "BFA89F7D19BA1521949B6982C3C88626E03AA9CDE7FD5DC81188B0CAC6263B2D",
+      "bytes": 541
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_motionsickness.lua",
+      "sha256": "BFA89F7D19BA1521949B6982C3C88626E03AA9CDE7FD5DC81188B0CAC6263B2D",
+      "bytes": 541
+    }
+  ],
+  "preserved_uncertainty": {
+    "description_display_localization": "UT6-MOTION-DESC",
+    "runtime_unproven_dimensions": [
+      "java_lua",
+      "kahlua",
+      "reset_save_load"
+    ],
+    "in_game_proof": "not claimed; current Build 42 execution after full exit/relaunch and save/load remains unobserved"
+  },
+  "explicit_non_goals": {
+    "multiplayer": "UTMods is single-player-only; multiplayer support, synchronization, migration, proof, tests, and documentation are out of scope"
+  }
+}

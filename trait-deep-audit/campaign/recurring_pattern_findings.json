@@ -13,31 +13,12 @@
     "source_release_media_parity": true
   },
   "summary": {
-    "findings": 2,
+    "findings": 1,
     "unknown_event_names": 0,
     "literal_percent_keys": 1,
-    "source_release_drift_files": 1
+    "source_release_drift_files": 0
   },
   "findings": [
-    {
-      "id": "RP-PACKAGE-PARITY-UniversalTraits",
-      "state": "confirmed-defect",
-      "severity": "high",
-      "confidence": "high",
-      "title": "UniversalTraits source and 42.0 release media trees differ",
-      "anchors": [
-        "UTMods/UniversalTraits/media",
-        "UTMods/UniversalTraits/release/UniversalTraits/42.0/media"
-      ],
-      "affected_surfaces": [
-        "packaging",
-        "release-parity"
-      ],
-      "reproduction_evidence": "content_mismatch=['lua/shared/UniversalTraits/UT_SmokePings.lua']",
-      "missing_proof": "",
-      "recommended_correction": "Regenerate the release tree only through the authorized deployment workflow after product fixes and passing tests.",
-      "smallest_regression_test": "Hash every relative source/release media file and require empty missing, extra, and content-mismatch sets."
-    },
     {
       "id": "RP-TRANSLATION-LITERAL-PERCENT",
       "state": "confirmed-defect",
@@ -67,9 +48,7 @@
     "UniversalTraits": {
       "missing_in_release": [],
       "extra_in_release": [],
-      "content_mismatch": [
-        "lua/shared/UniversalTraits/UT_SmokePings.lua"
-      ]
+      "content_mismatch": []
     }
   }
 }

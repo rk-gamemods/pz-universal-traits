@@ -2260,7 +2260,7 @@
       "trait_id": "UniversalTraits:UT_motionsickness",
       "source_batch": "batch_06",
       "original_state": "confirmed-defect",
-      "review_state": "needs-correction",
+      "review_state": "accepted",
       "checked_dimensions": [
         "membership_registration_definition_ui",
         "runtime_and_exact_shared_dependencies",
@@ -2284,8 +2284,9 @@
       "rejected_finding_ids": [],
       "cross_trait_finding_ids": [],
       "unresolved_proof": [
-        "No Build 42 game/Kahlua, multiplayer, save-load, profiler/balance, rendered UI, or non-EN locale evidence.",
-        "Existing audit records were treated only as leads, not proof."
+        "Current Build 42 in-game/Kahlua and save/load execution remain unobserved.",
+        "Rendered UI, non-EN locale behavior, and balance/profiler evidence remain unobserved.",
+        "Multiplayer is an explicit non-goal under the controlling single-player-only UTMods scope."
       ],
       "evidence_anchors": [
         "source_inventory.json",
@@ -2297,14 +2298,14 @@
         "UniversalTraits/release/UniversalTraits/42.0/media"
       ],
       "release_parity": {
-        "source_runtime_sha256": "98D82E6C0832EF2713DF033FFDD5C27B97A0756269CBE1F87311EB7A879018CA",
-        "release_runtime_sha256": "98D82E6C0832EF2713DF033FFDD5C27B97A0756269CBE1F87311EB7A879018CA",
+        "source_runtime_sha256": "BFA89F7D19BA1521949B6982C3C88626E03AA9CDE7FD5DC81188B0CAC6263B2D",
+        "release_runtime_sha256": "BFA89F7D19BA1521949B6982C3C88626E03AA9CDE7FD5DC81188B0CAC6263B2D",
         "state": "proven-correct"
       },
       "omissions": [
         {
           "id": "IR0508-OM-012",
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "severity": "critical",
           "confidence": "high",
           "premise": "The handler calls getGameTime():getTicks(), but current PZCodebase GameTime exposes no getTicks; the standard-Lua mock invents the API.",
@@ -2320,12 +2321,18 @@
             "central event dispatch"
           ],
           "reproduction_evidence": "Live JCodeMunch exact symbol/text review found getTicks only on unrelated DrainableComboItem, not GameTime; the call is unguarded.",
-          "missing_proof": "No game launch was authorized; failure is derived from current Java exposure.",
-          "recommended_correction": "Use dispatch tick.tickCount or another current clock and remove the invented mock method.",
-          "smallest_regression_test": "Test with an engine-faithful GameTime mock lacking getTicks, assert cadence from tickCount, then run one in-vehicle smoke check.",
-          "title": "Motion Sickness calls a nonexistent GameTime method"
+          "missing_proof": "Current Build 42 in-game/Kahlua and save/load execution remain unobserved.",
+          "recommended_correction": "No runtime correction in this reconciliation; retain current dispatcher-backed implementation.",
+          "smallest_regression_test": "Keep the existing dispatcher-backed Motion Sickness standard-Lua coverage and run current-game proof separately.",
+          "title": "Motion Sickness calls a nonexistent GameTime method",
+          "resolution_state": "closed-stale-finding",
+          "resolution_evidence": "Current source and release no longer call GameTime.getTicks; both use the central tick dispatcher with vehicleAware=true and throttle=60. The prior invalid-runtime-api premise is stale."
         }
-      ]
+      ],
+      "explicit_non_goals": {
+        "multiplayer": "support, synchronization, migration, proof, tests, and documentation are out of scope"
+      },
+      "resolution_record": "change-impact/motionsickness-stale-runtime-finding-resolution.json"
     },
     {
       "trait_id": "UniversalTraits:UT_mstoptimist",

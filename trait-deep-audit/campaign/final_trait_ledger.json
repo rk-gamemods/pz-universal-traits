@@ -46,7 +46,7 @@
   },
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "4F7338C65D9EC8C15B9D3E749A9A82ADB60F09D968265F4E0A09E65660E93326",
-    "independent_reviews/traits_05_08.json": "3D1FDF7BFAAB333BF376641982344867344FBB703E86C5AE59D63FB67D9C0D4A",
+    "independent_reviews/traits_05_08.json": "B2340C7354B55AB63A4A36D7E253161193FB55748306A66D6428DC18C05D902F",
     "independent_reviews/traits_09_12.json": "27A52A4BB934EDCCD324FC013C7CC1885085D91F474C3E0BEED192C5018C7805",
     "source_inventory.json": "47781D8C6AE00795C0DD5CFF8F89E295F49826BB57B64DC9DCD6DE6A767941C9",
     "trait_batches/batch_01.jsonl": "4FA9A60E8D86362B22C33D2BD2DC334565EB564071514576AAD0E90F7FF4BB81",
@@ -54,7 +54,7 @@
     "trait_batches/batch_03.jsonl": "33481D2A1F6227C331C16BA8B5CCB006099D07A15649099B8EC0627887679337",
     "trait_batches/batch_04.jsonl": "2A7857094C09D1CAD329C8DC2BDA2B96DE56FD6A6AF0866F323D7D6B3C377217",
     "trait_batches/batch_05.jsonl": "2146BF05002A28EC9D01FD93F1DE4E0532F4769896EF382652E6A02167F3CF6A",
-    "trait_batches/batch_06.jsonl": "741A6D18C586BAD9E97B83FFDED5B287C7770ADCAC47C0D0E796F9D6B19A909E",
+    "trait_batches/batch_06.jsonl": "B9CE9F693D06BD0D4D7F4510410496BB334F0D8BEA9C2DDD79236617CA3C9E6F",
     "trait_batches/batch_07.jsonl": "6BFC2D4966C29749BFF856067ABD0EB3B3F3E6E53E37E72A4A4FE271BE9E892C",
     "trait_batches/batch_08.jsonl": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A",
     "trait_batches/batch_09.jsonl": "FFB64ADB79BEDD95F4F340F169A2BEB7A1158BF4C1E1602538AC75BA65F7D759",
@@ -70,10 +70,10 @@
     "independent_reviewed_traits": 198,
     "independent_review_findings": 118,
     "independent_review_states": {
-      "accepted": 71,
+      "accepted": 72,
       "confirmed-defect": 38,
       "coverage-gap": 20,
-      "needs-correction": 63,
+      "needs-correction": 62,
       "runtime-unproven": 6
     },
     "overall_states": {
@@ -1153,7 +1153,7 @@
     },
     {
       "id": "IR0508-OM-012",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "critical",
       "confidence": "high",
       "title": "Motion Sickness calls a nonexistent GameTime method",
@@ -1169,9 +1169,9 @@
         "central event dispatch"
       ],
       "reproduction_evidence": "Live JCodeMunch exact symbol/text review found getTicks only on unrelated DrainableComboItem, not GameTime; the call is unguarded.",
-      "missing_proof": "No game launch was authorized; failure is derived from current Java exposure.",
-      "recommended_correction": "Use dispatch tick.tickCount or another current clock and remove the invented mock method.",
-      "smallest_regression_test": "Test with an engine-faithful GameTime mock lacking getTicks, assert cadence from tickCount, then run one in-vehicle smoke check."
+      "missing_proof": "Current Build 42 in-game/Kahlua and save/load execution remain unobserved.",
+      "recommended_correction": "No runtime correction in this reconciliation; retain current dispatcher-backed implementation.",
+      "smallest_regression_test": "Keep the existing dispatcher-backed Motion Sickness standard-Lua coverage and run current-game proof separately."
     },
     {
       "id": "IR0508-OM-013",
@@ -31939,7 +31939,7 @@
         "runtime_path": {
           "state": "proven-correct",
           "evidence": [
-            "Cost -4; vehophobic exclusion; vehicle stress +.01 after 60 game ticks; registration, definition, EN, tests, and assigned release evidence inspected."
+            "Current source and release register the central tick handler with vehicleAware=true and throttle=60; the handler adds exactly 0.01 STRESS while tick.vehicle is non-nil and caps at 1."
           ],
           "missing_proof": [
             "none"
@@ -31963,7 +31963,7 @@
         "cadence": {
           "state": "proven-correct",
           "evidence": [
-            "Cost -4; vehophobic exclusion; vehicle stress +.01 after 60 game ticks; registration, definition, EN, tests, and assigned release evidence inspected."
+            "Current source and release register the central tick handler with vehicleAware=true and throttle=60; the handler adds exactly 0.01 STRESS while tick.vehicle is non-nil and caps at 1."
           ],
           "missing_proof": [
             "none"
@@ -31985,12 +31985,12 @@
           ]
         },
         "reset_save_load": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "Cost -4; vehophobic exclusion; vehicle stress +.01 after 60 game ticks; registration, definition, EN, tests, and assigned release evidence inspected."
+            "Static source and standard-Lua tests support the dispatcher-backed path without establishing current-game execution."
           ],
           "missing_proof": [
-            "none"
+            "Current Build 42 in-game execution after a full exit/relaunch and save/load remains unobserved."
           ],
           "source_dimensions": [
             "reset_save_load"
@@ -31999,10 +31999,10 @@
         "java_lua": {
           "state": "runtime-unproven",
           "evidence": [
-            "Cost -4; vehophobic exclusion; vehicle stress +.01 after 60 game ticks; registration, definition, EN, tests, and assigned release evidence inspected."
+            "Static source and standard-Lua tests support the dispatcher-backed path without establishing current-game execution."
           ],
           "missing_proof": [
-            "Build 42 in-game/Kahlua evidence; multiplayer disabled and unrun"
+            "Current Build 42 in-game execution after a full exit/relaunch and save/load remains unobserved."
           ],
           "source_dimensions": [
             "java_lua"
@@ -32011,10 +32011,10 @@
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "Cost -4; vehophobic exclusion; vehicle stress +.01 after 60 game ticks; registration, definition, EN, tests, and assigned release evidence inspected."
+            "Static source and standard-Lua tests support the dispatcher-backed path without establishing current-game execution."
           ],
           "missing_proof": [
-            "Build 42 in-game/Kahlua evidence; multiplayer disabled and unrun"
+            "Current Build 42 in-game execution after a full exit/relaunch and save/load remains unobserved."
           ],
           "source_dimensions": [
             "kahlua"
@@ -32023,7 +32023,7 @@
         "events": {
           "state": "proven-correct",
           "evidence": [
-            "Cost -4; vehophobic exclusion; vehicle stress +.01 after 60 game ticks; registration, definition, EN, tests, and assigned release evidence inspected."
+            "Current source and release register the central tick handler with vehicleAware=true and throttle=60; the handler adds exactly 0.01 STRESS while tick.vehicle is non-nil and caps at 1."
           ],
           "missing_proof": [
             "none"
@@ -32045,12 +32045,12 @@
           ]
         },
         "multiplayer": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Cost -4; vehophobic exclusion; vehicle stress +.01 after 60 game ticks; registration, definition, EN, tests, and assigned release evidence inspected."
+            "Explicit non-goal: UTMods is single-player-only and the trait definition is disabled in multiplayer."
           ],
           "missing_proof": [
-            "Build 42 in-game/Kahlua evidence; multiplayer disabled and unrun"
+            "none"
           ],
           "source_dimensions": [
             "multiplayer"
@@ -32119,7 +32119,7 @@
         "tests": {
           "state": "proven-correct",
           "evidence": [
-            "Cost -4; vehophobic exclusion; vehicle stress +.01 after 60 game ticks; registration, definition, EN, tests, and assigned release evidence inspected."
+            "The current standard-Lua suite covers the dispatcher-backed Motion Sickness path; this is mock evidence only."
           ],
           "missing_proof": [
             "none"
@@ -32131,7 +32131,7 @@
         "mocks": {
           "state": "proven-correct",
           "evidence": [
-            "Cost -4; vehophobic exclusion; vehicle stress +.01 after 60 game ticks; registration, definition, EN, tests, and assigned release evidence inspected."
+            "The current standard-Lua suite covers the dispatcher-backed Motion Sickness path; this is mock evidence only."
           ],
           "missing_proof": [
             "none"
@@ -32169,13 +32169,14 @@
         "UT6-MOTION-DESC"
       ],
       "unknowns": [
-        "No Build 42 game/Kahlua, multiplayer, save-load, profiler/balance, rendered UI, or non-EN locale evidence.",
-        "Existing audit records were treated only as leads, not proof."
+        "Current Build 42 in-game/Kahlua and save/load execution remain unobserved.",
+        "Rendered UI, non-EN locale behavior, and balance/profiler evidence remain unobserved.",
+        "Multiplayer support, synchronization, migration, proof, and tests are explicit non-goals under the controlling UTMods scope."
       ],
       "translation_terminal_state": "coverage-gap",
       "independent_review": {
         "artifact": "independent_reviews/traits_05_08.json",
-        "review_state": "needs-correction",
+        "review_state": "accepted",
         "omission_finding_ids": [
           "IR0508-OM-012"
         ],
@@ -32185,8 +32186,9 @@
         ],
         "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [
-          "No Build 42 game/Kahlua, multiplayer, save-load, profiler/balance, rendered UI, or non-EN locale evidence.",
-          "Existing audit records were treated only as leads, not proof."
+          "Current Build 42 in-game/Kahlua and save/load execution remain unobserved.",
+          "Rendered UI, non-EN locale behavior, and balance/profiler evidence remain unobserved.",
+          "Multiplayer is an explicit non-goal under the controlling single-player-only UTMods scope."
         ]
       }
     },

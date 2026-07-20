@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "remediation_queue_sha256": "d359362d4533a40feb7713fc449ba1a365daa9f9d26e88264a42b07939542bac",
+  "remediation_queue_sha256": "0f1406867a02f061c6ebca0b7d33688f31eaacf6e89797c7b49e7f1e2b91415a",
   "category_label": "release-blocker",
   "classification_scope_statement": "Only the queue rows listed by these reviewed semantic identities are classified as release-blocker; all other rows remain unclassified in the exhaustive ledger.",
   "identities": [
@@ -14,17 +14,6 @@
       ],
       "dependencies": [],
       "evidence_scope": "Unwavering translation text contains a character rejected by the Translator load guard."
-    },
-    {
-      "semantic_identity": "trait:UT_motionsickness",
-      "identity_kind": "trait",
-      "status": "open",
-      "priority_reason_code": "invalid-runtime-api",
-      "queue_ids": [
-        "finding:IR0508-OM-012"
-      ],
-      "dependencies": [],
-      "evidence_scope": "Motion Sickness calls a nonexistent GameTime method on its runtime path."
     },
     {
       "semantic_identity": "trait:UT_immuneresponse",
@@ -152,12 +141,10 @@
       "status": "open",
       "priority_reason_code": "release-tree-reconciliation",
       "queue_ids": [
-        "finding:RP-PACKAGE-PARITY-UniversalTraits",
         "finding:XTF0104-SOURCE-RELEASE-DRIFT"
       ],
       "dependencies": [
         "translator-load:Unwavering",
-        "trait:UT_motionsickness",
         "trait:UT_scrounger-runtime",
         "trait:UT_superimmune",
         "trait:UT_immuneresponse",
