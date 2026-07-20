@@ -216,6 +216,43 @@ def test_parser_handles_multiline_strings_and_comments(tmp_path, text):
     assert calls[0].arg_count >= 0
 
 
+def test_forage_categories_is_empty_is_one_hash_set_surface(tmp_path, monkeypatch):
+    relative_path = Path(
+        "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua"
+    )
+    path = tmp_path / relative_path
+    path.parent.mkdir(parents=True)
+    path.write_text(
+        "local function isWildPlantItem(item)\n"
+        "    -- cats:isEmpty() is documentation, not a call\n"
+        "    local example = 'cats:isEmpty()'\n"
+        "    local ok, cats = pcall(function() return item:getScriptItem():getForageFocusCategories() end)\n"
+        "    return ok and cats ~= nil and not cats:isEmpty()\n"
+        "end\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(verifier, "UTMODS_ROOT", tmp_path)
+    calls = [call for call in verifier.extract_mod_calls(path)
+             if call.receiver == "cats" and call.method == "isEmpty"]
+    results = [verifier.verify_call(call, {}, {}) for call in calls]
+    entries = [verifier.build_inventory_entry(result) for result in results]
+    inventory_result = verifier.build_inventory(results, META_BASE)
+    assert len(calls) == 1
+
+    assert results[0].status == "OK"
+    assert entries[0]["surface_name"] == "HashSet"
+    assert inventory_result["unique_surfaces"] == [{
+        "surface_name": "HashSet",
+        "receiver": "cats",
+        "method": "isEmpty",
+        "verification_kind": "method_call",
+        "statuses": ["OK"],
+        "owners": ["runtime_support:UT_ItemConsumptionHooks"],
+        "files": [relative_path.as_posix()],
+        "occurrence_count": 1,
+    }]
+
+
 def test_unknown_parser_syntax_blocks(tmp_path):
     path = tmp_path / "fixture.lua"
     path.write_text("player:getStats([=[unterminated)", encoding="utf-8")

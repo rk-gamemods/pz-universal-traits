@@ -195,7 +195,7 @@ RECEIVER_MAP = {
     "action":      ["__skip"],
     "actionName":  ["__skip"],
     "actionType":  ["__skip"],
-    "cats":        ["__skip"],
+    "cats":        ["__java_hash_set"],
     "trait":       ["__skip"],   # trait definition
     "traitDefinition": ["__skip"],
     "CharacterCreationProfession": ["__skip"],
@@ -600,6 +600,21 @@ def verify_call(
                 call=call,
                 detail=f"Unknown Java list method '{method}'",
             )
+
+    if class_candidates == ["__java_hash_set"]:
+        if method == "isEmpty" and call.arg_count == 0:
+            return VerifyResult(
+                status="OK",
+                call=call,
+                matched_class="HashSet",
+                matched_method=method,
+                detail="Java HashSet method",
+            )
+        return VerifyResult(
+            status="WARN",
+            call=call,
+            detail=f"Unknown Java HashSet method '{method}'",
+        )
 
     matches = []
     arity_mismatches = []

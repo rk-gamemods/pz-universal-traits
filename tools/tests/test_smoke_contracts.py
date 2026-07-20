@@ -75,6 +75,26 @@ class GeneratorTests(unittest.TestCase):
         self.assertIn("local _ = CharacterStat.ENDURANCE:getMaximumValue()", source)
         self.assertIn("mark('CharacterStat.getMaximumValue')", source)
 
+    def test_hash_set_is_empty_renders_canonical_forage_categories_ping_once(self):
+        verifier_inventory = {"unique_surfaces": [{
+            "surface_name": "HashSet", "receiver": "cats", "method": "isEmpty",
+            "verification_kind": "method_call", "occurrence_count": 1,
+        }], "call_sites": [{
+            "surface_name": "HashSet", "receiver": "cats", "method": "isEmpty",
+            "arg_count": 0, "relative_file":
+            "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+        }]}
+        emitted, omitted = generator.build_plan(verifier_inventory, {})
+        source = generator.generate_lua(emitted)
+
+        self.assertEqual(emitted, [("cats", "isEmpty")])
+        self.assertEqual(omitted, {})
+        self.assertEqual(source.count(
+            'local _ = ScriptManager.instance:getItem("Base.BerryGeneric1"):'
+            'getForageFocusCategories():isEmpty()'), 1)
+        self.assertEqual(source.count("mark('HashSet.isEmpty')"), 1)
+        self.assertNotIn("mark('cats.isEmpty')", source)
+
     def test_runtime_identity_is_not_in_canonical_bytes(self):
         emitted, _ = generator.build_plan(inventory(), {})
         source = generator.generate_lua(emitted)

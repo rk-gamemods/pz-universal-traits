@@ -14,13 +14,14 @@ DEFAULT_OUTPUT = ROOT / "UniversalTraits/media/lua/shared/UniversalTraits/UT_Smo
 SAFE_METHOD_PREFIXES = ("get", "is", "has", "num", "size")
 RECEIVER_EXPRESSIONS = {
     "ENDURANCE": "CharacterStat.ENDURANCE",
+    "cats": 'ScriptManager.instance:getItem("Base.BerryGeneric1"):getForageFocusCategories()',
     "player": "player", "character": "player", "attacker": "player", "target": "player",
     "stats": "_stats", "bodyDamage": "_bd", "bd": "_bd", "nutrition": "_nutrition",
     "inv": "_inv", "inventory": "_inv", "container": "_inv", "pack": "_inv",
     "wornItems": "_wornItems", "square": "_square", "sq": "_square",
     "cm": "_cm", "gt": "_gt", "spottedList": "_parts",
 }
-RECEIVER_SURFACES = {"ENDURANCE": "CharacterStat"}
+RECEIVER_SURFACES = {"ENDURANCE": "CharacterStat", "cats": "HashSet"}
 GLOBAL_RECEIVERS = {"ISEatFoodAction", "ISDrinkFluidAction", "ISFitnessAction"}
 DOCUMENTED_OMISSIONS = {
     "action.getMaxTime": (
