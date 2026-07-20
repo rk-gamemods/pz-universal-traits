@@ -86,6 +86,10 @@ def _lstat(path: Path, *, missing_ok: bool = False) -> os.stat_result | None:
     return value
 
 
+def _stable_stat_snapshot(st: os.stat_result) -> tuple[int, int, int, int, int]:
+    return (st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns, st.st_ctime_ns)
+
+
 def _require_directory(path: Path, *, label: str) -> None:
     absolute = Path(os.path.abspath(path))
     chain = list(reversed(absolute.parents)) + [absolute]
@@ -501,7 +505,7 @@ class _StageWriter:
         except OSError as error:
             raise DeployError("file-read", "unable to read copy source", path=str(source), os_error=str(error)) from error
         after = _lstat(source)
-        if before != after:
+        if _stable_stat_snapshot(before) != _stable_stat_snapshot(after):
             raise DeployError("file-race", "source changed while it was copied", path=str(source))
         file_handle: int | None = None
         try:
@@ -570,7 +574,7 @@ def sha256(path: Path) -> str:
     except OSError as error:
         raise DeployError("file-read", "unable to read file", path=str(path), os_error=str(error)) from error
     after = _lstat(path)
-    if before != after:
+    if _stable_stat_snapshot(before) != _stable_stat_snapshot(after):
         raise DeployError("file-race", "file changed while it was being hashed", path=str(path))
     return digest.hexdigest()
 
@@ -581,7 +585,7 @@ def entry(path: Path) -> Entry:
         raise DeployError("not-file", "manifest entry must be a regular file", path=str(path))
     digest = sha256(path)
     after = _lstat(path)
-    if before != after:
+    if _stable_stat_snapshot(before) != _stable_stat_snapshot(after):
         raise DeployError("file-race", "file changed while its manifest entry was built", path=str(path))
     return Entry(after.st_size, digest)
 

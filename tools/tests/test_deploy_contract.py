@@ -28,6 +28,7 @@ class DeployContractTests(unittest.TestCase):
             (mod / "mod.info").write_text("versionMin=42.0\n", encoding="utf-8")
             (mod / "poster.png").write_bytes(b"png")
             release = mod / "release" / name
+            release.parent.mkdir()
             expected, _ = deploy.source_manifest(mod)
             deploy.copy_source_package(mod, release)
             self.assertEqual([], deploy.compare(expected, deploy.directory_manifest(release)))
@@ -377,23 +378,76 @@ class DeployContractTests(unittest.TestCase):
         self.assertEqual(deploy.EXIT_DRIFT, code)
         self.assertEqual("file-read", report["error"]["kind"])
 
-    def test_hash_race_is_structured(self) -> None:
+    def test_file_read_race_checks_ignore_atime_but_detect_stable_identity_changes(self) -> None:
         path = self.source / deploy.MODS[0] / "poster.png"
         real_lstat = deploy._lstat
+        original = real_lstat(path)
+        self.assertIsNotNone(original)
+
+        def snapshot(**changes: int) -> mock.Mock:
+            values = {
+                "st_mode": original.st_mode,
+                "st_dev": original.st_dev,
+                "st_ino": original.st_ino,
+                "st_size": original.st_size,
+                "st_atime_ns": original.st_atime_ns,
+                "st_mtime_ns": original.st_mtime_ns,
+                "st_ctime_ns": original.st_ctime_ns,
+            }
+            values.update(changes)
+            return mock.Mock(**values)
+
+        def run_reader(reader: str, after: mock.Mock) -> None:
+            calls = 0
+
+            def changing_lstat(candidate: Path, **kwargs: object) -> os.stat_result | mock.Mock | None:
+                nonlocal calls
+                if candidate == path:
+                    calls += 1
+                    return snapshot() if calls == 1 else after
+                return real_lstat(candidate, **kwargs)
+
+            with mock.patch.object(deploy, "_lstat", side_effect=changing_lstat):
+                if reader == "copy":
+                    stage = self.root / f"stage-race-{after.st_dev}-{after.st_ino}-{after.st_size}-{after.st_mtime_ns}-{after.st_ctime_ns}"
+                    writer = deploy._StageWriter(stage)
+                    try:
+                        writer.copy(path, Path("poster.png"))
+                    finally:
+                        writer.close()
+                elif reader == "sha256":
+                    deploy.sha256(path)
+                else:
+                    deploy.entry(path)
+
+        atime_only = snapshot(st_atime_ns=original.st_atime_ns + 1)
+        failures = {
+            "content mutation": snapshot(st_mtime_ns=original.st_mtime_ns + 1, st_ctime_ns=original.st_ctime_ns + 1),
+            "size change": snapshot(st_size=original.st_size + 1),
+            "same-size replacement": snapshot(st_dev=original.st_dev + 1, st_ino=original.st_ino + 1),
+        }
+        for reader in ("copy", "sha256", "entry"):
+            with self.subTest(reader=reader, change="atime only"):
+                run_reader(reader, atime_only)
+            for change, changed in failures.items():
+                with self.subTest(reader=reader, change=change):
+                    with self.assertRaises(deploy.DeployError) as raised:
+                        run_reader(reader, changed)
+                    self.assertEqual("file-race", raised.exception.kind)
+
+    def test_hash_race_is_structured(self) -> None:
+        real_snapshot = deploy._stable_stat_snapshot
         calls = 0
 
-        def changed(candidate: Path, **kwargs: object) -> os.stat_result | None:
+        def changed(value: os.stat_result) -> tuple[int, int, int, int, int]:
             nonlocal calls
-            value = real_lstat(candidate, **kwargs)
-            if candidate == path:
-                calls += 1
-                if calls > 1 and value is not None:
-                    values = list(value)
-                    values[6] += 1
-                    return os.stat_result(values)
-            return value
+            calls += 1
+            result = real_snapshot(value)
+            if calls == 2:
+                return (*result[:3], result[3] + 1, result[4] + 1)
+            return result
 
-        with mock.patch.object(deploy, "_lstat", side_effect=changed):
+        with mock.patch.object(deploy, "_stable_stat_snapshot", side_effect=changed):
             code, report = self.run_main("--verify-only", deploy.MODS[0])
         self.assertEqual(deploy.EXIT_DRIFT, code)
         self.assertEqual("file-race", report["error"]["kind"])
