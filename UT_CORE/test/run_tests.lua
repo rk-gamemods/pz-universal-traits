@@ -1776,6 +1776,17 @@ end)
 
 -- ===== FreezeLogger Tests =====
 
+local function withFreezeLoggerSandbox(body)
+    local originalPrint = _G.print
+    local originalGetPlayer = _G.getPlayer
+    UTCore._resetFreezeLogger()
+    local ok, err = pcall(body)
+    _G.print = originalPrint
+    _G.getPlayer = originalGetPlayer
+    UTCore._resetFreezeLogger()
+    if not ok then error(err, 0) end
+end
+
 test("FreezeLogger: no freeze detected during normal movement", function()
     UTCore._resetFreezeLogger()
     local p = MockPlayer({}, { moving = true })
@@ -1848,13 +1859,31 @@ test("FreezeLogger: resets stuck count when player releases keys", function()
     assert_eq(UTCore._getFreezeLoggerStuckCount(), 0, "should reset when keys released")
 end)
 
-test("FreezeLogger: skips dead player", function()
-    UTCore._resetFreezeLogger()
-    local p = MockPlayer({})
-    p.isDead = function() return true end
-    p:moveTo(1.0, 0)
-    UTCore._freezeLoggerOnPlayerUpdate(p)
-    assert_eq(UTCore._getFreezeLoggerStuckCount(), 0, "dead player should not trigger")
+test("FreezeLogger: distinct player lifecycle resets state and preserves stable identity", function()
+    withFreezeLoggerSandbox(function()
+        local messages = {}
+        _G.print = function(message) messages[#messages + 1] = message end
+
+        local playerA = MockPlayer({}, { moving = true })
+        playerA:moveTo(7.0, 3.0)
+        UTCore._freezeLoggerOnPlayerUpdate(playerA)
+        for _ = 1, 4 do
+            UTCore._freezeLoggerOnPlayerUpdate(playerA)
+        end
+        assert_eq(UTCore._getFreezeLoggerStuckCount(), 4, "player A should advance to four stuck ticks")
+
+        local playerB = MockPlayer({}, { moving = true })
+        playerB:moveTo(7.0, 3.0)
+        UTCore._freezeLoggerOnPlayerUpdate(playerB)
+        assert_eq(UTCore._getFreezeLoggerStuckCount(), 0,
+            "first update for player B must reset player A's coordinates and counters")
+        assert_eq(#messages, 0, "player B must not trigger a freeze log from player A's borrowed state")
+
+        UTCore._freezeLoggerOnPlayerUpdate(playerB)
+        assert_eq(UTCore._getFreezeLoggerStuckCount(), 1,
+            "second update for the same player B object must advance its state")
+        assert_eq(#messages, 0, "player B's first stuck tick must not emit a freeze log")
+    end)
 end)
 
 test("FreezeLogger: skips nil player", function()
@@ -1864,11 +1893,11 @@ test("FreezeLogger: skips nil player", function()
 end)
 
 test("FreezeLogger: OnPlayerMove tracker sets flag", function()
-    UTCore._resetFreezeLogger()
-    _G.getPlayer = function() return MockPlayer({}) end
-    UTCore._freezeLoggerOnPlayerMove()
-    _G.getPlayer = function() return nil end
-    -- The flag is internal, we just verify it doesn't crash
+    withFreezeLoggerSandbox(function()
+        local player = MockPlayer({})
+        UTCore._freezeLoggerOnPlayerMove(player)
+        -- The flag is internal, so this verifies the movement event accepts its explicit player.
+    end)
 end)
 
 -- ===== PZ API Surface Tests =====
