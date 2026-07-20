@@ -1041,6 +1041,12 @@ function getClimateManager()
     }
 end
 
+-- Static RainManager surface used by the B42 thermal-regulation hook.
+RainManager = RainManager or {}
+RainManager.isRaining = function()
+    return _mockClimate.precipitationIntensity > 0.1
+end
+
 if not _G.getPlayer then
     _G.getPlayer = function() return nil end
 end
@@ -1597,13 +1603,6 @@ if not _G.GameTime then
             return { getMultiplier = function(self) return 1.0 end }
         end,
     }
-end
-
--- isRaining() global (used by lesssweaty)
-if not _G.isRaining then
-    _G.isRaining = function()
-        return _mockClimate.precipitationIntensity > 0.1
-    end
 end
 
 -- addSound global (used by fearful inside pcall — must exist as a no-op)

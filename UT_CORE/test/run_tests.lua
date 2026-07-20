@@ -527,13 +527,50 @@ test("unregisterPeriodicHandler removes handler", function()
     assert_eq(UTCore._periodicHandlers["test_trait2"], nil)
 end)
 
-test("ThermalRegulationHook reduces indoor wetness each minute when configured", function()
-    setMockClimate(0.0, 0.5)
-    local p = MockPlayer({}, { outside = false })
-    p:getStats():set(CharacterStat.WETNESS, 50)
-    UTCore.applyWetnessReductionProfile(p, 3.0, 1.5, 0.5)
-    withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_eq(p:getStats():get(CharacterStat.WETNESS), 47, "expected indoor wetness reduction of 3")
+test("ThermalRegulationHook selects indoor, dry-outdoor, and rainy-outdoor wetness reductions", function()
+    local originalRainManager = _G.RainManager
+    local originalIsRaining = _G.isRaining
+    local originalPrecipitation = _mockClimate.precipitationIntensity
+    local originalClouds = _mockClimate.cloudIntensity
+    local originalGetPlayer = _G.getPlayer
+    local originalEveryOneMinute = _G.Events.EveryOneMinute
+    local activePlayer
+
+    _G.isRaining = function()
+        error("ThermalRegulationHook must call RainManager.isRaining()", 0)
+    end
+    _G.getPlayer = function() return activePlayer end
+
+    local ok, err = pcall(function()
+        local cases = {
+            { name = "indoors", outside = false, precipitation = 0.0, expected = 47 },
+            { name = "dry outdoors", outside = true, precipitation = 0.0, expected = 48.5 },
+            { name = "rainy outdoors", outside = true, precipitation = 0.5, expected = 49.5 },
+        }
+
+        for _, case in ipairs(cases) do
+            setMockClimate(case.precipitation, 0.5)
+            activePlayer = MockPlayer({}, { outside = case.outside })
+            activePlayer:getStats():set(CharacterStat.WETNESS, 50)
+            UTCore.applyWetnessReductionProfile(activePlayer, 3.0, 1.5, 0.5)
+            Events.EveryOneMinute:fire()
+            assert_eq(
+                activePlayer:getStats():get(CharacterStat.WETNESS),
+                case.expected,
+                "unexpected wetness after " .. case.name .. " event"
+            )
+        end
+    end)
+
+    _G.RainManager = originalRainManager
+    _G.isRaining = originalIsRaining
+    _mockClimate.precipitationIntensity = originalPrecipitation
+    _mockClimate.cloudIntensity = originalClouds
+    _G.getPlayer = originalGetPlayer
+    _G.Events.EveryOneMinute = originalEveryOneMinute
+    activePlayer = nil
+
+    if not ok then error(err, 0) end
 end)
 
 test("ThermalRegulationHook cools mild overheating when configured", function()
