@@ -2411,21 +2411,6 @@ test("superimmune marks the trait and reduces infection over time", function()
         "expected infection to decrease by 2 (50→48)")
 end)
 
-test("butterfingers only flags a drop after 300 ticks and a successful roll", function()
-    resetMockZombRand()
-    local earlyPlayer = MockPlayer({ "UniversalTraits:UT_butterfingers" }, { playerNum = 101 })
-    setMockGameTime(0, 299)
-    Events.OnPlayerUpdate:fire(earlyPlayer)
-    assert_true(earlyPlayer:getModData()["UT_dropNext"] == nil, "expected no drop flag before 300 ticks")
-
-    local player = MockPlayer({ "UniversalTraits:UT_butterfingers" }, { playerNum = 102 })
-    setMockZombRandSequence({ 0 })
-    setMockGameTime(0, 300)
-    Events.OnPlayerUpdate:fire(player)
-    assert_eq(player:getModData()["UT_dropNext"], true, "expected drop flag after a successful roll")
-    resetMockZombRand()
-end)
-
 test("idealweight doubles calorie burn when overweight", function()
     local player = MockPlayer({ "UniversalTraits:UT_idealweight" }, { weight = 85.0, calories = 2000.0 })
     withActivePlayer(player, function()
@@ -2993,36 +2978,6 @@ test("scardycat no cascade when panic does not rise by 5", function()
     local panic = player:getStats():get(CharacterStat.PANIC)
     assert_true(panic < 30,
         "no cascade should fire when panic rose less than 5 (got " .. tostring(panic) .. ")")
-end)
-
--- ─── UT_butterfingers: drop execution ─────────────────────────────────────────
-
-test("butterfingers drops primary hand item when UT_dropNext flag is set", function()
-    local item    = MockItem("ButterKnife")
-    local inv     = MockInventory(1.0)
-    local sq      = MockSquare()
-    inv:AddItem(item)
-    local player = MockPlayer({ "UniversalTraits:UT_butterfingers" }, {
-        primaryHandItem = item,
-        inventory = inv,
-        square = sq,
-    })
-    player:getModData()["UT_dropNext"] = true
-    Events.OnPlayerUpdate:fire(player)
-    assert_eq(player:getPrimaryHandItem(), nil, "primary hand item should be removed after drop")
-    assert_eq(#sq._dropped, 1, "item should have been placed on the ground square")
-end)
-
-test("butterfingers does nothing when no item in primary hand", function()
-    local inv  = MockInventory(0.0)
-    local sq   = MockSquare()
-    local player = MockPlayer({ "UniversalTraits:UT_butterfingers" }, {
-        inventory = inv,
-        square = sq,
-    })
-    player:getModData()["UT_dropNext"] = true
-    Events.OnPlayerUpdate:fire(player)
-    assert_eq(#sq._dropped, 0, "nothing dropped when primary hand is empty")
 end)
 
 -- ===== UT_melancholic behavioral tests (code changed: raises unhappiness) =====
@@ -4016,6 +3971,129 @@ end
 local function rebuildFor(player)
     Events.OnCreatePlayer:fire(0, player)
 end
+
+local BUTTERFINGERS_ID = "UniversalTraits:UT_butterfingers"
+local function findButterfingersRegistration()
+    local found = nil
+    local count = 0
+    for i = 1, #UTCore._tickHandlers do
+        local handler = UTCore._tickHandlers[i]
+        if handler.id == BUTTERFINGERS_ID then
+            found = handler
+            count = count + 1
+        end
+    end
+    assert_eq(count, 1, "butterfingers should have exactly one registration")
+    return found
+end
+
+local function butterTick(player, tickCount)
+    local tick = UTCore.buildMockTickContext(player)
+    tick.tickCount = tickCount
+    findButterfingersRegistration().fn(player, tick)
+end
+
+test("butterfingers uses dispatcher ticks and the mock exposes no GameTime.getTicks API", function()
+    assert_eq(getGameTime().getTicks, nil, "B42 GameTime must not invent getTicks")
+    local registration = findButterfingersRegistration()
+    assert_true(registration.opts.throttle == nil or registration.opts.throttle == 0,
+        "pending-drop consumer must run every update")
+    local p = MockPlayer({ BUTTERFINGERS_ID }, { playerNum = 201 })
+    local ok, err = pcall(function() butterTick(p, 1) end)
+    assert_true(ok, "handler should be safe with production-faithful APIs: " .. tostring(err))
+end)
+
+test("butterfingers rolls at exactly 300 dispatcher ticks, not before", function()
+    resetMockZombRand()
+    setMockZombRandSequence({ 0 })
+    local p = MockPlayer({ BUTTERFINGERS_ID }, { playerNum = 202 })
+    butterTick(p, 299)
+    assert_eq(p:getModData()["UT_dropNext"], nil, "no roll before the 300-tick boundary")
+    butterTick(p, 300)
+    assert_eq(p:getModData()["UT_dropNext"], true, "successful roll schedules at tick 300")
+    resetMockZombRand()
+end)
+
+test("butterfingers success range is ZombRand 0 through 2, excluding 3", function()
+    for roll = 0, 3 do
+        resetMockZombRand()
+        setMockZombRandSequence({ roll })
+        local p = MockPlayer({ BUTTERFINGERS_ID }, { playerNum = 210 + roll })
+        butterTick(p, 300)
+        assert_eq(p:getModData()["UT_dropNext"], roll < 3 and true or nil,
+            "unexpected scheduling result for roll " .. tostring(roll))
+    end
+    resetMockZombRand()
+end)
+
+test("butterfingers consumes a successful roll on the following update", function()
+    resetMockZombRand()
+    setMockZombRandSequence({ 2 })
+    local item = MockItem("ButterKnife")
+    local inv = MockInventory(1.0)
+    local sq = MockSquare()
+    inv:AddItem(item)
+    local p = MockPlayer({ BUTTERFINGERS_ID }, {
+        playerNum = 220, primaryHandItem = item, inventory = inv, square = sq,
+    })
+    butterTick(p, 300)
+    assert_eq(p:getPrimaryHandItem(), item, "scheduling update must not drop immediately")
+    assert_eq(#sq._dropped, 0, "scheduling update must leave the square unchanged")
+    butterTick(p, 301)
+    assert_eq(p:getModData()["UT_dropNext"], nil, "following update consumes the pending flag")
+    assert_eq(p:getPrimaryHandItem(), nil, "item leaves the primary hand")
+    assert_eq(#inv._items, 0, "item leaves inventory")
+    assert_eq(sq._dropped[1], item, "same item enters the current square")
+    resetMockZombRand()
+end)
+
+test("butterfingers clears a pending flag with an empty primary hand", function()
+    local sq = MockSquare()
+    local p = MockPlayer({ BUTTERFINGERS_ID }, {
+        playerNum = 221, inventory = MockInventory(0), square = sq,
+    })
+    p:getModData()["UT_dropNext"] = true
+    butterTick(p, 1)
+    assert_eq(p:getModData()["UT_dropNext"], nil, "empty-hand update still consumes the flag")
+    assert_eq(#sq._dropped, 0, "empty hand must not create a world item")
+end)
+
+test("butterfingers keeps the default vehicle gate", function()
+    local p = MockPlayer({ BUTTERFINGERS_ID }, { playerNum = 222, vehicle = MockVehicle() })
+    p:getModData()["UT_dropNext"] = true
+    rebuildFor(p)
+    Events.OnPlayerUpdate:fire(p)
+    assert_eq(p:getModData()["UT_dropNext"], true, "non-vehicle-aware handler stays gated in vehicles")
+end)
+
+test("butterfingers activates through OnCreatePlayer rebuild", function()
+    resetMockZombRand()
+    setMockZombRandSequence({ 99 })
+    local p = MockPlayer({ BUTTERFINGERS_ID }, { playerNum = 223 })
+    rebuildFor(p)
+    local active = false
+    for i = 1, #(UTCore._activeTickHandlers or {}) do
+        if UTCore._activeTickHandlers[i].id == BUTTERFINGERS_ID then active = true end
+    end
+    assert_true(active, "OnCreatePlayer rebuild should activate Butterfingers")
+    p:getModData()["UT_dropNext"] = true
+    Events.OnPlayerUpdate:fire(p)
+    assert_eq(p:getModData()["UT_dropNext"], nil, "active handler should consume on the next update")
+    resetMockZombRand()
+end)
+
+test("butterfingers source and release runtime stay byte-identical", function()
+    local function readAll(path)
+        local file = assert(io.open(path, "rb"))
+        local content = file:read("*a")
+        file:close()
+        return content
+    end
+    local relative = "lua/shared/UniversalTraits/traits/UT_butterfingers.lua"
+    assert_eq(readAll(base .. "../media/" .. relative),
+        readAll(base .. "../release/UniversalTraits/42.0/media/" .. relative),
+        "source and release Butterfingers files must match")
+end)
 
 local function updatesToNextMotionCadence()
     local remainder = UTCore.getMockDispatchTickCount() % 60

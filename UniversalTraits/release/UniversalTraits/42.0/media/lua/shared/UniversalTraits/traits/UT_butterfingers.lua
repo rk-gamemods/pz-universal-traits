@@ -9,7 +9,7 @@ local lastCheckTick = {}
 
 local function onTick(player, tick)
     local playerId = player:getPlayerNum()
-    local currentTick = getGameTime():getTicks()
+    local currentTick = tick.tickCount
 
     lastCheckTick[playerId] = lastCheckTick[playerId] or 0
 

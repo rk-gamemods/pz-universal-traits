@@ -987,6 +987,7 @@ if not _G.Events.OnPlayerUpdate then
                 _mockDispatchTickCount = _mockDispatchTickCount + 1
                 local tc = _mockDispatchTickCount
                 local tick = UTCore.buildMockTickContext(player)
+                tick.tickCount = tc
                 local handlers = UTCore._activeTickPlayer == player
                     and UTCore._activeTickHandlers or UTCore._tickHandlers
                 if handlers then
