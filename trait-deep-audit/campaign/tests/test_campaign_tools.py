@@ -5,6 +5,8 @@ from __future__ import annotations
 import importlib.util
 import json
 import hashlib
+import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -47,6 +49,33 @@ QUEUE_SPEC = importlib.util.spec_from_file_location(
 assert QUEUE_SPEC and QUEUE_SPEC.loader
 QUEUE_MODULE = importlib.util.module_from_spec(QUEUE_SPEC)
 QUEUE_SPEC.loader.exec_module(QUEUE_MODULE)
+
+WOOD_MODULE_PATH = CAMPAIGN_ROOT / "tools" / "regenerate_woodsplitter.py"
+WOOD_SPEC = importlib.util.spec_from_file_location("regenerate_woodsplitter", WOOD_MODULE_PATH)
+assert WOOD_SPEC and WOOD_SPEC.loader
+WOOD_MODULE = importlib.util.module_from_spec(WOOD_SPEC)
+WOOD_SPEC.loader.exec_module(WOOD_MODULE)
+
+
+def _wood_fixture(destination: Path) -> Path:
+    root = destination / "UTMods"
+    campaign = root / "trait-deep-audit" / "campaign"
+    for relative in WOOD_MODULE.OUTPUTS:
+        source = CAMPAIGN_ROOT / relative
+        target = campaign / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
+    for relative in (
+        WOOD_MODULE.SOURCE_UI,
+        WOOD_MODULE.RELEASE_UI,
+        "trait-deep-audit/campaign/tools/regenerate_woodsplitter.py",
+        "trait-deep-audit/campaign/tests/test_campaign_tools.py",
+    ):
+        source = CAMPAIGN_ROOT.parents[1] / relative
+        target = root / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
+    return root
 
 
 class ResolutionRecordTests(unittest.TestCase):
@@ -327,6 +356,100 @@ class CampaignManifestTests(unittest.TestCase):
                 MANIFEST_MODULE.build_manifest(
                     Path(directory), required_artifacts=("required.json",)
                 )
+
+
+class WoodSplitterRegeneratorTests(unittest.TestCase):
+    def test_plan_is_deterministic_and_preserves_unrelated_event_records(self) -> None:
+        first = WOOD_MODULE.build_plan()
+        second = WOOD_MODULE.build_plan()
+        self.assertEqual(first.planned, second.planned)
+
+        named_events = ("OnActionAdded", "OnClimbFence", "OnFenceClimb", "OnFishCaught")
+        for relative, owner in (
+            ("final_trait_ledger_rows.jsonl", lambda row: row.get("trait_id") == WOOD_MODULE.TRAIT),
+            ("dimension_ledger_rows.jsonl", lambda row: row.get("trait_id") == WOOD_MODULE.TRAIT),
+            ("remediation_queue.jsonl", lambda row: row.get("trait_id") == WOOD_MODULE.TRAIT),
+        ):
+            before = WOOD_MODULE._load_jsonl(first.original[relative])
+            after = WOOD_MODULE._load_jsonl(first.planned[relative])
+            self.assertEqual([row for row in before if not owner(row)], [row for row in after if not owner(row)])
+            before_named = [row for row in before if any(name in json.dumps(row) for name in named_events)]
+            after_named = [row for row in after if any(name in json.dumps(row) for name in named_events)]
+            self.assertEqual(before_named, after_named)
+
+        recurring_before = WOOD_MODULE._load_json(first.original["recurring_pattern_findings.json"])
+        recurring_after = WOOD_MODULE._load_json(first.planned["recurring_pattern_findings.json"])
+        self.assertEqual(
+            [row for row in recurring_before["findings"] if row["id"] != WOOD_MODULE.PATTERN_ID],
+            [row for row in recurring_after["findings"] if row["id"] != WOOD_MODULE.PATTERN_ID],
+        )
+
+    def test_commit_failure_rolls_back_every_owned_output(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = _wood_fixture(Path(directory))
+            master = root / "trait-deep-audit/campaign/MASTER_COVERAGE_LEDGER.md"
+            master.write_text(master.read_text(encoding="utf-8").replace(
+                "UniversalTraits:UT_woodsplitter is statically validated",
+                "UniversalTraits:UT_woodsplitter is stale",
+            ), encoding="utf-8", newline="\n")
+            recurring = root / "trait-deep-audit/campaign/recurring_pattern_findings.json"
+            recurring.write_text(
+                recurring.read_text(encoding="utf-8").replace(
+                    "Translator preprocessing mutates literal percent signs",
+                    "stale translator finding",
+                ),
+                encoding="utf-8",
+                newline="\n",
+            )
+            plan = WOOD_MODULE.build_plan(root)
+            before = {relative: (plan.campaign / relative).read_bytes() for relative in WOOD_MODULE.OUTPUTS}
+            calls = 0
+
+            def fail_once(source: str | Path, target: str | Path) -> None:
+                nonlocal calls
+                calls += 1
+                if calls == 4:
+                    raise OSError("injected replacement failure")
+                os.replace(source, target)
+
+            with self.assertRaisesRegex(OSError, "injected replacement failure"):
+                WOOD_MODULE.commit_transaction(plan, replace=fail_once)
+            after = {relative: (plan.campaign / relative).read_bytes() for relative in WOOD_MODULE.OUTPUTS}
+            self.assertEqual(before, after)
+
+    def test_ambiguous_ownership_fails_before_writes(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = _wood_fixture(Path(directory))
+            batch = root / "trait-deep-audit/campaign/trait_batches/batch_12.jsonl"
+            original = batch.read_bytes()
+            wood_line = next(
+                line for line in original.decode("utf-8").splitlines()
+                if json.loads(line)["trait_id"] == WOOD_MODULE.TRAIT
+            )
+            batch.write_bytes(original + wood_line.encode("utf-8") + b"\n")
+            before = {
+                relative: (root / "trait-deep-audit/campaign" / relative).read_bytes()
+                for relative in WOOD_MODULE.OUTPUTS
+            }
+            with self.assertRaisesRegex(ValueError, "ownership mismatch"):
+                WOOD_MODULE.build_plan(root)
+            after = {
+                relative: (root / "trait-deep-audit/campaign" / relative).read_bytes()
+                for relative in WOOD_MODULE.OUTPUTS
+            }
+            self.assertEqual(before, after)
+
+    def test_arguments_are_rejected_without_writes(self) -> None:
+        before = {relative: (CAMPAIGN_ROOT / relative).read_bytes() for relative in WOOD_MODULE.OUTPUTS}
+        result = subprocess.run(
+            [sys.executable, "-B", str(WOOD_MODULE_PATH), "--unexpected"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 2)
+        after = {relative: (CAMPAIGN_ROOT / relative).read_bytes() for relative in WOOD_MODULE.OUTPUTS}
+        self.assertEqual(before, after)
 
 
 class RecurringPatternTests(unittest.TestCase):
