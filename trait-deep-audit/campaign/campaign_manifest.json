@@ -40,8 +40,8 @@
     "trait_batches/batch_12.jsonl",
     "translation_audit.json"
   ],
-  "file_count": 63,
-  "total_bytes": 12627152,
+  "file_count": 65,
+  "total_bytes": 12636841,
   "files": [
     {
       "path": "MASTER_COVERAGE_LEDGER.md",
@@ -49,6 +49,13 @@
       "byte_semantics": "utf-8-lf",
       "bytes": 30911,
       "sha256": "EA5638E57B03ABBE54C5D88DCA34F22523D1DD79BDB07000F6563D0C67830563"
+    },
+    {
+      "path": "change-impact/actionhero-handler-lifecycle-resolution.json",
+      "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 2845,
+      "sha256": "7843D01E6276A9E477D1CAC6A6C3FBA63306DADC1AA5498A41EBD709ACE6F250"
     },
     {
       "path": "change-impact/unwavering-copy-resolution.json",
@@ -236,8 +243,8 @@
       "path": "runtime-traces/wave-01-single/UT_actionhero.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
-      "bytes": 7625,
-      "sha256": "64470428BC59EC164AA5C613D11993A1F8FA8DD1206C12135932FF4EEBE65EE5"
+      "bytes": 8218,
+      "sha256": "B3BCD6C6DBC2443F852935CA38EF465A02527FC2D6382F523A042042AA875021"
     },
     {
       "path": "runtime-traces/wave-01-single/UT_adaptivemetabolism.json",
@@ -371,6 +378,13 @@
       "byte_semantics": "utf-8-lf",
       "bytes": 12209,
       "sha256": "BA3F12BC45B5890F12224BC300B87CE36115F682652EA41D57203744D8EAEFD7"
+    },
+    {
+      "path": "tools/regenerate_actionhero.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 6251,
+      "sha256": "520E0077460D94784827EEC234CEAECEBB818605484F427C7F0C8D51FA1D0303"
     },
     {
       "path": "tools/regenerate_unwavering.py",

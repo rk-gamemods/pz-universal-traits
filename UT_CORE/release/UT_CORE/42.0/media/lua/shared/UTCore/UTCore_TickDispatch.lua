@@ -23,6 +23,16 @@ UTCore = UTCore or {}
 ---------------------------------------------------------------------
 local _handlers = {}
 local _handlerCount = 0
+local _activeLight = nil
+local _activeLightCount = 0
+local _activeHeavy = nil
+local _activeHeavyCount = 0
+
+local function teardownHandler(handler, reason)
+    if handler and handler.teardown then
+        handler.teardown(reason)
+    end
+end
 
 --- Register a trait's per-tick handler.
 -- Central dispatch calls hasTrait automatically (or skips it if active-only
@@ -46,8 +56,40 @@ function UTCore.registerTickHandler(traitId, fn, opts)
         anyTrait     = opts.anyTrait,
         throttle     = opts.throttle or 0,
         heavy        = opts.heavy == true,
+        teardown     = opts.teardown,
         _offset      = 0,
     }
+end
+
+--- Remove every registered handler for a trait, restoring handler-owned state first.
+function UTCore.unregisterTickHandler(traitId, reason)
+    local kept = {}
+    local keptCount = 0
+    for i = 1, _handlerCount do
+        local handler = _handlers[i]
+        if handler.id == traitId then
+            teardownHandler(handler, reason or "unregister")
+        else
+            keptCount = keptCount + 1
+            kept[keptCount] = handler
+        end
+    end
+    _handlers = kept
+    _handlerCount = keptCount
+
+    local function removeActive(list, count)
+        local active = {}
+        local activeCount = 0
+        for i = 1, count do
+            if list[i].id ~= traitId then
+                activeCount = activeCount + 1
+                active[activeCount] = list[i]
+            end
+        end
+        return active, activeCount
+    end
+    _activeLight, _activeLightCount = removeActive(_activeLight or {}, _activeLightCount)
+    _activeHeavy, _activeHeavyCount = removeActive(_activeHeavy or {}, _activeHeavyCount)
 end
 
 --- Return the current handler count (for testing/diagnostics).
@@ -66,14 +108,13 @@ end
 --
 -- Eliminates 42-handler iteration + hasTrait gate on every tick.
 ---------------------------------------------------------------------
-local _activeLight = nil
-local _activeLightCount = 0
-local _activeHeavy = nil
-local _activeHeavyCount = 0
 
 --- Rebuild the active handler arrays for a player.
 --- Called on OnCreatePlayer and when traits change.
 function UTCore.rebuildActiveHandlers(player)
+    local previousActive = {}
+    for i = 1, _activeLightCount do previousActive[_activeLight[i]] = true end
+    for i = 1, _activeHeavyCount do previousActive[_activeHeavy[i]] = true end
     _activeLight = {}
     _activeLightCount = 0
     _activeHeavy = {}
@@ -94,6 +135,7 @@ function UTCore.rebuildActiveHandlers(player)
             match = UTCore.hasTrait(player, h.id)
         end
         if match then
+            previousActive[h] = nil
             if h.heavy then
                 _activeHeavyCount = _activeHeavyCount + 1
                 _activeHeavy[_activeHeavyCount] = h
@@ -102,6 +144,10 @@ function UTCore.rebuildActiveHandlers(player)
                 _activeLight[_activeLightCount] = h
             end
         end
+    end
+
+    for handler in pairs(previousActive) do
+        teardownHandler(handler, "deactivated")
     end
 
     -- Pass 2: assign staggered offsets for light handlers (by throttle group)
@@ -145,6 +191,12 @@ end
 --- Return active heavy handler count (testing/diagnostics).
 function UTCore.getActiveHeavyCount()
     return _activeHeavyCount
+end
+
+--- Restore state owned by every currently active handler.
+function UTCore.teardownActiveTickHandlers(reason)
+    for i = 1, _activeLightCount do teardownHandler(_activeLight[i], reason or "teardown") end
+    for i = 1, _activeHeavyCount do teardownHandler(_activeHeavy[i], reason or "teardown") end
 end
 
 ---------------------------------------------------------------------
@@ -301,7 +353,10 @@ end
 -- Central dispatch (ONE OnPlayerUpdate handler for ALL of UTCore)
 ---------------------------------------------------------------------
 local function centralDispatch(player)
-    if not player then return end
+    if not player then
+        UTCore.teardownActiveTickHandlers("invalid-player")
+        return
+    end
 
     -- Sort core handlers by priority once (highest first)
     if not _coreHandlersSorted and UTCore._coreHandlerCount > 1 then
@@ -315,7 +370,10 @@ local function centralDispatch(player)
     local tick = buildTickContext(player)
 
     -- Dead = skip everything
-    if tick.shouldSkip then return end
+    if tick.shouldSkip then
+        UTCore.teardownActiveTickHandlers("invalid-player")
+        return
+    end
 
     local debugMode = UTCore._debugDispatch
     local tc = _tickCount

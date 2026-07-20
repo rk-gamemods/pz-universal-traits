@@ -867,6 +867,28 @@ test("actionhero deduplicates one weapon held in both hands", function()
     assert_eq(weapon:getCriticalSetCalls(), 1, "same weapon must be written once")
 end)
 
+test("actionhero boosts both distinct eligible equipped weapons", function()
+    local primary = MockWeaponSimple("Axe", { critChance = 10 })
+    local secondary = MockWeaponSimple("Knife", { critChance = 30 })
+    local player = MockActionPlayer({ ACTION_HERO_ID }, MockSpottedList(3, 1), primary, secondary)
+    fireActionHero(player)
+    assert_eq(primary:getCriticalChance(), 25, "primary eligible weapon must gain exactly +15")
+    assert_eq(secondary:getCriticalChance(), 45, "secondary eligible weapon must gain exactly +15")
+    player.getSpottedList = function() return MockSpottedList(2, 1) end
+    fireActionHero(player)
+    assert_eq(primary:getCriticalChance(), 10, "primary weapon must restore exactly")
+    assert_eq(secondary:getCriticalChance(), 30, "secondary weapon must restore exactly")
+end)
+
+test("actionhero preserves the accepted eight-point definition cost", function()
+    local file = assert(io.open(base .. "../media/scripts/UT_character_traits.txt", "r"))
+    local source = file:read("*a")
+    file:close()
+    local block = source:match("character_trait_definition%s+UniversalTraits:UT_actionhero%s*(%b{})")
+    assert_true(block ~= nil, "Action Hero definition must exist")
+    assert_true(block:find("Cost%s*=%s*8[%s,]"), "Action Hero must retain cost 8")
+end)
+
 test("actionhero restores swapped weapon and manages replacement independently", function()
     local weaponA = MockWeaponSimple("Axe", { critChance = 10 })
     local weaponB = MockWeaponSimple("Bat", { critChance = 30 })
@@ -937,6 +959,47 @@ test("actionhero duplicate load retains one state and does not compound", functi
     player.getSpottedList = function() return MockSpottedList(2, 1) end
     fireActionHero(player)
     assert_eq(weapon:getCriticalChance(), 10, "duplicate load must retain restoration ownership")
+    local registrations = 0
+    for i = 1, #UTCore._tickHandlers do
+        if UTCore._tickHandlers[i].id == ACTION_HERO_ID then registrations = registrations + 1 end
+    end
+    assert_eq(registrations, 1, "duplicate load must leave exactly one Action Hero handler")
+end)
+
+test("actionhero teardown restores before handler removal", function()
+    local weapon = MockWeaponSimple("Axe", { critChance = 10 })
+    local player = MockActionPlayer({ ACTION_HERO_ID }, MockSpottedList(3, 1), weapon)
+    fireActionHero(player)
+    assert_eq(weapon:getCriticalChance(), 25, "precondition: bonus active")
+    UTCore.unregisterTickHandler(ACTION_HERO_ID, "test-teardown")
+    assert_eq(weapon:getCriticalChance(), 10, "teardown must restore before registration disappears")
+    local registrations = 0
+    for i = 1, #UTCore._tickHandlers do
+        if UTCore._tickHandlers[i].id == ACTION_HERO_ID then registrations = registrations + 1 end
+    end
+    assert_eq(registrations, 0, "teardown must remove every stale Action Hero callback")
+    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_actionhero.lua")
+end)
+
+test("actionhero active-set deactivation restores outstanding weapons", function()
+    local weapon = MockWeaponSimple("Axe", { critChance = 10 })
+    local player = MockActionPlayer({ ACTION_HERO_ID }, MockSpottedList(3, 1), weapon)
+    UTCore.rebuildActiveHandlers(player)
+    fireActionHero(player)
+    assert_eq(weapon:getCriticalChance(), 25, "precondition: bonus active")
+    player:getCharacterTraits():remove(CharacterTrait.get(ResourceLocation.of(ACTION_HERO_ID)))
+    UTCore.rebuildActiveHandlers(player)
+    assert_eq(weapon:getCriticalChance(), 10, "trait removal rebuild must restore outstanding weapons")
+end)
+
+test("actionhero player invalidation restores outstanding weapons", function()
+    local weapon = MockWeaponSimple("Axe", { critChance = 10 })
+    local player = MockActionPlayer({ ACTION_HERO_ID }, MockSpottedList(3, 1), weapon)
+    UTCore.rebuildActiveHandlers(player)
+    fireActionHero(player)
+    assert_eq(weapon:getCriticalChance(), 25, "precondition: bonus active")
+    UTCore.teardownActiveTickHandlers("invalid-player")
+    assert_eq(weapon:getCriticalChance(), 10, "invalid player teardown must restore outstanding weapons")
 end)
 
 test("actionhero reload boundary does not depend on persisted base-crit moddata", function()

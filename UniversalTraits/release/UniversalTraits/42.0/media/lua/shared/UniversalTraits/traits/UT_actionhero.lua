@@ -31,6 +31,12 @@ local function restoreWeapon(weapon)
     state.trackedWeapons[weapon] = nil
 end
 
+local function restoreAllWeapons()
+    local restore = {}
+    for weapon in pairs(state.trackedWeapons) do restore[#restore + 1] = weapon end
+    for i = 1, #restore do restoreWeapon(restore[i]) end
+end
+
 local function boostWeapon(weapon)
     if not weapon or not instanceof(weapon, "HandWeapon") then return end
 
@@ -84,4 +90,10 @@ local function onTick(player, tick)
     if secondary ~= primary then boostWeapon(secondary) end
 end
 
-UTCore.registerTickHandler(TRAIT_ID, onTick, { throttle = 30 })
+if UTCore.unregisterTickHandler then
+    UTCore.unregisterTickHandler(TRAIT_ID, "reload")
+end
+UTCore.registerTickHandler(TRAIT_ID, onTick, {
+    throttle = 30,
+    teardown = restoreAllWeapons,
+})

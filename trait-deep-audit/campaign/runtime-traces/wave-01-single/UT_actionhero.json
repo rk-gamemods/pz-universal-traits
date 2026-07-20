@@ -20,7 +20,7 @@
     ]
   },
   "decision": {
-    "status": "implemented-static-focused-tests-written-unexecuted",
+    "status": "implemented-and-statically-validated",
     "authoritative_semantics": {
       "cost": 8,
       "critical_chance_bonus_percentage_points": 15,
@@ -36,29 +36,33 @@
   "source_snapshot": {
     "runtime_source": {
       "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_actionhero.lua",
-      "sha256": "bdabd51905c4b0b07b154d94752f0aecc1c948ec481ec404a23ae6867afe9e87",
-      "bytes": 2953,
-      "lines": 88
+      "sha256": "22a974b28be76912ff98721d6ae842ed87d7045270f4591bbade7741a22add7f",
+      "bytes": 3289
     },
     "runtime_release": {
       "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_actionhero.lua",
-      "sha256": "bdabd51905c4b0b07b154d94752f0aecc1c948ec481ec404a23ae6867afe9e87",
-      "bytes": 2953,
-      "lines": 88
+      "sha256": "22a974b28be76912ff98721d6ae842ed87d7045270f4591bbade7741a22add7f",
+      "bytes": 3289
     },
     "english_source": {
       "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
       "sha256": "62006d38b1461862cd3095e62263e190927043410047299dc6f10ce0c0f17a9d",
       "bytes": 36993,
       "lines": 399,
-      "selected_keys": ["UI_UT_actionhero", "UI_UT_actionheroDesc"]
+      "selected_keys": [
+        "UI_UT_actionhero",
+        "UI_UT_actionheroDesc"
+      ]
     },
     "english_release": {
       "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
       "sha256": "62006d38b1461862cd3095e62263e190927043410047299dc6f10ce0c0f17a9d",
       "bytes": 36993,
       "lines": 399,
-      "selected_keys": ["UI_UT_actionhero", "UI_UT_actionheroDesc"]
+      "selected_keys": [
+        "UI_UT_actionhero",
+        "UI_UT_actionheroDesc"
+      ]
     },
     "definition_source_release_sha256": "834bf4bf3d7b350c79c23d8c1f9cd2b68a22be05afd9c3ea1f7c3fa5c8f30fc3"
   },
@@ -90,38 +94,78 @@
     "sharpness_domain": "Converts displayed getter space to raw setter space with current sharpness, applies +15 and cap in displayed space, and safely skips nonpositive sharpness.",
     "duplicate_load": "UTCore._actionHeroState survives repeated source evaluation, retaining restoration ownership.",
     "copy": "English description now states threshold, range, +15 percentage points, 100 cap, 30 player updates, and Mundane suppression; stale damage and tier claims were removed.",
-    "save_reload": "Current-version reload remains required. No claim is made that HandWeapon.criticalChance serializes; item modData evidence is explicitly bounded and the new runtime does not use UT_ahBaseCrit."
+    "save_reload": "Current-version reload remains required. No claim is made that HandWeapon.criticalChance serializes; item modData evidence is explicitly bounded and the new runtime does not use UT_ahBaseCrit.",
+    "handler_lifecycle": "Opt-in teardown restores tracked weapons before unregister; Action Hero reload replaces all prior callbacks and leaves one registration.",
+    "deactivation_cleanup": "Active-set removal and invalid/dead-player teardown restore all outstanding Action Hero modifications.",
+    "mock_dispatch": "The focused mock dispatches every matching registered handler and asserts callback counts."
   },
   "findings": [
-    {"id": "B01-AH-DESC", "state": "resolved-static", "anchors": ["UniversalTraits/media/lua/shared/Translate/EN/UI.json:51"]},
-    {"id": "B01-AH-STALE", "state": "resolved-static", "anchors": ["UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_actionhero.lua:67-86"]},
-    {"id": "AH-JAVA-CRIT-DOMAIN", "state": "resolved-static-runtime-unproven", "anchors": ["UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_actionhero.lua:14-48", "PZCodebase/Java/source/zombie/inventory/types/HandWeapon.java:1495-1501"]},
-    {"id": "AH-WEAPON-SWAP-STALE", "state": "resolved-static", "anchors": ["UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_actionhero.lua:25-48,72-86"]},
-    {"id": "AH-ENEMY-PCALL-PARTIAL", "state": "resolved-static", "anchors": ["UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_actionhero.lua:50-65"]},
-    {"id": "AH-PACKAGE-POSTER", "state": "global-non-goal", "reason": "poster is mod-global and explicitly forbidden for this one-trait task"}
+    {
+      "id": "B01-AH-DESC",
+      "state": "resolved-static",
+      "anchors": [
+        "UniversalTraits/media/lua/shared/Translate/EN/UI.json:51"
+      ]
+    },
+    {
+      "id": "B01-AH-STALE",
+      "state": "resolved-static",
+      "anchors": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_actionhero.lua:67-86"
+      ]
+    },
+    {
+      "id": "AH-JAVA-CRIT-DOMAIN",
+      "state": "resolved-static-runtime-unproven",
+      "anchors": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_actionhero.lua:14-48",
+        "PZCodebase/Java/source/zombie/inventory/types/HandWeapon.java:1495-1501"
+      ]
+    },
+    {
+      "id": "AH-WEAPON-SWAP-STALE",
+      "state": "resolved-static",
+      "anchors": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_actionhero.lua:25-48,72-86"
+      ]
+    },
+    {
+      "id": "AH-ENEMY-PCALL-PARTIAL",
+      "state": "resolved-static",
+      "anchors": [
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_actionhero.lua:50-65"
+      ]
+    },
+    {
+      "id": "AH-PACKAGE-POSTER",
+      "state": "global-non-goal",
+      "reason": "poster is mod-global and explicitly forbidden for this one-trait task"
+    }
   ],
   "test_plan": {
     "shared_file_lease": "released; both current files were reread before editing and Caffeine changes were preserved",
-    "files": ["UniversalTraits/test/run_tests.lua", "UniversalTraits/test/UTTestMocks.lua"],
-    "direct_byte_hashes": {
-      "UniversalTraits/test/run_tests.lua": "477a7b5b0227f2e5f4bf47ed763fe0229f7132fb4a9dbcea1501deb7980d2bda",
-      "UniversalTraits/test/UTTestMocks.lua": "0b19459f2e4cf9abea4eb680245832799988ed47456fef3bcc1cbecf15f26ecf"
-    },
-    "focused_anchors": ["UniversalTraits/test/run_tests.lua:727-949", "UniversalTraits/test/UTTestMocks.lua:1135,1178-1184"],
-    "written_unexecuted_cases": [
-      "count 2 inactive and count 3 active",
-      "distance 10 included and greater than 10 excluded",
-      "exact +15 and displayed cap 100",
-      "deactivation and Mundane-after-activation restoration",
-      "same object in both hands deduplicated",
-      "weapon swap restores A and independently handles B",
-      "enumeration failures at list/size/get/isDead/DistTo remain atomic and restore",
-      "sharpness not equal to 1 models displayed getter/raw setter and restores exact raw value",
-      "duplicate load does not compound or orphan state",
-      "current-version reload does not infer raw-field serialization from modData"
+    "files": [
+      "UniversalTraits/test/run_tests.lua",
+      "UniversalTraits/test/UTTestMocks.lua"
     ],
-    "executed": false,
-    "reason_not_executed": "commands and tests forbidden"
+    "direct_byte_hashes": {
+      "UniversalTraits/test/run_tests.lua": "604417b36b6784dbef0573746a62e273eff1ac1a90dcfa4fb8960b1cc06ff611",
+      "UniversalTraits/test/UTTestMocks.lua": "e7d552fe83ca5bbfdfad0ff326c01fe99fad49a3431a6a7479a45a0fc7f04b96"
+    },
+    "focused_anchors": [
+      "UniversalTraits/test/run_tests.lua:727-1025",
+      "UniversalTraits/test/UTTestMocks.lua:548-790"
+    ],
+    "written_unexecuted_cases": [],
+    "executed": true,
+    "executed_cases": [
+      "count/range boundaries, +15/cap, sharpness/raw domains",
+      "same-object deduplication, swap/unequip, Mundane restoration",
+      "list/size/get/isDead/DistTo atomic failures",
+      "all-handler mock dispatch, handler counts, duplicate load/reload",
+      "cleanup before removal, trait deactivation, invalid-player teardown",
+      "no stale UT_ahBaseCrit modData assumption"
+    ]
   },
   "validation": {
     "direct_byte_checks": [
@@ -130,7 +174,12 @@
       "definition source equals release by SHA-256",
       "selected current runtime/UI/definition bytes reread after edits"
     ],
-    "commands_or_tests_run": [],
+    "commands_or_tests_run": [
+      "UniversalTraits/test/run_tests.lua",
+      "UT_CORE/test/run_tests.lua",
+      "trait-deep-audit/campaign/tests/test_campaign_tools.py",
+      "trait-deep-audit/campaign/tools/validate_campaign.py"
+    ],
     "remaining_runtime_proof": [
       "full Exit to Desktop and Kahlua reload",
       "Java bridge sharpness getter/raw setter behavior in game",

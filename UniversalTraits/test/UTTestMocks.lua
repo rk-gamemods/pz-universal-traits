@@ -561,11 +561,35 @@ UTCore.registerTickHandler = function(traitId, fn, opts)
     }
 end
 
+UTCore.unregisterTickHandler = function(traitId, reason)
+    local kept = {}
+    for i = 1, #UTCore._tickHandlers do
+        local handler = UTCore._tickHandlers[i]
+        if handler.id == traitId then
+            if handler.opts.teardown then handler.opts.teardown(reason or "unregister") end
+        else
+            kept[#kept + 1] = handler
+        end
+    end
+    UTCore._tickHandlers = kept
+
+    local active = {}
+    for i = 1, #(UTCore._activeTickHandlers or {}) do
+        local handler = UTCore._activeTickHandlers[i]
+        if handler.id ~= traitId then active[#active + 1] = handler end
+    end
+    UTCore._activeTickHandlers = active
+end
+
 UTCore.getTickHandlerCount = function()
     return #UTCore._tickHandlers
 end
 
 UTCore.rebuildActiveHandlers = function(player)
+    local previouslyActive = {}
+    for i = 1, #(UTCore._activeTickHandlers or {}) do
+        previouslyActive[UTCore._activeTickHandlers[i]] = true
+    end
     local light, heavy = {}, {}
     for i = 1, #UTCore._tickHandlers do
         local h = UTCore._tickHandlers[i]
@@ -578,9 +602,14 @@ UTCore.rebuildActiveHandlers = function(player)
             match = UTCore.hasTrait(player, h.id)
         end
         if match then
+            previouslyActive[h] = nil
             local target = h.opts.heavy == true and heavy or light
             target[#target + 1] = h
         end
+    end
+
+    for handler in pairs(previouslyActive) do
+        if handler.opts.teardown then handler.opts.teardown("deactivated") end
     end
 
     local lightGroups = {}
@@ -622,6 +651,13 @@ end
 
 UTCore.getActiveHandlerCount = function()
     return UTCore._activeTickHandlers and #UTCore._activeTickHandlers or 0
+end
+
+UTCore.teardownActiveTickHandlers = function(reason)
+    for i = 1, #(UTCore._activeTickHandlers or {}) do
+        local handler = UTCore._activeTickHandlers[i]
+        if handler.opts.teardown then handler.opts.teardown(reason or "teardown") end
+    end
 end
 
 -- Lazy enemy list accessor (mirrors UTCore.getLivingEnemies in real dispatch)
@@ -737,16 +773,18 @@ function UTCore.getInjuries(tick)
     return out
 end
 
--- Convenience: fire a single registered tick handler for a player.
+-- Convenience: fire every matching registered tick handler for a player.
 -- Returns the tick context used, for assertion purposes.
 UTCore.fireTickHandler = function(traitId, player)
-    local h = nil
+    local matches = {}
     for i = 1, #UTCore._tickHandlers do
-        if UTCore._tickHandlers[i].id == traitId then h = UTCore._tickHandlers[i]; break end
+        if UTCore._tickHandlers[i].id == traitId then
+            matches[#matches + 1] = UTCore._tickHandlers[i]
+        end
     end
-    if not h then error("No tick handler registered for " .. tostring(traitId)) end
+    if #matches == 0 then error("No tick handler registered for " .. tostring(traitId)) end
     local tick = UTCore.buildMockTickContext(player)
-    h.fn(player, tick)
+    for i = 1, #matches do matches[i].fn(player, tick) end
     return tick
 end
 
