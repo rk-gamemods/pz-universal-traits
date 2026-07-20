@@ -40,15 +40,22 @@
     "trait_batches/batch_12.jsonl",
     "translation_audit.json"
   ],
-  "file_count": 61,
-  "total_bytes": 12622586,
+  "file_count": 63,
+  "total_bytes": 12627152,
   "files": [
     {
       "path": "MASTER_COVERAGE_LEDGER.md",
       "kind": "master-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 30650,
-      "sha256": "0854871CEC3BD7BAF6F2BCE1A9C8EF136E2768BFB97B4A83BAFEEBF5DD7ADEA0"
+      "bytes": 30911,
+      "sha256": "EA5638E57B03ABBE54C5D88DCA34F22523D1DD79BDB07000F6563D0C67830563"
+    },
+    {
+      "path": "change-impact/unwavering-copy-resolution.json",
+      "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 1613,
+      "sha256": "FCF895F37229EE866FB5F72AFD13C0751EFB7F3BC80E61CFD7D4EE94BCBE8E41"
     },
     {
       "path": "change-impact/woodsplitter-axeman-alias-resolution.json",
@@ -75,22 +82,22 @@
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2257680,
-      "sha256": "32BBCB64524C40FB3666D267A4416AEF45874B81CE418EE128CAFB66E00A0C53"
+      "bytes": 2257628,
+      "sha256": "611E7FFBDC073B91333B03AB8364CEB5CAE0815BF597BA20EC123B3295ECB439"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2081760,
-      "sha256": "2A657B23E5759C7F0BCD96BADF0088C6DB4808380A8152ADA823596B4E1B42ED"
+      "bytes": 2081649,
+      "sha256": "C00F6FAA3BE213FB5D971F0AEE928ABAD93D1A0B6C28436D696E7EE19D04BB2A"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1277539,
-      "sha256": "B2177DF489961BD20CD5EACBD7573A50852EDE4B46A8C34617E4FC9CC7BF9027"
+      "bytes": 1277485,
+      "sha256": "7B2633F605BEC11A933F0C49CE5BF80B4D82651D2989EF9955C6F1136A0F37D8"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
@@ -125,7 +132,7 @@
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
       "bytes": 112884,
-      "sha256": "F41976727FEA3F56102EC97431C5852AC9E8BEB69E2BD009AB00BDBF1485E665"
+      "sha256": "AE50D38C8FA77C886041A487F8D2A9E72A1B22EE96FC8A4B77A63E3A4D3728B9"
     },
     {
       "path": "independent_reviews/ut_core_integration.json",
@@ -152,15 +159,15 @@
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2333330,
-      "sha256": "E9744544362CD337FFC8E58EAE980818122BE1348F2550B7D996FF701308950C"
+      "bytes": 2327189,
+      "sha256": "C57B4474329D9B714F7511E2D24A9D7EBF65D7786E8D8B96126F1F02A37A273F"
     },
     {
       "path": "remediation_summary.json",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
       "bytes": 1184,
-      "sha256": "E0A31D583AAB7C1831DC5BC8FC8DC05F0F991E2312DCBEA09A8F91AF402D083D"
+      "sha256": "C8962ED923A4EECF68C78F8EC3974B718DBA6364A406A52A0FDAB4B107AA3233"
     },
     {
       "path": "runtime-traces/utcore-wave-01.jsonl",
@@ -327,8 +334,8 @@
       "path": "tests/test_campaign_tools.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 32754,
-      "sha256": "28C3F529130CC46B76B4628AB5DDAC83DCAFF8ECCF0552D8D7E91C8FDA5E52AD"
+      "bytes": 32739,
+      "sha256": "681CAFB6CA6779B10CC6A663187DB125725A64EC3E6377C7FFF2D968B77215BC"
     },
     {
       "path": "tools/build_campaign_manifest.py",
@@ -366,11 +373,18 @@
       "sha256": "BA3F12BC45B5890F12224BC300B87CE36115F682652EA41D57203744D8EAEFD7"
     },
     {
+      "path": "tools/regenerate_unwavering.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 8862,
+      "sha256": "D4EEEE21E592F1A16A901EAF5D8C813D92FEFAECC0977BF05BCAD5660B65B7EE"
+    },
+    {
       "path": "tools/regenerate_woodsplitter.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 32904,
-      "sha256": "7CDCEFBE85E5E6919B9B3BADEB27AC6174CC9DEA933E5003D2B478A0DFC723B9"
+      "bytes": 33212,
+      "sha256": "AD5C92C79CF938F4F1D103960362718595D920BE7AF742526B7C5C4FBDBB2D6D"
     },
     {
       "path": "tools/validate_campaign.py",
@@ -460,15 +474,15 @@
       "path": "trait_batches/batch_12.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 83372,
-      "sha256": "C1DCBAE0CC6F81B838D0DEF75F35187E606E392B5D79C253B0FC0C3945436A8B"
+      "bytes": 83272,
+      "sha256": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47"
     },
     {
       "path": "translation_audit.json",
       "kind": "translation-audit",
       "byte_semantics": "utf-8-lf",
-      "bytes": 494905,
-      "sha256": "89C8338252797F29D2CB327DC46695E8E23CE23CAAE8BDEFD1F7D464A26566FD"
+      "bytes": 494900,
+      "sha256": "984BE8A843175A0EEB02B29D8C77932070717AFDE0E3E27540FD47DB26624A6B"
     }
   ]
 }

@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0.0",
+  "resolution_id": "unwavering-copy-reconciliation",
+  "trait_id": "UniversalTraits:UT_unwavering",
+  "status": "statically-validated-runtime-unproven",
+  "accepted_classification": "documentation-only correction",
+  "history": {
+    "development_base": "d2b059b4646107c99e5f464c58f7912a5258d819",
+    "master_unchanged": "a32f251e7cebdc27b533907b6b16c7aa135eb882",
+    "mechanic_commit": "cf2da09955e97e55296652170a4334ecd6b704fa",
+    "mechanic": "EveryTenMinutes subtracts 10 panic only when panic is above 10",
+    "b42_representation": "The former 0.1 threshold and amount became 10 on the Build 42 panic scale without a mechanic change."
+  },
+  "changed_surfaces": [
+    "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+    "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+    "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_unwavering.lua",
+    "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_unwavering.lua",
+    "UniversalTraits/test/run_tests.lua",
+    "trait-deep-audit/active/batch/traits/UT_unwavering.md"
+  ],
+  "deliberately_unchanged": [
+    "gameplay code",
+    "event cadence",
+    "panic threshold and amount",
+    "trait cost, registration, definition, exclusions, and grants",
+    "mocks and other traits",
+    "live and deployed files"
+  ],
+  "remaining_runtime_proof": [
+    "Kahlua EveryTenMinutes execution",
+    "current-version save/load execution",
+    "rendered English UI copy",
+    "interaction and balance observation with other panic modifiers"
+  ]
+}

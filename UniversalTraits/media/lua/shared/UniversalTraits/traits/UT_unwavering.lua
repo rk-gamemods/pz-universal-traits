@@ -1,6 +1,6 @@
 -- UT_unwavering.lua
 -- Unwavering: passive panic drain every 10 in-game minutes.
--- Reduces panic by 0.1 whenever it is above 0.1, slowly suppressing
+-- Reduces panic by 10 whenever it is above 10, slowly suppressing
 -- long-term panic accumulation without preventing immediate spikes.
 
 local TRAIT_ID = "UniversalTraits:UT_unwavering"

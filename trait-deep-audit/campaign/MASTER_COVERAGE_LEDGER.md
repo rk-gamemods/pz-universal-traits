@@ -424,3 +424,6 @@ runtime, commit, push, or publication was changed by this campaign.
 
 <!-- WOODSPLITTER-CORRECTION -->
 - UniversalTraits:UT_woodsplitter is statically validated; in-game selection, save/reload, rendered EN, and key-ring occurrence remain runtime-unproven.
+
+<!-- UNWAVERING-COPY-CORRECTION -->
+- UniversalTraits:UT_unwavering copy now matches the fixed EveryTenMinutes drain of 10 above a strict threshold of 10; Kahlua execution, save/reload, rendered EN, and interaction/balance observation remain runtime-unproven.

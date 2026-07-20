@@ -515,6 +515,10 @@ def _update_master(plan: Plan) -> None:
         marker
         + "\n- UniversalTraits:UT_woodsplitter is statically validated; in-game selection, "
         "save/reload, rendered EN, and key-ring occurrence remain runtime-unproven.\n"
+        "\n<!-- UNWAVERING-COPY-CORRECTION -->\n"
+        "- UniversalTraits:UT_unwavering copy now matches the fixed EveryTenMinutes drain "
+        "of 10 above a strict threshold of 10; Kahlua execution, save/reload, rendered EN, "
+        "and interaction/balance observation remain runtime-unproven.\n"
     )
     plan.write(relative, (text.split(marker)[0].rstrip() + "\n\n" + note).encode("utf-8"))
 

@@ -47,7 +47,7 @@
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "4F7338C65D9EC8C15B9D3E749A9A82ADB60F09D968265F4E0A09E65660E93326",
     "independent_reviews/traits_05_08.json": "D042BBCD575D70897788E1598054972D118246E3CABF7F738072A71B8E955B82",
-    "independent_reviews/traits_09_12.json": "F41976727FEA3F56102EC97431C5852AC9E8BEB69E2BD009AB00BDBF1485E665",
+    "independent_reviews/traits_09_12.json": "AE50D38C8FA77C886041A487F8D2A9E72A1B22EE96FC8A4B77A63E3A4D3728B9",
     "source_inventory.json": "47781D8C6AE00795C0DD5CFF8F89E295F49826BB57B64DC9DCD6DE6A767941C9",
     "trait_batches/batch_01.jsonl": "4FA9A60E8D86362B22C33D2BD2DC334565EB564071514576AAD0E90F7FF4BB81",
     "trait_batches/batch_02.jsonl": "8B1EAD1B3C9B6C33F0A40B0A78455432E3604F5C5023ECF1585CCE5CC18AAE4D",
@@ -60,8 +60,8 @@
     "trait_batches/batch_09.jsonl": "FFB64ADB79BEDD95F4F340F169A2BEB7A1158BF4C1E1602538AC75BA65F7D759",
     "trait_batches/batch_10.jsonl": "2FFE37D42F2DC928789EAE78A16880F4A283BAFB1D735113BB8D25ADE3A90F10",
     "trait_batches/batch_11.jsonl": "46B75AB40DF0F1939D1B381E7AC16710C8F3C3A793A26B2F9249799150A43362",
-    "trait_batches/batch_12.jsonl": "C1DCBAE0CC6F81B838D0DEF75F35187E606E392B5D79C253B0FC0C3945436A8B",
-    "translation_audit.json": "89C8338252797F29D2CB327DC46695E8E23CE23CAAE8BDEFD1F7D464A26566FD"
+    "trait_batches/batch_12.jsonl": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47",
+    "translation_audit.json": "984BE8A843175A0EEB02B29D8C77932070717AFDE0E3E27540FD47DB26624A6B"
   },
   "counts": {
     "traits": 198,
@@ -71,21 +71,21 @@
     "independent_review_findings": 118,
     "independent_review_states": {
       "accepted": 71,
-      "confirmed-defect": 40,
+      "confirmed-defect": 39,
       "coverage-gap": 19,
       "needs-correction": 63,
-      "runtime-unproven": 5
+      "runtime-unproven": 6
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 80,
+      "confirmed-defect": 79,
       "coverage-gap": 11,
-      "runtime-unproven": 82
+      "runtime-unproven": 83
     },
     "dimension_states": {
-      "proven-correct": 2617,
-      "confirmed-defect": 314,
-      "coverage-gap": 820,
+      "proven-correct": 2624,
+      "confirmed-defect": 309,
+      "coverage-gap": 818,
       "runtime-unproven": 1001
     }
   },
@@ -59721,7 +59721,7 @@
     {
       "trait_id": "UniversalTraits:UT_unwavering",
       "batch": "batch_12",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
@@ -59764,9 +59764,9 @@
           ]
         },
         "source_intent": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "description promises 40% less panic-event impact; runtime performs fixed periodic drain"
+            "accepted fixed periodic panic recovery is documented and unchanged"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -59774,9 +59774,9 @@
           ]
         },
         "runtime_path": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "EveryTenMinutes subtracts 10 panic only when panic>10"
+            "EveryTenMinutes subtracts 10 panic only when panic is above 10"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -59784,9 +59784,9 @@
           ]
         },
         "numbers": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "fixed -10 is neither a 40% multiplier nor proportional to incoming panic"
+            "Build 42 panic scale uses threshold 10 and fixed subtraction 10"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -59888,9 +59888,9 @@
           ]
         },
         "description": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "40% resistance claim does not describe fixed -10/10min drain"
+            "English copy states the exact cadence, strict threshold, and fixed amount"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -59908,13 +59908,11 @@
           ]
         },
         "balance": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "cost 6 prices a claimed behavior different from implementation"
+            "documentation-only correction preserves the accepted cost 6 and mechanic"
           ],
-          "missing_proof": [
-            "No balance target chose resistance versus periodic recovery."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "balance"
           ]
@@ -59930,9 +59928,9 @@
           ]
         },
         "tests": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "tests assert fixed -10 and threshold, not advertised 40% event resistance"
+            "behavioral boundary tests and exact source/release copy parity test are present"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -59940,13 +59938,11 @@
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Stats mock proves arithmetic only"
+            "existing Stats mock covers the unchanged arithmetic; no panic-event hook is claimed"
           ],
-          "missing_proof": [
-            "No panic-event input hook is modeled because production has none."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "mocks"
           ]
@@ -59954,7 +59950,7 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "assigned source/release surfaces match"
+            "assigned source/release Lua and English copy are byte-identical"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -59976,13 +59972,12 @@
         "B12-UNWAVERING-001"
       ],
       "unknowns": [
-        "Original upstream intent was not in the allowed evidence set.",
-        "No in-game panic-event run was supplied."
+        "Kahlua execution, save/load, rendered English, and panic-modifier interaction remain runtime-unproven."
       ],
-      "translation_terminal_state": "confirmed-defect",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_09_12.json",
-        "review_state": "confirmed-defect",
+        "review_state": "runtime-unproven",
         "omission_finding_ids": [],
         "cross_finding_ids": [
           "IR0912-FINDING-STATE-001",

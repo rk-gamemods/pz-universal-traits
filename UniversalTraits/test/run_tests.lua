@@ -3181,6 +3181,23 @@ test("unwavering does not affect player without the trait", function()
     assert_eq(player:getStats():get(CharacterStat.PANIC), 50, "panic unchanged without trait")
 end)
 
+test("unwavering English copy states the exact fixed drain and release matches source", function()
+    local expected = "Fear never really got its hooks into you. Every 10 in-game minutes, if panic is above 10, panic is reduced by 10."
+    local function readDescription(path)
+        local file = io.open(path, "r")
+        assert_true(file ~= nil, "failed to open " .. path)
+        local text = file:read("*a")
+        file:close()
+        return text:match('"UI_UT_unwaveringDesc"%s*:%s*"([^"]+)"')
+    end
+
+    local source = readDescription(base .. "../media/lua/shared/Translate/EN/UI.json")
+    local release = readDescription(base .. "../release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json")
+    assert_eq(source, expected, "source Unwavering copy must describe cadence, threshold, and amount")
+    assert_eq(release, expected, "release Unwavering copy must match the accepted source copy")
+    assert_eq(release, source, "Unwavering source/release copy parity")
+end)
+
 -- ===== UT_pillsallergy behavioral tests (hook in UT_ItemConsumptionHooks.lua) =====
 
 test("pillsallergy dispatches for every vanilla medication type", function()

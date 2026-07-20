@@ -2167,7 +2167,7 @@
       ]
     },
     {
-      "accepted_overall_state": "confirmed-defect",
+      "accepted_overall_state": "runtime-unproven",
       "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_12.jsonl:9",
       "cross_finding_ids": [
         "IR0912-FINDING-STATE-001",
@@ -2175,7 +2175,7 @@
         "IR0912-PERCENT-001",
         "IR0912-UNICODE-001"
       ],
-      "independent_state": "confirmed-defect",
+      "independent_state": "runtime-unproven",
       "omission_disposition": "none beyond referenced cross-trait findings",
       "omissions": [],
       "rejected_accepted_finding_ids": [],

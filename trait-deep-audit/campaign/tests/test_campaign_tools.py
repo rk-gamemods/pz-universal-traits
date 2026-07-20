@@ -592,8 +592,8 @@ class RecurringPatternTests(unittest.TestCase):
         self.assertNotIn("\u2014", source_ui["UI_UT_unwaveringDesc"])
         self.assertEqual(
             source_ui["UI_UT_unwaveringDesc"],
-            "Fear never really got its hooks into you. Panic resistance is increased "
-            "by 40 percent; panic events have 40 percent less impact.",
+            "Fear never really got its hooks into you. Every 10 in-game minutes, "
+            "if panic is above 10, panic is reduced by 10.",
         )
         self.assertEqual(source_bytes, release_path.read_bytes())
 
