@@ -522,49 +522,137 @@ class WoodSplitterRegeneratorTests(unittest.TestCase):
     def test_build_plan_updates_release_blocker_after_queue_before_manifest(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = _wood_fixture(Path(directory))
-            helper_directory = root / "helper-fixture"
-            helper_directory.mkdir()
-            helper_context = mock.MagicMock()
-            helper_context.__enter__.return_value = str(helper_directory)
+            campaign = root / "trait-deep-audit" / "campaign"
+            queue_bytes = b'{"queue_id":"planned-crlf"}\r\n{"queue_id":"planned-lf"}\n'
+            initial_digest = "0" * 64
+            release_blocker_path = campaign / "release_blocker_queue.json"
+            release_blocker_path.write_bytes(
+                json.dumps({"remediation_queue_sha256": initial_digest}).encode("utf-8")
+            )
+            expected_digest = __import__("hashlib").sha256(queue_bytes).hexdigest()
+            expected_blocker_bytes = (
+                json.dumps(
+                    {"remediation_queue_sha256": expected_digest},
+                    indent=2,
+                    ensure_ascii=False,
+                )
+                + "\n"
+            ).encode("utf-8")
             calls: list[str] = []
+            temporary_paths: list[tuple[Path, Path]] = []
+
+            def update_derived(plan, *_: object) -> None:
+                calls.append("queue-written")
+                plan.planned["remediation_queue.jsonl"] = queue_bytes
+
+            real_update = WOOD_MODULE.update_release_blocker_queue_sha256
+
+            def update_release_blocker(queue_path: Path, blocker_path: Path) -> None:
+                temporary_paths.append((queue_path, blocker_path))
+                self.assertEqual(queue_path.read_bytes(), queue_bytes)
+                self.assertEqual(
+                    json.loads(blocker_path.read_bytes())["remediation_queue_sha256"],
+                    initial_digest,
+                )
+                real_update(queue_path, blocker_path)
+                self.assertEqual(
+                    json.loads(blocker_path.read_bytes())["remediation_queue_sha256"],
+                    expected_digest,
+                )
+                calls.append("release-blocker-updated")
+
+            def update_manifest(plan) -> None:
+                self.assertEqual(plan.planned["release_blocker_queue.json"], expected_blocker_bytes)
+                calls.append("manifest-regenerated")
 
             with (
-                mock.patch.object(
-                    WOOD_MODULE.tempfile,
-                    "TemporaryDirectory",
-                    return_value=helper_context,
-                ),
                 mock.patch.object(WOOD_MODULE, "_update_batch", return_value={}),
                 mock.patch.object(WOOD_MODULE, "_update_source_records", return_value={}),
                 mock.patch.object(WOOD_MODULE, "_update_change_impact"),
                 mock.patch.object(
                     WOOD_MODULE,
                     "_update_derived",
-                    side_effect=lambda *_: calls.append("queue-written"),
+                    side_effect=update_derived,
                 ),
                 mock.patch.object(
                     WOOD_MODULE,
                     "update_release_blocker_queue_sha256",
-                    side_effect=lambda *_: calls.append("release-blocker-updated"),
-                ) as update_release_blocker,
+                    side_effect=update_release_blocker,
+                ),
                 mock.patch.object(WOOD_MODULE, "_update_pattern"),
                 mock.patch.object(WOOD_MODULE, "_update_master"),
                 mock.patch.object(
                     WOOD_MODULE,
                     "_update_manifest",
-                    side_effect=lambda *_: calls.append("manifest-regenerated"),
+                    side_effect=update_manifest,
                 ),
             ):
-                WOOD_MODULE.build_plan(root)
+                plan = WOOD_MODULE.build_plan(root)
 
-            update_release_blocker.assert_called_once_with(
-                helper_directory / "remediation_queue.jsonl",
-                helper_directory / "release_blocker_queue.json",
-            )
+            self.assertEqual(plan.planned["remediation_queue.jsonl"], queue_bytes)
+            self.assertEqual(plan.planned["release_blocker_queue.json"], expected_blocker_bytes)
+            self.assertNotEqual(expected_digest, initial_digest)
             self.assertEqual(
                 calls,
                 ["queue-written", "release-blocker-updated", "manifest-regenerated"],
             )
+            self.assertEqual(len(temporary_paths), 1)
+            queue_path, blocker_path = temporary_paths[0]
+            self.assertEqual(queue_path.name, "remediation_queue.jsonl")
+            self.assertEqual(blocker_path.name, "release_blocker_queue.json")
+            self.assertEqual(queue_path.parent, blocker_path.parent)
+            self.assertFalse(queue_path.parent.exists())
+
+    def test_build_plan_cleans_temporary_hash_inputs_after_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = _wood_fixture(Path(directory))
+            campaign = root / "trait-deep-audit" / "campaign"
+            queue_bytes = b'{"queue_id":"failure-crlf"}\r\n{"queue_id":"failure-lf"}\n'
+            release_blocker_path = campaign / "release_blocker_queue.json"
+            release_blocker_path.write_bytes(
+                json.dumps({"remediation_queue_sha256": "f" * 64}).encode("utf-8")
+            )
+            canonical_before = {
+                relative: (campaign / relative).read_bytes()
+                for relative in WOOD_MODULE.OUTPUTS
+            }
+            temporary_paths: list[tuple[Path, Path]] = []
+            real_update = WOOD_MODULE.update_release_blocker_queue_sha256
+
+            def update_derived(plan, *_: object) -> None:
+                plan.planned["remediation_queue.jsonl"] = queue_bytes
+
+            def fail_after_real_update(queue_path: Path, blocker_path: Path) -> None:
+                temporary_paths.append((queue_path, blocker_path))
+                self.assertEqual(queue_path.read_bytes(), queue_bytes)
+                real_update(queue_path, blocker_path)
+                raise RuntimeError("injected temporary workflow failure")
+
+            with (
+                mock.patch.object(WOOD_MODULE, "_update_batch", return_value={}),
+                mock.patch.object(WOOD_MODULE, "_update_source_records", return_value={}),
+                mock.patch.object(WOOD_MODULE, "_update_change_impact"),
+                mock.patch.object(WOOD_MODULE, "_update_derived", side_effect=update_derived),
+                mock.patch.object(
+                    WOOD_MODULE,
+                    "update_release_blocker_queue_sha256",
+                    side_effect=fail_after_real_update,
+                ),
+                mock.patch.object(WOOD_MODULE, "_update_pattern"),
+                mock.patch.object(WOOD_MODULE, "_update_master"),
+                mock.patch.object(WOOD_MODULE, "_update_manifest") as update_manifest,
+            ):
+                with self.assertRaisesRegex(RuntimeError, "injected temporary workflow failure"):
+                    WOOD_MODULE.build_plan(root)
+
+            self.assertEqual(len(temporary_paths), 1)
+            self.assertFalse(temporary_paths[0][0].parent.exists())
+            update_manifest.assert_not_called()
+            canonical_after = {
+                relative: (campaign / relative).read_bytes()
+                for relative in WOOD_MODULE.OUTPUTS
+            }
+            self.assertEqual(canonical_after, canonical_before)
 
     def test_plan_is_deterministic_and_preserves_unrelated_event_records(self) -> None:
         first = WOOD_MODULE.build_plan()
