@@ -60,9 +60,14 @@ function UTCore.setCollisionDebug(enabled)
     print("[UTCore:ZCollision] Debug " .. (UTCore._debugCollisions and "ON" or "OFF"))
 end
 
-local function dbg(msg)
-    if not UTCore._debugCollisions then return end
-    print("[UTCore:ZCollision] " .. tostring(msg))
+local function dbg(player, makeMessage)
+    local perSaveEnabled = false
+    if player then
+        local modData = player:getModData()
+        perSaveEnabled = modData and modData.UT_DEBUG_COLLISIONS == true
+    end
+    if not UTCore._debugCollisions and not perSaveEnabled then return end
+    print("[UTCore:ZCollision] " .. tostring(makeMessage()))
 end
 
 ---------------------------------------------------------------------------
@@ -129,7 +134,7 @@ local function onPlayerUpdate(player, tick)
             md.UT_bumpSuppress = nil
             md.UT_bumpGuardZombie = nil
             md.UT_prevBumped = nil
-            dbg("Cleaned up old suppression moddata")
+            dbg(player, function() return "Cleaned up old suppression moddata" end)
         end
         return
     end
@@ -168,13 +173,17 @@ local function onPlayerUpdate(player, tick)
 
                                 -- Fire callbacks for NEW zombies entering range
                                 if not prevHandled[zKey] then
-                                    dbg("Zombie in range: " .. zKey
-                                        .. " dist=" .. string.format("%.2f", dist)
-                                        .. (sprinting and " [SPRINT]" or " [RUN]"))
+                                    dbg(player, function()
+                                        return "Zombie in range: " .. zKey
+                                            .. " dist=" .. string.format("%.2f", dist)
+                                            .. (sprinting and " [SPRINT]" or " [RUN]")
+                                    end)
                                     for traitId, fn in pairs(UTCore._zombieCollisionCallbacks) do
                                         local ok, err = pcall(fn, player, obj)
                                         if not ok then
-                                            dbg("Callback ERROR [" .. traitId .. "]: " .. tostring(err))
+                                            dbg(player, function()
+                                                return "Callback ERROR [" .. traitId .. "]: " .. tostring(err)
+                                            end)
                                         end
                                     end
                                 end

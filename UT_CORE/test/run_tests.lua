@@ -968,6 +968,97 @@ end)
 
 -- ===== ZombieCollisionHook tests =====
 
+local function withCollisionDebugHarness(body)
+    local oldPrint = _G.print
+    local oldFormat = string.format
+    local oldTostring = _G.tostring
+    local oldDebug = UTCore._debugCollisions
+    local oldCell = _G._mockCell
+    local messages = {}
+    _G.print = function(message) messages[#messages + 1] = message end
+    local ok, err = pcall(body, messages)
+    _G.print = oldPrint
+    string.format = oldFormat
+    _G.tostring = oldTostring
+    UTCore._debugCollisions = oldDebug
+    _G._mockCell = oldCell
+    if not ok then error(err, 0) end
+end
+
+local function collisionDebugFixture(modData)
+    UTCore._zombieCollisionCallbacks = {}
+    UTCore._zombieCollisionCallbackCount = 0
+    local z = MockZombie({ x = 0.3, y = 0, z = 0 })
+    local sq = MockCollisionSquare(0, 0, 0, {z})
+    local squares = { ["0,0,0"] = sq }
+    for dx = -1, 1 do for dy = -1, 1 do
+        if dx ~= 0 or dy ~= 0 then squares[dx..","..dy..",0"] = MockCollisionSquare(dx, dy, 0, {}) end
+    end end
+    _G._mockCell = MockCell(squares)
+    local p = MockPlayer({}, { square = sq })
+    for key, value in pairs(modData or {}) do p:getModData()[key] = value end
+    return p, z
+end
+
+test("ZombieCollisionHook per-save debug logs cleanup", function()
+    withCollisionDebugHarness(function(messages)
+        UTCore._debugCollisions = false
+        local p = collisionDebugFixture({ UT_DEBUG_COLLISIONS = true, UT_bumpSuppress = true })
+        UTCore.registerZombieCollisionHandler("test_trait", function() end)
+        Events.OnPlayerUpdate.fire(p)
+        assert_eq(messages[1], "[UTCore:ZCollision] Cleaned up old suppression moddata")
+    end)
+end)
+
+test("ZombieCollisionHook per-save debug logs entry once and prefixes callback error", function()
+    withCollisionDebugHarness(function(messages)
+        UTCore._debugCollisions = false
+        local p = collisionDebugFixture({ UT_DEBUG_COLLISIONS = true })
+        p:setRunning(true)
+        UTCore.registerZombieCollisionHandler("test_trait", function() error("debug boom") end)
+        Events.OnPlayerUpdate.fire(p)
+        Events.OnPlayerUpdate.fire(p)
+        assert_eq(#messages, 2, "sustained range should log entry and callback error only once")
+        assert_true(messages[1]:find("[UTCore:ZCollision] Zombie in range:", 1, true) == 1)
+        assert_true(messages[2]:find("[UTCore:ZCollision] Callback ERROR [test_trait]:", 1, true) == 1)
+        assert_true(messages[2]:find("debug boom", 1, true) ~= nil)
+    end)
+end)
+
+test("ZombieCollisionHook suppresses all debug work when both toggles are false", function()
+    withCollisionDebugHarness(function(messages)
+        UTCore._debugCollisions = false
+        local p = collisionDebugFixture({ UT_bumpSuppress = true })
+        UTCore.registerZombieCollisionHandler("test_trait", function() end)
+        Events.OnPlayerUpdate.fire(p)
+        p:setRunning(true)
+        local formatCalls, errorTostringCalls = 0, 0
+        local realFormat, realTostring = string.format, tostring
+        string.format = function(...) formatCalls = formatCalls + 1; return realFormat(...) end
+        local callbackError = setmetatable({}, { __tostring = function() return "silent boom" end })
+        _G.tostring = function(value)
+            if value == callbackError then errorTostringCalls = errorTostringCalls + 1 end
+            return realTostring(value)
+        end
+        UTCore.registerZombieCollisionHandler("test_trait", function() error(callbackError) end)
+        Events.OnPlayerUpdate.fire(p)
+        assert_eq(#messages, 0, "cleanup, entry, and callback error should all be silent")
+        assert_eq(formatCalls, 0, "range formatting should be lazy while debug is disabled")
+        assert_eq(errorTostringCalls, 0, "callback errors should not stringify while debug is disabled")
+    end)
+end)
+
+test("ZombieCollisionHook global debug still logs when per-save debug is false", function()
+    withCollisionDebugHarness(function(messages)
+        UTCore._debugCollisions = true
+        local p = collisionDebugFixture({ UT_DEBUG_COLLISIONS = false })
+        p:setRunning(true)
+        UTCore.registerZombieCollisionHandler("test_trait", function() end)
+        Events.OnPlayerUpdate.fire(p)
+        assert_true(messages[1]:find("[UTCore:ZCollision] Zombie in range:", 1, true) == 1)
+    end)
+end)
+
 test("registerZombieCollisionHandler stores callback", function()
     UTCore._zombieCollisionCallbacks = {}
     local fn = function() end
