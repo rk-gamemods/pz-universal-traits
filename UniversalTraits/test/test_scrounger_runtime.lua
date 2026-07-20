@@ -89,11 +89,21 @@ function M.run(test, assert_eq, assert_true, base)
     test("scrounger event contract, Lua-array receiver, player resolution, and four-phase gating", function()
         local s = scenario()
         assert_eq(#s.handlers, 1)
-        for _, state in ipairs({ "start", "refresh", "middle" }) do s.fire(state) end
-        assert_eq(s.randomCalls(), 0, "only the completed inspection may roll")
+        for _, state in ipairs({ "begin", "beforeFloor", "buttonsAdded" }) do
+            s.fire(state)
+            assert_eq(s.randomCalls(), 0, state .. " must not roll")
+            assert_eq(s.modData.UT_scroungerRolled, nil, state .. " must not set the persistent flag")
+            assert_eq(s.worldObject.transmits, nil, state .. " must not transmit mod data")
+            assert_eq(s.inventory.added, nil, state .. " must not duplicate an item")
+            assert_eq(#s.sent, 0, state .. " must not send a duplicated item")
+        end
         s.fire("end")
+        assert_true(s.modData.UT_scroungerRolled, "end is the sole phase that sets the persistent flag")
+        assert_eq(s.worldObject.transmits, 1, "end is the sole phase that transmits mod data")
+        assert_eq(s.randomCalls(), 2, "end is the sole phase that rolls")
         assert_eq(s.selectedPlayerIndex(), 2, "inventory page player index is resolved")
         assert_eq(#s.inventory.added, 1, "plain Lua backpacks array is traversed")
+        assert_eq(#s.sent, 1, "end is the sole phase that sends the duplicated item")
     end)
 
     test("scrounger gates nil player and missing trait", function()
