@@ -23,6 +23,7 @@ from build_remediation_queue import (
     build_dimension_rows,
     build_queue,
     render_jsonl,
+    update_release_blocker_queue_sha256,
 )
 
 
@@ -48,6 +49,7 @@ OUTPUTS = (
     "final_trait_ledger_rows.jsonl",
     "dimension_ledger_rows.jsonl",
     "remediation_queue.jsonl",
+    "release_blocker_queue.json",
     "remediation_summary.json",
     "recurring_pattern_findings.json",
     "MASTER_COVERAGE_LEDGER.md",
@@ -564,6 +566,13 @@ def build_plan(root: Path = ROOT) -> Plan:
     review = _update_source_records(plan)
     _update_change_impact(plan)
     _update_derived(plan, batch, review)
+    with tempfile.TemporaryDirectory(prefix=TRANSACTION_PREFIX) as directory:
+        queue_path = Path(directory) / "remediation_queue.jsonl"
+        release_blocker_path = Path(directory) / "release_blocker_queue.json"
+        queue_path.write_bytes(plan.read("remediation_queue.jsonl"))
+        release_blocker_path.write_bytes(plan.read("release_blocker_queue.json"))
+        update_release_blocker_queue_sha256(queue_path, release_blocker_path)
+        plan.planned["release_blocker_queue.json"] = release_blocker_path.read_bytes()
     _update_pattern(plan)
     _update_master(plan)
     _update_manifest(plan)

@@ -13,6 +13,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 CAMPAIGN_ROOT = Path(__file__).resolve().parents[1]
@@ -517,6 +518,53 @@ class WoodSplitterRegeneratorTests(unittest.TestCase):
             or path.name.startswith(WOOD_MODULE.TRANSACTION_PREFIX)
         ]
         self.assertEqual(artifacts, [])
+
+    def test_build_plan_updates_release_blocker_after_queue_before_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = _wood_fixture(Path(directory))
+            helper_directory = root / "helper-fixture"
+            helper_directory.mkdir()
+            helper_context = mock.MagicMock()
+            helper_context.__enter__.return_value = str(helper_directory)
+            calls: list[str] = []
+
+            with (
+                mock.patch.object(
+                    WOOD_MODULE.tempfile,
+                    "TemporaryDirectory",
+                    return_value=helper_context,
+                ),
+                mock.patch.object(WOOD_MODULE, "_update_batch", return_value={}),
+                mock.patch.object(WOOD_MODULE, "_update_source_records", return_value={}),
+                mock.patch.object(WOOD_MODULE, "_update_change_impact"),
+                mock.patch.object(
+                    WOOD_MODULE,
+                    "_update_derived",
+                    side_effect=lambda *_: calls.append("queue-written"),
+                ),
+                mock.patch.object(
+                    WOOD_MODULE,
+                    "update_release_blocker_queue_sha256",
+                    side_effect=lambda *_: calls.append("release-blocker-updated"),
+                ) as update_release_blocker,
+                mock.patch.object(WOOD_MODULE, "_update_pattern"),
+                mock.patch.object(WOOD_MODULE, "_update_master"),
+                mock.patch.object(
+                    WOOD_MODULE,
+                    "_update_manifest",
+                    side_effect=lambda *_: calls.append("manifest-regenerated"),
+                ),
+            ):
+                WOOD_MODULE.build_plan(root)
+
+            update_release_blocker.assert_called_once_with(
+                helper_directory / "remediation_queue.jsonl",
+                helper_directory / "release_blocker_queue.json",
+            )
+            self.assertEqual(
+                calls,
+                ["queue-written", "release-blocker-updated", "manifest-regenerated"],
+            )
 
     def test_plan_is_deterministic_and_preserves_unrelated_event_records(self) -> None:
         first = WOOD_MODULE.build_plan()
