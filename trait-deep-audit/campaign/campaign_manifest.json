@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 66,
-  "total_bytes": 12699694,
+  "total_bytes": 12703205,
   "files": [
     {
       "path": "MASTER_COVERAGE_LEDGER.md",
@@ -341,8 +341,8 @@
       "path": "tests/test_campaign_tools.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 79128,
-      "sha256": "CEAB6727820985D91E037ACE77F038C67F8B3A7AC84621A62121B1C05C42C668"
+      "bytes": 82639,
+      "sha256": "FE56FB73D33B7F3724B54C8FFC35E50BF0A50CC8F5B50DBAA595EC1C76761784"
     },
     {
       "path": "tools/build_campaign_manifest.py",

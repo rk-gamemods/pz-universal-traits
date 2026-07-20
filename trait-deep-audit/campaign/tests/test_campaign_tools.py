@@ -198,6 +198,98 @@ class ResolutionRecordTests(unittest.TestCase):
                     )
 
 
+class FirstPassFindingResolutionStateTests(unittest.TestCase):
+    @staticmethod
+    def build_rows(findings: list[dict[str, object]]) -> list[dict[str, object]]:
+        with tempfile.TemporaryDirectory() as directory:
+            campaign_root = Path(directory)
+            batch_root = campaign_root / "trait_batches"
+            batch_root.mkdir()
+            (batch_root / "batch_01.jsonl").write_text(
+                json.dumps({"trait_id": "UniversalTraits:UT_fixture", "findings": findings})
+                + "\n",
+                encoding="utf-8",
+                newline="\n",
+            )
+            with mock.patch.object(
+                QUEUE_MODULE, "build_report", return_value={"findings": []}
+            ):
+                return QUEUE_MODULE.build_finding_rows(
+                    {"independent_review_findings": []}, campaign_root
+                )
+
+    def test_first_pass_finding_without_resolution_state_defaults_to_confirmed_defect(
+        self,
+    ) -> None:
+        rows = self.build_rows([{"id": "FIRST-PASS-DEFAULT"}])
+        self.assertEqual(rows[0]["state"], "confirmed-defect")
+
+    def test_explicit_resolved_first_pass_finding_remains_proven_correct(self) -> None:
+        rows = self.build_rows(
+            [
+                {
+                    "id": "FIRST-PASS-RESOLVED",
+                    "state": "confirmed-defect",
+                    "resolution_state": "proven-correct",
+                }
+            ]
+        )
+        self.assertEqual(rows[0]["state"], "proven-correct")
+
+    def test_explicit_resolution_does_not_reclassify_unrelated_findings(self) -> None:
+        rows = self.build_rows(
+            [
+                {
+                    "id": "FIRST-PASS-RESOLVED",
+                    "resolution_state": "proven-correct",
+                },
+                {"id": "FIRST-PASS-UNCHANGED"},
+            ]
+        )
+        states = {row["finding_id"]: row["state"] for row in rows}
+        self.assertEqual(
+            states,
+            {
+                "FIRST-PASS-RESOLVED": "proven-correct",
+                "FIRST-PASS-UNCHANGED": "confirmed-defect",
+            },
+        )
+
+    def test_resolution_state_accepts_terminal_enum_and_rejects_unsupported_values(
+        self,
+    ) -> None:
+        for state in MODULE.TERMINAL_STATES:
+            with self.subTest(state=state):
+                rows = self.build_rows(
+                    [{"id": f"FIRST-PASS-{state}", "resolution_state": state}]
+                )
+                self.assertEqual(rows[0]["state"], state)
+
+        for state in ("resolved", "unknown", ""):
+            with self.subTest(unsupported_state=state):
+                with self.assertRaisesRegex(ValueError, "unknown audit state"):
+                    self.build_rows(
+                        [{"id": "FIRST-PASS-INVALID", "resolution_state": state}]
+                    )
+
+    def test_scrounger_resolutions_remain_proven_correct_in_generated_rows(self) -> None:
+        ledger = MODULE.build_ledger(CAMPAIGN_ROOT)
+        findings = QUEUE_MODULE.build_finding_rows(ledger, CAMPAIGN_ROOT)
+        states = {
+            row["finding_id"]: row["state"]
+            for row in findings
+            if row["finding_id"].startswith("B10-SCROUNGER-")
+        }
+        self.assertEqual(
+            states,
+            {
+                "B10-SCROUNGER-001": "proven-correct",
+                "B10-SCROUNGER-002": "proven-correct",
+                "B10-SCROUNGER-003": "proven-correct",
+            },
+        )
+
+
 class ReleaseBlockerQueueDigestTests(unittest.TestCase):
     def test_updates_from_exact_raw_bytes_and_is_idempotent(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
