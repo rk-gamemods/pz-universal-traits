@@ -4,13 +4,15 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
 from build_campaign_manifest import build_manifest, render_manifest
 from build_final_trait_ledger import build_ledger, render_ledger, render_trait_rows
-from build_remediation_queue import build_outputs
+from build_remediation_queue import build_outputs, update_release_blocker_queue_sha256
 from campaign_cli import no_arg_command
 from check_recurring_patterns import build_report, render_report
 
@@ -25,6 +27,17 @@ DESCRIPTION = (
 )
 SOURCE_UI = "UniversalTraits/media/lua/shared/Translate/EN/UI.json"
 RELEASE_UI = "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json"
+DERIVED_OUTPUTS = (
+    "final_trait_ledger.json",
+    "final_trait_ledger_rows.jsonl",
+    "dimension_ledger_rows.jsonl",
+    "remediation_queue.jsonl",
+    "release_blocker_queue.json",
+    "remediation_summary.json",
+    "recurring_pattern_findings.json",
+    "campaign_manifest.json",
+)
+TRANSACTION_PREFIX = ".regenerate_unwavering."
 
 
 def _load_json(path: Path) -> Any:
@@ -170,22 +183,34 @@ def _update_inventory() -> None:
 
 def _regenerate_derived() -> None:
     ledger = build_ledger(CAMPAIGN)
-    (CAMPAIGN / "final_trait_ledger.json").write_text(
-        render_ledger(ledger), encoding="utf-8", newline="\n"
-    )
-    (CAMPAIGN / "final_trait_ledger_rows.jsonl").write_text(
-        render_trait_rows(ledger), encoding="utf-8", newline="\n"
-    )
     dimensions, queue, summary = build_outputs(CAMPAIGN)
-    (CAMPAIGN / "dimension_ledger_rows.jsonl").write_text(dimensions, encoding="utf-8", newline="\n")
-    (CAMPAIGN / "remediation_queue.jsonl").write_text(queue, encoding="utf-8", newline="\n")
-    (CAMPAIGN / "remediation_summary.json").write_text(summary, encoding="utf-8", newline="\n")
-    (CAMPAIGN / "recurring_pattern_findings.json").write_text(
-        render_report(build_report()), encoding="utf-8", newline="\n"
-    )
-    (CAMPAIGN / "campaign_manifest.json").write_text(
-        render_manifest(build_manifest(CAMPAIGN)), encoding="utf-8", newline="\n"
-    )
+    planned = {
+        "final_trait_ledger.json": render_ledger(ledger).encode("utf-8"),
+        "final_trait_ledger_rows.jsonl": render_trait_rows(ledger).encode("utf-8"),
+        "dimension_ledger_rows.jsonl": dimensions.encode("utf-8"),
+        "remediation_queue.jsonl": queue.encode("utf-8"),
+        "release_blocker_queue.json": (CAMPAIGN / "release_blocker_queue.json").read_bytes(),
+        "remediation_summary.json": summary.encode("utf-8"),
+        "recurring_pattern_findings.json": render_report(build_report()).encode("utf-8"),
+    }
+
+    with tempfile.TemporaryDirectory(prefix=TRANSACTION_PREFIX) as directory:
+        transaction = Path(directory)
+        queue_path = transaction / "remediation_queue.jsonl"
+        blocker_path = transaction / "release_blocker_queue.json"
+        queue_path.write_bytes(planned["remediation_queue.jsonl"])
+        blocker_path.write_bytes(planned["release_blocker_queue.json"])
+        update_release_blocker_queue_sha256(queue_path, blocker_path)
+        planned["release_blocker_queue.json"] = blocker_path.read_bytes()
+
+        overlay = transaction / "campaign"
+        shutil.copytree(CAMPAIGN, overlay)
+        for relative, data in planned.items():
+            (overlay / relative).write_bytes(data)
+        planned["campaign_manifest.json"] = render_manifest(build_manifest(overlay)).encode("utf-8")
+
+    for relative in DERIVED_OUTPUTS:
+        (CAMPAIGN / relative).write_bytes(planned[relative])
 
 
 def main() -> int:

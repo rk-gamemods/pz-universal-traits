@@ -58,6 +58,14 @@ assert WOOD_SPEC and WOOD_SPEC.loader
 WOOD_MODULE = importlib.util.module_from_spec(WOOD_SPEC)
 WOOD_SPEC.loader.exec_module(WOOD_MODULE)
 
+UNWAVERING_MODULE_PATH = CAMPAIGN_ROOT / "tools" / "regenerate_unwavering.py"
+UNWAVERING_SPEC = importlib.util.spec_from_file_location(
+    "regenerate_unwavering", UNWAVERING_MODULE_PATH
+)
+assert UNWAVERING_SPEC and UNWAVERING_SPEC.loader
+UNWAVERING_MODULE = importlib.util.module_from_spec(UNWAVERING_SPEC)
+UNWAVERING_SPEC.loader.exec_module(UNWAVERING_MODULE)
+
 
 PRE_REMEDIATION_TEXT_REPLACEMENTS = (
     ("fungi - the edible", "fungi — the edible"),
@@ -508,6 +516,121 @@ class CampaignManifestTests(unittest.TestCase):
                 MANIFEST_MODULE.build_manifest(
                     Path(directory), required_artifacts=("required.json",)
                 )
+
+
+class UnwaveringRegeneratorTests(unittest.TestCase):
+    def make_campaign(self, root: Path) -> Path:
+        campaign = root / "campaign"
+        campaign.mkdir()
+        for relative in UNWAVERING_MODULE.DERIVED_OUTPUTS:
+            (campaign / relative).write_bytes(f"original:{relative}\n".encode("utf-8"))
+        (campaign / "release_blocker_queue.json").write_bytes(
+            json.dumps({"remediation_queue_sha256": "0" * 64}).encode("utf-8")
+        )
+        (campaign / "stable-input.txt").write_bytes(b"stable\n")
+        return campaign
+
+    def test_derived_plan_hashes_exact_queue_before_manifest_last(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            campaign = self.make_campaign(Path(directory))
+            queue_bytes = b'{"queue_id":"crlf"}\r\n{"queue_id":"lf"}\n'
+            expected_digest = hashlib.sha256(queue_bytes).hexdigest()
+            calls: list[str] = []
+            temporary_paths: list[tuple[Path, Path]] = []
+            real_update = UNWAVERING_MODULE.update_release_blocker_queue_sha256
+
+            def update_blocker(queue_path: Path, blocker_path: Path) -> None:
+                self.assertEqual(queue_path.read_bytes(), queue_bytes)
+                temporary_paths.append((queue_path, blocker_path))
+                real_update(queue_path, blocker_path)
+                calls.append("release-blocker-updated")
+
+            def build_manifest(overlay: Path) -> dict[str, object]:
+                self.assertEqual((overlay / "remediation_queue.jsonl").read_bytes(), queue_bytes)
+                blocker = json.loads((overlay / "release_blocker_queue.json").read_bytes())
+                self.assertEqual(blocker["remediation_queue_sha256"], expected_digest)
+                calls.append("manifest-regenerated")
+                return {"observed_digest": blocker["remediation_queue_sha256"]}
+
+            with (
+                mock.patch.object(UNWAVERING_MODULE, "CAMPAIGN", campaign),
+                mock.patch.object(UNWAVERING_MODULE, "build_ledger", return_value={}),
+                mock.patch.object(UNWAVERING_MODULE, "render_ledger", return_value="ledger\n"),
+                mock.patch.object(UNWAVERING_MODULE, "render_trait_rows", return_value="rows\n"),
+                mock.patch.object(
+                    UNWAVERING_MODULE,
+                    "build_outputs",
+                    return_value=("dimensions\n", queue_bytes.decode("utf-8"), "summary\n"),
+                ),
+                mock.patch.object(UNWAVERING_MODULE, "build_report", return_value={}),
+                mock.patch.object(UNWAVERING_MODULE, "render_report", return_value="patterns\n"),
+                mock.patch.object(
+                    UNWAVERING_MODULE,
+                    "update_release_blocker_queue_sha256",
+                    side_effect=update_blocker,
+                ),
+                mock.patch.object(UNWAVERING_MODULE, "build_manifest", side_effect=build_manifest),
+                mock.patch.object(
+                    UNWAVERING_MODULE,
+                    "render_manifest",
+                    side_effect=lambda value: json.dumps(value) + "\n",
+                ),
+            ):
+                UNWAVERING_MODULE._regenerate_derived()
+
+            self.assertEqual(calls, ["release-blocker-updated", "manifest-regenerated"])
+            self.assertEqual((campaign / "remediation_queue.jsonl").read_bytes(), queue_bytes)
+            blocker = json.loads((campaign / "release_blocker_queue.json").read_bytes())
+            self.assertEqual(blocker["remediation_queue_sha256"], expected_digest)
+            self.assertEqual(len(temporary_paths), 1)
+            self.assertFalse(temporary_paths[0][0].parent.exists())
+
+    def test_derived_plan_cleans_temporary_inputs_and_preserves_canonical_on_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            campaign = self.make_campaign(Path(directory))
+            before = {
+                relative: (campaign / relative).read_bytes()
+                for relative in UNWAVERING_MODULE.DERIVED_OUTPUTS
+            }
+            queue_bytes = b'{"queue_id":"failure-crlf"}\r\n{"queue_id":"failure-lf"}\n'
+            temporary_paths: list[tuple[Path, Path]] = []
+            real_update = UNWAVERING_MODULE.update_release_blocker_queue_sha256
+
+            def fail_after_real_update(queue_path: Path, blocker_path: Path) -> None:
+                temporary_paths.append((queue_path, blocker_path))
+                real_update(queue_path, blocker_path)
+                raise RuntimeError("injected temporary workflow failure")
+
+            with (
+                mock.patch.object(UNWAVERING_MODULE, "CAMPAIGN", campaign),
+                mock.patch.object(UNWAVERING_MODULE, "build_ledger", return_value={}),
+                mock.patch.object(UNWAVERING_MODULE, "render_ledger", return_value="ledger\n"),
+                mock.patch.object(UNWAVERING_MODULE, "render_trait_rows", return_value="rows\n"),
+                mock.patch.object(
+                    UNWAVERING_MODULE,
+                    "build_outputs",
+                    return_value=("dimensions\n", queue_bytes.decode("utf-8"), "summary\n"),
+                ),
+                mock.patch.object(UNWAVERING_MODULE, "build_report", return_value={}),
+                mock.patch.object(UNWAVERING_MODULE, "render_report", return_value="patterns\n"),
+                mock.patch.object(
+                    UNWAVERING_MODULE,
+                    "update_release_blocker_queue_sha256",
+                    side_effect=fail_after_real_update,
+                ),
+                mock.patch.object(UNWAVERING_MODULE, "build_manifest") as build_manifest,
+            ):
+                with self.assertRaisesRegex(RuntimeError, "injected temporary workflow failure"):
+                    UNWAVERING_MODULE._regenerate_derived()
+
+            self.assertEqual(len(temporary_paths), 1)
+            self.assertFalse(temporary_paths[0][0].parent.exists())
+            build_manifest.assert_not_called()
+            after = {
+                relative: (campaign / relative).read_bytes()
+                for relative in UNWAVERING_MODULE.DERIVED_OUTPUTS
+            }
+            self.assertEqual(after, before)
 
 
 class WoodSplitterRegeneratorTests(unittest.TestCase):
