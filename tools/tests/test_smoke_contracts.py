@@ -32,6 +32,19 @@ def inventory():
 
 
 class GeneratorTests(unittest.TestCase):
+    def test_character_stat_endurance_renders_verified_maximum_value_ping(self):
+        verifier_inventory = {"unique_surfaces": [{
+            "receiver": "CharacterStat", "method": "getMaximumValue",
+            "verification_kind": "method_call"}], "call_sites": [{
+            "receiver": "CharacterStat", "method": "getMaximumValue", "arg_count": 0,
+            "relative_file": "media/lua/shared/example.lua"}]}
+        emitted, omitted = generator.build_plan(verifier_inventory, {})
+        source = generator.generate_lua(emitted)
+        self.assertEqual(emitted, [("CharacterStat", "getMaximumValue")])
+        self.assertEqual(omitted, {})
+        self.assertIn("local _ = CharacterStat.ENDURANCE:getMaximumValue()", source)
+        self.assertIn("mark('CharacterStat.getMaximumValue')", source)
+
     def test_runtime_identity_is_not_in_canonical_bytes(self):
         emitted, _ = generator.build_plan(inventory(), {})
         source = generator.generate_lua(emitted)

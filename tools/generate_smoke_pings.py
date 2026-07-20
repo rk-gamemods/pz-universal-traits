@@ -13,6 +13,7 @@ DEFAULT_INVENTORY = SCRIPT_DIR / "pz_api_inventory.json"
 DEFAULT_OUTPUT = ROOT / "UniversalTraits/media/lua/shared/UniversalTraits/UT_SmokePings.lua"
 SAFE_METHOD_PREFIXES = ("get", "is", "has", "num", "size")
 RECEIVER_EXPRESSIONS = {
+    "CharacterStat": "CharacterStat.ENDURANCE",
     "player": "player", "character": "player", "attacker": "player", "target": "player",
     "stats": "_stats", "bodyDamage": "_bd", "bd": "_bd", "nutrition": "_nutrition",
     "inv": "_inv", "inventory": "_inv", "container": "_inv", "pack": "_inv",
