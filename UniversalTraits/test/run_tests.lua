@@ -2471,6 +2471,11 @@ dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_antivaxxer.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_physicallyactive.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_gunspecialist_III.lua")
+
+ISEatFoodAction.perform = function(self)
+    self._originalPerformCalls = (self._originalPerformCalls or 0) + 1
+    return self._originalPerformReturn
+end
 dofile(base .. "../media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua")
 
 -- Install consumption + fitness hooks (simulates game startup)
@@ -2827,21 +2832,61 @@ test("caffeine consumption hooks are reload-safe and preserve later hook owners"
         "a later hook owner must remain installed")
 end)
 
-test("consumption hook applies stored hunger bonus multipliers", function()
-    local player = MockPlayer({}, { hunger = 0.8, calories = 2000 })
-    local item = MockItem("Stew", {
-        hungerChange = -20,
-        calories = 200,
-        moddata = { UT_gordHungerMult = 1.5 },
-    })
-    local action = { character = player, item = item, percentage = 1.0 }
+test("gordanite consumption keeps one net 1.5x effect after native consumption", function()
+    local cases = {
+        { name = "full", percentage = 1.0, hungerChange = -0.2, expectedHunger = 0.5 },
+        { name = "partial", percentage = 0.5, hungerChange = -0.2, expectedHunger = 0.55 },
+        { name = "zero percentage", percentage = 0, hungerChange = -0.2, expectedHunger = 0.6 },
+        { name = "negative percentage", percentage = -0.5, hungerChange = -0.2, expectedHunger = 0.6 },
+        { name = "zero hunger change", percentage = 1.0, hungerChange = 0, expectedHunger = 0.6 },
+        { name = "positive hunger change", percentage = 1.0, hungerChange = 0.2, expectedHunger = 0.6 },
+    }
+
+    for _, case in ipairs(cases) do
+        -- The starting values represent state after vanilla complete() consumed
+        -- the already-boosted 300-calorie item and applied its base hunger change.
+        local player = MockPlayer({}, { hunger = 0.6, calories = 2300 })
+        local item = MockItem("Stew", {
+            hungerChange = case.hungerChange,
+            calories = 300,
+            moddata = { UT_gordHungerMult = 1.5 },
+        })
+        local action = {
+            character = player,
+            item = item,
+            percentage = case.percentage,
+            _originalPerformReturn = "vanilla-return",
+        }
+
+        local result = ISEatFoodAction.perform(action)
+
+        assert_true(math.abs(player:getStats():get(CharacterStat.HUNGER) - case.expectedHunger) < 1e-9,
+            case.name .. ": expected exactly one 1.5x hunger effect")
+        assert_eq(player:getNutrition():getCalories(), 2300,
+            case.name .. ": Gordanite calories must not receive a second 1.5x application")
+        assert_eq(action._originalPerformCalls, 1,
+            case.name .. ": original perform must run exactly once")
+        assert_eq(result, nil,
+            case.name .. ": wrapper return behavior must remain unchanged")
+    end
+end)
+
+test("consumption hook leaves non-Gordanite food unchanged", function()
+    local player = MockPlayer({}, { hunger = 0.6, calories = 2200 })
+    local action = {
+        character = player,
+        item = MockItem("Stew", { hungerChange = -0.2, calories = 200 }),
+        percentage = 1.0,
+    }
 
     ISEatFoodAction.perform(action)
 
-    assert_eq(player:getStats():get(CharacterStat.HUNGER), 0,
-        "expected stored hunger bonus to reduce hunger and clamp at zero")
-    assert_eq(player:getNutrition():getCalories(), 2100,
-        "expected stored calorie bonus to add 50% extra calories")
+    assert_eq(player:getStats():get(CharacterStat.HUNGER), 0.6,
+        "non-Gordanite hunger must remain unchanged")
+    assert_eq(player:getNutrition():getCalories(), 2200,
+        "non-Gordanite calories must remain unchanged")
+    assert_eq(action._originalPerformCalls, 1,
+        "non-Gordanite original perform must run exactly once")
 end)
 
 -- ─── UT_humanhamster ──────────────────────────────────────────────────────────

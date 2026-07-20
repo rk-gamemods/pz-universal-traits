@@ -60,25 +60,28 @@ local function isWildPlantItem(item)
     return ok and cats ~= nil and not cats:isEmpty()
 end
 
-local function getFoodBonusMultiplier(item)
-    if not item or type(item.getModData) ~= "function" then return 1.0 end
+local function getFoodBonusMultipliers(item)
+    if not item or type(item.getModData) ~= "function" then return 1.0, 1.0 end
 
     local md = item:getModData()
     local multiplier = 1.0
+    local gordaniteCaloriesAlreadyBoosted = false
 
     if type(md["UT_gordHungerMult"]) == "number" and md["UT_gordHungerMult"] > multiplier then
         multiplier = md["UT_gordHungerMult"]
+        gordaniteCaloriesAlreadyBoosted = true
     end
 
     if type(md["UT_wildsmanFishHungerMult"]) == "number" and md["UT_wildsmanFishHungerMult"] > multiplier then
         multiplier = md["UT_wildsmanFishHungerMult"]
     end
 
-    return multiplier
+    local calorieMultiplier = gordaniteCaloriesAlreadyBoosted and 1.0 or multiplier
+    return multiplier, calorieMultiplier
 end
 
 local function applyFoodBonusEffects(character, item, percentage)
-    local multiplier = getFoodBonusMultiplier(item)
+    local multiplier, calorieMultiplier = getFoodBonusMultipliers(item)
     if multiplier <= 1.0 then return end
 
     local consumedFraction = percentage or 1.0
@@ -93,10 +96,10 @@ local function applyFoodBonusEffects(character, item, percentage)
         end
 
         local calories = item.getCalories and item:getCalories() or nil
-        if calories and calories > 0 then
+        if calories and calories > 0 and calorieMultiplier > 1.0 then
             local nutrition = character.getNutrition and character:getNutrition() or nil
             if nutrition and nutrition.setCalories and nutrition.getCalories then
-                nutrition:setCalories(nutrition:getCalories() + (calories * consumedFraction * (multiplier - 1.0)))
+                nutrition:setCalories(nutrition:getCalories() + (calories * consumedFraction * (calorieMultiplier - 1.0)))
             end
         end
     end)
