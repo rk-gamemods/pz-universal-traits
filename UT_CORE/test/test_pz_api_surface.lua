@@ -248,7 +248,7 @@ test("API:Global — getGameTime() exists with required methods", function()
     assert(type(getGameTime) == "function", "getGameTime must be a function")
     local gt = getGameTime()
     assert(type(gt.getWorldAgeHours) == "function", "getWorldAgeHours")
-    assert(type(gt.getTicks) == "function", "getTicks")
+    assert(gt.getTicks == nil, "getTicks must remain absent: it is not exposed by current GameTime")
     assert(type(gt.getTimeOfDay) == "function", "getTimeOfDay")
 end)
 

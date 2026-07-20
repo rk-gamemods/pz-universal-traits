@@ -4008,20 +4008,66 @@ test("nervouswreck does not re-apply when already applied", function()
         "value should not change on second update")
 end)
 
-test("motionsickness raises stress when in vehicle after 60 ticks", function()
-    local vehicle = MockVehicle()
-    local p = MockPlayer({ "UniversalTraits:UT_motionsickness" },
-        { vehicle = vehicle, playerNum = 300, stress = 0.0 })
-    setMockGameTime(0, 300)  -- tick 300 >> lastCheckTick[300]+60
-    Events.OnPlayerUpdate:fire(p)
-    assert_true(p:getStats():get(CharacterStat.STRESS) > 0.0, "stress should increase while in vehicle")
+local MOTION_SICKNESS_ID = "UniversalTraits:UT_motionsickness"
+local function firePlayerUpdates(player, count)
+    for _ = 1, count do Events.OnPlayerUpdate:fire(player) end
+end
+
+test("motionsickness has one dispatch-managed vehicle-aware registration", function()
+    local handler = UTCore._tickHandlers[MOTION_SICKNESS_ID]
+    assert_true(handler ~= nil, "motionsickness handler should be registered")
+    assert_eq(handler.id, MOTION_SICKNESS_ID, "registration id")
+    assert_eq(handler.opts.vehicleAware, true, "registration should be vehicle-aware")
+    assert_eq(handler.opts.throttle, 60, "dispatcher should own the 60-update cadence")
 end)
-test("motionsickness does NOT fire when not in vehicle", function()
-    local p = MockPlayer({ "UniversalTraits:UT_motionsickness" },
-        { playerNum = 301, stress = 0.0 })
-    setMockGameTime(0, 600)
+test("motionsickness first update is safe and has no effect before cadence", function()
+    local p = MockPlayer({ MOTION_SICKNESS_ID }, { vehicle = MockVehicle(), stress = 0.0 })
     Events.OnPlayerUpdate:fire(p)
-    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.0, "no stress without vehicle")
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.0, "first update should not apply stress")
+end)
+test("motionsickness applies exactly 0.01 to driver and passenger on cadence", function()
+    local driver = MockPlayer({ MOTION_SICKNESS_ID },
+        { vehicle = MockVehicle(), driving = true, stress = 0.0 })
+    firePlayerUpdates(driver, 59)
+    assert_eq(driver:getStats():get(CharacterStat.STRESS), 0.0, "driver: no effect before update 60")
+    Events.OnPlayerUpdate:fire(driver)
+    assert_eq(driver:getStats():get(CharacterStat.STRESS), 0.01, "driver: exact cadence effect")
+
+    UTCore._mockTickCount = 0
+    local passenger = MockPlayer({ MOTION_SICKNESS_ID },
+        { vehicle = MockVehicle(), driving = false, stress = 0.0 })
+    firePlayerUpdates(passenger, 60)
+    assert_eq(passenger:getStats():get(CharacterStat.STRESS), 0.01, "passenger: exact cadence effect")
+end)
+test("motionsickness repeats cadence and caps stress at 1.0", function()
+    local p = MockPlayer({ MOTION_SICKNESS_ID }, { vehicle = MockVehicle(), stress = 0.985 })
+    firePlayerUpdates(p, 60)
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.995, "first cadence should add exactly 0.01")
+    firePlayerUpdates(p, 60)
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 1, "second cadence should cap at 1.0")
+end)
+test("motionsickness skips on foot and without the trait", function()
+    local onFoot = MockPlayer({ MOTION_SICKNESS_ID }, { stress = 0.0 })
+    firePlayerUpdates(onFoot, 60)
+    assert_eq(onFoot:getStats():get(CharacterStat.STRESS), 0.0, "no stress on foot")
+
+    UTCore._mockTickCount = 0
+    local noTrait = MockPlayer({}, { vehicle = MockVehicle(), stress = 0.0 })
+    firePlayerUpdates(noTrait, 60)
+    assert_eq(noTrait:getStats():get(CharacterStat.STRESS), 0.0, "no stress without trait")
+end)
+test("motionsickness cadence resets on dispatcher rebuild and honors trait removal", function()
+    local p = MockPlayer({ MOTION_SICKNESS_ID }, { vehicle = MockVehicle(), stress = 0.0 })
+    firePlayerUpdates(p, 59)
+    UTCore._mockTickCount = 0 -- new central dispatcher after save/load rebuild
+    firePlayerUpdates(p, 59)
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.0, "rebuild should restart cadence")
+    Events.OnPlayerUpdate:fire(p)
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.01, "rebuilt dispatcher should apply on update 60")
+
+    p:getCharacterTraits():remove(CharacterTrait.get(ResourceLocation.of(MOTION_SICKNESS_ID)))
+    firePlayerUpdates(p, 60)
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.01, "removed trait should stop future effects")
 end)
 
 test("vehophobic raises panic and stress when driving (past cooldown)", function()

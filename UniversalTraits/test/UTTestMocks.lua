@@ -932,9 +932,7 @@ if not _G.Events.OnPlayerUpdate then
                     if not vehicleAware and tick.vehicle then hasTrait = false end
                     -- Dead gate
                     if player.isDead and player:isDead() then hasTrait = false end
-                    if hasTrait then
-                        pcall(h.fn, player, tick)
-                    end
+                    if hasTrait then h.fn(player, tick) end
                     end
                     ::continueTick::
                 end
@@ -994,13 +992,11 @@ end
 
 local _mockGameTime = {
     worldAgeHours = 0,
-    ticks = 0,
     timeOfDay = 12,  -- engine contract is an hour on a 0..24 clock
 }
 
-function setMockGameTime(worldAgeHours, ticks)
+function setMockGameTime(worldAgeHours)
     _mockGameTime.worldAgeHours = worldAgeHours or 0
-    _mockGameTime.ticks = ticks or 0
 end
 
 function setMockTimeOfDay(v)
@@ -1011,14 +1007,9 @@ function advanceMockGameTimeHours(delta)
     _mockGameTime.worldAgeHours = _mockGameTime.worldAgeHours + (delta or 0)
 end
 
-function advanceMockGameTicks(delta)
-    _mockGameTime.ticks = _mockGameTime.ticks + (delta or 0)
-end
-
 function getGameTime()
     return {
         getWorldAgeHours = function(self) return _mockGameTime.worldAgeHours end,
-        getTicks         = function(self) return _mockGameTime.ticks end,
         getTimeOfDay     = function(self) return _mockGameTime.timeOfDay end,
     }
 end
