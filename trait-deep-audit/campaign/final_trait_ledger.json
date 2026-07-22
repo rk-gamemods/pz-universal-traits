@@ -45,12 +45,12 @@
     }
   },
   "source_artifact_sha256": {
-    "independent_reviews/traits_01_04.json": "8003D021E36FA024ED1007B3FB98F3A814A3204E2D7B6435CF1DCDB3C7A182E3",
+    "independent_reviews/traits_01_04.json": "C733900ADBDEB711681C5975462B0AA1393B874E30428457A59E6B887B5A6925",
     "independent_reviews/traits_05_08.json": "1EC23EF9DE7D30A8244E32AE98C8D469A060243D7A1A93AAF8D6E410C13B5530",
     "independent_reviews/traits_09_12.json": "27A52A4BB934EDCCD324FC013C7CC1885085D91F474C3E0BEED192C5018C7805",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "7662955EC097DEFA35D50374254DDA128E3338D6113275FB59F09A21ACA2D3B1",
-    "trait_batches/batch_02.jsonl": "C738089C591B9CA6B1AEB8D31085109357DDB3A4C7D49F82F833B1E5F92AF3D5",
+    "trait_batches/batch_02.jsonl": "FA426145828F685B3BA57A73EDFB9E4FE31126D4075F69C9C9BB01A4643871FF",
     "trait_batches/batch_03.jsonl": "F8C9E0FD9E273306FEC68C182BD9B6A34D268D7EF47BBD040845FC308AFE169A",
     "trait_batches/batch_04.jsonl": "7BE87A0648404822CC35EE0904E3E4CC43391B4F955363D61BE1E3B8FEC6DA6E",
     "trait_batches/batch_05.jsonl": "6F550AD8CF0BD3BA4E827AD9D5F39F2149C50B4D8A990816451C8E86F58DE5AE",
@@ -61,7 +61,7 @@
     "trait_batches/batch_10.jsonl": "FD77CC372A742BCDEB66FCB6D26BF9622BA4EC439CDB8E9135CAC22B946F3A44",
     "trait_batches/batch_11.jsonl": "11FBFE83557FBD93363F41AC740897040804E74E1063367C55A521DA0D2C98F4",
     "trait_batches/batch_12.jsonl": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47",
-    "translation_audit.json": "F808449B20E8EA46514911457071C7AF6B4D8F2ABDF428EB9EF46D7B73823E87"
+    "translation_audit.json": "B74428726F351BBD54269D08F743C01EAD7C0BBA1F4118062AD1E574C80B39A0"
   },
   "counts": {
     "traits": 198,
@@ -70,10 +70,10 @@
     "independent_reviewed_traits": 198,
     "independent_review_findings": 118,
     "independent_review_states": {
-      "accepted": 77,
+      "accepted": 78,
       "confirmed-defect": 38,
       "coverage-gap": 20,
-      "needs-correction": 57,
+      "needs-correction": 56,
       "runtime-unproven": 6
     },
     "overall_states": {
@@ -83,10 +83,10 @@
       "runtime-unproven": 91
     },
     "dimension_states": {
-      "proven-correct": 2694,
+      "proven-correct": 2702,
       "confirmed-defect": 272,
-      "coverage-gap": 796,
-      "runtime-unproven": 990
+      "coverage-gap": 791,
+      "runtime-unproven": 987
     }
   },
   "independent_review_findings": [
@@ -446,7 +446,7 @@
     },
     {
       "id": "IR0104-BOUNCER_I-SOURCE-RELEASE-PERK",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
       "title": "Bouncer 1 source and release definitions disagree on the medical XP perk",
@@ -461,13 +461,13 @@
         "packaging"
       ],
       "reproduction_evidence": "Source uses Doctor=1; release uses FirstAid=1. Current PerkFactory exposes Doctor and no FirstAid symbol.",
-      "missing_proof": "",
-      "recommended_correction": "Copy the current source Doctor definition into release and reject unknown XPBoost tokens during validation.",
-      "smallest_regression_test": "Compare the exact source/release block and validate every XPBoost token against current PerkFactory.Perks."
+      "missing_proof": "Current-build in-game observation remains unrun.",
+      "recommended_correction": "No further static Bouncer I correction is indicated.",
+      "smallest_regression_test": "Covered by the focused Bouncer I regression cases."
     },
     {
       "id": "IR0104-BOUNCER_I-TICK-COOLDOWN",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "medium",
       "confidence": "high",
       "title": "Bouncer cooldown treats update callbacks as a fixed 60-Hz clock",
@@ -481,9 +481,9 @@
         "performance"
       ],
       "reproduction_evidence": "The shared Bouncer handler uses a constant ticks-per-second conversion on OnPlayerUpdate; update count varies with runtime cadence and is not elapsed seconds.",
-      "missing_proof": "No in-game timing trace across frame/update rates was captured.",
-      "recommended_correction": "Use game time or a supported delta-time value for elapsed cooldowns.",
-      "smallest_regression_test": "Measure the same cooldown under two update rates and assert equal wall/game-time duration."
+      "missing_proof": "Current-build in-game observation remains unrun.",
+      "recommended_correction": "No further static Bouncer I correction is indicated.",
+      "smallest_regression_test": "Covered by the focused Bouncer I regression cases."
     },
     {
       "id": "IR0104-BOUNCER_II-SOURCE-RELEASE-PERK",
@@ -11093,13 +11093,15 @@
           ]
         },
         "definition_parser": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "Complete-file regex parse found one definition; source inventory SHA E93D...F34A3FE reports 198/198 unique definitions and parser fixtures passed."
+            "The complete source/release definitions parse in the standard-Lua consistency suite and both Bouncer blocks use valid Doctor perk tokens."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current-build ScriptManager parsing has not been observed in game."
+          ],
           "source_dimensions": [
-            "complete_script_definition_and_parser_validity"
+            "definition_parser"
           ]
         },
         "namespace": {
@@ -11113,57 +11115,61 @@
           ]
         },
         "cost_xp_grants_exclusions": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Cost=4; XPBoosts=Strength=1;Doctor=1; exclusions=UT_bouncer_II."
+            "Cost is 4, XPBoosts are Strength=1 and Doctor=1, and Bouncer I/Bouncer II exclusions are reciprocal in source and release."
           ],
           "missing_proof": [
-            "Counterpart definitions were not exhaustively retrieved within this assigned-trait-only batch, so reverse declarations remain unproven."
+            "none"
           ],
           "source_dimensions": [
-            "cost_XP_grants_exclusions_and_bidirectional_exclusion_behavior"
+            "cost_xp_grants_exclusions"
           ]
         },
         "source_intent": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Source comments/runtime and EN text establish observed intent: UT_bouncer_I.lua shared handler anyTrait I/II; snapshots UTCore injuries and downgrades new injuries."
+            "Pre-campaign master and d10b240 establish the accepted injury-downgrade behavior and explicitly specify real-world seconds; later history establishes the current Tier I formula and Doctor perk."
           ],
           "missing_proof": [
-            "Original source-mod implementation or indexed PRD section proving intended parity was not available for every assigned trait."
+            "none"
           ],
           "source_dimensions": [
-            "source_mod_intent"
+            "source_intent"
           ]
         },
         "runtime_path": {
           "state": "proven-correct",
           "evidence": [
-            "UT_bouncer_I.lua shared handler anyTrait I/II; snapshots UTCore injuries and downgrades new injuries"
+            "IsoPlayer.update triggers the UTCore dispatcher, which compares the shared injury view with the ready snapshot, applies one downgrade, and advances Tier I with GameTime real-seconds delta."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "exact_runtime_path_through_UT_CORE_or_script_only_behavior"
+            "runtime_path"
           ]
         },
         "numbers": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "I cooldown max(10,300-Strength*10)s"
+            "Tier I cooldown is max(10, 300 - Strength*10) seconds; bite becomes deep wound time 20, deep wound becomes scratch, and fracture time is halved."
           ],
           "missing_proof": [
-            "No current in-game observation confirms engine units, tick rate, or bridge behavior."
+            "none"
           ],
           "source_dimensions": [
-            "numerical_behavior"
+            "numbers"
           ]
         },
         "cadence": {
           "state": "proven-correct",
           "evidence": [
-            "UT_bouncer_I.lua shared handler anyTrait I/II; snapshots UTCore injuries and downgrades new injuries"
+            "The active handler runs through the single UTCore player-update dispatcher; cooldown subtraction uses elapsed real seconds instead of assuming 60 updates per second."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cadence"
           ]
@@ -11171,124 +11177,130 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
-            "I cooldown max(10,300-Strength*10)s"
+            "Tier I stores seconds and subtracts getRealworldSecondsSinceLastUpdate; expiry re-baselines injuries before a later injury can trigger."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "cooldowns"
+            "cooldown"
           ]
         },
         "reset_save_load": {
           "state": "runtime-unproven",
           "evidence": [
-            "Persistent state uses player/item modData where present; local tables/events reset on process reload."
+            "The first active update and every cooldown expiry rebuild a serializable injury snapshot in player modData."
           ],
           "missing_proof": [
-            "No save/load game run verifies persistence, stale-state cleanup, or trait removal behavior."
+            "Current-version repeated world entry and save/load remain unobserved."
           ],
           "source_dimensions": [
-            "reset_and_save_load"
+            "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Current indexed code uses PZ globals/Java methods shown in the runtime path."
+            "SVN 964 exposes IsoPlayer OnPlayerUpdate, GameTime real-seconds delta, the BodyDamage body-part list, and every BodyPart getter/setter used by the downgrade path."
           ],
           "missing_proof": [
-            "Exact current Java symbols were only partially cross-checked; no live Kahlua invocation."
+            "none"
           ],
           "source_dimensions": [
-            "Java_Lua_exposure"
+            "java_lua"
           ]
         },
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "All 12 assigned runtime source files passed Lua 5.4 loadfile syntax compilation."
+            "The implementation uses Kahlua-compatible Lua and verified current Java receiver methods."
           ],
           "missing_proof": [
-            "Standard Lua syntax is not Kahlua execution proof."
+            "Current-build Kahlua execution is unobserved."
           ],
           "source_dimensions": [
-            "Kahlua_compatibility"
+            "kahlua"
           ]
         },
         "events": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "UT_bouncer_I.lua shared handler anyTrait I/II; snapshots UTCore injuries and downgrades new injuries"
+            "UTCore owns one OnPlayerUpdate callback and activates the shared Bouncer handler only when either mutually exclusive tier is present."
           ],
           "missing_proof": [
-            "No full-relaunch event registration/removal or multiplayer lifecycle run."
+            "none"
           ],
           "source_dimensions": [
-            "event_lifecycle"
+            "events"
           ]
         },
         "stacking_interactions": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Declared exclusions and shared UT_CORE buckets/handlers were inspected where directly reached."
+            "Bouncer I and II are reciprocally selection-exclusive; this pass changes only the Tier I cooldown branch and proves Tier II still decrements by one tick."
           ],
           "missing_proof": [
-            "No exhaustive pairwise assigned/foreign-trait runtime matrix."
+            "none"
           ],
           "source_dimensions": [
-            "stacking_and_cross_trait_interactions"
+            "stacking_interactions"
           ]
         },
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "DisabledInMultiplayer=true in the complete definition."
+            "The definition disables the trait in multiplayer and multiplayer support is an explicit product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "multiplayer_restriction"
+            "multiplayer"
           ]
         },
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "EN UI display key exists and matches UIName."
+            "The exact English display name is Bouncer I."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "display_name"
+            "display"
           ]
         },
         "description": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "EN description matches inspected static numeric/path evidence."
+            "The English copy matches the accepted injury mappings, Tier I formula, after-cooldown eligibility, and pre-existing infection rule."
           ],
           "missing_proof": [
-            "No in-game behavior observation."
+            "none"
           ],
           "source_dimensions": [
-            "description_accuracy"
+            "description"
           ]
         },
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "EN display and description keys exist; source inventory lists only EN."
+            "The exact English keys exist in source and release."
           ],
           "missing_proof": [
-            "All non-EN locales are absent."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
-            "localization_coverage_including_absent_locales"
+            "localization"
           ]
         },
         "balance": {
           "state": "runtime-unproven",
           "evidence": [
-            "Cost=4; behavior=I cooldown max(10,300-Strength*10)s."
+            "Static behavior is cost 4 with one injury downgrade per Strength-scaled 300-second base cooldown."
           ],
           "missing_proof": [
-            "No gameplay telemetry, comparative cost model, or in-game balance session."
+            "No gameplay telemetry or comparative balance session exists."
           ],
           "source_dimensions": [
             "balance"
@@ -11297,34 +11309,34 @@
         "performance": {
           "state": "runtime-unproven",
           "evidence": [
-            "Cadence/path: UT_bouncer_I.lua shared handler anyTrait I/II; snapshots UTCore injuries and downgrades new injuries."
+            "During Tier I cooldown the handler performs one GameTime delta read and no injury scan; while ready it uses the shared injury snapshot path."
           ],
           "missing_proof": [
-            "No profiler capture on current build."
+            "No current-build profiler capture exists."
           ],
           "source_dimensions": [
-            "performance_risk"
+            "performance"
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Indexed tests include registry inventory/shared contracts and focused cases for several assigned traits; tests were not accepted as sole proof."
+            "Focused tests cover every downgrade, infection state, snapshot boundary, formulas, elapsed-time opposition, companion isolation, and source-release contracts."
           ],
           "missing_proof": [
-            "No permitted focused command isolated all 17 traits; whole suite was not run because it would execute foreign-trait sources outside the delegated read scope."
+            "none"
           ],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "UTTestMocks provides UTCore/event/PZ boundaries; Java API manifest covers bouncer calls."
+            "The GameTime mock exposes a controllable real-seconds delta matching the Java method, and BodyPart mocks preserve zero-based Java-list access and setter domains."
           ],
           "missing_proof": [
-            "Mock fidelity was not independently proven against every current Java method/event used."
+            "none"
           ],
           "source_dimensions": [
             "mocks"
@@ -11333,9 +11345,11 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "Per-trait source and 42.0 release Lua SHA-256 match."
+            "Runtime, definition, and English source/release pairs are byte-identical and both definitions use Doctor."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_release_parity"
           ]
@@ -11343,13 +11357,13 @@
         "packaging": {
           "state": "coverage-gap",
           "evidence": [
-            "Expected 42.0 source/release locations were checked for assigned per-trait Lua."
+            "All Bouncer I-owned 42.0 runtime, definition, and English counterparts are present and identical."
           ],
           "missing_proof": [
-            "Full package manifest/mod.info/load-order and live-copy deployment were outside scope."
+            "UniversalTraits package verification remains blocked only by the separately tracked missing source poster."
           ],
           "source_dimensions": [
-            "packaging_integrity"
+            "packaging"
           ]
         }
       },
@@ -11357,14 +11371,16 @@
         "B02-UT_bouncer_I-COVERAGE"
       ],
       "unknowns": [
-        "Current in-game Build 42.19 execution and logs were not available.",
-        "Non-EN localization is absent.",
-        "Balance and profiler evidence are absent."
+        "Current-build Kahlua execution, full relaunch, repeated world entry, and current-version save/load remain unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory.",
+        "Bouncer II behavior remains assigned to its separate trait pass.",
+        "Multiplayer and backward save migration are explicit non-goals."
       ],
-      "translation_terminal_state": "confirmed-defect",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_01_04.json",
-        "review_state": "needs-correction",
+        "review_state": "accepted",
         "omission_finding_ids": [
           "IR0104-BOUNCER_I-SOURCE-RELEASE-PERK",
           "IR0104-BOUNCER_I-TICK-COOLDOWN"
@@ -11375,10 +11391,10 @@
         ],
         "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [
-          "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-          "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-          "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-          "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
+          "Current-build Kahlua execution, full desktop relaunch, repeated world entry, and current-version save/load remain unobserved.",
+          "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+          "Only English UI localization exists in the closed-world source inventory.",
+          "Bouncer II behavior remains assigned to its separate trait pass."
         ]
       }
     },
@@ -11666,7 +11682,7 @@
         "Non-EN localization is absent.",
         "Balance and profiler evidence are absent."
       ],
-      "translation_terminal_state": "confirmed-defect",
+      "translation_terminal_state": "coverage-gap",
       "independent_review": {
         "artifact": "independent_reviews/traits_01_04.json",
         "review_state": "needs-correction",

@@ -1,5 +1,5 @@
 -- UT_bouncer_I.lua
--- Bouncer (I & II): injury downgrade — experience handling rough crowds
+-- Bouncer (I & II): injury downgrade. Experience handling rough crowds
 -- means the character rolls with hits, downgrading NEW injuries to
 -- lesser ones on a cooldown timer.
 --
@@ -8,7 +8,7 @@
 -- cooldown reaches 0. Injuries present in the snapshot are baseline
 -- and ignored; only deltas (snapshot→live) trigger a downgrade.
 --
--- Downgrade table (checked in severity order, NEW injuries only):
+-- Downgrade table (checked in per-part severity order, NEW injuries only):
 --   NEW Bite        → Deep wound; clears infection unless pre-existing
 --                     (infected at snapshot time)
 --   NEW Deep wound  → Scratch
@@ -18,10 +18,10 @@
 --   Tier I:  max(10, 300 - STR * 10) seconds
 --   Tier II: max(10, 220 - STR * 20) seconds
 --
--- Architecture: reads live body state via the shared UTCore.getInjuries
--- lazy accessor. Bouncer makes zero direct Java body-part reads — all
--- per-part data comes from tick.injuries, built once per tick and shared
--- with any other medical trait on the same frame.
+-- Architecture: injury detection reads the shared UTCore.getInjuries lazy
+-- accessor, built once per tick and shared with other medical traits. Direct
+-- Java body-part access occurs only after one injury is selected, for the
+-- required mutation and diagnostic part name.
 
 local TRAIT_I  = "UniversalTraits:UT_bouncer_I"
 local TRAIT_II = "UniversalTraits:UT_bouncer_II"
@@ -124,18 +124,20 @@ local function applyDowngrade(bd, partIndex, kind, snap)
     return "unknown"
 end
 
---- Compute cooldown in ticks based on tier and player strength.
+--- Compute cooldown seconds based on tier and player strength.
 local function computeCooldown(player, isTierII)
     local baseSec   = isTierII and BASE_SEC_II or BASE_SEC_I
     local secPerStr = isTierII and SEC_PER_STR_II or SEC_PER_STR_I
     local strength = 0
     pcall(function() strength = player:getPerkLevel(Perks.Strength) end)
     local cdSec = math.max(MIN_CD_SEC, baseSec - strength * secPerStr)
-    return cdSec * TICKS_PER_SEC, strength, cdSec
+    local storedCooldown = isTierII and cdSec * TICKS_PER_SEC or cdSec
+    return storedCooldown, strength, cdSec
 end
 
 local function onTick(player, tick)
     local md = tick.modData
+    local isTierII = UTCore.hasTrait(player, TRAIT_II)
 
     -- Init: first-ever tick. Take baseline snapshot so pre-existing
     -- injuries (e.g. from save load) are recorded before any trigger.
@@ -146,9 +148,16 @@ local function onTick(player, tick)
         return
     end
 
-    -- Cooldown active: just decrement.
+    -- Tier I is specified in real-world seconds, so use the engine's
+    -- frame-rate-adjusted elapsed-seconds delta. Tier II remains unchanged
+    -- until its separate trait pass.
     if md[COOLDOWN_KEY] > 0 then
-        md[COOLDOWN_KEY] = md[COOLDOWN_KEY] - 1
+        if isTierII then
+            md[COOLDOWN_KEY] = md[COOLDOWN_KEY] - 1
+        else
+            local elapsed = getGameTime():getRealworldSecondsSinceLastUpdate()
+            md[COOLDOWN_KEY] = math.max(0, md[COOLDOWN_KEY] - elapsed)
+        end
         -- Cooldown just expired this tick: re-baseline the snapshot.
         -- Whatever exists now is treated as pre-existing and ignored
         -- on future ticks.
@@ -175,7 +184,6 @@ local function onTick(player, tick)
     if partIdx == nil then return end
 
     -- Downgrade this new injury.
-    local isTierII = UTCore.hasTrait(player, TRAIT_II)
     local cooldown, strength, cdSec = computeCooldown(player, isTierII)
     local bd = tick.bodyDamage
     local action = applyDowngrade(bd, partIdx, kind, snap)

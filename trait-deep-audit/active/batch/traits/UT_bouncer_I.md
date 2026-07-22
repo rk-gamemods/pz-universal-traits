@@ -1,203 +1,90 @@
 # UT_bouncer_I
 
-## Trait Summary
+## Accepted contract
 
-- UT trait id: UT_bouncer_I
-- Source mod: More Traits (ToadTraitsDynamic / hypnotoadtrance)
-- Source trait id: `bouncer` (registry key: `ToadTraitsRegistries.bouncer`)
-- Current cost: 4
-- Scripted: yes
-- Owner: agent
-- Status: complete
+- Trait ID: `UniversalTraits:UT_bouncer_I`
+- Display name: `Bouncer I`
+- Cost: 4
+- XP boosts: Strength 1 and Doctor 1
+- Reciprocal exclusion: `UniversalTraits:UT_bouncer_II`
+- Multiplayer: disabled by definition and outside product scope
+- Runtime effect: after Bouncer I is ready, the next new qualifying injury is downgraded once, then a Strength-scaled real-time cooldown begins.
+- Injury mapping: bite to deep wound, deep wound to scratch, fracture time halved.
+- Infection rule: infection that existed in the ready-state snapshot is preserved; infection introduced with a new bite is cleared.
+- Cooldown: `max(10, 300 - Strength * 10)` real-world seconds.
+- Save migration and backward compatibility are outside product scope.
 
-## Source Evidence
+The accepted authority is pre-campaign UTMods `master`, not the original upstream stagger implementation. Commit `d10b240` deliberately repurposed both Bouncer tiers from crowd stagger to injury downgrade and explicitly described its timer as real-world seconds. Later pre-campaign commits refined snapshots, infection handling, and the Tier I formula. Commits `9e730018` and `137afb9` changed the Build 42 medical perk token from `FirstAid` to `Doctor` in source and release respectively.
 
-- Source files reviewed:
-  - `research/installed-mods/MoreTraits/mods/More Traits/42.13/media/lua/shared/MoreTraits .lua` (lines 69, 1890–1931) — shared runtime update loop; B42.13 version
-  - `research/installed-mods/MoreTraits/mods/More Traits - Dynamic/42.13/media/lua/shared/MoreTraits - Dynamic.lua` (lines 435–444) — dynamic (unlock-at-runtime) variant
-  - `research/installed-mods/MoreTraits/mods/More Traits - Dynamic/42/media/lua/client/MoreTraits - Dynamic.lua` (lines 368–373) — legacy B42 client dynamic variant
-  - `research/installed-mods/EvolvingTraitsWorld/mods/Evolving Traits World - Mark Dynamic Traits/42/media/lua/shared/NPCs/ETWSubmodCreationMethods.lua` (line 99) — external mod notes `bouncer` as a dynamic alt-name
+## Definition and translation trace
 
-- Source data structure: `iBouncercooldown` is stored in a per-player `playerdata` table (initialised to `0`), not in `modData`.
-- Source parameters (all sandbox-configurable via `SandboxVars.MoreTraits`):
-  - `BouncerEffectiveness` — stagger chance in percent; default `5`
-  - `BouncerCooldown` — ticks between triggers; default `60`
-  - `BouncerDistance` — proximity radius for "close" enemies; default `1.75`
-- Source lucky/unlucky integration: if the player also has `ToadTraitsRegistries.lucky`, chance += `luckimpact` (default `1`); if `unlucky`, chance -= `luckimpact`.
-- Source trigger path:
-  - Called from the More Traits per-tick update loop (all-player update function) as `bouncerupdate(player, playerdata)`.
-  - Event: called every game tick (inside a continuous OnPlayerUpdate/OnTick loop).
-- Source behavior (B42.13 shared, `bouncerupdate`):
-  1. If player does not have `ToadTraitsRegistries.bouncer`, return immediately.
-  2. If `playerdata.iBouncercooldown > 0`, decrement by 1 and return.
-  3. Read sandbox vars for `chance`, `cooldown`, `distance` (defaults: 5, 60, 1.75).
-  4. Apply lucky/unlucky modifier to `chance`.
-  5. Get `enemies = player:getSpottedList()`. If `size() < 3`, return.
-  6. Iterate enemies: for each where `enemy:isZombie()` and `enemy:DistTo(player) <= distance`, increment `closeEnemyCount`. Once `closeEnemyCount >= 3`, if `not enemy:isKnockedDown()` and `ZombRand(0, 101) <= chance`, call `enemy:setStaggerBack(true)`, set `playerdata.iBouncercooldown = cooldown`, break.
-- Source conditions on stagger: (a) spotted-list size >= 3, (b) at least 3 zombies within distance, (c) target is not already knocked down, (d) random roll passes.
-- Dynamic unlock condition (More Traits - Dynamic): `lvlSmallBlunt >= BouncerDynamicSmallBlunt` and `lvlStrength >= BouncerDynamicStrength` (sandbox-configured thresholds); grants +1 XP boost to `Perks.SmallBlunt` on unlock.
-- Source `DisabledInMultiplayer`: not flagged in the source script definitions reviewed; the trait is not explicitly marked MP-disabled in More Traits.
+`UniversalTraits/media/scripts/UT_character_traits.txt` defines Bouncer I once with cost 4, `Strength=1;Doctor=1`, and exclusion of Bouncer II. The Bouncer II block declares the reverse exclusion. Source and release definitions are byte-identical.
 
-## Current UT Evidence
+`UniversalTraits/media/lua/shared/Translate/EN/UI.json` states the injury mappings, the 300-second base cooldown, the 10-second reduction per Strength level, and the pre-existing infection limitation. Source and release English files are byte-identical. The description matches the accepted Bouncer I path.
 
-### Structure
+## Runtime call map
 
-- Registered in test harness: yes (`run_tests.lua` line 304, in the Phase 3c registration sweep array)
-- Registered in `registries.lua`: yes (line 292)
-  - `UTTraitsRegistries.UT_bouncer_I = CharacterTrait.register("UniversalTraits:UT_bouncer_I")`
-  - `UTTraitsRegistries.UT_bouncer_II = CharacterTrait.register("UniversalTraits:UT_bouncer_II")` (line 293, companion tier)
-- Defined in `UT_character_traits.txt`: yes (lines 2082–2092)
-  - `IsProfessionTrait = false`
-  - `DisabledInMultiplayer = true`
-  - `CharacterTrait = UniversalTraits:UT_bouncer_I`
-  - `Cost = 4`
-  - `UIName = UI_UT_bouncer_I`
-  - `UIDescription = UI_UT_bouncer_IDesc`
-  - `XPBoosts = Strength=1;SmallBlunt=1`
-  - `MutuallyExclusiveTraits = UniversalTraits:UT_bouncer_II`
-- Companion tier `UT_bouncer_II` defined (lines 2094–2104): `Cost = 6`, `XPBoosts = Strength=2;SmallBlunt=2`, mutually exclusive with `UT_bouncer_I`.
-- Translation strings present: yes
-  - `UI_UT_bouncer_I = "Bouncer"` (UI_EN.txt line 644)
-  - `UI_UT_bouncer_IDesc = "Years working the door taught you how to handle yourself. Start at Strength 6 and Short Blunt level 1. When surrounded by 3 or more zombies, chance to automatically stagger one back."` (line 645)
-- Runtime Lua file exists: yes (`media/lua/shared/UniversalTraits/traits/UT_bouncer_I.lua`, 47 lines)
-- UT_MET.lua group membership: `UT_bouncer_I` and `UT_bouncer_II` are **not** listed in any group in `UT_MET.lua`. Their mutual exclusion is enforced only via the script `MutuallyExclusiveTraits` declarations; they have no UT_MET runtime group.
+1. `IsoPlayer.update()` performs body-damage processing and then triggers `OnPlayerUpdate` for the player.
+2. `UTCore_TickDispatch.lua` owns the single `OnPlayerUpdate` registration, builds one shared tick context, and calls the active Bouncer handler because the player has Bouncer I.
+3. On its first active update, `UT_bouncer_I.lua` stores a complete injury snapshot and marks the trait ready.
+4. While ready, the handler obtains the shared injury view through `UTCore.getInjuries(tick)` and compares every body part with the snapshot.
+5. The first qualifying new injury by body-part index is selected. Within a body part, bite is checked before deep wound and fracture.
+6. The handler obtains the matching Java `BodyPart`, applies one downgrade through the current setters, stores the Tier I cooldown in seconds, and logs the action.
+7. While Tier I is cooling down, each player update subtracts `getGameTime():getRealworldSecondsSinceLastUpdate()`. `GameTime` defines this as the number of real seconds since the last tick and adjusts it for actual frame cadence.
+8. On the update that reaches zero, the handler takes a new baseline snapshot and returns. Injuries that arose during cooldown therefore do not become delayed Bouncer activations. A later new injury is eligible.
 
-### Runtime Trace
+## Defect and correction
 
-- Files reviewed:
-  - `media/lua/shared/UniversalTraits/traits/UT_bouncer_I.lua` (full file, 47 lines)
-  - `UT_CORE/media/lua/shared/UTCore/UTCore_API.lua` (lines 11–16) — `UTCore.hasTrait` implementation
-  - `media/scripts/UT_character_traits.txt` (lines 2082–2104)
-  - `media/lua/shared/Translate/EN/UI_EN.txt` (lines 644–648)
-  - `test/run_tests.lua` (lines 612–676)
+The accepted Tier I cooldown was previously multiplied by 60 and decremented once per `OnPlayerUpdate`. That assumes player updates occur at exactly 60 Hz. `IsoPlayer.update()` supplies no such fixed-rate contract, so frame or update cadence changed the real cooldown duration.
 
-- Event registrations:
-  - `Events.OnPlayerUpdate.Add(onPlayerUpdate)` (line 46) — fires every game-engine update tick for the local player.
+The correction stores Tier I cooldown seconds directly and subtracts the engine's real-seconds delta. It deliberately leaves Bouncer II's tick representation unchanged for the separate Bouncer II trait pass. The traits are mutually exclusive, so their different stored units cannot interact during normal selection.
 
-- Local constants:
-  - `TRAIT_I  = "UniversalTraits:UT_bouncer_I"` (line 6)
-  - `TRAIT_II = "UniversalTraits:UT_bouncer_II"` (line 7)
+The older package-perk finding was stale before this correction. Current source and release both use the valid Build 42 `Doctor` perk token. Git history proves this was an already-completed source/release cascade, not a new intent decision.
 
-- UTCore hooks used:
-  - `UTCore.hasTrait(player, TRAIT_I)` — nil-safe check via `player:getTraits():contains(traitId)` (UTCore_API.lua line 15)
-  - `UTCore.hasTrait(player, TRAIT_II)` — same; the single handler serves both tiers
+## Java and Lua boundary evidence
 
-- Runtime chain (plain language):
-  1. `onPlayerUpdate(player)` fires every tick.
-  2. Guard: if `player` is nil, return.
-  3. Guard: if player has neither `UT_bouncer_I` nor `UT_bouncer_II`, return.
-  4. Read (or initialize) `md["UT_bouncer_cooldown"]` from `player:getModData()`. If `nil`, set to `0`.
-  5. If `md["UT_bouncer_cooldown"] > 0`, decrement by 1 and return (skipping all further logic this tick).
-  6. Get `spottedList = player:getSpottedList()`. If `size() < 3`, return.
-  7. Iterate spotted list from index 0 to `size()-1`. For each enemy where `player:DistTo(enemy) < 1.75`, append to `closeEnemies` table.
-  8. If `#closeEnemies < 3`, return.
-  9. Roll `ZombRand(100)`. If result `< 5` (i.e., 5% chance):
-     - Call `closeEnemies[1]:setStaggerBack(true)` — staggers the **first** close enemy only (index 1 in the Lua table, which corresponds to the first spotted enemy that was within range).
-     - Set `md["UT_bouncer_cooldown"] = 60`.
+- `PZCodebase/Java/source/zombie/characters/IsoPlayer.java:2241` triggers `OnPlayerUpdate` from the player update path.
+- `PZCodebase/Java/source/zombie/GameTime.java:195-201` exposes `getRealworldSecondsSinceLastUpdate()` and defines it as real seconds since the last tick.
+- `PZCodebase/Java/source/zombie/Lua/LuaManager.java:7840-7843` separately exposes wall-clock `getTimestampMs()`. It was not used because a persistent absolute timestamp would allow offline wall time to consume a saved cooldown.
+- Current vanilla Lua uses `getGameTime():getRealworldSecondsSinceLastUpdate()` for real-time countdowns, including `ISRestAction.lua`.
+- The standard-Lua Java API validation and injury mocks cover every BodyPart getter and setter on the Bouncer path.
 
-- Exact numerical parameters:
-  - Proximity radius: `< 1.75` tiles (strict less-than; enemy at exactly 1.75 is excluded)
-  - Minimum enemy count (spotted): 3
-  - Minimum enemy count (close): 3
-  - Stagger chance: 5% per tick when cooldown is 0 and conditions are met
-  - Cooldown length: 60 ticks
-  - Stagger target: `closeEnemies[1]` only — always the first close enemy encountered in iteration order
+## State and edge behavior
 
-- Cadence summary: when cooldown is 0 and all conditions hold, there is a 5% chance per tick to stagger one enemy and reset the cooldown to 60. The expected number of ticks between triggers (given all conditions continuously met) is `(1/0.05) + 60 = 80 ticks`.
+- First activation snapshots existing injuries and does not downgrade them.
+- No injury scan occurs during cooldown.
+- Cooldown expiry re-baselines current injuries and returns without a downgrade.
+- One qualifying body part is changed per activation.
+- Multiple simultaneous qualifying parts are deterministic by body-part index and are logged as `MULTI_NEW`.
+- A bite created with a new infection has that infection cleared.
+- Infection already present in the ready snapshot is preserved.
+- A fracture is eligible only when fracture time is greater than 1.
+- Bouncer I and II are selection-exclusive in both definition directions.
 
-## Description Integrity
+## Regression proof
 
-- Display name check: "Bouncer" — matches source trait colloquial name.
-- Description check: `UI_UT_bouncer_IDesc` reads: "Years working the door taught you how to handle yourself. Start at Strength 6 and Short Blunt level 1. When surrounded by 3 or more zombies, chance to automatically stagger one back."
-- Issues found:
-  1. **"Start at Strength 6 and Short Blunt level 1" is inaccurate.** The XPBoosts field is `Strength=1;SmallBlunt=1`. In PZ B42, `XPBoosts` grant **+N to the skill's XP multiplier** — they are not starting level grants. The description says "Start at Strength 6 and Short Blunt level 1", which implies the player begins at a specific absolute skill level. This is categorically wrong. The boost gives +1 XP rate multiplier to Strength and +1 to SmallBlunt; the player does not start at any specified level. The correct description phrasing should read "+1 to Strength and +1 to Short Blunt XP gains" or similar.
-  2. **Only one enemy is staggered despite "stagger one back" appearing accurate.** The description says "stagger one back" and the code does stagger exactly one, so this phrase is correct. However, it is always `closeEnemies[1]` — the first close enemy by iteration order, not a random selection. This implementation detail is not a description flaw but may be a design intent question (always first vs. random).
-  3. **"Surrounded by 3 or more zombies" — partially accurate.** The code checks that the spotted list has ≥ 3 entries (line 26) AND that at least 3 of those are within 1.75 tiles (lines 29–37). The description says "surrounded by 3 or more zombies" without specifying the proximity radius (1.75 tiles), so it is directionally correct but omits the explicit range gate. This is minor flavor imprecision rather than a factual error.
-  4. **No mention of cooldown.** The 60-tick cooldown between triggers is a significant constraint that the description omits. Players may expect the stagger to fire on every eligible tick; the actual rate is much lower. This is not a hard error but is a material omission for informed decision-making.
+The standard-Lua suite covers:
 
-## Balance Review
+- first-update snapshot behavior;
+- bite, deep wound, and fracture mappings;
+- infection clearing and preservation;
+- one-injury-per-cooldown behavior;
+- simultaneous injury ordering;
+- injury-at-expiry baseline behavior;
+- Strength 0, 5, and 10 Tier I formulas;
+- a quarter-second plus three-quarter-second oppositional timing case that expires after one total elapsed second rather than a fixed update count;
+- Tier II remaining tick-based during the Bouncer I pass;
+- source/release runtime parity;
+- definition, English, and perk-token consistency.
 
-- Upside:
-  - Passive stagger of a nearby enemy when surrounded by ≥ 3 enemies.
-  - 5% chance per tick when conditions are met, up to once per 60 ticks.
-  - XPBoosts: +1 Strength, +1 SmallBlunt (faster XP accumulation).
-  - Combined with `UT_bouncer_II` (mutually exclusive tier) for heavier investment: +2/+2 XP boosts at Cost 6.
+## Remaining proof
 
-- Downside / cost: positive trait; costs 4 character creation points.
+The static path and standard-Lua regression suite prove the corrected contract. The following remain explicitly unobserved:
 
-- Uptime analysis:
-  - Requires ≥ 3 enemies in the spotted list AND ≥ 3 within 1.75 tiles simultaneously. This is a tight spatial requirement — 1.75 tiles is very close quarters. In normal PZ combat, engaging 3 enemies simultaneously within 1.75 tiles is a high-danger scenario. The trait is situationally useful but does not activate in typical single-zombie encounters.
-  - When cooldown > 0 the stagger is completely suppressed. A 60-tick cooldown at ~20 ticks/second means approximately 3 seconds of suppression after each trigger.
+- current-build Kahlua execution after a full desktop relaunch;
+- current-version repeated world entry and save/load behavior;
+- rendered English in the live UI;
+- representative in-game profiler capture;
+- gameplay balance telemetry.
 
-- Divergences from source that affect balance:
-  1. **No sandbox configurability.** The source exposed `BouncerEffectiveness`, `BouncerCooldown`, and `BouncerDistance` as sandbox variables. The UT implementation hardcodes all three (5%, 60 ticks, 1.75 tiles). Server operators cannot tune the trait. This is a design regression.
-  2. **No lucky/unlucky integration.** The source added/subtracted `luckimpact` from the chance when those traits were present. The UT implementation ignores lucky/unlucky entirely.
-  3. **No `isKnockedDown()` guard.** The source skipped already-knocked-down enemies as stagger targets. The UT implementation calls `closeEnemies[1]:setStaggerBack(true)` without checking if the target is already knocked down. This means stagger is wasted on an enemy that is already falling.
-  4. **`DistTo` direction.** Source uses `enemy:DistTo(player)` (distance from enemy to player); UT uses `player:DistTo(enemy)` (distance from player to enemy). In practice both are symmetric distance calls but the source calls from the enemy's reference frame. Functionally equivalent given symmetric distance.
-  5. **Single-target selection.** Source selects the enemy that crossed the count threshold (the 3rd+ zombie in iteration) while UT always picks `closeEnemies[1]` — the first-enumerated close enemy, which is not guaranteed to be the most dangerous or nearest. Minor behavioral difference.
-  6. **Spotted-list check discrepancy.** UT checks `spottedList:size() < 3` then separately checks close enemies. Source checks `enemies:size() < 3` then accumulates close enemies inline. The UT two-pass approach is functionally correct but does not short-circuit on the close-enemy count mid-iteration.
-  7. **`DisabledInMultiplayer = true`.** The UT version disables this trait in multiplayer. The source did not flag it as MP-restricted. This is a UT-wide policy decision; however, the trait uses `Events.OnPlayerUpdate` (which fires per local player) and `player:getModData()` — both are standard patterns used by many UT traits that are also MP-disabled, so this is consistent with UT convention.
-
-- Cost verdict: 4 points is reasonable for a passive combat-survival trait that activates in high-danger crowd situations. The XP boosts (+1 Strength, +1 SmallBlunt) add meaningful long-term value. The tier-II variant at Cost 6 with doubled XP boosts provides a clear upgrade path. However, the missing `isKnockedDown()` guard and hardcoded parameters are correctness and flexibility gaps that reduce the real-world value relative to the source.
-
-- Peer comparison:
-  - `UT_batteringram` (if present) also triggers on proximity/collision events; these are not mutually exclusive. Their effects could stack synergistically without being excluded.
-  - No mutual exclusion exists with other combat traits that also raise or affect close-combat behavior. This is consistent with source but worth noting.
-
-## Regression Proof
-
-- Test location: `test/run_tests.lua` lines 612–676
-- Tests present:
-  1. **"bouncer stagger fires when >=3 close enemies and cooldown=0"** (lines 641–658):
-     - Sets up 4 enemies at distance 1.5 (all within 1.75), player has `UT_bouncer_I`, cooldown not set (nil → 0).
-     - Fires `Events.OnPlayerUpdate`.
-     - ZombRand is stubbed to always return 0 (so `0 < 5` is always true).
-     - Asserts that at least one enemy has `_staggerBack = true`.
-     - Asserts `player:getModData()["UT_bouncer_cooldown"] == 60`.
-     - **Proves**: stagger fires, cooldown is set to 60.
-  2. **"bouncer stagger does NOT fire during cooldown"** (lines 660–676):
-     - Same 4-enemy setup. Player has `UT_bouncer_I`. Cooldown pre-set to `30`.
-     - Fires `Events.OnPlayerUpdate`.
-     - Asserts no enemy has `_staggerBack = true`.
-     - Asserts `player:getModData()["UT_bouncer_cooldown"] == 29`.
-     - **Proves**: stagger is suppressed during cooldown, cooldown decrements correctly.
-
-- What the tests prove:
-  - The happy-path trigger (conditions met, cooldown 0, stagger fires).
-  - Cooldown initialization from nil to 0 (implicit in test 1).
-  - Cooldown suppression and decrement (test 2).
-
-- Missing proof:
-  1. No test for `#closeEnemies < 3` suppression (spotted list has ≥ 3 but close enemies count < 3 — e.g., enemies at distance 2.0 are not close).
-  2. No test for spotted-list `size() < 3` early-exit (fewer than 3 enemies visible total).
-  3. No test that `UT_bouncer_II` activates the same handler (the single file handles both via `TRAIT_I or TRAIT_II`; no test passes `UT_bouncer_II` as the active trait).
-  4. No test for the `ZombRand` failure path — ZombRand returning ≥ 5 should not stagger and should not set cooldown. The stub always returns 0, so the 95% non-trigger case is untested.
-  5. No test for the nil-player guard (`player == nil` early return on line 10).
-  6. No test that a player with neither trait is a no-op (though this is standard guard coverage common to all traits).
-  7. No test that `closeEnemies[1]:setStaggerBack(true)` specifically targets element 1 (the first in-range enemy), verifying the selection order.
-
-- Minimum next test if needed: "bouncer: no stagger when all enemies are too far" — mock 4 enemies at distance 2.0 (outside 1.75 radius), fire `OnPlayerUpdate`, assert no stagger and cooldown remains 0.
-
-## Final Verdict
-
-- Source origin: proven — More Traits `bouncer` (ToadTraitsRegistries.bouncer) is the confirmed source; `bouncerupdate` function located and read in full at `MoreTraits .lua` lines 1890–1931.
-- UT implementation: drifted — the core concept (passive stagger when surrounded by 3+ close enemies, with cooldown) is faithfully reproduced, but with multiple divergences:
-  1. **Hardcoded parameters** — source exposed chance, cooldown, and distance as sandbox variables; UT hardcodes all three (5%, 60, 1.75). Server operators lose configurability.
-  2. **Missing `isKnockedDown()` guard** — source skipped enemies already knocked down; UT does not, meaning the stagger roll can be wasted on a falling zombie.
-  3. **Missing lucky/unlucky integration** — source adjusted chance based on the player's luck traits; UT ignores this entirely.
-  4. **Target selection** — source staggers the enemy that crossed the 3-count threshold (the 3rd+ close zombie in iteration); UT always staggers `closeEnemies[1]` (first close zombie enumerated), regardless of iteration position.
-  5. **`DisabledInMultiplayer = true`** — source was not MP-restricted; UT applies its standard MP-disable policy.
-- Description: contains one factual error and one material omission:
-  1. **Error**: "Start at Strength 6 and Short Blunt level 1" misrepresents `XPBoosts`. XPBoosts grant additional XP multiplier bonuses, not starting levels. This must be corrected.
-  2. **Omission**: the 60-tick cooldown is not mentioned. Players cannot assess the effective stagger frequency without this information.
-- Balance: cost-4 with +1/+1 XP boosts is reasonable for a situational passive combat ability. The trait pair (I at 4, II at 6) provides a sensible investment scale. The missing `isKnockedDown()` guard is a minor correctness defect that wastes triggers. The removed sandbox configurability is a design regression relative to source.
-- Regression proof: two behavioral tests exist and cover the primary trigger and cooldown-suppression paths. Key gaps: close-enemy-too-far suppression, TRAIT_II activation, random failure path, nil-player guard.
-- Action needed:
-  1. **Fix description** — replace "Start at Strength 6 and Short Blunt level 1" with correct XPBoost language (e.g., "+1 to Strength and +1 to Short Blunt XP gains").
-  2. **Add `isKnockedDown()` guard** — before calling `setStaggerBack`, check `if not closeEnemies[1]:isKnockedDown() then` to avoid wasting the stagger roll and cooldown on an already-falling zombie.
-  3. **Consider adding cooldown mention to description** — "…has a short cooldown between triggers" or similar would inform player choice.
-  4. **Optional: consider sandbox-configurable parameters** — restoring `BouncerEffectiveness`, `BouncerCooldown`, and `BouncerDistance` as sandbox options would bring UT closer to source parity and give server operators control.
-  5. **Add missing tests**: close-enemy-too-far suppression, TRAIT_II activation path, ZombRand ≥ 5 non-trigger path.
-- Open gaps:
-  - No `UT_MET.lua` group for the bouncer pair. This is correct — their mutual exclusion is enforced by the `.txt` definition and they are not in an architectural conflict with any other UT group. No UT_MET entry is needed.
-  - `UT_bouncer_II`'s runtime behavior is identical to `UT_bouncer_I` (same handler, same parameters) — the only difference between the two tiers is the script cost and XPBoosts. Whether the tier-II should have a stronger stagger (e.g., lower cooldown, higher chance, or larger radius) is an open design question not addressed by the current implementation.
+No multiplayer, backward save migration, deployment, or Bouncer II behavioral correction is part of this trait pass.

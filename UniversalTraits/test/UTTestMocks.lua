@@ -1123,6 +1123,7 @@ end
 local _mockGameTime = {
     worldAgeHours = 0,
     timeOfDay = 12,  -- engine contract is an hour on a 0..24 clock
+    realworldSecondsSinceLastUpdate = 1 / 60,
 }
 
 function setMockGameTime(worldAgeHours)
@@ -1137,10 +1138,17 @@ function advanceMockGameTimeHours(delta)
     _mockGameTime.worldAgeHours = _mockGameTime.worldAgeHours + (delta or 0)
 end
 
+function setMockRealworldSecondsSinceLastUpdate(delta)
+    _mockGameTime.realworldSecondsSinceLastUpdate = delta or 0
+end
+
 function getGameTime()
     return {
         getWorldAgeHours = function(self) return _mockGameTime.worldAgeHours end,
         getTimeOfDay     = function(self) return _mockGameTime.timeOfDay end,
+        getRealworldSecondsSinceLastUpdate = function(self)
+            return _mockGameTime.realworldSecondsSinceLastUpdate
+        end,
     }
 end
 
@@ -1464,7 +1472,7 @@ end
 -- Additional helpers for behavioral tests (P0 coverage suite)
 -- ============================================================
 
--- MockItem — lightweight item stub for consumption hook tests
+-- MockItem: lightweight item stub for consumption hook tests
 -- opts.forageCategory: if set, getScriptItem():getForageFocusCategories() returns a non-empty set
 function MockItem(typeName, opts)
     opts = opts or {}
@@ -1529,7 +1537,7 @@ function MockItem(typeName, opts)
     }
 end
 
--- MockFirearm — weapon stub with reload/aim/jam stats for gunspecialist tests
+-- MockFirearm: weapon stub with reload/aim/jam stats for gunspecialist tests
 function MockFirearm(opts)
     opts = opts or {}
     local _reload  = opts.reloadTime  or 30
@@ -1549,7 +1557,7 @@ function MockFirearm(opts)
     }
 end
 
--- MockWornItems — worn-item container for humanhamster backpack detection
+-- MockWornItems: worn-item container for humanhamster backpack detection
 -- bagCount: number of inventory-container items (bags)
 -- nonBagCount: number of non-container worn items
 function MockWornItems(bagCount, nonBagCount)
@@ -1574,7 +1582,7 @@ function MockWornItems(bagCount, nonBagCount)
     }
 end
 
--- MockInventory — simple inventory with configurable weight
+-- MockInventory: simple inventory with configurable weight
 function MockInventory(currentWeight, maxWeight)
     local _items = {}
     return {
@@ -1592,7 +1600,7 @@ function MockInventory(currentWeight, maxWeight)
     }
 end
 
--- MockSquare — world square stub for item drop
+-- MockSquare: world square stub for item drop
 function MockSquare()
     local _dropped = {}
     return {
@@ -1603,7 +1611,7 @@ function MockSquare()
     }
 end
 
--- MockCollisionSquare — square with positioned moving objects for separate() tests
+-- MockCollisionSquare: square with positioned moving objects for separate() tests
 -- sqX, sqY, sqZ: tile coordinates (integers)
 -- movingObjects: array of mock zombie/player objects
 function MockCollisionSquare(sqX, sqY, sqZ, movingObjects)
@@ -1621,7 +1629,7 @@ function MockCollisionSquare(sqX, sqY, sqZ, movingObjects)
     }
 end
 
--- MockCell — minimal cell mock for getCell():getGridSquare(x, y, z)
+-- MockCell: minimal cell mock for getCell():getGridSquare(x, y, z)
 -- squares: table keyed by "x,y,z" → MockCollisionSquare
 function MockCell(squares)
     return {
@@ -1632,7 +1640,7 @@ function MockCell(squares)
     }
 end
 
--- getCell() global mock — set _G._mockCell before tests that need it
+-- getCell() global mock: set _G._mockCell before tests that need it
 if not _G.getCell then
     _G.getCell = function()
         return _G._mockCell
@@ -1673,7 +1681,7 @@ if not _G.ISDrinkFluidAction then
     }
 end
 
--- ISFitnessAction stub — needed by UT_physicallyactive to wrap exeLooped
+-- ISFitnessAction stub: needed by UT_physicallyactive to wrap exeLooped
 if not _G.ISFitnessAction then
     _G.ISFitnessAction = {
         exeLooped = function(self) end,
@@ -1684,7 +1692,7 @@ end
 -- Extended stubs for Phase-4 behavioral tests (70 new traits)
 -- ============================================================
 
--- CharacterStat global (B42.16 — all named getters/setters replaced with generic get/set)
+-- CharacterStat global (B42.16: all named getters/setters replaced with generic get/set)
 if not _G.CharacterStat then
     local function makeStat(name, min, max, default)
         return {
@@ -1729,7 +1737,7 @@ if not _G.GameTime then
     }
 end
 
--- addSound global (used by fearful inside pcall — must exist as a no-op)
+-- addSound global (used by fearful inside pcall; must exist as a no-op)
 if not _G.addSound then
     _G.addSound = function() end
 end
@@ -1763,7 +1771,7 @@ if not _G.Events.OnWeaponSwingHitPoint then
     }
 end
 
--- MockBackpack helper — stub for testing UT_flimsy backpack weight checks
+-- MockBackpack helper: stub for testing UT_flimsy backpack weight checks
 function MockBackpack(contentsWeight)
     return {
         _contentsWeight = contentsWeight or 0,
@@ -1775,7 +1783,7 @@ end
 -- Extended mocks for behavioral QA tests (P0 gap coverage)
 -- ============================================================
 
--- Events.OnHitZombie stub — needed by UT_tavernbrawler stomp bonus
+-- Events.OnHitZombie stub: needed by UT_tavernbrawler stomp bonus
 if not _G.Events.OnHitZombie then
     local _handlers = {}
     _G.Events.OnHitZombie = {
@@ -1784,7 +1792,7 @@ if not _G.Events.OnHitZombie then
     }
 end
 
--- Events.OnRefreshInventoryWindowContainers stub — needed by UT_antique, UT_scrounger
+-- Events.OnRefreshInventoryWindowContainers stub: needed by UT_antique, UT_scrounger
 if not _G.Events.OnRefreshInventoryWindowContainers then
     local _handlers = {}
     _G.Events.OnRefreshInventoryWindowContainers = {
@@ -1793,7 +1801,7 @@ if not _G.Events.OnRefreshInventoryWindowContainers then
     }
 end
 
--- MockClothingItem — worn clothing stub for UT_fitted tests
+-- MockClothingItem: worn clothing stub for UT_fitted tests
 function MockClothingItem(typeName, opts)
     opts = opts or {}
     local _moddata        = opts.moddata or {}
@@ -1816,7 +1824,7 @@ function MockClothingItem(typeName, opts)
     }
 end
 
--- MockFoodItemFull — food item with full stat accessors for UT_gourmand tests
+-- MockFoodItemFull: food item with full stat accessors for UT_gourmand tests
 function MockFoodItemFull(typeName, opts)
     opts = opts or {}
     local _moddata      = opts.moddata or {}
@@ -1840,7 +1848,7 @@ function MockFoodItemFull(typeName, opts)
     }
 end
 
--- MockTrapItem — item for UT_trackman (trap condition restoration)
+-- MockTrapItem: item for UT_trackman (trap condition restoration)
 function MockTrapItem(typeName, condition, conditionMax)
     local _condition = condition or 5
     local _conditionMax = conditionMax or 10
@@ -1857,7 +1865,7 @@ function MockTrapItem(typeName, condition, conditionMax)
     }
 end
 
--- MockWornItemsFull — worn items container supporting contains() and getItemByIndex()
+-- MockWornItemsFull: worn items container supporting contains() and getItemByIndex()
 -- items: array of mock clothing/item objects
 function MockWornItemsFull(items)
     items = items or {}
@@ -1874,7 +1882,7 @@ function MockWornItemsFull(items)
     }
 end
 
--- MockInventoryFull — inventory with items list supporting clothing scan
+-- MockInventoryFull: inventory with items list supporting clothing scan
 -- itemList: array of mock item objects
 function MockInventoryFull(itemList, opts)
     opts = opts or {}

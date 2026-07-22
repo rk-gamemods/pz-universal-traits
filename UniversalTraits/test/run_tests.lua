@@ -17,6 +17,7 @@ local testFilter = os.getenv("UNIVERSAL_TRAITS_TEST_FILTER")
 local function test(name, fn)
     if testFilter and not name:lower():find(testFilter:lower(), 1, true) then return end
     UTCore._mockTickCount = 0   -- reset dispatch tick counter per test
+    setMockRealworldSecondsSinceLastUpdate(1 / 60)
     local ok, err = pcall(fn)
     if ok then
         print("PASS  " .. name)
@@ -1100,7 +1101,8 @@ local function MockBouncerPlayer(traitList, parts, strengthLevel)
     return p
 end
 
--- Cooldown formula: max(10, baseSec - STR * secPerStr) * 60
+-- Cooldown formula: max(10, baseSec - STR * secPerStr).
+-- Tier I stores real seconds. Tier II still stores nominal update ticks.
 -- Tier I: 300 - 10*STR,  Tier II: 220 - 20*STR
 
 test("bouncer downgrades bite to deep wound (STR 5)", function()
@@ -1122,8 +1124,7 @@ test("bouncer downgrades bite to deep wound (STR 5)", function()
     assert_eq(part._isInfected, false, "infection should be cleared")
     assert_true(part:isDeepWounded(), "deep wound should be applied")
     assert_eq(part._deepWoundTime, 20, "deepWoundTime should be set to 20")
-    -- (300 - 5*10) * 60 = 250 * 60 = 15000
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 15000, "tier I STR5 cooldown = 15000")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 250, "tier I STR5 cooldown = 250 seconds")
 end)
 
 test("bouncer downgrades deep wound to scratch (STR 5)", function()
@@ -1143,7 +1144,7 @@ test("bouncer downgrades deep wound to scratch (STR 5)", function()
     assert_eq(part._deepWoundTime, 0, "deepWoundTime should be cleared")
     assert_true(part._scratched, "scratch should be applied")
     assert_eq(part._scratchNoInfect, true, "scratch should use forceNoInfection=true")
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 15000, "tier I STR5 cooldown = 15000")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 250, "tier I STR5 cooldown = 250 seconds")
 end)
 
 test("bouncer halves fracture time (STR 5)", function()
@@ -1159,7 +1160,7 @@ test("bouncer halves fracture time (STR 5)", function()
     Events.OnPlayerUpdate:fire(player)
 
     assert_eq(part._fractureTime, 20, "fracture time should be halved from 40 to 20")
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 15000, "tier I STR5 cooldown = 15000")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 250, "tier I STR5 cooldown = 250 seconds")
 end)
 
 test("bouncer tier II uses shorter cooldown (STR 5)", function()
@@ -1189,10 +1190,42 @@ test("bouncer does NOT fire during cooldown", function()
     Events.OnPlayerUpdate:fire(player)
 
     assert_true(part:bitten(), "bite should still be present during cooldown")
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 499, "cooldown should decrement by 1")
+    assert_close(player:getModData()["UT_bouncer_cooldown"], 500 - (1 / 60), 0.000001,
+        "tier I cooldown should decrement by real elapsed seconds")
 end)
 
-test("bouncer processes highest severity first (bite before deep wound)", function()
+test("bouncer tier I cooldown follows elapsed seconds instead of update count", function()
+    local part = MockInjuryPart("Torso_Upper", { bitten = true, biteTime = 60 })
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 5)
+    player:getModData()["UT_bouncer_cooldown"] = 1
+
+    setMockRealworldSecondsSinceLastUpdate(0.25)
+    Events.OnPlayerUpdate:fire(player)
+    assert_close(player:getModData()["UT_bouncer_cooldown"], 0.75, 0.000001,
+        "one quarter-second update should remove one quarter second")
+
+    setMockRealworldSecondsSinceLastUpdate(0.75)
+    Events.OnPlayerUpdate:fire(player)
+    setMockRealworldSecondsSinceLastUpdate(1 / 60)
+
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 0, "one total elapsed second should expire cooldown")
+    assert_true(part:bitten(), "injury present at expiry should become the new baseline")
+end)
+
+test("bouncer tier II cooldown remains tick-based in the Bouncer I pass", function()
+    local part = MockInjuryPart("Torso_Upper", { bitten = true, biteTime = 60 })
+    local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_II" }, { part }, 5)
+    player:getModData()["UT_bouncer_cooldown"] = 500
+
+    setMockRealworldSecondsSinceLastUpdate(0.25)
+    Events.OnPlayerUpdate:fire(player)
+
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 499,
+        "Bouncer I correction must not change Bouncer II cooldown behavior")
+    assert_true(part:bitten(), "Bouncer II injury should remain untouched during cooldown")
+end)
+
+test("bouncer processes lower-index bite before later deep wound", function()
     local bitePart = MockInjuryPart("Head", {})
     local deepPart = MockInjuryPart("Torso_Upper", {})
     local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { bitePart, deepPart }, 5)
@@ -1254,11 +1287,10 @@ test("bouncer STR 0 uses full base cooldown", function()
     Events.OnPlayerUpdate:fire(player)
 
     assert_true(not part:bitten(), "bite should be cleared")
-    -- (300 - 0*10) * 60 = 300 * 60 = 18000
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 18000, "tier I STR0 cooldown = 18000")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 300, "tier I STR0 cooldown = 300 seconds")
 end)
 
-test("bouncer STR 10 produces minimum tier I cooldown", function()
+test("bouncer STR 10 produces expected tier I cooldown", function()
     local part = MockInjuryPart("Torso_Upper", {})
     local player = MockBouncerPlayer({ "UniversalTraits:UT_bouncer_I" }, { part }, 10)
 
@@ -1273,8 +1305,7 @@ test("bouncer STR 10 produces minimum tier I cooldown", function()
     Events.OnPlayerUpdate:fire(player)
 
     assert_true(not part:bitten(), "bite should be cleared")
-    -- (300 - 10*10) * 60 = 200 * 60 = 12000
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 12000, "tier I STR10 cooldown = 12000")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 200, "tier I STR10 cooldown = 200 seconds")
 end)
 
 test("bouncer tier II STR 10 cooldown", function()
@@ -1333,7 +1364,7 @@ test("bouncer preserves pre-existing infection when downgrading bite", function(
     assert_true(not part:bitten(), "bite should be cleared")
     assert_eq(part._isInfected, true, "pre-existing infection should be PRESERVED")
     assert_true(part:isDeepWounded(), "deep wound should be applied")
-    assert_eq(player:getModData()["UT_bouncer_cooldown"], 15000, "cooldown should be set")
+    assert_eq(player:getModData()["UT_bouncer_cooldown"], 250, "cooldown should be set in seconds")
 end)
 
 test("bouncer clears new infection from fresh bite", function()
@@ -1488,8 +1519,10 @@ test("bouncer ignores injury present at cooldown expiry", function()
     part._biteTime = 60
     player:getModData()["UT_bouncer_cooldown"] = 1
 
-    -- Expiry tick: decrements to 0, re-baselines snapshot.
+    -- One real second expires the Tier I cooldown and re-baselines snapshot.
+    setMockRealworldSecondsSinceLastUpdate(1)
     Events.OnPlayerUpdate:fire(player)
+    setMockRealworldSecondsSinceLastUpdate(1 / 60)
     assert_true(part:bitten(), "expiry tick must NOT downgrade (injury is baseline)")
     assert_eq(player:getModData()["UT_bouncer_cooldown"], 0, "cooldown now 0")
 
