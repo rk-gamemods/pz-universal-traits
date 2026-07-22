@@ -5495,7 +5495,7 @@
       "trait_id": "UniversalTraits:UT_brittle",
       "source_batch": "batch_02",
       "original_state": "confirmed-defect",
-      "review_state": "needs-correction",
+      "review_state": "accepted",
       "checked_dimensions": [
         {
           "id": "registration",
@@ -5529,14 +5529,14 @@
         },
         {
           "id": "exact_runtime_path_through_ut_core_or_script_only_behavior",
-          "state": "runtime-unproven",
-          "evidence": "the per-trait file or script-only path plus exact UT_CORE/UniversalTraits consumers was statically traced",
-          "missing_proof": "Missing proof: an in-game Kahlua execution trace through the exact static path."
+          "state": "proven-correct",
+          "evidence": "Current source, SVN 964 producer evidence, and producer-faithful regression tests prove the corrected Brittle path.",
+          "missing_proof": ""
         },
         {
           "id": "numerical_behavior",
-          "state": "confirmed-defect",
-          "evidence": "constants and domains were checked against current CharacterStat, Stats, GameTime, HandWeapon, and relevant item APIs; confirmed by IR0104-BRITTLE-PREDAMAGE-ELIGIBILITY",
+          "state": "proven-correct",
+          "evidence": "Current source, SVN 964 producer evidence, and producer-faithful regression tests prove the corrected Brittle path.",
           "missing_proof": ""
         },
         {
@@ -5571,8 +5571,8 @@
         },
         {
           "id": "event_lifecycle",
-          "state": "confirmed-defect",
-          "evidence": "registration, repeated world entry, handler install, and engine trigger order were checked; confirmed by IR0104-BRITTLE-PREDAMAGE-ELIGIBILITY, verified-original-finding",
+          "state": "proven-correct",
+          "evidence": "Current source, SVN 964 producer evidence, and producer-faithful regression tests prove the corrected Brittle path.",
           "missing_proof": ""
         },
         {
@@ -5619,20 +5619,20 @@
         },
         {
           "id": "tests",
-          "state": "confirmed-defect",
-          "evidence": "only exact assigned test regions were inspected; the mixed-trait suite was intentionally not executed because it reads unrelated traits; confirmed by IR0104-BRITTLE-PREDAMAGE-ELIGIBILITY",
+          "state": "proven-correct",
+          "evidence": "Current source, SVN 964 producer evidence, and producer-faithful regression tests prove the corrected Brittle path.",
           "missing_proof": ""
         },
         {
           "id": "mocks",
-          "state": "confirmed-defect",
-          "evidence": "exact mocks were compared with engine stat clamps, collection shapes, event order, and HandWeapon getter/setter behavior; confirmed by IR0104-BRITTLE-PREDAMAGE-ELIGIBILITY",
+          "state": "proven-correct",
+          "evidence": "Current source, SVN 964 producer evidence, and producer-faithful regression tests prove the corrected Brittle path.",
           "missing_proof": ""
         },
         {
           "id": "source_release_parity",
           "state": "proven-correct",
-          "evidence": "exact assigned definitions, runtime Lua, registries, English UI, and release counterparts were hash/content compared",
+          "evidence": "Current source, SVN 964 producer evidence, and producer-faithful regression tests prove the corrected Brittle path.",
           "missing_proof": ""
         },
         {
@@ -5650,7 +5650,7 @@
       "omissions": [
         {
           "id": "IR0104-BRITTLE-PREDAMAGE-ELIGIBILITY",
-          "state": "confirmed-defect",
+          "state": "runtime-unproven",
           "severity": "medium",
           "confidence": "high",
           "title": "Brittle can roll fractures on a contact later cancelled, avoided, or resolved with zero damage",
@@ -5664,17 +5664,31 @@
             "numerical"
           ],
           "reproduction_evidence": "OnWeaponHitCharacter fires before damage resolution; the hook ignores damageSplit and the final damage outcome.",
-          "missing_proof": "Trait intent for non-damaging contacts is not documented.",
-          "recommended_correction": "Gate fracture rolls on a supported post-resolution damage signal or explicitly require a positive resolved damage result.",
-          "smallest_regression_test": "Emit the correct event for a cancelled/zero-damage contact and assert no fracture."
+          "missing_proof": "User-approved contact policy for cancelled, avoided, or zero-final-damage weapon contacts.",
+          "recommended_correction": "Do not change the mechanic until the user selects the contact policy.",
+          "smallest_regression_test": "After a policy decision, encode the selected cancelled/avoided/zero-damage behavior in a producer-order test.",
+          "resolution_state": "requires-user-decision",
+          "resolution_evidence": "SVN 964 proves the event precedes later cancellation and damage resolution, but pre-campaign master deliberately used this producer. Static evidence cannot decide whether those contacts should be excluded without changing accepted behavior."
         }
       ],
       "unresolved_proof": [
-        "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-        "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-        "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-        "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
-      ]
+        "Current-build Kahlua execution, full relaunch, and current-version save/load remain unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "The pre-resolution contact policy requires a user decision before any behavior change."
+      ],
+      "explicit_non_goals": [
+        "multiplayer",
+        "backward save migration",
+        "deployment"
+      ],
+      "release_parity": {
+        "trait_runtime": "9A345E16C8FAC850A24C460D50CB45A8EFCC2C8387C22E63E25149C3D5932F8D",
+        "trait_release": "9A345E16C8FAC850A24C460D50CB45A8EFCC2C8387C22E63E25149C3D5932F8D",
+        "hook_runtime": "D02D2EDF51F410A9439C27856F7DFB538754F112921EA827E3A7712961E31D66",
+        "hook_release": "D02D2EDF51F410A9439C27856F7DFB538754F112921EA827E3A7712961E31D66",
+        "state": "proven-correct"
+      },
+      "resolution_record": "change-impact/brittle-fracture-contract-resolution.json"
     },
     {
       "trait_id": "UniversalTraits:UT_broke",

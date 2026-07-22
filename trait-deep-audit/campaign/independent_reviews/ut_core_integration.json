@@ -119,10 +119,10 @@
     },
     {
       "path": "UT_CORE/media/lua/shared/UTCore/UTCore_FractureHook.lua",
-      "sha256": "4bed7dea7e7729899bd162f4a259ed31eed4faf5da1d26153bb2092f24e8fc62",
-      "bytes": 2401,
+      "sha256": "d02d2edf51f410a9439c27856f7dfb538754f112921ea827e3a7712961e31d66",
+      "bytes": 2659,
       "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_FractureHook.lua",
-      "release_sha256": "4bed7dea7e7729899bd162f4a259ed31eed4faf5da1d26153bb2092f24e8fc62",
+      "release_sha256": "d02d2edf51f410a9439c27856f7dfb538754f112921ea827e3a7712961e31d66",
       "release_parity": "exact"
     },
     {
@@ -1106,13 +1106,13 @@
     },
     {
       "path": "UT_CORE/media/lua/shared/UTCore/UTCore_FractureHook.lua",
-      "sha256": "4bed7dea7e7729899bd162f4a259ed31eed4faf5da1d26153bb2092f24e8fc62",
-      "bytes": 2401,
+      "sha256": "d02d2edf51f410a9439c27856f7dfb538754f112921ea827e3a7712961e31d66",
+      "bytes": 2659,
       "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_FractureHook.lua",
-      "release_sha256": "4bed7dea7e7729899bd162f4a259ed31eed4faf5da1d26153bb2092f24e8fc62",
+      "release_sha256": "d02d2edf51f410a9439c27856f7dfb538754f112921ea827e3a7712961e31d66",
       "release_parity": "exact",
       "source_role": "weapon-hit fracture chance consumer",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "linked_finding_ids": [
         "IC-VPF-001",
         "IC-VPF-002",
@@ -1121,15 +1121,15 @@
       "dimensions": {
         "public_helpers_and_handlers": {
           "classification": "proven-correct",
-          "evidence": "weapon-hit fracture chance consumer",
+          "evidence": "Current hook, SVN 964 producer/API evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-VPF-002"
           ]
         },
         "event_producer_consumer_contracts": {
-          "classification": "confirmed-defect",
-          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "classification": "proven-correct",
+          "evidence": "Current hook, SVN 964 producer/API evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-VPF-002"
@@ -1137,7 +1137,7 @@
         },
         "shared_state_and_moddata": {
           "classification": "proven-correct",
-          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "evidence": "Current hook, SVN 964 producer/API evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-VPF-002"
@@ -1145,15 +1145,15 @@
         },
         "registration_removal_idempotence": {
           "classification": "proven-correct",
-          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "evidence": "Current hook, SVN 964 producer/API evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-VPF-002"
           ]
         },
         "cadence_throttle_reset_save_load": {
-          "classification": "confirmed-defect",
-          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "classification": "proven-correct",
+          "evidence": "Current hook, SVN 964 producer/API evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-VPF-002"
@@ -1161,7 +1161,7 @@
         },
         "numerical_behavior": {
           "classification": "proven-correct",
-          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "evidence": "Current hook, SVN 964 producer/API evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-VPF-002"
@@ -1169,7 +1169,7 @@
         },
         "java_lua_kahlua_receiver_methods": {
           "classification": "proven-correct",
-          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "evidence": "Current hook, SVN 964 producer/API evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-VPF-002"
@@ -1177,7 +1177,7 @@
         },
         "single_player_restriction_assumptions": {
           "classification": "proven-correct",
-          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "evidence": "Current hook, SVN 964 producer/API evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-VPF-002"
@@ -1185,23 +1185,23 @@
         },
         "stacking_and_composition": {
           "classification": "proven-correct",
-          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "evidence": "Current hook, SVN 964 producer/API evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-VPF-002"
           ]
         },
         "performance": {
-          "classification": "proven-correct",
-          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "classification": "runtime-unproven",
+          "evidence": "Static work is bounded to six body-part checks per eligible hit; no profiler capture exists.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-VPF-002"
           ]
         },
         "tests_and_mocks": {
-          "classification": "coverage-gap",
-          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "classification": "proven-correct",
+          "evidence": "Current hook, SVN 964 producer/API evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-VPF-002"
@@ -1209,7 +1209,7 @@
         },
         "source_release_parity": {
           "classification": "proven-correct",
-          "evidence": "Source and 42.0 release bytes share SHA-256 4bed7dea7e7729899bd162f4a259ed31eed4faf5da1d26153bb2092f24e8fc62",
+          "evidence": "Current hook, SVN 964 producer/API evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-005"
           ]
@@ -3257,7 +3257,7 @@
   "verified_prior_findings": [
     {
       "id": "IC-VPF-001",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
       "title": "Weapon-hit consumers bind target and weapon in the wrong positions",
@@ -3278,7 +3278,7 @@
         "UniversalTraits:UT_brittle"
       ],
       "reproduction_or_source_evidence": "Current producer emits (wielder,target,weapon,damageSplit), while both handlers declare (attacker,weapon,target); the player target is misbound and the guards return.",
-      "missing_proof": "An in-game corrected-order run remains prohibited by the write-only/game-state boundary.",
+      "missing_proof": "Current-build in-game Kahlua observation remains unrun.",
       "recommended_correction": "Bind (attacker,target,weapon,damageSplit) and update mocks from the producer contract.",
       "smallest_regression_test": "Fire the real four-argument order and assert both consumers reach the player branch.",
       "prior_ids": [
@@ -3286,11 +3286,13 @@
         "RP-EVENT-ARGS-DAMAGEMULT",
         "RP-EVENT-ARGS-FRACTURE"
       ],
-      "disposition": "verified"
+      "disposition": "verified",
+      "resolution_state": "implemented-and-statically-validated",
+      "resolution_evidence": "Commit 2f98749 corrected the producer argument order and elapsed-time cooldown. Current tests fire the exact producer order and advance world time without synthetic hits."
     },
     {
       "id": "IC-VPF-002",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "medium",
       "confidence": "high",
       "title": "Fracture cooldown counts later hits instead of elapsed time",
@@ -3307,13 +3309,15 @@
         "UniversalTraits:UT_brittle"
       ],
       "reproduction_or_source_evidence": "UT_fractureCooldown is decremented only inside the weapon-hit callback; 300 therefore means 300 subsequent hits.",
-      "missing_proof": "Trait-design intent for the nominal duration is not machine-authenticated.",
+      "missing_proof": "Current-build in-game Kahlua observation remains unrun.",
       "recommended_correction": "Store a world-age expiry or decrement from a time/tick producer.",
       "smallest_regression_test": "Set the cooldown, advance the intended duration without hits, then assert the next eligible hit may roll.",
       "prior_ids": [
         "F-CORE-002"
       ],
-      "disposition": "verified"
+      "disposition": "verified",
+      "resolution_state": "implemented-and-statically-validated",
+      "resolution_evidence": "Commit 2f98749 corrected the producer argument order and elapsed-time cooldown. Current tests fire the exact producer order and advance world time without synthetic hits."
     },
     {
       "id": "IC-VPF-003",

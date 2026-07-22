@@ -1,0 +1,102 @@
+{
+  "schema": "ut-brittle-fracture-contract-resolution-v1",
+  "trait_id": "UniversalTraits:UT_brittle",
+  "authority": "pre-campaign UTMods master",
+  "accepted_intent": {
+    "cost": -6,
+    "trigger": "OnWeaponHitCharacter",
+    "base_chance_percent": 4,
+    "multiplier": 1.5,
+    "effective_roll_percent": 6,
+    "fracture_time": 21,
+    "cooldown_in_game_seconds": 10,
+    "scope": "single-player"
+  },
+  "historical_source_boundary": "SomewhatTraits fall/collision behavior is evidence only and was not restored because pre-campaign UTMods master is the accepted behavior authority.",
+  "resolved_findings": [
+    "B02-UT_brittle-01",
+    "B02-UT_brittle-02",
+    "IC-VPF-001",
+    "IC-VPF-002"
+  ],
+  "engine_evidence": [
+    "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6768",
+    "PZCodebase/Java/source/zombie/GameTime.java:1175",
+    "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyPart.java:1153-1159"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_brittle.lua",
+      "sha256": "9A345E16C8FAC850A24C460D50CB45A8EFCC2C8387C22E63E25149C3D5932F8D",
+      "bytes": 279
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_brittle.lua",
+      "sha256": "9A345E16C8FAC850A24C460D50CB45A8EFCC2C8387C22E63E25149C3D5932F8D",
+      "bytes": 279
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_FractureHook.lua",
+      "sha256": "D02D2EDF51F410A9439C27856F7DFB538754F112921EA827E3A7712961E31D66",
+      "bytes": 2659
+    },
+    {
+      "path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_FractureHook.lua",
+      "sha256": "D02D2EDF51F410A9439C27856F7DFB538754F112921EA827E3A7712961E31D66",
+      "bytes": 2659
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "C8A3B1E644300DD354A9F2E98F110AC91267EC2B9172A7FCF9253FF3E59D1FEE",
+      "bytes": 36923
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "C8A3B1E644300DD354A9F2E98F110AC91267EC2B9172A7FCF9253FF3E59D1FEE",
+      "bytes": 36923
+    },
+    {
+      "path": "UT_CORE/test/run_tests.lua",
+      "sha256": "C551C964520E59284EB34AF6C11BD8A2215080A76D3D8ABCE5ABF1620A6F5FE7",
+      "bytes": 99062
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "7888D7DBDB33CBCEFD9A143723A37322CCF5FA50D2BBA8E2CB3E2A2A40A167F6",
+      "bytes": 263265
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_brittle.md",
+      "sha256": "C6B255081744321552EB223E134B7A73A1ACD405C2DDA436D54C894B26DDFCF6",
+      "bytes": 3819
+    }
+  ],
+  "regression_cases": [
+    "exact four-argument producer order",
+    "successful 6 percent path with deterministic roll",
+    "multiplier at or below one",
+    "elapsed cooldown without intervening hits",
+    "all eligible parts already fractured",
+    "same-process hook reload",
+    "trait present and absent at new game"
+  ],
+  "preserved_surfaces": [
+    "trait cost",
+    "weapon-hit trigger",
+    "base chance and multiplier",
+    "fracture duration",
+    "10-second cooldown intent",
+    "registration and English copy"
+  ],
+  "open_policy_question": {
+    "id": "IR0104-BRITTLE-PREDAMAGE-ELIGIBILITY",
+    "status": "requires-user-decision",
+    "question": "Should cancelled, avoided, or zero-final-damage contacts be excluded even though pre-campaign master selected the pre-resolution event?"
+  },
+  "runtime_proof": "Unobserved; requires full Exit to Desktop and current-build in-game hit, cooldown, and current-version save/load checks.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment"
+  ]
+}

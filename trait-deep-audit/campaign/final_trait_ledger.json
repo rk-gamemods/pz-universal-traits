@@ -45,12 +45,12 @@
     }
   },
   "source_artifact_sha256": {
-    "independent_reviews/traits_01_04.json": "4F7338C65D9EC8C15B9D3E749A9A82ADB60F09D968265F4E0A09E65660E93326",
+    "independent_reviews/traits_01_04.json": "35499EB19322F19CB40455DF35EBD42734814A7E2E08AC3659966B5074E4DB8C",
     "independent_reviews/traits_05_08.json": "1EC23EF9DE7D30A8244E32AE98C8D469A060243D7A1A93AAF8D6E410C13B5530",
     "independent_reviews/traits_09_12.json": "27A52A4BB934EDCCD324FC013C7CC1885085D91F474C3E0BEED192C5018C7805",
     "source_inventory.json": "47781D8C6AE00795C0DD5CFF8F89E295F49826BB57B64DC9DCD6DE6A767941C9",
     "trait_batches/batch_01.jsonl": "4FA9A60E8D86362B22C33D2BD2DC334565EB564071514576AAD0E90F7FF4BB81",
-    "trait_batches/batch_02.jsonl": "8B1EAD1B3C9B6C33F0A40B0A78455432E3604F5C5023ECF1585CCE5CC18AAE4D",
+    "trait_batches/batch_02.jsonl": "69E1FF6F6A40B2D2F54E3E76DD7651370AC67E50633EC4F959397C66C74335C2",
     "trait_batches/batch_03.jsonl": "33481D2A1F6227C331C16BA8B5CCB006099D07A15649099B8EC0627887679337",
     "trait_batches/batch_04.jsonl": "2A7857094C09D1CAD329C8DC2BDA2B96DE56FD6A6AF0866F323D7D6B3C377217",
     "trait_batches/batch_05.jsonl": "6F550AD8CF0BD3BA4E827AD9D5F39F2149C50B4D8A990816451C8E86F58DE5AE",
@@ -61,7 +61,7 @@
     "trait_batches/batch_10.jsonl": "FD77CC372A742BCDEB66FCB6D26BF9622BA4EC439CDB8E9135CAC22B946F3A44",
     "trait_batches/batch_11.jsonl": "11FBFE83557FBD93363F41AC740897040804E74E1063367C55A521DA0D2C98F4",
     "trait_batches/batch_12.jsonl": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47",
-    "translation_audit.json": "9CE80F799BA3043258ABC7568B9632CDBFD4FA1CCFF4718CFA106C91C6BDFF6E"
+    "translation_audit.json": "BC12EABD348135ECDED9B1CC3693F475E1C99781931A4C39B54900959C4009E6"
   },
   "counts": {
     "traits": 198,
@@ -70,23 +70,23 @@
     "independent_reviewed_traits": 198,
     "independent_review_findings": 118,
     "independent_review_states": {
-      "accepted": 72,
+      "accepted": 73,
       "confirmed-defect": 38,
       "coverage-gap": 20,
-      "needs-correction": 62,
+      "needs-correction": 61,
       "runtime-unproven": 6
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 74,
+      "confirmed-defect": 73,
       "coverage-gap": 12,
-      "runtime-unproven": 87
+      "runtime-unproven": 88
     },
     "dimension_states": {
-      "proven-correct": 2654,
-      "confirmed-defect": 288,
-      "coverage-gap": 811,
-      "runtime-unproven": 999
+      "proven-correct": 2664,
+      "confirmed-defect": 281,
+      "coverage-gap": 809,
+      "runtime-unproven": 998
     }
   },
   "independent_review_findings": [
@@ -528,7 +528,7 @@
     },
     {
       "id": "IR0104-BRITTLE-PREDAMAGE-ELIGIBILITY",
-      "state": "confirmed-defect",
+      "state": "runtime-unproven",
       "severity": "medium",
       "confidence": "high",
       "title": "Brittle can roll fractures on a contact later cancelled, avoided, or resolved with zero damage",
@@ -542,9 +542,9 @@
         "numerical"
       ],
       "reproduction_evidence": "OnWeaponHitCharacter fires before damage resolution; the hook ignores damageSplit and the final damage outcome.",
-      "missing_proof": "Trait intent for non-damaging contacts is not documented.",
-      "recommended_correction": "Gate fracture rolls on a supported post-resolution damage signal or explicitly require a positive resolved damage result.",
-      "smallest_regression_test": "Emit the correct event for a cancelled/zero-damage contact and assert no fracture."
+      "missing_proof": "User-approved contact policy for cancelled, avoided, or zero-final-damage weapon contacts.",
+      "recommended_correction": "Do not change the mechanic until the user selects the contact policy.",
+      "smallest_regression_test": "After a policy decision, encode the selected cancelled/avoided/zero-damage behavior in a producer-order test."
     },
     {
       "id": "IR0104-CANGRABLESS-ONE-WAY-EXCLUSION",
@@ -11673,7 +11673,7 @@
     {
       "trait_id": "UniversalTraits:UT_brittle",
       "batch": "batch_02",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
@@ -11716,36 +11716,36 @@
           ]
         },
         "source_intent": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Source comments/runtime and EN text establish observed intent: UT_brittle.lua OnNewGame sets UT_fractureMult=1.5; UTCore_FractureHook consumes it."
+            "Pre-campaign master is the accepted authority: cost -6, +50 percent fracture risk on the weapon-hit event, and a 10 in-game-second cooldown. Historical SomewhatTraits fall behavior was not restored."
           ],
           "missing_proof": [
-            "Original source-mod implementation or indexed PRD section proving intended parity was not available for every assigned trait."
+            "none"
           ],
           "source_dimensions": [
             "source_mod_intent"
           ]
         },
         "runtime_path": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "UT_brittle.lua OnNewGame sets UT_fractureMult=1.5; UTCore_FractureHook subscribes to OnWeaponHitCharacter, but declares (attacker,weapon,target) while IsoGameCharacter.java:6768 emits (wielder,target,weapon,damageSplit). The Lua target therefore receives the weapon and target ~= player returns."
+            "SVN 964 emits OnWeaponHitCharacter(wielder,target,weapon,damageSplit); the hook binds that order, reads the target's 1.5 multiplier, rolls floor(4*1.5)=6 percent, and sets fracture time 21 on one eligible unfractured part."
           ],
           "missing_proof": [
-            "No missing proof for the static disablement: current Java emission order and Lua callback order conflict exactly. A real-order regression test is still required to prevent recurrence."
+            "none"
           ],
           "source_dimensions": [
             "exact_runtime_path_through_UT_CORE_or_script_only_behavior"
           ]
         },
         "numbers": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Intended fracture roll is floor(4*1.5)=6%, but the event-order defect prevents the roll. UT_fractureCooldown=300 is decremented only when the hit callback runs, so after signature correction it represents 300 subsequent hit events, not ticks or about 10 seconds."
+            "The multiplier produces a 6 percent roll; one of six eligible parts receives fracture time 21; already fractured parts are excluded."
           ],
           "missing_proof": [
-            "Elapsed-time behavior cannot match the stated 10 seconds without a tick/time-driven decrement; add a real-time regression test."
+            "none"
           ],
           "source_dimensions": [
             "numerical_behavior"
@@ -11754,20 +11754,22 @@
         "cadence": {
           "state": "proven-correct",
           "evidence": [
-            "UT_brittle.lua OnNewGame sets UT_fractureMult=1.5; UTCore_FractureHook consumes it"
+            "One bounded six-part scan is possible per eligible weapon-hit callback."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cadence"
           ]
         },
         "cooldown": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "UTCore_FractureHook.lua sets COOLDOWN=300 and decrements UT_fractureCooldown by one only inside OnWeaponHitCharacter."
+            "The cooldown is an absolute GameTime world-age expiry of 10/3600 hours, so it expires without intervening hits."
           ],
           "missing_proof": [
-            "No elapsed-time/tick decrement path exists in the inspected hook."
+            "none"
           ],
           "source_dimensions": [
             "cooldowns"
@@ -11776,22 +11778,22 @@
         "reset_save_load": {
           "state": "runtime-unproven",
           "evidence": [
-            "Persistent state uses player/item modData where present; local tables/events reset on process reload."
+            "The multiplier and cooldown expiry persist in player mod data; same-process hook reload replaces its prior callback."
           ],
           "missing_proof": [
-            "No save/load game run verifies persistence, stale-state cleanup, or trait removal behavior."
+            "Current-version in-game save/load and full relaunch remain unobserved; backward save migration is a non-goal."
           ],
           "source_dimensions": [
             "reset_and_save_load"
           ]
         },
         "java_lua": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Current indexed code uses PZ globals/Java methods shown in the runtime path."
+            "SVN 964 exposes the four event arguments, GameTime.getWorldAgeHours, BodyDamage.getBodyPart, BodyPart.getFractureTime, and BodyPart.setFractureTime used by the hook."
           ],
           "missing_proof": [
-            "Exact current Java symbols were only partially cross-checked; no live Kahlua invocation."
+            "none"
           ],
           "source_dimensions": [
             "Java_Lua_exposure"
@@ -11800,34 +11802,34 @@
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "All 12 assigned runtime source files passed Lua 5.4 loadfile syntax compilation."
+            "The path uses Kahlua-compatible Lua constructs and verified Java receiver methods."
           ],
           "missing_proof": [
-            "Standard Lua syntax is not Kahlua execution proof."
+            "Current-build Kahlua execution is unobserved."
           ],
           "source_dimensions": [
             "Kahlua_compatibility"
           ]
         },
         "events": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Events.OnWeaponHitCharacter.Add registers the handler, but current engine argument order (wielder,target,weapon,damageSplit) is incompatible with handler(attacker,weapon,target), disabling its target check."
+            "The handler binds the producer's exact argument order and removes its stored prior callback before re-registering; the regression suite proves one handler after reload."
           ],
           "missing_proof": [
-            "No missing static proof; a real-order harness and in-game smoke remain needed as regression validation."
+            "none"
           ],
           "source_dimensions": [
             "event_lifecycle"
           ]
         },
         "stacking_interactions": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Declared exclusions and shared UT_CORE buckets/handlers were inspected where directly reached."
+            "Closed-world search finds one UT_fractureMult writer and one consumer; no other trait writes the multiplier or cooldown keys."
           ],
           "missing_proof": [
-            "No exhaustive pairwise assigned/foreign-trait runtime matrix."
+            "none"
           ],
           "source_dimensions": [
             "stacking_and_cross_trait_interactions"
@@ -11836,9 +11838,11 @@
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "DisabledInMultiplayer=true in the complete definition."
+            "The trait is disabled in multiplayer and multiplayer support is an explicit product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "multiplayer_restriction"
           ]
@@ -11846,20 +11850,22 @@
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "EN UI display key exists and matches UIName."
+            "The exact English display name is Brittle."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "display_name"
           ]
         },
         "description": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "EN promises +50% fracture chance, but the current event-order mismatch prevents the trait effect; the hook also documents a 10-second cooldown that is implemented as 300 hit callbacks."
+            "The English +50 percent claim matches the accepted 1.5 fracture-risk multiplier."
           ],
           "missing_proof": [
-            "In-game confirmation after correction."
+            "none"
           ],
           "source_dimensions": [
             "description_accuracy"
@@ -11868,10 +11874,10 @@
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "EN display and description keys exist; source inventory lists only EN."
+            "The exact English keys exist in source and release."
           ],
           "missing_proof": [
-            "All non-EN locales are absent."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
             "localization_coverage_including_absent_locales"
@@ -11880,10 +11886,10 @@
         "balance": {
           "state": "runtime-unproven",
           "evidence": [
-            "Cost=-6; behavior=documented core base roll 4%*1.5=6%."
+            "Static behavior is cost -6 and a 6 percent fracture roll on an eligible hit."
           ],
           "missing_proof": [
-            "No gameplay telemetry, comparative cost model, or in-game balance session."
+            "No gameplay telemetry or comparative balance session exists."
           ],
           "source_dimensions": [
             "balance"
@@ -11892,34 +11898,34 @@
         "performance": {
           "state": "runtime-unproven",
           "evidence": [
-            "Cadence/path: UT_brittle.lua OnNewGame sets UT_fractureMult=1.5; UTCore_FractureHook consumes it."
+            "The event path has a constant six-part upper bound and no background polling."
           ],
           "missing_proof": [
-            "No profiler capture on current build."
+            "No current-build profiler capture exists."
           ],
           "source_dimensions": [
             "performance_risk"
           ]
         },
         "tests": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Existing hook tests invoke the mocked callback in the Lua handler's assumed order and therefore fail to model IsoGameCharacter.java's real emitted order; cooldown tests advance hit callbacks rather than elapsed ticks/time."
+            "Producer-order, successful roll, multiplier gate, elapsed-time cooldown, exhausted eligibility, trait marker, and reload-idempotence regressions are present."
           ],
           "missing_proof": [
-            "Tests that fire (wielder,target,weapon,damageSplit) and advance time without hits."
+            "none"
           ],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "The OnWeaponHitCharacter mock contract does not preserve the current engine's four-argument order, allowing the disabled hook to pass tests."
+            "The event mock forwards all four arguments in order; game time and fracture-time state are modeled independently."
           ],
           "missing_proof": [
-            "A mock tied to current PZCodebase event emission order."
+            "none"
           ],
           "source_dimensions": [
             "mocks"
@@ -11928,9 +11934,11 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "Per-trait source and 42.0 release Lua SHA-256 match."
+            "Trait runtime, shared hook, and English source/release pairs are byte-identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_release_parity"
           ]
@@ -11938,10 +11946,10 @@
         "packaging": {
           "state": "coverage-gap",
           "evidence": [
-            "Expected 42.0 source/release locations were checked for assigned per-trait Lua."
+            "All Brittle-owned 42.0 runtime and English counterparts are present and identical."
           ],
           "missing_proof": [
-            "Full package manifest/mod.info/load-order and live-copy deployment were outside scope."
+            "UniversalTraits package verification remains blocked only by the separately tracked missing source poster."
           ],
           "source_dimensions": [
             "packaging_integrity"
@@ -11953,14 +11961,15 @@
         "B02-UT_brittle-02"
       ],
       "unknowns": [
-        "Non-EN localization is absent.",
-        "Balance and profiler evidence are absent.",
-        "Current in-game Build 42.19 execution after correction remains unrun; the two defects are proven statically from current engine and hook sources."
+        "Current-build Kahlua execution, full relaunch, and current-version save/load remain unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Whether cancelled, avoided, or zero-final-damage contacts should be excluded requires user approval because pre-campaign master deliberately used the pre-resolution event.",
+        "Multiplayer and backward save migration are explicit non-goals."
       ],
-      "translation_terminal_state": "coverage-gap",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_01_04.json",
-        "review_state": "needs-correction",
+        "review_state": "accepted",
         "omission_finding_ids": [
           "IR0104-BRITTLE-PREDAMAGE-ELIGIBILITY"
         ],
@@ -11971,10 +11980,9 @@
         ],
         "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [
-          "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-          "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-          "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-          "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
+          "Current-build Kahlua execution, full relaunch, and current-version save/load remain unobserved.",
+          "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+          "The pre-resolution contact policy requires a user decision before any behavior change."
         ]
       }
     },

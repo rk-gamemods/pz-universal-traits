@@ -1879,6 +1879,20 @@ test("FractureHook skips already-fractured parts", function()
         "expected no cooldown set when all parts already fractured")
 end)
 
+test("FractureHook reload retains one weapon-hit handler", function()
+    local original = UTCore._fractureHookHandler
+    local before = Events.OnWeaponHitCharacter._handlerCount()
+    Events.OnWeaponHitCharacter.Remove(original)
+    assert_eq(Events.OnWeaponHitCharacter._handlerCount(), before - 1,
+        "expected exactly one registered occurrence of the stored fracture handler")
+    Events.OnWeaponHitCharacter.Add(original)
+    dofile(base .. "../media/lua/shared/UTCore/UTCore_FractureHook.lua")
+    assert_eq(Events.OnWeaponHitCharacter._handlerCount(), before,
+        "expected reload to replace rather than duplicate the fracture handler")
+    assert_true(UTCore._fractureHookHandler ~= original,
+        "expected reload to install the new function object")
+end)
+
 -- ===== NoiseHook tests =====
 
 test("NoiseHook emits noise when sleeping with noiseMult > 1.0", function()

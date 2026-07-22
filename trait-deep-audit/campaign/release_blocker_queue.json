@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "remediation_queue_sha256": "62e1727c9ec7de7fdbadb365a5b5d2250c647bab6b9e165509aad2f9c59476f9",
+  "remediation_queue_sha256": "8e9633d2a8dec2bbdc83c52d61a9272d2fe3c6e0e8931f7b3bc20626803c7ddc",
   "category_label": "release-blocker",
   "classification_scope_statement": "Only the queue rows listed by these reviewed semantic identities are classified as release-blocker; all other rows remain unclassified in the exhaustive ledger.",
   "identities": [
@@ -14,18 +14,6 @@
       ],
       "dependencies": [],
       "evidence_scope": "Unwavering translation text contains a character rejected by the Translator load guard."
-    },
-    {
-      "semantic_identity": "shared-hook:UTCore_FractureHook",
-      "identity_kind": "shared-hook",
-      "status": "open",
-      "priority_reason_code": "invalid-shared-event-contract",
-      "queue_ids": [
-        "finding:B02-UT_brittle-01",
-        "dimension:UniversalTraits:UT_brittle:events"
-      ],
-      "dependencies": [],
-      "evidence_scope": "The shared fracture hook uses the wrong OnWeaponHitCharacter argument order for Brittle."
     },
     {
       "semantic_identity": "trait:UT_glassbody-hit-handler",
