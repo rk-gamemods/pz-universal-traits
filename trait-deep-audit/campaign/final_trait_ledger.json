@@ -47,7 +47,7 @@
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "417C222A68161C10EB07CAEFE38D7D6E5C73E010CCC14431FE732754B34F0DB8",
     "independent_reviews/traits_05_08.json": "B0B92939B0E09B468C555B7434551B4E08D5A3353E63A86A83F415C842DB37E3",
-    "independent_reviews/traits_09_12.json": "51B092F2E86347E7F6EEC63EBD3D9210FDCBFEA05053FBFBE4DD814C49E8FFF9",
+    "independent_reviews/traits_09_12.json": "E6583566E0614CECBAC92E29BAA5F3143748236745059BD95172260430879108",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "7B741591E807E09BDE359BECBB8CF8BCBA18A872A9DD6B022EF105975DA78499",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
@@ -59,9 +59,9 @@
     "trait_batches/batch_08.jsonl": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A",
     "trait_batches/batch_09.jsonl": "7493EABBF27471F551A42E6B750D8927EC80B36404B51ED6E7CBC74349EAFE44",
     "trait_batches/batch_10.jsonl": "33304EC69C6072CE027BFD779AB0E2332EEDE70DC56B6920468F46BC4A2ABE31",
-    "trait_batches/batch_11.jsonl": "11FBFE83557FBD93363F41AC740897040804E74E1063367C55A521DA0D2C98F4",
+    "trait_batches/batch_11.jsonl": "1F6AE4E6BFCFE708F0A2913B1499BCBE14ED68AE1EEFD8E758733E164F0036E4",
     "trait_batches/batch_12.jsonl": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47",
-    "translation_audit.json": "665380BC589E8ADE18E3010A46E42609D4BDD1C0BAA0C345DA70090CD5134C51"
+    "translation_audit.json": "87FD74386B1DE2E170338BBF4DD3BF8CEFA094A1C93377B1A125DDFDE534A60F"
   },
   "counts": {
     "traits": 198,
@@ -71,22 +71,22 @@
     "independent_review_findings": 118,
     "independent_review_states": {
       "accepted": 82,
-      "confirmed-defect": 37,
+      "confirmed-defect": 36,
       "coverage-gap": 20,
       "needs-correction": 52,
-      "runtime-unproven": 7
+      "runtime-unproven": 8
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 64,
+      "confirmed-defect": 63,
       "coverage-gap": 12,
-      "runtime-unproven": 97
+      "runtime-unproven": 98
     },
     "dimension_states": {
-      "proven-correct": 2752,
-      "confirmed-defect": 249,
-      "coverage-gap": 771,
-      "runtime-unproven": 980
+      "proven-correct": 2755,
+      "confirmed-defect": 247,
+      "coverage-gap": 769,
+      "runtime-unproven": 981
     }
   },
   "independent_review_findings": [
@@ -55100,24 +55100,28 @@
     {
       "trait_id": "UniversalTraits:UT_staunch",
       "batch": "batch_11",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
           "evidence": [
-            "exact"
+            "The namespaced registry entry, complete definition, runtime key, and English keys agree."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "registration"
           ]
         },
         "definition_parser": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "complete"
+            "The complete source and release definitions are byte-identical and parse in the standard-Lua consistency suite."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current-build ScriptManager parsing has not been observed in game."
+          ],
           "source_dimensions": [
             "definition_parser"
           ]
@@ -55125,9 +55129,11 @@
         "namespace": {
           "state": "proven-correct",
           "evidence": [
-            "consistent"
+            "All owned surfaces use UniversalTraits:UT_staunch."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "namespace"
           ]
@@ -55135,9 +55141,11 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "cost 10; Doctor +1; no grants/exclusions"
+            "Cost is 10, XPBoosts grants Doctor=1, no grants or exclusions exist, and DisabledInMultiplayer is true."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cost_xp_grants_exclusions"
           ]
@@ -55145,20 +55153,22 @@
         "source_intent": {
           "state": "proven-correct",
           "evidence": [
-            "medical training: bandaged bleedingTime decay 3x"
+            "Pre-campaign master defines 3x bandaged wound closure and explicitly requires 4.5x when combined with Thick Blood."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_intent"
           ]
         },
         "runtime_path": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "OnCreatePlayer -> applyBleedDecayMult(3,true) -> shared per-tick hook throttled 10 invocations"
+            "OnCreatePlayer and one throttled lifecycle handler own a named 3.0 bandaged-only source consumed by the shared bleed-decay hook."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "none"
           ],
           "source_dimensions": [
             "runtime_path"
@@ -55167,20 +55177,22 @@
         "numbers": {
           "state": "proven-correct",
           "evidence": [
-            "verified native 0.0002 bandaged decay; hook adds 2x extra over 10 ticks"
+            "Native rates are 0.0002 bandaged and 0.00002 unbandaged per update; exact factor products are 3.0 alone, 4.5 with Thick Blood, and 0.99 with Anemic while bandaged."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "numbers"
           ]
         },
         "cadence": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "OnCreatePlayer setup; core OnPlayerUpdate connector"
+            "OnCreatePlayer applies immediately, a light vehicle-aware handler reconciles every 30 updates, and the core hook applies accumulated extra decay every 10 updates."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "none"
           ],
           "source_dimensions": [
             "cadence"
@@ -55189,20 +55201,22 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
+            "Staunch has no probabilistic trigger or cooldown."
+          ],
+          "missing_proof": [
             "none"
           ],
-          "missing_proof": [],
           "source_dimensions": [
             "cooldown"
           ]
         },
         "reset_save_load": {
-          "state": "confirmed-defect",
+          "state": "runtime-unproven",
           "evidence": [
-            "reapplies on new/load, but shares one persisted scalar/flag with Thick Blood"
+            "Named-source removal covers deactivation, invalid player, replacement, unregister, and reload; OnCreatePlayer reasserts on new game and save load."
           ],
           "missing_proof": [
-            "Exact listener order was not runtime-traced; overwrite and non-composition are order-independent."
+            "A full current-build new-game and save-load lifecycle remains unobserved."
           ],
           "source_dimensions": [
             "reset_save_load"
@@ -55211,9 +55225,11 @@
         "java_lua": {
           "state": "proven-correct",
           "evidence": [
-            "0-based BodyParts loop and BodyPart APIs match Java"
+            "SVN 964 proves event ordering, native BodyPart rates, the 0-based body-part list, setters, bandage state, and embedded-glass floor."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "java_lua"
           ]
@@ -55221,10 +55237,10 @@
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "simple compatible Lua"
+            "The implementation uses Kahlua-compatible tables, numeric loops, pcall boundaries, and verified Java receiver methods."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "Current-build Kahlua execution is unobserved."
           ],
           "source_dimensions": [
             "kahlua"
@@ -55233,20 +55249,22 @@
         "events": {
           "state": "proven-correct",
           "evidence": [
-            "OnCreatePlayer(playerIndex,player) signature matches engine"
+            "New-game OnNewGame precedes OnCreatePlayer; save load fires OnCreatePlayer; registrations are replace-on-reload and teardown-aware."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "events"
           ]
         },
         "stacking_interactions": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "allowed with Thick Blood but both overwrite UT_bleedDecayMult and UT_bleedDecayBandagedOnly"
+            "Independent factors multiply deterministically: Thick Blood remains 1.5x on all wounds and composes to 4.5x bandaged; Anemic composes to 0.99x bandaged and remains 0.33x unbandaged."
           ],
           "missing_proof": [
-            "Exact listener order was not runtime-traced; overwrite and non-composition are order-independent."
+            "none"
           ],
           "source_dimensions": [
             "stacking_interactions"
@@ -55255,9 +55273,11 @@
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "disabled"
+            "The definition disables Staunch in multiplayer and multiplayer support is an explicit product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "multiplayer"
           ]
@@ -55265,9 +55285,11 @@
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "EN present"
+            "The exact English display name is Staunch."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "display"
           ]
@@ -55275,9 +55297,11 @@
         "description": {
           "state": "proven-correct",
           "evidence": [
-            "accurate in isolation"
+            "English states +1 First Aid, faster bandaged wound closure, and no unbandaged benefit without inventing a stack formula for the player."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "description"
           ]
@@ -55285,22 +55309,22 @@
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "EN only"
+            "The exact English keys exist in source and release."
           ],
           "missing_proof": [
-            "A non-EN localization requirement was not supplied."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
             "localization"
           ]
         },
         "balance": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "cost 10 unbenchmarked"
+            "Static behavior remains the pre-campaign cost 10, Doctor=1, and 3.0 bandaged factor contract."
           ],
           "missing_proof": [
-            "A formal balance target was not supplied."
+            "No gameplay telemetry or comparative balance session exists."
           ],
           "source_dimensions": [
             "balance"
@@ -55309,34 +55333,34 @@
         "performance": {
           "state": "runtime-unproven",
           "evidence": [
-            "17-part scan every 10 player updates while modifier active"
+            "Staunch adds one scalar bucket write every 30 updates; the existing core hook still scans at most 64 parts every 10 updates."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "No current-build profiler capture exists."
           ],
           "source_dimensions": [
             "performance"
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "isolated setup test only; no interaction/save-load test"
+            "Focused tests cover exact wound-state math, Thick Blood and Anemic composition, source removal, legacy preservation, deactivation, and duplicate load."
           ],
           "missing_proof": [
-            "A targeted regression covering this exact dimension is missing or incomplete."
+            "none"
           ],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "do not model competing writes/event-order lifecycle"
+            "Mock BodyPart now exposes bleeding time, bandage state, and embedded-glass state; event mocks support removal and handler counts."
           ],
           "missing_proof": [
-            "A current engine-faithful mock for this exact path is missing or incomplete."
+            "none"
           ],
           "source_dimensions": [
             "mocks"
@@ -55345,19 +55369,23 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "assigned and shared files equal"
+            "Staunch runtime and both changed UT_CORE runtime pairs are byte-identical between source and 42.0 release."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_release_parity"
           ]
         },
         "packaging": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "complete"
+            "All Staunch-owned 42.0 runtime, definition, and English counterparts are present and identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Read-only package verification still tracks the separate missing source poster."
+          ],
           "source_dimensions": [
             "packaging"
           ]
@@ -55367,13 +55395,16 @@
         "B11-STAUNCH-BLEED-STACK-001"
       ],
       "unknowns": [
-        "Intended composition rule (multiplicative 4.5x versus another formula) is not authoritatively specified.",
-        "No in-game lifecycle trace/non-EN requirement."
+        "Current-build Kahlua, live new-game and save-load lifecycle, death, and repeated world entry remain unobserved.",
+        "Live bandaged, unbandaged, embedded-glass, Thick Blood, Anemic, and trait-removal behavior remain unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory.",
+        "Multiplayer and backward save migration are explicit non-goals."
       ],
-      "translation_terminal_state": "coverage-gap",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_09_12.json",
-        "review_state": "confirmed-defect",
+        "review_state": "runtime-unproven",
         "omission_finding_ids": [],
         "cross_finding_ids": [
           "IR0912-FINDING-STATE-001",

@@ -4047,10 +4047,60 @@ test("gimp sets UT_speedMod=-0.5 on create", function()
     assert_eq(p:getModData()["UT_speedMod"], -0.5, "expected UT_speedMod=-0.5")
 end)
 
-test("staunch sets UT_bleedDecayMult=3.0 bandaged-only on create", function()
+test("staunch stores its 3.0 multiplier in the named bandaged-only bucket", function()
     local p = fireCreatePlayer("UniversalTraits:UT_staunch")
-    assert_eq(p:getModData()["UT_bleedDecayMult"],        3.0,  "bleedDecayMult")
-    assert_eq(p:getModData()["UT_bleedDecayBandagedOnly"], true, "bandagedOnly should be true")
+    local buckets = p:getModData()["UT_modifierBuckets"]
+    assert_eq(buckets.bleedDecayBandagedMult["UniversalTraits:UT_staunch"], 3.0,
+        "named Staunch multiplier")
+    assert_eq(p:getModData()["UT_bleedDecayMult"], nil,
+        "Staunch must not overwrite the legacy all-wound scalar")
+end)
+
+test("staunch preserves a coexisting Thick Blood all-wound multiplier", function()
+    local p = MockPlayer({ "UniversalTraits:UT_staunch", "UniversalTraits:UT_thickblood" })
+    p:getModData()["UT_bleedDecayMult"] = 1.5
+    p:getModData()["UT_bleedDecayBandagedOnly"] = false
+    Events.OnCreatePlayer:fire(0, p)
+
+    assert_eq(p:getModData()["UT_bleedDecayMult"], 1.5, "Thick Blood scalar")
+    assert_eq(
+        p:getModData()["UT_modifierBuckets"].bleedDecayBandagedMult["UniversalTraits:UT_staunch"],
+        3.0,
+        "Staunch named factor"
+    )
+end)
+
+test("staunch removes only its named multiplier when deactivated", function()
+    local p = fireCreatePlayer("UniversalTraits:UT_staunch")
+    p:getModData()["UT_bleedDecayMult"] = 1.5
+    p:getModData()["UT_bleedDecayBandagedOnly"] = false
+    Events.OnCreatePlayer:fire(0, MockPlayer({}))
+
+    assert_eq(
+        p:getModData()["UT_modifierBuckets"].bleedDecayBandagedMult["UniversalTraits:UT_staunch"],
+        nil,
+        "deactivation must remove Staunch source"
+    )
+    assert_eq(p:getModData()["UT_bleedDecayMult"], 1.5,
+        "deactivation must preserve another trait's scalar")
+end)
+
+test("staunch duplicate load replaces its handlers and clears stale state", function()
+    local p = fireCreatePlayer("UniversalTraits:UT_staunch")
+    local createHandlers = Events.OnCreatePlayer.getHandlerCount()
+    local tickHandlers = #UTCore._tickHandlers
+
+    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_staunch.lua")
+
+    assert_eq(Events.OnCreatePlayer.getHandlerCount(), createHandlers,
+        "reload must replace the create-player handler")
+    assert_eq(#UTCore._tickHandlers, tickHandlers,
+        "reload must replace the tick handler")
+    assert_eq(
+        p:getModData()["UT_modifierBuckets"].bleedDecayBandagedMult["UniversalTraits:UT_staunch"],
+        nil,
+        "reload teardown must clear stale state"
+    )
 end)
 
 test("sorelegs sets UT_speedMod=-0.2 and reduces carry weight on create", function()

@@ -1757,13 +1757,13 @@
       ]
     },
     {
-      "accepted_overall_state": "confirmed-defect",
+      "accepted_overall_state": "runtime-unproven",
       "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:8",
       "cross_finding_ids": [
         "IR0912-FINDING-STATE-001",
         "IR0912-LOCALIZATION-001"
       ],
-      "independent_state": "confirmed-defect",
+      "independent_state": "runtime-unproven",
       "omission_disposition": "none beyond referenced cross-trait findings",
       "omissions": [],
       "rejected_accepted_finding_ids": [],
@@ -1777,7 +1777,25 @@
         "RP0912-SAVELOAD-001",
         "RP0912-BALANCE-PERF-001",
         "RP0912-LOCALE-001"
-      ]
+      ],
+      "repair_resolution": {
+        "state": "implemented-and-statically-validated",
+        "resolved_finding_ids": [
+          "B11-STAUNCH-BLEED-STACK-001"
+        ],
+        "open_finding_ids": [],
+        "remaining_runtime_proof": "Current-build Kahlua, live wound composition, new game, save load, trait removal, death, rendered English, balance, and profiler observation remain unrun."
+      },
+      "release_parity": {
+        "source_runtime_sha256": "2FA5D75194D7CB5968AC93E19E4E761019DDF278B3AF61376629BB77B785F3A9",
+        "release_runtime_sha256": "2FA5D75194D7CB5968AC93E19E4E761019DDF278B3AF61376629BB77B785F3A9",
+        "source_core_stat_sha256": "BAC8028A1111B3166FEAAC4DE4EE9ABC25DC967F9E5373AE1AB4DC20C836CB98",
+        "release_core_stat_sha256": "BAC8028A1111B3166FEAAC4DE4EE9ABC25DC967F9E5373AE1AB4DC20C836CB98",
+        "source_core_hook_sha256": "718143F879F0442D2FB3F6C99DDD59F087BAF3A7F3E8A52CCFA5E7E736F4A946",
+        "release_core_hook_sha256": "718143F879F0442D2FB3F6C99DDD59F087BAF3A7F3E8A52CCFA5E7E736F4A946",
+        "state": "proven-correct"
+      },
+      "resolution_record": "change-impact/staunch-bleed-decay-composition.json"
     },
     {
       "accepted_overall_state": "confirmed-defect",

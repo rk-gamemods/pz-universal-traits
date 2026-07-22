@@ -1,5 +1,5 @@
 -- UTCore_BleedDecayHook.lua
--- Reads UT_bleedDecayMult and UT_bleedDecayBandagedOnly from player moddata.
+-- Reads legacy scalar and named bleed-decay multiplier buckets from player moddata.
 -- Every OnPlayerUpdate tick, adjusts bleedingTime on each body part to
 -- multiply the native decay rate by the stored multiplier.
 --
@@ -7,8 +7,9 @@
 --   bandaged:   0.0002 * GameTime.multiplier
 --   unbandaged: 0.00002 * GameTime.multiplier
 --
--- Mechanism: the game has already applied its native decay this tick.
--- We apply the delta to achieve the target multiplied rate:
+-- Mechanism: OnPlayerUpdate runs before the engine's native decay for this tick.
+-- Every tenth update, apply the accumulated extra delta; native decay then
+-- completes the target multiplied rate for the ten-update interval:
 --   extraDecay = nativeDecay * (mult - 1.0)
 --   part:setBleedingTime(current - extraDecay)
 --   → mult=3.0: removes 2x extra → 3x total decay (3x faster healing)
@@ -24,8 +25,31 @@ local NATIVE_BANDAGED   = 0.0002
 local NATIVE_UNBANDAGED = 0.00002
 local EMBEDDED_GLASS_BLEEDING_FLOOR = 3.0
 local MAX_BODY_PARTS = 64
+local MODIFIER_BUCKETS_KEY = "UT_modifierBuckets"
+local BLEED_DECAY_ALL_BUCKET = "bleedDecayAllMult"
+local BLEED_DECAY_BANDAGED_BUCKET = "bleedDecayBandagedMult"
 
 local _bleedDecayTick = 0
+
+local function validMultiplier(value)
+    return type(value) == "number"
+        and value == value
+        and value >= 0
+        and value < math.huge
+end
+
+local function productBucket(bucket)
+    local product = 1.0
+    if type(bucket) ~= "table" then return product end
+
+    for _, value in pairs(bucket) do
+        if validMultiplier(value) then
+            product = product * value
+            if not validMultiplier(product) then return 1.0 end
+        end
+    end
+    return product
+end
 
 local function onPlayerUpdate(player, tick)
     -- Throttle: body part iteration is expensive. Check every 10 ticks (~3x/sec).
@@ -40,10 +64,14 @@ local function onPlayerUpdate(player, tick)
     end)
     if not ok or type(md) ~= "table" then return end
 
-    local mult        = md["UT_bleedDecayMult"]
-    local bandagedOnly = md["UT_bleedDecayBandagedOnly"]
+    local legacyMult = md["UT_bleedDecayMult"]
+    if not validMultiplier(legacyMult) then legacyMult = 1.0 end
+    local legacyBandagedOnly = md["UT_bleedDecayBandagedOnly"] == true
+    local buckets = md[MODIFIER_BUCKETS_KEY]
+    local allWoundMult = productBucket(type(buckets) == "table" and buckets[BLEED_DECAY_ALL_BUCKET])
+    local bandagedMult = productBucket(type(buckets) == "table" and buckets[BLEED_DECAY_BANDAGED_BUCKET])
 
-    if type(mult) ~= "number" or mult ~= mult or mult < 0 or mult == 1.0 then return end
+    if legacyMult == 1.0 and allWoundMult == 1.0 and bandagedMult == 1.0 then return end
 
     local boundaryOK, gameMultiplier, parts, partCount = pcall(function()
         if not GameTime or not GameTime.getInstance then return nil end
@@ -75,7 +103,14 @@ local function onPlayerUpdate(player, tick)
             if type(bleedingTime) ~= "number" or bleedingTime ~= bleedingTime or bleedingTime <= 0 then return end
 
             local isBandaged = part:bandaged() == true
-            if bandagedOnly and not isBandaged then return end
+            local mult = allWoundMult
+            if not legacyBandagedOnly or isBandaged then
+                mult = mult * legacyMult
+            end
+            if isBandaged then
+                mult = mult * bandagedMult
+            end
+            if not validMultiplier(mult) or mult == 1.0 then return end
 
             local nativeDecay = isBandaged and NATIVE_BANDAGED or NATIVE_UNBANDAGED
             -- Multiply by 10 to compensate for the 10-update throttle.

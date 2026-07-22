@@ -343,6 +343,9 @@ function MockBodyPart(partType, isBleeding, isStemmed)
     local _stemmed = isStemmed or false
     local _health = 1.0
     local _fractureTime = 0
+    local _bleedingTime = _bleeding and 10.0 or 0.0
+    local _bandaged = false
+    local _haveGlass = false
     local addHealthCalls = 0
     local reduceHealthCalls = 0
     return {
@@ -358,6 +361,12 @@ function MockBodyPart(partType, isBleeding, isStemmed)
         setFractured         = function(self, v) _fractureTime = v and 1 or 0 end,
         setFractureTime      = function(self, v) _fractureTime = v end,
         getFractureTime      = function(self) return _fractureTime end,
+        getBleedingTime      = function(self) return _bleedingTime end,
+        setBleedingTime      = function(self, v) _bleedingTime = v end,
+        bandaged             = function(self) return _bandaged end,
+        setBandaged          = function(self, v) _bandaged = v and true or false end,
+        haveGlass            = function(self) return _haveGlass end,
+        setHaveGlass         = function(self, v) _haveGlass = v and true or false end,
     }
 end
 

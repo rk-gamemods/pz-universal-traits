@@ -1166,6 +1166,69 @@ test("BleedHook calls ReduceHealth for bleedMult > 1.0", function()
     assert(torso:getReduceHealthCalls() >= 1, "expected ReduceHealth call for mult 2.0")
 end)
 
+local function runBleedDecayInterval(player)
+    for _ = 1, 10 do Events.OnPlayerUpdate.fire(player) end
+end
+
+test("BleedDecayHook applies a named bandaged-only multiplier without legacy overwrite", function()
+    local p = MockPlayer({})
+    local bandaged = MockBodyPart("Hand_L", true, false)
+    local open = MockBodyPart("Hand_R", true, false)
+    bandaged:setBandaged(true)
+    p:setBodyDamage(MockBodyDamage({ bandaged, open }))
+
+    UTCore.applyBleedDecayMult(p, 3.0, true, "UniversalTraits:UT_staunch")
+    assert_eq(p:getModData()["UT_bleedDecayMult"], nil, "named source must not overwrite legacy scalar")
+    runBleedDecayInterval(p)
+
+    assert_close(bandaged:getBleedingTime(), 9.996, 0.0000001, "3x bandaged extra decay")
+    assert_close(open:getBleedingTime(), 10.0, 0.0000001, "unbandaged wound must be unchanged")
+end)
+
+test("BleedDecayHook composes Staunch and Thick Blood to 4.5x only while bandaged", function()
+    local p = MockPlayer({})
+    local bandaged = MockBodyPart("Hand_L", true, false)
+    local open = MockBodyPart("Hand_R", true, false)
+    bandaged:setBandaged(true)
+    p:setBodyDamage(MockBodyDamage({ bandaged, open }))
+
+    UTCore.applyBleedDecayMult(p, 1.5, false)
+    UTCore.applyBleedDecayMult(p, 3.0, true, "UniversalTraits:UT_staunch")
+    runBleedDecayInterval(p)
+
+    assert_close(bandaged:getBleedingTime(), 9.993, 0.0000001, "4.5x bandaged extra decay")
+    assert_close(open:getBleedingTime(), 9.9999, 0.0000001, "1.5x unbandaged extra decay")
+end)
+
+test("BleedDecayHook removes one named source and preserves the legacy modifier", function()
+    local p = MockPlayer({})
+    local bandaged = MockBodyPart("Hand_L", true, false)
+    bandaged:setBandaged(true)
+    p:setBodyDamage(MockBodyDamage({ bandaged }))
+
+    UTCore.applyBleedDecayMult(p, 1.5, false)
+    UTCore.applyBleedDecayMult(p, 3.0, true, "UniversalTraits:UT_staunch")
+    UTCore.applyBleedDecayMult(p, nil, true, "UniversalTraits:UT_staunch")
+    runBleedDecayInterval(p)
+
+    assert_close(bandaged:getBleedingTime(), 9.999, 0.0000001, "Thick Blood must remain after Staunch removal")
+end)
+
+test("BleedDecayHook deterministically composes Staunch with the allowed Anemic opposite", function()
+    local p = MockPlayer({})
+    local bandaged = MockBodyPart("Hand_L", true, false)
+    local open = MockBodyPart("Hand_R", true, false)
+    bandaged:setBandaged(true)
+    p:setBodyDamage(MockBodyDamage({ bandaged, open }))
+
+    UTCore.applyBleedDecayMult(p, 0.33, false)
+    UTCore.applyBleedDecayMult(p, 3.0, true, "UniversalTraits:UT_staunch")
+    runBleedDecayInterval(p)
+
+    assert_close(bandaged:getBleedingTime(), 10.00002, 0.0000001, "0.99x bandaged composition")
+    assert_close(open:getBleedingTime(), 10.000134, 0.0000001, "0.33x unbandaged composition")
+end)
+
 -- MeleeDelayHook: 50% reduction for axe category with UT_axes trait
 test("MockPlayer owns mutable melee delay and clamps writes at zero", function()
     local p = MockPlayer({}, { meleeDelay = 20 })

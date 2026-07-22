@@ -531,7 +531,16 @@ UTCore.setModData = function(player, key, value)
     player:getModData()[key] = value
 end
 UTCore.applySpawnCondition  = function(player, t) player:getModData()["_spawnCond"] = t end
-UTCore.applyBleedDecayMult  = function(player, mult, bandagedOnly)
+UTCore.applyBleedDecayMult  = function(player, mult, bandagedOnly, sourceId)
+    if sourceId ~= nil then
+        local md = player:getModData()
+        md["UT_modifierBuckets"] = md["UT_modifierBuckets"] or {}
+        local bucketName = bandagedOnly and "bleedDecayBandagedMult" or "bleedDecayAllMult"
+        local bucket = md["UT_modifierBuckets"][bucketName] or {}
+        md["UT_modifierBuckets"][bucketName] = bucket
+        bucket[sourceId] = mult
+        return
+    end
     player:getModData()["UT_bleedDecayMult"]        = mult
     player:getModData()["UT_bleedDecayBandagedOnly"] = bandagedOnly and true or false
 end
@@ -993,6 +1002,12 @@ if not _G.Events.OnCreatePlayer then
     local _createPlayerHandlers = {}
     _G.Events.OnCreatePlayer = {
         Add  = function(fn) table.insert(_createPlayerHandlers, fn) end,
+        Remove = function(fn)
+            for i = #_createPlayerHandlers, 1, -1 do
+                if _createPlayerHandlers[i] == fn then table.remove(_createPlayerHandlers, i) end
+            end
+        end,
+        getHandlerCount = function() return #_createPlayerHandlers end,
         fire = function(...)
             local args = { ... }
             if args[1] == _G.Events.OnCreatePlayer then table.remove(args, 1) end

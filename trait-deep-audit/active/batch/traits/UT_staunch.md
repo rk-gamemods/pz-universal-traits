@@ -1,118 +1,78 @@
-# UT_staunch
+# UniversalTraits:UT_staunch refreshed resolution
 
-## Trait Summary
+## Decision
 
-- UT trait id: UT_staunch
-- Source mod: FillerTraits
-- Source trait id: Staunch
-- Current cost: 10
-- Scripted: yes
-- Owner: parallel trait audit worker
-- Status: complete
+Finding `B11-STAUNCH-BLEED-STACK-001` is confirmed and corrected without changing the pre-campaign trait contract.
 
-## Source Evidence
+The accepted contract is the UTMods `master` state that existed before this campaign:
 
-- Source files reviewed:
-  - `research/installed-mods/FillerTraits/mods/FillerTraits/42/media/lua/shared/NPCs/UpgradeMainCreationMethods.lua`
-  - `research/installed-mods/FillerTraits/mods/FillerTraits/42/media/lua/client/UpgradeTraits.lua`
-  - `research/installed-mods/FillerTraits/mods/FillerTraits/common/lua/shared/NPCs/UpgradeMainCreationMethods.lua`
-- Source trigger path:
-  - Build 42 source registers `Staunch` at cost 10 with `+1 Fitness` and `+1 Strength` XP boosts, then calls `Staunch(player)` from a shared `PlayerUpdate` function wired to `Events.OnPlayerUpdate`.
-- Source behavior:
-  - Proven. In the B42 source, if the player has `Staunch`, each `OnPlayerUpdate` tick checks all body parts. For every body part that is actively bleeding and not stemmed, it adds `0.002` health directly; Neck gets double (`0.004`).
-  - Source text says: `Loses health at a slightly slower pace than normal. +1 Strength +1 Fitness`.
-  - Source mutual exclusion in the B42 file is only `Frail`. Older/common source variants excluded a larger vanilla weakness/fitness set, so the source family is not perfectly consistent across versions.
+- cost 10;
+- `Doctor=1` (`+1 First Aid`);
+- bandaged wounds close at 3 times the native rate;
+- unbandaged wounds and active bleed health drain are unaffected by Staunch;
+- Staunch is allowed with Thick Blood, and the master Thick Blood runtime explicitly requires 4.5 times bandaged wound closure when both traits are active.
 
-## Current UT Evidence
+The older FillerTraits implementation is historical evidence only. Its Strength, Fitness, and direct-health behavior does not override the accepted UTMods baseline.
 
-### Structure
-- Registered in registries.lua: yes — `UTTraitsRegistries.UT_staunch = CharacterTrait.register("UniversalTraits:UT_staunch")`
-- Defined in UT_character_traits.txt: yes — cost `10`, `XPBoosts = FirstAid=1`
-- Translation strings present: yes — `UI_UT_staunch` and `UI_UT_staunchDesc`
-- Exclusions/grants correct: no — current UT definition has no `MutuallyExclusiveTraits`; source B42 had at least `Frail`
-- Runtime Lua file exists: yes — `UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_staunch.lua`
+## Confirmed defect
 
-### Runtime Trace
-- Files reviewed:
-  - `UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_staunch.lua`
-  - `UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua`
-  - `UT_CORE/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua`
-- Event registrations:
-  - `Events.OnCreatePlayer.Add(onCreatePlayer)` in `UT_staunch.lua`
-  - shared consumer: `Events.OnPlayerUpdate.Add(onPlayerUpdate)` in `UTCore_BleedDecayHook.lua`
-- UT_CORE hooks used:
-  - `UTCore.hasTrait(player, TRAIT_ID)`
-  - `UTCore.applyBleedDecayMult(player, 3.0, true)`
-  - `UTCore_BleedDecayHook` reads `UT_bleedDecayMult` and `UT_bleedDecayBandagedOnly`
-- Runtime chain (plain language):
-  1. On player creation/load, the trait checks whether the player has `UniversalTraits:UT_staunch`.
-  2. If yes, it stores `UT_bleedDecayMult = 3.0` and `UT_bleedDecayBandagedOnly = true` in modData.
-  3. On every player update, `UTCore_BleedDecayHook` scans body parts with `bleedingTime > 0`.
-  4. If a part is bandaged, it applies extra decay so bleedingTime shrinks at 3x the native bandaged rate.
-  5. Unbandaged wounds are ignored. Active bleed death rate is unchanged. Pain is unchanged. Injury stat penalties are unchanged.
-- Actual behavior (exact values):
-  - Bandaged body parts: bleedingTime decays at `3.0x` native bandaged speed.
-  - Unbandaged body parts: no bonus.
-  - Native rates documented in UT_CORE: bandaged `0.0002 * gameMultiplier` per tick, unbandaged `0.00002 * gameMultiplier` per tick.
-  - UT_staunch adds the extra `2.0x` decay needed to reach `3.0x` total on already-bandaged parts only.
-  - No direct health gain, no pain reduction, no endurance/strength/fitness effect, no bleed-drain reduction.
+Before this correction, Staunch and Thick Blood both called `UTCore.applyBleedDecayMult`, which stored one shared `UT_bleedDecayMult` scalar and one shared bandaged-only flag. Project Zomboid fires `OnNewGame` before `OnCreatePlayer` for a new character. Thick Blood therefore wrote `1.5,false` first and Staunch then replaced it with `3.0,true`.
 
-## Description Integrity
+The result was 3 times bandaged decay and normal unbandaged decay. The required 4.5 times bandaged and 1.5 times unbandaged behavior could not occur. The same scalar design also made legal opposite effects overwrite rather than compose.
 
-- Display name check: acceptable — `Staunch` still implies toughness/recovery.
-- Description check: misleading. Current text says `You have an unusually high pain tolerance and recover from injuries well. Pain effects and injury penalties are reduced.` The implementation does none of that.
-- Missing or misleading details:
-  - No pain tolerance mechanic exists.
-  - No generic injury-penalty reduction exists.
-  - The real effect is specifically: bandaged wounds close faster.
-  - The current description also hides the bandaged-only condition.
-  - Source intent drift is major: source gave Strength/Fitness XP and active-bleed health mitigation; UT gives First Aid XP and bandaged bleedingTime acceleration.
+## Runtime trace
 
-## Balance Review
+1. The complete trait definition registers `UniversalTraits:UT_staunch`, cost 10, `Doctor=1`, and no exclusions.
+2. `UT_staunch.lua` applies a named factor of `3.0` in the bandaged-only multiplier bucket.
+3. `UT_thickblood.lua` retains its existing all-wound scalar of `1.5` and active-bleed drain scalar of `0.5`.
+4. `UTCore_BleedDecayHook` runs through the single UTCore player-update dispatcher and reconciles once per ten player updates.
+5. For each body part with positive `bleedingTime`, it multiplies all-wound factors and, only when bandaged, bandaged-only factors.
+6. The hook subtracts the extra accumulated decay before the engine performs that update's native `BodyPart.DamageUpdate` subtraction.
+7. Embedded glass retains the engine's `bleedingTime=3.0` floor.
+8. Staunch owns only its named factor. Trait deactivation, invalid-player teardown, player replacement, unregister, and same-process reload remove only that source.
 
-- Upside:
-  - `+1 First Aid` XP boost.
-  - Faster closure of already-bandaged wounds via `3x` bandaged bleedingTime decay.
-- Downside:
-  - None intrinsic; this is a positive trait.
-- Uptime:
-  - First Aid XP is always on.
-  - The wound-healing benefit only matters when the player is bleeding, has already bandaged the wound, and the wound still has positive bleedingTime.
-- Peer comparison:
-  - `UT_thickblood` costs 4 and provides broader bleed benefits: `UT_bleedDecayMult = 1.5` on all wounds plus `UT_bleedDrainMult = 0.5`.
-  - `UT_staunch` costs 10 but is much narrower: bandaged-only clot acceleration plus a small XP boost.
-  - Relative to the source, UT removed the valuable Strength/Fitness package but kept the top-end price.
-- Stack or exclusion notes:
-  - `UT_thickblood.lua` explicitly documents stacking with `UT_staunch`; bandaged wounds would get `4.5x` total decay if both are active.
-  - No current script exclusion prevents that stack.
-  - Source B42 at least excluded `Frail`; UT does not carry forward any exclusion here.
-- Cost verdict: wrong. The implemented effect is far weaker and narrower than both the source package and several cheaper UT peers.
+## Exact composition
 
-## Regression Proof
+| Active effects | Bandaged multiplier | Unbandaged multiplier |
+| --- | ---: | ---: |
+| Staunch | `3.0` | `1.0` |
+| Thick Blood | `1.5` | `1.5` |
+| Staunch and Thick Blood | `3.0 * 1.5 = 4.5` | `1.5` |
+| Anemic | `0.33` | `0.33` |
+| Staunch and Anemic | `3.0 * 0.33 = 0.99` | `0.33` |
 
-- Existing test:
-  - Registration only: `UniversalTraits/test/run_tests.lua` verifies `UT_staunch` is registered.
-- What it proves:
-  - Only that the registry entry exists.
-- Missing proof:
-  - No automated test proves `OnCreatePlayer` writes `UT_bleedDecayMult = 3.0`.
-  - No automated test proves `UT_bleedDecayBandagedOnly = true`.
-  - No automated test proves the runtime path is bandaged-only rather than all-wounds.
-- Minimum next test if needed:
-  1. Fire `OnCreatePlayer` for a mock player with `UniversalTraits:UT_staunch`.
-  2. Assert modData contains `UT_bleedDecayMult == 3.0` and `UT_bleedDecayBandagedOnly == true`.
-  3. Add a UT_CORE hook test for `UTCore_BleedDecayHook` with one bandaged and one unbandaged bleeding body part, then assert only the bandaged part gets accelerated decay.
+Thick Blood and Anemic are mutually exclusive. Staunch is legally selectable with either. Multiplication preserves each accepted independent factor and removes event-order dependence.
 
-## Final Verdict
+## Engine evidence
 
-- Source origin: proven
-- UT implementation: drifted
-- Description: misleading
-- Balance: wrong
-- Regression proof: missing
-- Action needed: code fix
-- Open gaps:
-  - UT keeps the source name and cost, but the shipped effect is a different mechanic: `+1 First Aid` plus 3x bandaged-only bleed-time decay instead of source `+1 Strength`, `+1 Fitness`, and active unstemmed bleed health mitigation.
-  - The current player-facing text is materially false for the live implementation: no pain-tolerance effect, no generic injury-penalty reduction, and no mention that the real bonus is bandaged-only.
-  - Regression coverage is still registration-only; there is no test proving `OnCreatePlayer` sets `UT_bleedDecayMult = 3.0` and `UT_bleedDecayBandagedOnly = true`, or that the shared hook stays bandaged-only.
-  - Source mutual exclusion was not carried forward: B42 source excludes `Frail`, while UT currently exposes no `MutuallyExclusiveTraits` here.
+- `PZCodebase/Java/source/zombie/characters/BodyDamage/BodyPart.java:215-233` applies native bandaged decay of `0.0002 * GameTime.multiplier`, unbandaged decay of `0.00002 * GameTime.multiplier`, the embedded-glass floor of `3.0`, and zero cleanup.
+- `PZCodebase/Java/source/zombie/characters/IsoPlayer.java:2011-2035,2233-2242` proves `OnPlayerUpdate` runs inside `updateInternal2` before `super.update`, where normal body-damage processing occurs.
+- `PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:9731-9743` calls `BodyDamage.Update` from the superclass update.
+- `PZCodebase/Java/source/zombie/iso/IsoWorld.java:2160-2209` and `zombie/gameStates/GameLoadingState.java:400-431` prove new-game `OnNewGame` precedes `OnCreatePlayer`.
+- `PZCodebase/Java/source/zombie/gameStates/GameLoadingState.java:400-431` proves save loading still fires `OnCreatePlayer`.
+
+## Focused proof
+
+UT_CORE tests now prove:
+
+- the mock BodyPart exposes the exact bleeding-time, bandage, and embedded-glass methods used by production;
+- Staunch's named factor does not overwrite the legacy all-wound scalar;
+- Staunch alone changes only bandaged wound decay;
+- Staunch and Thick Blood produce exact 4.5 and 1.5 factors by wound state;
+- removing Staunch preserves Thick Blood;
+- Staunch and Anemic deterministically produce 0.99 and 0.33 factors by wound state.
+
+UniversalTraits tests now prove:
+
+- OnCreatePlayer stores Staunch in the named bandaged-only bucket;
+- an existing Thick Blood scalar survives Staunch setup;
+- deactivation removes only Staunch's source;
+- duplicate runtime loading replaces both handler registrations and clears stale state.
+
+Source and 42.0 release copies remain byte-identical for every changed runtime file.
+
+## Remaining runtime proof
+
+Static source and deterministic tests establish the high-confidence runtime model. Final observational proof still requires a full current-build relaunch and live checks for new game, save load, bandaged and unbandaged wounds, Staunch with Thick Blood, Staunch with Anemic, trait removal, death, repeated world entry, embedded glass, rendered English, balance, and profiler behavior.
+
+Multiplayer, backward save migration, and deployment are explicit non-goals.

@@ -13,6 +13,8 @@ local WORK_BUCKET = "workAdd"
 local TRANSFER_BUCKET = "transferMult"
 local CARRY_FLAT_BUCKET = "carryFlatAdd"
 local CARRY_STRENGTH_BUCKET = "carryStrengthAdd"
+local BLEED_DECAY_ALL_BUCKET = "bleedDecayAllMult"
+local BLEED_DECAY_BANDAGED_BUCKET = "bleedDecayBandagedMult"
 
 local LEGACY_SPEED_SOURCE = "__legacy_speed"
 local LEGACY_WORK_SOURCE = "__legacy_work"
@@ -66,6 +68,8 @@ local function ensureModifierBuckets(player)
     if type(buckets[TRANSFER_BUCKET]) ~= "table" then buckets[TRANSFER_BUCKET] = {} end
     if type(buckets[CARRY_FLAT_BUCKET]) ~= "table" then buckets[CARRY_FLAT_BUCKET] = {} end
     if type(buckets[CARRY_STRENGTH_BUCKET]) ~= "table" then buckets[CARRY_STRENGTH_BUCKET] = {} end
+    if type(buckets[BLEED_DECAY_ALL_BUCKET]) ~= "table" then buckets[BLEED_DECAY_ALL_BUCKET] = {} end
+    if type(buckets[BLEED_DECAY_BANDAGED_BUCKET]) ~= "table" then buckets[BLEED_DECAY_BANDAGED_BUCKET] = {} end
 
     return md, buckets
 end
@@ -321,9 +325,10 @@ function UTCore.applyStatFloor(player, stat, floor)
     end
 end
 
--- Stores "UT_bleedDecayMult" and "UT_bleedDecayBandagedOnly" in moddata.
--- UTCore_BleedDecayHook reads these every OnPlayerUpdate tick and adjusts
--- bleedingTime on each body part to multiply the native decay rate.
+-- Stores a bleed-decay multiplier in moddata. Named sources use independent
+-- multiplicative buckets so compatible traits cannot overwrite one another.
+-- Anonymous callers retain the original scalar contract until their owning
+-- trait receives an isolated migration.
 --
 -- mult < 1.0 → slower healing (e.g. 0.33 = 3x slower — anemic)
 -- mult > 1.0 → faster healing (e.g. 3.0 = 3x faster — staunch)
@@ -335,7 +340,13 @@ end
 -- Native decay rates (from BodyPart.DamageUpdate):
 --   bandaged:   0.0002 * GameTime.multiplier per tick
 --   unbandaged: 0.00002 * GameTime.multiplier per tick
-function UTCore.applyBleedDecayMult(player, mult, bandagedOnly)
+function UTCore.applyBleedDecayMult(player, mult, bandagedOnly, sourceId)
+    if sourceId ~= nil then
+        local bucketName = bandagedOnly and BLEED_DECAY_BANDAGED_BUCKET or BLEED_DECAY_ALL_BUCKET
+        setBucketValue(player, bucketName, sourceId, mult)
+        return
+    end
+
     local md = player:getModData()
     md["UT_bleedDecayMult"]        = mult
     md["UT_bleedDecayBandagedOnly"] = bandagedOnly and true or false
