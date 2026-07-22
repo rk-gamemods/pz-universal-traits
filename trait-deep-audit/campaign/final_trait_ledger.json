@@ -45,13 +45,13 @@
     }
   },
   "source_artifact_sha256": {
-    "independent_reviews/traits_01_04.json": "42D5DC791B0526A5F77BF0F86DA1B93395E87872CFF10FA5EFF403A7E05A67F7",
+    "independent_reviews/traits_01_04.json": "FAFB9CB01BC6C494391C0D08A8F45805921FA023CC25298F510BB96D1172C9B0",
     "independent_reviews/traits_05_08.json": "1EC23EF9DE7D30A8244E32AE98C8D469A060243D7A1A93AAF8D6E410C13B5530",
     "independent_reviews/traits_09_12.json": "27A52A4BB934EDCCD324FC013C7CC1885085D91F474C3E0BEED192C5018C7805",
-    "source_inventory.json": "47781D8C6AE00795C0DD5CFF8F89E295F49826BB57B64DC9DCD6DE6A767941C9",
+    "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "7662955EC097DEFA35D50374254DDA128E3338D6113275FB59F09A21ACA2D3B1",
     "trait_batches/batch_02.jsonl": "69E1FF6F6A40B2D2F54E3E76DD7651370AC67E50633EC4F959397C66C74335C2",
-    "trait_batches/batch_03.jsonl": "33481D2A1F6227C331C16BA8B5CCB006099D07A15649099B8EC0627887679337",
+    "trait_batches/batch_03.jsonl": "F8C9E0FD9E273306FEC68C182BD9B6A34D268D7EF47BBD040845FC308AFE169A",
     "trait_batches/batch_04.jsonl": "7BE87A0648404822CC35EE0904E3E4CC43391B4F955363D61BE1E3B8FEC6DA6E",
     "trait_batches/batch_05.jsonl": "6F550AD8CF0BD3BA4E827AD9D5F39F2149C50B4D8A990816451C8E86F58DE5AE",
     "trait_batches/batch_06.jsonl": "B9CE9F693D06BD0D4D7F4510410496BB334F0D8BEA9C2DDD79236617CA3C9E6F",
@@ -61,7 +61,7 @@
     "trait_batches/batch_10.jsonl": "FD77CC372A742BCDEB66FCB6D26BF9622BA4EC439CDB8E9135CAC22B946F3A44",
     "trait_batches/batch_11.jsonl": "11FBFE83557FBD93363F41AC740897040804E74E1063367C55A521DA0D2C98F4",
     "trait_batches/batch_12.jsonl": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47",
-    "translation_audit.json": "FD8DDE5004CCDB172D53D20ADE57858258A4563F03E71CE80EEE20DA01BCEE0B"
+    "translation_audit.json": "C23955B319C452D1D4C54B07C9889124413105CDA02368087429D07D2E18D7E4"
   },
   "counts": {
     "traits": 198,
@@ -70,23 +70,23 @@
     "independent_reviewed_traits": 198,
     "independent_review_findings": 118,
     "independent_review_states": {
-      "accepted": 75,
+      "accepted": 76,
       "confirmed-defect": 38,
       "coverage-gap": 20,
-      "needs-correction": 59,
+      "needs-correction": 58,
       "runtime-unproven": 6
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 71,
+      "confirmed-defect": 70,
       "coverage-gap": 12,
-      "runtime-unproven": 90
+      "runtime-unproven": 91
     },
     "dimension_states": {
-      "proven-correct": 2675,
-      "confirmed-defect": 275,
-      "coverage-gap": 807,
-      "runtime-unproven": 995
+      "proven-correct": 2686,
+      "confirmed-defect": 272,
+      "coverage-gap": 800,
+      "runtime-unproven": 994
     }
   },
   "independent_review_findings": [
@@ -612,7 +612,7 @@
     },
     {
       "id": "IR0104-COMPETITIVEEATER-MEAL-DETECTION",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
       "title": "Food-timer polling misses ordinary partial meals",
@@ -628,13 +628,13 @@
         "mocks"
       ],
       "reproduction_evidence": "The trait infers a meal only from healthFromFoodTimer rising by more than 50. The engine increments that timer only when eating reaches minimum hunger, resets it for dangerous uncooked food, and small increments also fail the threshold.",
-      "missing_proof": "No in-game trace establishes that every intended meal reaches hunger zero and increments the timer by more than 50.",
-      "recommended_correction": "Use the actual timed-action/Eat path through an idempotent shared hook, or explicitly narrow the description to fully satiating safe meals.",
-      "smallest_regression_test": "Simulate a partial meal leaving hunger above zero, a fully satiating meal, an increment of exactly 50, and dangerous uncooked food; assert the approved trigger contract."
+      "missing_proof": "Current-build in-game observation remains unrun.",
+      "recommended_correction": "No further static correction is indicated.",
+      "smallest_regression_test": "Covered by the focused Competitive Eater regression cases."
     },
     {
       "id": "IR0104-COMPETITIVEEATER-RECIPROCAL-EXCLUSION",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
       "title": "Competitive Eater and Gourmand are mutually exclusive in only one selection direction",
@@ -649,13 +649,13 @@
         "cross_trait"
       ],
       "reproduction_evidence": "Competitive Eater lists Gourmand, but Gourmand does not list Competitive Eater; current selection checks are directional.",
-      "missing_proof": "No user-approved intent authorizes order-dependent coexistence.",
-      "recommended_correction": "Make the exclusion reciprocal or remove it after an explicit design decision.",
-      "smallest_regression_test": "Select each trait first and assert the other is rejected in both orders."
+      "missing_proof": "Current-build in-game observation remains unrun.",
+      "recommended_correction": "No further static correction is indicated.",
+      "smallest_regression_test": "Covered by the focused Competitive Eater regression cases."
     },
     {
       "id": "IR0104-COMPETITIVEEATER-UNTHROTTLED-POLL",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "medium",
       "confidence": "high",
       "title": "Food-timer edge detection runs every OnPlayerUpdate",
@@ -668,9 +668,9 @@
         "cadence"
       ],
       "reproduction_evidence": "registerTickHandler is called without throttle; the dispatcher defaults the omitted throttle to zero and executes the polling handler on every player update.",
-      "missing_proof": "No in-game profiler capture quantifies the cost, but the unbounded cadence is statically proven and contradicts the same campaign's Anorexy classification.",
-      "recommended_correction": "Move meal detection to an exact consumption edge or apply a documented bounded throttle.",
-      "smallest_regression_test": "Count executions over 300 player updates and assert the approved upper bound."
+      "missing_proof": "Current-build in-game observation remains unrun.",
+      "recommended_correction": "No further static correction is indicated.",
+      "smallest_regression_test": "Covered by the focused Competitive Eater regression cases."
     },
     {
       "id": "IR0104-EVASIVE-SESSION-BASELINE",
@@ -2562,21 +2562,19 @@
       "title": "Shared food-timer polling does not represent ordinary meals and is inconsistently throttled",
       "anchors": [
         "UniversalTraits/media/lua/shared/UniversalTraits/UT_ascetic.lua",
-        "UniversalTraits/media/lua/shared/UniversalTraits/UT_competitiveeater.lua",
         "UniversalTraits/media/lua/shared/UniversalTraits/UT_badteeth.lua",
         "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyDamage.java:617-635",
         "UniversalTraits/media/lua/shared/UTCore/UTCore_TickDispatch.lua:36-48"
       ],
       "affected_surfaces": [
         "UniversalTraits:UT_ascetic",
-        "UniversalTraits:UT_competitiveeater",
         "UniversalTraits:UT_badteeth",
         "runtime",
         "cadence",
         "performance",
         "tests"
       ],
-      "reproduction_evidence": "Anorexy is resolved through exact post-consumption hooks. Ascetic, Competitive Eater, and Bad Teeth still use healthFromFoodTimer paths that miss ordinary partial meals or depend on special healing conditions.",
+      "reproduction_evidence": "Anorexy and Competitive Eater are resolved through exact post-consumption hooks. Ascetic and Bad Teeth retain healthFromFoodTimer paths that miss ordinary partial meals or depend on special healing conditions.",
       "missing_proof": "No current-game meal trace establishes that every intended meal reaches hunger zero and raises the timer by more than 50.",
       "recommended_correction": "Use an idempotent exact consumption edge or narrow the descriptions; apply a documented bounded cadence wherever polling remains.",
       "smallest_regression_test": "Exercise partial, fully satiating, exactly-50, and dangerous-uncooked meals while counting handler calls over a fixed update window."
@@ -2589,9 +2587,7 @@
       "title": "Directional and undocumented exclusions contradict accepted reciprocal-coverage claims",
       "anchors": [
         "UniversalTraits/media/scripts/UT_character_traits.txt:941-949",
-        "UniversalTraits/media/scripts/UT_character_traits.txt:1602",
         "UniversalTraits/media/scripts/UT_character_traits.txt:1777-1785",
-        "UniversalTraits/media/scripts/UT_character_traits.txt:2019",
         "PZCodebase/Lua/client/OptionScreens/CharacterCreationProfession.lua"
       ],
       "affected_surfaces": [
@@ -2599,14 +2595,12 @@
         "UniversalTraits:UT_badteeth",
         "UniversalTraits:UT_cangrabless",
         "UniversalTraits:UT_cangrabmore",
-        "UniversalTraits:UT_competitiveeater",
         "UniversalTraits:UT_couchdweller",
         "UniversalTraits:UT_fearful",
-        "UniversalTraits:UT_gourmand",
         "definitions",
         "character_creation"
       ],
-      "reproduction_evidence": "Current selection checks are directional. Competitive Eater names Gourmand without the reverse edge; several custom traits name vanilla opposites without proven reverse edges; Albino/Bad Teeth is reciprocal but lacks inspected rationale; Couch Dweller's alleged opponent has no authoritative source.",
+      "reproduction_evidence": "Competitive Eater and Gourmand are now reciprocal. Other reviewed custom/vanilla edges and the undocumented Albino/Bad Teeth and Couch Dweller questions remain open.",
       "missing_proof": "No user-approved design record resolves the undocumented Albino/Bad Teeth edge or identifies Couch Dweller's alleged opposing trait.",
       "recommended_correction": "Reject B03-UT_couchdweller-01, make intended incompatibilities explicit in both selection directions, and document or remove unexplained edges.",
       "smallest_regression_test": "Validate the approved exclusion graph and attempt every affected pair in both character-creation selection orders."
@@ -2679,7 +2673,6 @@
         "UniversalTraits:UT_ascetic",
         "UniversalTraits:UT_axes",
         "UniversalTraits:UT_cleaver",
-        "UniversalTraits:UT_competitiveeater",
         "tests",
         "mocks"
       ],
@@ -14123,7 +14116,7 @@
     {
       "trait_id": "UniversalTraits:UT_competitiveeater",
       "batch": "batch_03",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
@@ -14138,13 +14131,13 @@
         "definition_parser": {
           "state": "coverage-gap",
           "evidence": [
-            "Definition block is complete by static inspection; parser was not executed."
+            "The complete definition is parsed by the standard-Lua consistency suite and source/release blocks match."
           ],
           "missing_proof": [
-            "Current game parser acceptance/run log."
+            "Current-build ScriptManager parsing has not been observed in game."
           ],
           "source_dimensions": [
-            "complete script definition and parser validity"
+            "definition_parser"
           ]
         },
         "namespace": {
@@ -14158,216 +14151,228 @@
           ]
         },
         "cost_xp_grants_exclusions": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Every tick detects healthFromFoodTimer jump >50 then calls CharacterStat.HUNGER add(-5) and BOREDOM add(-10)."
+            "Cost remains 3, no XP or grants are added, and Anorexy/Gourmand exclusions are reciprocal in source and release."
           ],
           "missing_proof": [
-            "Independent in-game/runtime proof or focused test where applicable."
+            "none"
           ],
           "source_dimensions": [
-            "cost/XP/grants/exclusions and bidirectional exclusion behavior"
+            "cost_xp_grants_exclusions"
           ]
         },
         "source_intent": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Every tick detects healthFromFoodTimer jump >50 then calls CharacterStat.HUNGER add(-5) and BOREDOM add(-10)."
+            "Pre-campaign master plus e87e49d, 16e1f1e, and be6eed18 establish the accepted per-eating-event effect and symmetric Gourmand exclusion without importing unrelated behavior."
           ],
           "missing_proof": [
-            "Independent in-game/runtime proof or focused test where applicable."
+            "none"
           ],
           "source_dimensions": [
-            "source-mod intent"
+            "source_intent"
           ]
         },
         "runtime_path": {
           "state": "proven-correct",
           "evidence": [
-            "Every tick detects healthFromFoodTimer jump >50 then calls CharacterStat.HUNGER add(-5) and BOREDOM add(-10)."
+            "The shared item-consumption module runs native complete/eat first, then applies Competitive Eater once for positive completed or interrupted consumption. The trait file owns no poll."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "exact runtime path through UT_CORE or script-only behavior"
+            "runtime_path"
           ]
         },
         "numbers": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Every tick detects healthFromFoodTimer jump >50 then calls CharacterStat.HUNGER add(-5) and BOREDOM add(-10)."
+            "Each positive consumption event removes exactly 10 boredom points and 0.05 hunger after native food effects, with both values bounded at zero."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "numerical behavior"
+            "numbers"
           ]
         },
         "cadence": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Every tick detects healthFromFoodTimer jump >50 then calls CharacterStat.HUNGER add(-5) and BOREDOM add(-10)."
+            "Work is bounded to actual completed or interrupted consumption calls; player updates do not execute Competitive Eater logic."
           ],
           "missing_proof": [
-            "Independent in-game/runtime proof or focused test where applicable."
+            "none"
           ],
           "source_dimensions": [
             "cadence"
           ]
         },
         "cooldown": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Every tick detects healthFromFoodTimer jump >50 then calls CharacterStat.HUNGER add(-5) and BOREDOM add(-10)."
+            "No cooldown is part of the accepted one-effect-per-consumption contract."
           ],
           "missing_proof": [
-            "Independent in-game/runtime proof or focused test where applicable."
+            "none"
           ],
           "source_dimensions": [
-            "cooldowns"
+            "cooldown"
           ]
         },
         "reset_save_load": {
           "state": "runtime-unproven",
           "evidence": [
-            "Every tick detects healthFromFoodTimer jump >50 then calls CharacterStat.HUNGER add(-5) and BOREDOM add(-10)."
+            "The correction owns no persistent trait state and unregisters the obsolete polling handler."
           ],
           "missing_proof": [
-            "A matching Build 42 full-relaunch runtime check/save-load cycle."
+            "Current-version in-game save/load and repeated world entry remain unobserved."
           ],
           "source_dimensions": [
-            "reset and save/load"
+            "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Every tick detects healthFromFoodTimer jump >50 then calls CharacterStat.HUNGER add(-5) and BOREDOM add(-10)."
+            "SVN 964 exposes ISEatFoodAction.complete/eat, IsoGameCharacter.Eat, Stats.get/set, and the verified boredom and hunger domains used by the implementation."
           ],
           "missing_proof": [
-            "A matching Build 42 full-relaunch runtime check/save-load cycle."
+            "none"
           ],
           "source_dimensions": [
-            "Java-Lua exposure"
+            "java_lua"
           ]
         },
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "Every tick detects healthFromFoodTimer jump >50 then calls CharacterStat.HUNGER add(-5) and BOREDOM add(-10)."
+            "The implementation uses Kahlua-compatible Lua and verified Java receiver methods."
           ],
           "missing_proof": [
-            "A matching Build 42 full-relaunch runtime check/save-load cycle."
+            "Current-build Kahlua execution is unobserved."
           ],
           "source_dimensions": [
-            "Kahlua compatibility"
+            "kahlua"
           ]
         },
         "events": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Every tick detects healthFromFoodTimer jump >50 then calls CharacterStat.HUNGER add(-5) and BOREDOM add(-10)."
+            "Stable sentinels keep complete/eat wrappers single across repeated installation, and the obsolete tick registration is removed."
           ],
           "missing_proof": [
-            "A matching Build 42 full-relaunch runtime check/save-load cycle."
+            "none"
           ],
           "source_dimensions": [
-            "event lifecycle"
+            "events"
           ]
         },
         "stacking_interactions": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Every tick detects healthFromFoodTimer jump >50 then calls CharacterStat.HUNGER add(-5) and BOREDOM add(-10)."
+            "Competitive Eater composes independently with other post-consumption effects, mutates no item, and is reciprocally exclusive with Anorexy and Gourmand."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "stacking and cross-trait interactions"
+            "stacking_interactions"
           ]
         },
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "Current source and release/index evidence agree."
+            "The definition disables the trait in multiplayer and multiplayer support is an explicit product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "multiplayer restriction"
+            "multiplayer"
           ]
         },
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "Current source and release/index evidence agree."
+            "The exact English display name is Competitive Eater."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "display name"
+            "display"
           ]
         },
         "description": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Every tick detects healthFromFoodTimer jump >50 then calls CharacterStat.HUNGER add(-5) and BOREDOM add(-10)."
+            "The English copy states the eating trigger, 10-point boredom relief, 0.05 hunger relief, and 5 percent hunger-meter interpretation."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "description accuracy"
+            "description"
           ]
         },
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "EN UI name/description keys exist; no non-EN locale was present in allowed evidence."
+            "The exact English keys exist in source and release."
           ],
           "missing_proof": [
-            "Localized keys for absent locales or explicit localization policy."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
-            "localization coverage including absent locales"
+            "localization"
           ]
         },
         "balance": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "Every tick detects healthFromFoodTimer jump >50 then calls CharacterStat.HUNGER add(-5) and BOREDOM add(-10)."
+            "Static behavior is cost 3, 10 boredom relief, and 0.05 hunger relief per positive food-consumption event."
           ],
           "missing_proof": [
-            "Independent in-game/runtime proof or focused test where applicable."
+            "No gameplay telemetry or comparative balance session exists."
           ],
           "source_dimensions": [
             "balance"
           ]
         },
         "performance": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "Every tick detects healthFromFoodTimer jump >50 then calls CharacterStat.HUNGER add(-5) and BOREDOM add(-10)."
+            "The per-update poll was removed. The shared hook adds one trait lookup per actual food-consumption call and two reads/writes only for an active Competitive Eater player."
           ],
           "missing_proof": [
-            "Independent in-game/runtime proof or focused test where applicable."
+            "No current-build profiler capture exists."
           ],
           "source_dimensions": [
-            "performance risk"
+            "performance"
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "No assigned-trait focused test execution was authorized/performed; shared helper tests are not independent trait proof."
+            "Focused tests cover exact completed and interrupted behavior, ordering, bounds, zero/no-trait no-ops, no polling, shared-wrapper composition, exclusions, English copy, and parity."
           ],
           "missing_proof": [
-            "Focused assigned-trait regression test and matching engine-faithful mock."
+            "none"
           ],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "No assigned-trait focused test execution was authorized/performed; shared helper tests are not independent trait proof."
+            "Timed-action mocks separate complete and eat, allow native effects before assertions, and tests prove explicit boredom/hunger bounds without relying on mock clamping."
           ],
           "missing_proof": [
-            "Focused assigned-trait regression test and matching engine-faithful mock."
+            "none"
           ],
           "source_dimensions": [
             "mocks"
@@ -14376,23 +14381,25 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "Current source and release/index evidence agree."
+            "Runtime, shared hook, definition, and English source/release pairs are byte-identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "source/release parity"
+            "source_release_parity"
           ]
         },
         "packaging": {
-          "state": "runtime-unproven",
+          "state": "coverage-gap",
           "evidence": [
-            "Every tick detects healthFromFoodTimer jump >50 then calls CharacterStat.HUNGER add(-5) and BOREDOM add(-10)."
+            "All Competitive Eater-owned 42.0 runtime, definition, and English counterparts are present and identical."
           ],
           "missing_proof": [
-            "A matching Build 42 full-relaunch runtime check/save-load cycle."
+            "UniversalTraits package verification remains blocked only by the separately tracked missing source poster."
           ],
           "source_dimensions": [
-            "packaging integrity"
+            "packaging"
           ]
         }
       },
@@ -14401,14 +14408,15 @@
         "B03-UT_competitiveeater-02"
       ],
       "unknowns": [
-        "No Build 42 game launch/runtime log, multiplayer session, or save/load round trip was performed.",
-        "Non-English localization is absent from the allowed/current evidence.",
-        "Parser validity is static-only because the game script parser was not executed."
+        "Current-build Kahlua execution, full relaunch, repeated world entry, and current-version save/load remain unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory.",
+        "Multiplayer and backward save migration are explicit non-goals."
       ],
-      "translation_terminal_state": "coverage-gap",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_01_04.json",
-        "review_state": "needs-correction",
+        "review_state": "accepted",
         "omission_finding_ids": [
           "IR0104-COMPETITIVEEATER-MEAL-DETECTION",
           "IR0104-COMPETITIVEEATER-RECIPROCAL-EXCLUSION",
@@ -14421,10 +14429,9 @@
         ],
         "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [
-          "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-          "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-          "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-          "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
+          "Current-build Kahlua execution, full relaunch, repeated world entry, and current-version save/load remain unobserved.",
+          "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+          "Only English UI localization exists in the closed-world source inventory."
         ]
       }
     },

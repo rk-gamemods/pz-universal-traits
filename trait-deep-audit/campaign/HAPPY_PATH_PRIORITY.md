@@ -16,13 +16,14 @@ This is the small operational queue for making the mod usable and reliable first
 - Brittle: pre-campaign fracture behavior reconciled; the real weapon-hit argument order, elapsed-time cooldown, exact fracture API, and reload-safe handler are statically proven.
 - Glass Body: restored the pre-campaign all-source +50 percent damage contract through resolved body-health deltas; pre-resolution weapon-event defects, recursive amplification, player replacement, and reload behavior are regression-protected.
 - Anorexy: restored the pre-campaign one-meal +0.10 stress contract through completed and interrupted food-consumption paths; the +10 scale bug, food-timer misses, per-update polling, and wrapper reload behavior are regression-protected.
+- Competitive Eater: restored the accepted per-meal 10-point boredom and 0.05 hunger relief through completed and interrupted consumption paths; the hunger-scale error, food-timer misses, per-update polling, vague description, and one-way Gourmand exclusion are regression-protected.
 
 ## Next Gameplay Blockers
 
 Work one trait at a time. Before changing behavior, prove the accepted pre-campaign intent from `master`. If the intended outcome is not certain, stop and request a decision.
 
-1. `UT_ascetic`: prove its pre-campaign eating trigger and numerical outcome before replacing the same unreliable food-timer polling pattern.
-2. `UT_competitiveeater`: reconcile its consumption trigger, stat domains, and exclusions without changing accepted intent.
+1. `UT_ascetic`: implementation is paused on the explicit user decision between +0.05 stress and instant maximum stress; all other intent and runtime evidence is traced.
+2. `UT_badteeth`: reconcile its special food-health trigger against the intended eating outcome without changing accepted intent.
 
 ## Contract Reconciliation Before Any Fix
 
@@ -42,9 +43,9 @@ These records may be stale because later development commits or tests already ch
 ## Current Validation Baseline
 
 - UT_CORE standard-Lua suite: 252 passed.
-- UniversalTraits standard-Lua suite: 454 passed after the Anorexy correction.
-- Campaign validator: structurally valid, with 198 traits, 4,752 dimensions, and 2,342 open remediation records.
-- Campaign generator tests: 115 passed.
+- UniversalTraits standard-Lua suite: 460 passed after the Competitive Eater correction.
+- Campaign validator: structurally valid, with 198 traits, 4,752 dimensions, and 2,326 open remediation records.
+- Campaign generator tests: 122 passed.
 - UniversalTraits package content parity: no release issues, but the package verdict is blocked by the missing source poster.
 
 ## Runtime Proof Boundary

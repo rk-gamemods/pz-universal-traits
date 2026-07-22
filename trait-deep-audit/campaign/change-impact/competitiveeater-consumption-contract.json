@@ -1,0 +1,111 @@
+{
+  "schema": "ut-competitiveeater-consumption-contract-v1",
+  "trait_id": "UniversalTraits:UT_competitiveeater",
+  "authority": {
+    "accepted_baseline": "pre-campaign UTMods master",
+    "original_event_implementation": "e87e49d",
+    "build_42_migration_with_defects": "16e1f1e",
+    "symmetric_exclusion_declaration": "be6eed18"
+  },
+  "accepted_intent": {
+    "cost": 3,
+    "trigger": "each completed or interrupted positive food-consumption event",
+    "boredom_relief": 10,
+    "hunger_relief": 0.05,
+    "lower_bound": 0,
+    "exclusions": [
+      "UniversalTraits:UT_anorexy",
+      "UniversalTraits:UT_gourmand"
+    ],
+    "runtime_scope": "single-player"
+  },
+  "resolved_findings": [
+    "B03-UT_competitiveeater-01",
+    "B03-UT_competitiveeater-02",
+    "IR0104-COMPETITIVEEATER-MEAL-DETECTION",
+    "IR0104-COMPETITIVEEATER-RECIPROCAL-EXCLUSION",
+    "IR0104-COMPETITIVEEATER-UNTHROTTLED-POLL"
+  ],
+  "partially_resolved_cross_findings": [
+    "XTF0104-EATING-EDGE-POLLING",
+    "XTF0104-EXCLUSION-CONTRACT",
+    "XTF0104-MOCK-ENGINE-DOMAINS"
+  ],
+  "engine_evidence": [
+    "PZCodebase/Lua/shared/TimedActions/ISEatFoodAction.lua:126-176,193-201",
+    "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6380-6507",
+    "PZCodebase/Java/source/zombie/characters/CharacterStat.java:11-33",
+    "PZCodebase/Java/source/zombie/characters/Stats.java:74-87",
+    "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyDamage.java:617-635"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_competitiveeater.lua",
+      "sha256": "0F509ABFFAD406B4096E8BE48063CCFFD28ED55E70B430738C6693D21AF702B5",
+      "bytes": 366
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_competitiveeater.lua",
+      "sha256": "0F509ABFFAD406B4096E8BE48063CCFFD28ED55E70B430738C6693D21AF702B5",
+      "bytes": 366
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+      "sha256": "1FD665CC23DB3BE319359DE85B7BDAEDD1E3B4572D7E98E6B2705DB7328D6D0D",
+      "bytes": 12118
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+      "sha256": "1FD665CC23DB3BE319359DE85B7BDAEDD1E3B4572D7E98E6B2705DB7328D6D0D",
+      "bytes": 12118
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "716D778E9040C040DD6D8130920F8249418A95EB6D03483BCF8CEF70A22076E1",
+      "bytes": 36965
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "716D778E9040C040DD6D8130920F8249418A95EB6D03483BCF8CEF70A22076E1",
+      "bytes": 36965
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "1A526776EDFD0296DA78DE98824AA10B39FB54DDCFAAD1A892CFF5EFCBE78B8A",
+      "bytes": 274568
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_competitiveeater.md",
+      "sha256": "B6411A97863CB4B792E20B634C89C077B572D38ADE10EC73C84F051E37A739F1",
+      "bytes": 4486
+    }
+  ],
+  "regression_cases": [
+    "exact completed post-native boredom and hunger relief",
+    "exact interrupted partial-consumption relief",
+    "zero bounds",
+    "zero consumption and no-trait no-op",
+    "no player-update polling, stale mod data, or tick handler",
+    "perform alone is not consumption",
+    "shared Anorexy wrapper composition without double application",
+    "reciprocal Gourmand exclusion",
+    "exact English copy and source-release parity"
+  ],
+  "performance_model": "No new loop or handler is added. One trait lookup occurs per actual food-consumption call, followed by two stat reads and writes only for an active Competitive Eater player.",
+  "runtime_proof": "Unobserved; requires full Exit to Desktop, current-build completed and interrupted food observation, repeated world entry, current-version save/load, rendered English, and profiler capture.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment"
+  ]
+}

@@ -1,9 +1,10 @@
 -- UT_ItemConsumptionHooks.lua
 -- Shared overrides for ISEatFoodAction.perform and ISDrinkFluidAction.perform.
--- Handles six traits that need to know what the player just consumed:
+-- Handles seven traits that need to know what the player just consumed:
 --   UT_allergic:            food sickness spike on eating any food (not medication)
 --   UT_addictedtocaffeine:  sets UT_hadCaffeine flag when caffeinated item consumed
 --   UT_anorexy:             adds 0.10 stress after food is actually consumed
+--   UT_competitiveeater:    removes 10 boredom and 0.05 hunger after food is consumed
 --   UT_antivaxxer:          stress spike when non-beta-blocker medication consumed
 --   UT_pillsallergy:        food sickness +15 when any medication is consumed
 --   UT_wildplantsallergy:   food sickness +20 when any foraged item is consumed
@@ -14,6 +15,7 @@
 -- Item type strings that count as caffeine sources (case-insensitive substring match)
 local CAFFEINE_KEYWORDS = { "Coffee", "EnergyDrink", "Espresso", "Cola", "ChocolateCoffeeBeans" }
 local ANOREXY_ID = "UniversalTraits:UT_anorexy"
+local COMPETITIVE_EATER_ID = "UniversalTraits:UT_competitiveeater"
 
 -- Exact InventoryItem:getType() identities for current vanilla medications.
 local MEDICATION_TYPES = {
@@ -179,17 +181,25 @@ local function hookISEatFoodAction()
     ISEatFoodAction.__UTItemConsumptionPerformWrapper = wrapper
 end
 
--- Anorexy must run after character:Eat so food's own stress change is applied
--- first. A completed action uses complete(); an interrupted partial action uses
--- eat(). SVN 964 keeps those paths separate, so wrapping both does not double
--- apply the trait.
-local function applyAnorexyAfterEat(character, consumedFraction)
+-- Post-consumption effects must run after character:Eat so the food's own stat
+-- changes are applied first. A completed action uses complete(); an interrupted
+-- partial action uses eat(). SVN 964 keeps those paths separate, so wrapping both
+-- does not double-apply these traits.
+local function applyPostConsumptionEffects(character, consumedFraction)
     if not character or not consumedFraction or consumedFraction <= 0 then return end
-    if not UTCore.hasTrait(character, ANOREXY_ID) then return end
 
     local stats = character:getStats()
-    local stress = stats:get(CharacterStat.STRESS)
-    stats:set(CharacterStat.STRESS, math.min(1.0, stress + 0.10))
+    if UTCore.hasTrait(character, ANOREXY_ID) then
+        local stress = stats:get(CharacterStat.STRESS)
+        stats:set(CharacterStat.STRESS, math.min(1.0, stress + 0.10))
+    end
+
+    if UTCore.hasTrait(character, COMPETITIVE_EATER_ID) then
+        local boredom = stats:get(CharacterStat.BOREDOM)
+        local hunger = stats:get(CharacterStat.HUNGER)
+        stats:set(CharacterStat.BOREDOM, math.max(0.0, boredom - 10.0))
+        stats:set(CharacterStat.HUNGER, math.max(0.0, hunger - 0.05))
+    end
 end
 
 local function hookISEatFoodActionPostConsumption()
@@ -200,7 +210,7 @@ local function hookISEatFoodActionPostConsumption()
         if type(originalComplete) == "function" then
             local function completeWrapper(self)
                 local result = originalComplete(self)
-                pcall(applyAnorexyAfterEat, self.character, self.percentage or 1.0)
+                pcall(applyPostConsumptionEffects, self.character, self.percentage or 1.0)
                 return result
             end
             ISEatFoodAction.complete = completeWrapper
@@ -214,7 +224,7 @@ local function hookISEatFoodActionPostConsumption()
             local function partialWrapper(self, food, percentage)
                 local result = originalEat(self, food, percentage)
                 local consumedFraction = (self.percentage or 1.0) * (percentage or 0)
-                pcall(applyAnorexyAfterEat, self.character, consumedFraction)
+                pcall(applyPostConsumptionEffects, self.character, consumedFraction)
                 return result
             end
             ISEatFoodAction.eat = partialWrapper

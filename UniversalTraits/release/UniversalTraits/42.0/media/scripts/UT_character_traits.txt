@@ -1601,7 +1601,7 @@ module UniversalTraits
         Cost = 4,
         UIName = UI_UT_gourmand,
         UIDescription = UI_UT_gourmandDesc,
-        MutuallyExclusiveTraits = UniversalTraits:UT_ascetic;UniversalTraits:UT_anorexy,
+        MutuallyExclusiveTraits = UniversalTraits:UT_ascetic;UniversalTraits:UT_anorexy;UniversalTraits:UT_competitiveeater,
     }
 
     character_trait_definition UniversalTraits:UT_ascetic

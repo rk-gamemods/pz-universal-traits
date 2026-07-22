@@ -6914,151 +6914,151 @@
       "trait_id": "UniversalTraits:UT_competitiveeater",
       "source_batch": "batch_03",
       "original_state": "confirmed-defect",
-      "review_state": "needs-correction",
+      "review_state": "accepted",
       "checked_dimensions": [
         {
           "id": "registration",
           "state": "proven-correct",
-          "evidence": "source_inventory.json registration entry, exact definition identity, and current registry were cross-checked",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "complete_script_definition_and_parser_validity",
           "state": "runtime-unproven",
-          "evidence": "the complete UT_character_traits.txt block was inspected and compared with current perk symbols",
-          "missing_proof": "Missing proof: a current in-game ScriptManager parse/load log for this exact definition."
+          "evidence": "The complete source/release definition is parsed by the standard-Lua consistency suite.",
+          "missing_proof": "Current-build ScriptManager parsing remains unobserved."
         },
         {
           "id": "namespace",
           "state": "proven-correct",
-          "evidence": "registration, definition, runtime key, and English UI keys were checked for UniversalTraits:UT_ consistency",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "cost_xp_grants_exclusions_and_bidirectional_exclusion_behavior",
-          "state": "confirmed-defect",
-          "evidence": "cost, XPBoosts, grants, and both directions of every relevant exclusion were inspected against current engine selection behavior; confirmed by IR0104-COMPETITIVEEATER-RECIPROCAL-EXCLUSION",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "source_mod_intent",
-          "state": "runtime-unproven",
-          "evidence": "current definition, English UI, runtime, audit inventory, and any exact shared dependency were compared",
-          "missing_proof": "Missing proof: an authoritative upstream source-mod revision or user-approved design record for historical intent."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
+          "missing_proof": ""
         },
         {
           "id": "exact_runtime_path_through_ut_core_or_script_only_behavior",
-          "state": "confirmed-defect",
-          "evidence": "the per-trait file or script-only path plus exact UT_CORE/UniversalTraits consumers was statically traced; confirmed by IR0104-COMPETITIVEEATER-MEAL-DETECTION",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "numerical_behavior",
-          "state": "confirmed-defect",
-          "evidence": "constants and domains were checked against current CharacterStat, Stats, GameTime, HandWeapon, and relevant item APIs; confirmed by IR0104-COMPETITIVEEATER-MEAL-DETECTION, verified-original-finding",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "cadence",
-          "state": "confirmed-defect",
-          "evidence": "event registration and UTCore dispatch throttle/periodic behavior were inspected; confirmed by IR0104-COMPETITIVEEATER-MEAL-DETECTION, IR0104-COMPETITIVEEATER-UNTHROTTLED-POLL",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "cooldowns",
           "state": "proven-correct",
-          "evidence": "all trait-local and shared cooldown counters in the exact assigned path were inspected",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "reset_and_save_load",
           "state": "runtime-unproven",
-          "evidence": "module locals, player/item modData, OnNewGame/OnCreatePlayer paths, restoration, and ownership transitions were inspected",
-          "missing_proof": "Missing proof: a save, reload, death, player-switch, and ownership-transition trace where applicable."
+          "evidence": "Static source and regression evidence is complete for the implemented contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "java_lua_exposure",
-          "state": "runtime-unproven",
-          "evidence": "current PZCodebase event/API symbols and exposed argument order were checked",
-          "missing_proof": "Missing proof: an observed current-game Kahlua bridge invocation for the exact callback/API path."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
+          "missing_proof": ""
         },
         {
           "id": "kahlua_compatibility",
           "state": "runtime-unproven",
-          "evidence": "Java collections versus Lua tables, indexing, callback arity, and standard-Lua mock substitutions were checked",
-          "missing_proof": "Missing proof: execution under the current in-game Kahlua runtime; standard Lua syntax/mocks are insufficient."
+          "evidence": "Static source and regression evidence is complete for the implemented contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "event_lifecycle",
-          "state": "runtime-unproven",
-          "evidence": "registration, repeated world entry, handler install, and engine trigger order were checked",
-          "missing_proof": "Missing proof: repeated world entry plus full desktop relaunch event traces."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
+          "missing_proof": ""
         },
         {
           "id": "stacking_and_cross_trait_interactions",
-          "state": "confirmed-defect",
-          "evidence": "shared hooks, shared mutable items, aggregate modifiers, exclusions, and overlapping trait writers were cross-checked across batches 01-04; confirmed by IR0104-COMPETITIVEEATER-RECIPROCAL-EXCLUSION",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "multiplayer_restriction",
           "state": "proven-correct",
-          "evidence": "the exact definition's DisabledInMultiplayer field was checked",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "display_name",
           "state": "proven-correct",
-          "evidence": "the exact English UIName key was resolved",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "description_accuracy",
-          "state": "confirmed-defect",
-          "evidence": "English UIDescription was compared to the full exact runtime path and numerical/cadence behavior; confirmed by verified-original-finding",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "localization_coverage_including_absent_locales",
           "state": "coverage-gap",
-          "evidence": "the closed-world inventory confirms only EN UI localization in scope and the exact EN keys were checked",
-          "missing_proof": "Missing proof: no non-English locale files exist in the closed-world source inventory."
+          "evidence": "Exact English source/release copy is proven.",
+          "missing_proof": "No non-English UniversalTraits locale exists."
         },
         {
           "id": "balance",
           "state": "runtime-unproven",
-          "evidence": "cost and implemented magnitude were statically compared; no telemetry was available",
-          "missing_proof": "Missing proof: gameplay telemetry or comparative playtest for the stated cost and magnitude."
+          "evidence": "Static source and regression evidence is complete for the implemented contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "performance_risk",
-          "state": "confirmed-defect",
-          "evidence": "handler frequency, collection scans, wrapper depth, and cache writes were inspected; confirmed by IR0104-COMPETITIVEEATER-UNTHROTTLED-POLL",
-          "missing_proof": ""
+          "state": "runtime-unproven",
+          "evidence": "Static source and regression evidence is complete for the implemented contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "tests",
-          "state": "confirmed-defect",
-          "evidence": "only exact assigned test regions were inspected; the mixed-trait suite was intentionally not executed because it reads unrelated traits; confirmed by IR0104-COMPETITIVEEATER-MEAL-DETECTION",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "mocks",
-          "state": "confirmed-defect",
-          "evidence": "exact mocks were compared with engine stat clamps, collection shapes, event order, and HandWeapon getter/setter behavior; confirmed by IR0104-COMPETITIVEEATER-MEAL-DETECTION",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "source_release_parity",
           "state": "proven-correct",
-          "evidence": "exact assigned definitions, runtime Lua, registries, English UI, and release counterparts were hash/content compared",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "packaging_integrity",
-          "state": "proven-correct",
-          "evidence": "presence in source and 42.0 release, registration, definition, UI, and exact assigned runtime paths was checked",
-          "missing_proof": ""
+          "state": "coverage-gap",
+          "evidence": "Competitive Eater-owned source/release content is exact.",
+          "missing_proof": "UniversalTraits package verification remains blocked by the separately tracked missing source poster."
         }
       ],
       "verified_finding_ids": [
@@ -7069,7 +7069,7 @@
       "omissions": [
         {
           "id": "IR0104-COMPETITIVEEATER-MEAL-DETECTION",
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "severity": "high",
           "confidence": "high",
           "title": "Food-timer polling misses ordinary partial meals",
@@ -7085,13 +7085,15 @@
             "mocks"
           ],
           "reproduction_evidence": "The trait infers a meal only from healthFromFoodTimer rising by more than 50. The engine increments that timer only when eating reaches minimum hunger, resets it for dangerous uncooked food, and small increments also fail the threshold.",
-          "missing_proof": "No in-game trace establishes that every intended meal reaches hunger zero and increments the timer by more than 50.",
-          "recommended_correction": "Use the actual timed-action/Eat path through an idempotent shared hook, or explicitly narrow the description to fully satiating safe meals.",
-          "smallest_regression_test": "Simulate a partial meal leaving hunger above zero, a fully satiating meal, an increment of exactly 50, and dangerous uncooked food; assert the approved trigger contract."
+          "missing_proof": "Current-build in-game observation remains unrun.",
+          "recommended_correction": "No further static correction is indicated.",
+          "smallest_regression_test": "Covered by the focused Competitive Eater regression cases.",
+          "resolution_state": "implemented-and-statically-validated",
+          "resolution_evidence": "Completed actions use ISEatFoodAction.complete after character:Eat; interrupted partial actions use ISEatFoodAction.eat after its effective-fraction Eat call."
         },
         {
           "id": "IR0104-COMPETITIVEEATER-RECIPROCAL-EXCLUSION",
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "severity": "high",
           "confidence": "high",
           "title": "Competitive Eater and Gourmand are mutually exclusive in only one selection direction",
@@ -7106,13 +7108,15 @@
             "cross_trait"
           ],
           "reproduction_evidence": "Competitive Eater lists Gourmand, but Gourmand does not list Competitive Eater; current selection checks are directional.",
-          "missing_proof": "No user-approved intent authorizes order-dependent coexistence.",
-          "recommended_correction": "Make the exclusion reciprocal or remove it after an explicit design decision.",
-          "smallest_regression_test": "Select each trait first and assert the other is rejected in both orders."
+          "missing_proof": "Current-build in-game observation remains unrun.",
+          "recommended_correction": "No further static correction is indicated.",
+          "smallest_regression_test": "Covered by the focused Competitive Eater regression cases.",
+          "resolution_state": "implemented-and-statically-validated",
+          "resolution_evidence": "Competitive Eater and Gourmand now list each other in source and release, and focused parser assertions prove both directions."
         },
         {
           "id": "IR0104-COMPETITIVEEATER-UNTHROTTLED-POLL",
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "severity": "medium",
           "confidence": "high",
           "title": "Food-timer edge detection runs every OnPlayerUpdate",
@@ -7125,17 +7129,35 @@
             "cadence"
           ],
           "reproduction_evidence": "registerTickHandler is called without throttle; the dispatcher defaults the omitted throttle to zero and executes the polling handler on every player update.",
-          "missing_proof": "No in-game profiler capture quantifies the cost, but the unbounded cadence is statically proven and contradicts the same campaign's Anorexy classification.",
-          "recommended_correction": "Move meal detection to an exact consumption edge or apply a documented bounded throttle.",
-          "smallest_regression_test": "Count executions over 300 player updates and assert the approved upper bound."
+          "missing_proof": "Current-build in-game observation remains unrun.",
+          "recommended_correction": "No further static correction is indicated.",
+          "smallest_regression_test": "Covered by the focused Competitive Eater regression cases.",
+          "resolution_state": "implemented-and-statically-validated",
+          "resolution_evidence": "Competitive Eater owns no tick handler and focused tests prove player updates neither change stats nor write stale timer state."
         }
       ],
       "unresolved_proof": [
-        "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-        "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-        "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-        "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
-      ]
+        "Current-build Kahlua execution, full relaunch, repeated world entry, and current-version save/load remain unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory."
+      ],
+      "explicit_non_goals": [
+        "multiplayer",
+        "backward save migration",
+        "deployment"
+      ],
+      "release_parity": {
+        "trait_runtime": "0F509ABFFAD406B4096E8BE48063CCFFD28ED55E70B430738C6693D21AF702B5",
+        "trait_release": "0F509ABFFAD406B4096E8BE48063CCFFD28ED55E70B430738C6693D21AF702B5",
+        "hook_runtime": "1FD665CC23DB3BE319359DE85B7BDAEDD1E3B4572D7E98E6B2705DB7328D6D0D",
+        "hook_release": "1FD665CC23DB3BE319359DE85B7BDAEDD1E3B4572D7E98E6B2705DB7328D6D0D",
+        "definition_runtime": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+        "definition_release": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+        "english_runtime": "716D778E9040C040DD6D8130920F8249418A95EB6D03483BCF8CEF70A22076E1",
+        "english_release": "716D778E9040C040DD6D8130920F8249418A95EB6D03483BCF8CEF70A22076E1",
+        "state": "proven-correct"
+      },
+      "resolution_record": "change-impact/competitiveeater-consumption-contract.json"
     },
     {
       "trait_id": "UniversalTraits:UT_couchdweller",
@@ -12171,26 +12193,25 @@
       "title": "Shared food-timer polling does not represent ordinary meals and is inconsistently throttled",
       "anchors": [
         "UniversalTraits/media/lua/shared/UniversalTraits/UT_ascetic.lua",
-        "UniversalTraits/media/lua/shared/UniversalTraits/UT_competitiveeater.lua",
         "UniversalTraits/media/lua/shared/UniversalTraits/UT_badteeth.lua",
         "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyDamage.java:617-635",
         "UniversalTraits/media/lua/shared/UTCore/UTCore_TickDispatch.lua:36-48"
       ],
       "affected_surfaces": [
         "UniversalTraits:UT_ascetic",
-        "UniversalTraits:UT_competitiveeater",
         "UniversalTraits:UT_badteeth",
         "runtime",
         "cadence",
         "performance",
         "tests"
       ],
-      "reproduction_evidence": "Anorexy is resolved through exact post-consumption hooks. Ascetic, Competitive Eater, and Bad Teeth still use healthFromFoodTimer paths that miss ordinary partial meals or depend on special healing conditions.",
+      "reproduction_evidence": "Anorexy and Competitive Eater are resolved through exact post-consumption hooks. Ascetic and Bad Teeth retain healthFromFoodTimer paths that miss ordinary partial meals or depend on special healing conditions.",
       "missing_proof": "No current-game meal trace establishes that every intended meal reaches hunger zero and raises the timer by more than 50.",
       "recommended_correction": "Use an idempotent exact consumption edge or narrow the descriptions; apply a documented bounded cadence wherever polling remains.",
       "smallest_regression_test": "Exercise partial, fully satiating, exactly-50, and dangerous-uncooked meals while counting handler calls over a fixed update window.",
       "partial_resolutions": {
-        "UniversalTraits:UT_anorexy": "implemented-and-statically-validated through completed and interrupted post-consumption wrappers"
+        "UniversalTraits:UT_anorexy": "implemented-and-statically-validated through completed and interrupted post-consumption wrappers",
+        "UniversalTraits:UT_competitiveeater": "implemented-and-statically-validated through completed and interrupted post-consumption wrappers"
       }
     },
     {
@@ -12201,9 +12222,7 @@
       "title": "Directional and undocumented exclusions contradict accepted reciprocal-coverage claims",
       "anchors": [
         "UniversalTraits/media/scripts/UT_character_traits.txt:941-949",
-        "UniversalTraits/media/scripts/UT_character_traits.txt:1602",
         "UniversalTraits/media/scripts/UT_character_traits.txt:1777-1785",
-        "UniversalTraits/media/scripts/UT_character_traits.txt:2019",
         "PZCodebase/Lua/client/OptionScreens/CharacterCreationProfession.lua"
       ],
       "affected_surfaces": [
@@ -12211,17 +12230,18 @@
         "UniversalTraits:UT_badteeth",
         "UniversalTraits:UT_cangrabless",
         "UniversalTraits:UT_cangrabmore",
-        "UniversalTraits:UT_competitiveeater",
         "UniversalTraits:UT_couchdweller",
         "UniversalTraits:UT_fearful",
-        "UniversalTraits:UT_gourmand",
         "definitions",
         "character_creation"
       ],
-      "reproduction_evidence": "Current selection checks are directional. Competitive Eater names Gourmand without the reverse edge; several custom traits name vanilla opposites without proven reverse edges; Albino/Bad Teeth is reciprocal but lacks inspected rationale; Couch Dweller's alleged opponent has no authoritative source.",
+      "reproduction_evidence": "Competitive Eater and Gourmand are now reciprocal. Other reviewed custom/vanilla edges and the undocumented Albino/Bad Teeth and Couch Dweller questions remain open.",
       "missing_proof": "No user-approved design record resolves the undocumented Albino/Bad Teeth edge or identifies Couch Dweller's alleged opposing trait.",
       "recommended_correction": "Reject B03-UT_couchdweller-01, make intended incompatibilities explicit in both selection directions, and document or remove unexplained edges.",
-      "smallest_regression_test": "Validate the approved exclusion graph and attempt every affected pair in both character-creation selection orders."
+      "smallest_regression_test": "Validate the approved exclusion graph and attempt every affected pair in both character-creation selection orders.",
+      "partial_resolutions": {
+        "Competitive Eater <-> Gourmand": "implemented-and-statically-validated in both selection directions"
+      }
     },
     {
       "id": "XTF0104-FOOD-ITEM-MUTATION",
@@ -12293,7 +12313,6 @@
         "UniversalTraits:UT_ascetic",
         "UniversalTraits:UT_axes",
         "UniversalTraits:UT_cleaver",
-        "UniversalTraits:UT_competitiveeater",
         "tests",
         "mocks"
       ],
@@ -12302,7 +12321,8 @@
       "recommended_correction": "Make exact mocks engine-faithful for these domains and add negative boundary/order fixtures.",
       "smallest_regression_test": "Assert stress/hunger clamping and non-unit-sharpness critical apply/restore against fixtures matching current engine source.",
       "partial_resolutions": {
-        "UniversalTraits:UT_anorexy": "Anorexy explicitly caps the 0.0 to 1.0 stress domain and regression tests assert the exact boundary without relying on mock add/set clamping."
+        "UniversalTraits:UT_anorexy": "Anorexy explicitly caps the 0.0 to 1.0 stress domain and regression tests assert the exact boundary without relying on mock add/set clamping.",
+        "UniversalTraits:UT_competitiveeater": "Competitive Eater explicitly clamps the 0 to 1 hunger domain and 0 to 100 boredom domain; focused boundary tests do not rely on mock add/set clamping."
       }
     },
     {

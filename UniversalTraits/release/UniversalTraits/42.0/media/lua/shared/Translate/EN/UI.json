@@ -362,7 +362,7 @@
     "UI_UT_allergic": "Allergic",
     "UI_UT_allergicDesc": "Your body reacts badly to things that others tolerate fine. Food allergies can turn a meal into a medical event.",
     "UI_UT_competitiveeater": "Competitive Eater",
-    "UI_UT_competitiveeaterDesc": "You eat with purpose and efficiency. Every meal is an event you approach with genuine enthusiasm and unusual results.",
+    "UI_UT_competitiveeaterDesc": "You eat with purpose and efficiency. Each time you eat, boredom decreases by 10 points and hunger decreases by 0.05 (5 percent of the hunger meter).",
     "UI_UT_sensitivestomach": "Sensitive Stomach",
     "UI_UT_sensitivestomachDesc": "Your digestive system does not take kindly to stress or poor food. Meals that others handle fine can leave you miserable.",
     "UI_UT_butterfingers": "Butterfingers",

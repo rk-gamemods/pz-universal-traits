@@ -344,49 +344,49 @@ local expected_ids = {
     "UniversalTraits:UT_cangrabmore", "UniversalTraits:UT_cangrabless",
     "UniversalTraits:UT_backpacker", "UniversalTraits:UT_topheavy",
     "UniversalTraits:UT_sore", "UniversalTraits:UT_staunch",
-    -- Phase 2 — Spawn / Inventory (1)
+    -- Phase 2 - Spawn / Inventory (1)
     "UniversalTraits:UT_preparedpack",
-    -- Phase 2 — Movement (5)
+    -- Phase 2 - Movement (5)
     "UniversalTraits:UT_fast", "UniversalTraits:UT_noodlelegs",
     "UniversalTraits:UT_pacer", "UniversalTraits:UT_lurcher",
     "UniversalTraits:UT_sorelegs",
-    -- Phase 2 — Work Speed (3)
+    -- Phase 2 - Work Speed (3)
     "UniversalTraits:UT_quickworker", "UniversalTraits:UT_slowworker",
     "UniversalTraits:UT_slack",
-    -- Phase 2 — Combat & Physical (7)
+    -- Phase 2 - Combat & Physical (7)
     "UniversalTraits:UT_batteringram", "UniversalTraits:UT_fitted",
     "UniversalTraits:UT_glassbody", "UniversalTraits:UT_brittle",
     "UniversalTraits:UT_flailer", "UniversalTraits:UT_fasthands",
     "UniversalTraits:UT_analgesia",
-    -- Phase 2 — Bleeding (3)
+    -- Phase 2 - Bleeding (3)
     "UniversalTraits:UT_thickblood", "UniversalTraits:UT_heavilybleedingwounds",
     "UniversalTraits:UT_weaklybleedingwounds",
-    -- Phase 2 — Sleep & Rest (3)
+    -- Phase 2 - Sleep & Rest (3)
     "UniversalTraits:UT_restfulsleeper", "UniversalTraits:UT_quickrest",
     "UniversalTraits:UT_snorer",
-    -- Phase 2 — Psychology & Modifiers (5)
+    -- Phase 2 - Psychology & Modifiers (5)
     "UniversalTraits:UT_unwavering", "UniversalTraits:UT_idealweight",
     "UniversalTraits:UT_mundane", "UniversalTraits:UT_incomprehensive",
     "UniversalTraits:UT_photographicmemory",
-    -- Phase 2 — XP Penalties (4)
+    -- Phase 2 - XP Penalties (4)
     "UniversalTraits:UT_antigun", "UniversalTraits:UT_flatearther",
     "UniversalTraits:UT_luddite", "UniversalTraits:UT_onetrickpony",
-    -- Phase 2 — No-XP Series (6)
+    -- Phase 2 - No-XP Series (6)
     "UniversalTraits:UT_noxpshooter", "UniversalTraits:UT_noxptechnician",
     "UniversalTraits:UT_noxpaxe", "UniversalTraits:UT_noxpfirstaid",
     "UniversalTraits:UT_noxpmaintenance", "UniversalTraits:UT_noxpsneaky",
-    -- Phase 2 — Timed / Circadian (2)
+    -- Phase 2 - Timed / Circadian (2)
     "UniversalTraits:UT_owlperson", "UniversalTraits:UT_larkperson",
-    -- Phase 2 — Vehicle (3)
+    -- Phase 2 - Vehicle (3)
     "UniversalTraits:UT_leadfoot", "UniversalTraits:UT_expertdriver",
     "UniversalTraits:UT_poordriver",
-    -- Phase 2 — Item / Consumption (4)
+    -- Phase 2 - Item / Consumption (4)
     "UniversalTraits:UT_ironliver", "UniversalTraits:UT_durability",
     "UniversalTraits:UT_gourmand", "UniversalTraits:UT_ascetic",
-    -- Phase 3a — Spawn-With-Condition (4)
+    -- Phase 3a - Spawn-With-Condition (4)
     "UniversalTraits:UT_injured_I", "UniversalTraits:UT_injured_II",
     "UniversalTraits:UT_broke", "UniversalTraits:UT_burned",
-    -- Phase 3b — Periodic-Check (25)
+    -- Phase 3b - Periodic-Check (25)
     "UniversalTraits:UT_depressive", "UniversalTraits:UT_paranoia",
     "UniversalTraits:UT_selfdestructive", "UniversalTraits:UT_melancholic",
     "UniversalTraits:UT_immuneresponse", "UniversalTraits:UT_ravenous",
@@ -400,7 +400,7 @@ local expected_ids = {
     "UniversalTraits:UT_alcoholic_I", "UniversalTraits:UT_alcoholic_II",
     "UniversalTraits:UT_alcoholic_III", "UniversalTraits:UT_addictedtocaffeine",
     "UniversalTraits:UT_immunocompromised",
-    -- Phase 3c — Event-Driven (22)
+    -- Phase 3c - Event-Driven (22)
     "UniversalTraits:UT_fearful", "UniversalTraits:UT_nervouswreck",
     "UniversalTraits:UT_scardycat", "UniversalTraits:UT_maniac",
     "UniversalTraits:UT_anorexy", "UniversalTraits:UT_pillsallergy",
@@ -412,7 +412,7 @@ local expected_ids = {
     "UniversalTraits:UT_superimmune", "UniversalTraits:UT_bouncer_I",
     "UniversalTraits:UT_bouncer_II", "UniversalTraits:UT_gunspecialist_I",
     "UniversalTraits:UT_gunspecialist_II", "UniversalTraits:UT_gunspecialist_III",
-    -- Phase 3d — Complex State (3)
+    -- Phase 3d - Complex State (3)
     "UniversalTraits:UT_indefatigable", "UniversalTraits:UT_hardy",
     "UniversalTraits:UT_secondwind",
 }
@@ -2099,7 +2099,7 @@ test("batteringram does NOT manipulate bump state (v3 preemptive)", function()
     player._blockMovement = true
     local zombie = MockZombie()
     fireRamCollision(player, zombie)
-    -- v3b: callback no longer touches bump state — prevention via knockDown + setBumpedChr
+    -- v3b: callback no longer touches bump state; prevention uses knockDown + setBumpedChr
     assert_eq(player._bumpType, "stagger",
         "v3 callback should NOT clear bumpType")
     assert_eq(player._bumpedChr, originalZombie,
@@ -2200,10 +2200,10 @@ end)
 
 -- ===== INTEGRATION: verify the engine's re-bump guard is preserved =====
 -- The PZ tick order (from decompiled IsoPlayer.updateInternal2) is:
---   1. doDeferredMovement()         — movement applied
---   2. OnPlayerUpdate                — our hook fires here
---   3. separate() collision detection — re-detects overlap, re-sets bumpType
---   4. stateMachine.update()         — BumpedState enters if bumpType set
+--   1. doDeferredMovement(): movement applied
+--   2. OnPlayerUpdate: our hook fires here
+--   3. separate() collision detection: re-detects overlap, re-sets bumpType
+--   4. stateMachine.update(): BumpedState enters if bumpType set
 --
 -- The fix relies on the engine's OWN re-bump guard in separate() (line 1222):
 --   if getBumpedChr() != obj then bump = true
@@ -2261,7 +2261,7 @@ test("INTEGRATION: v4 collision hook does NOT set setBumpedChr (knockdown-only)"
     Events.OnCreatePlayer:fire(0, player)
     player._sprinting = true
     Events.OnPlayerUpdate:fire(player)
-    -- v4: hook NEVER touches player bump state — only fires knockdown callbacks
+    -- v4: hook NEVER touches player bump state; it only fires knockdown callbacks
     assert_eq(player:getBumpedChr(), nil,
         "v4 hook must NOT set bumpedChr (knockdown-only defense)")
 end)
@@ -4307,7 +4307,7 @@ test("nervouswreck does not re-apply when already applied", function()
     p:getBodyDamage()._panicReductionValue = 0.06
     Events.OnPlayerUpdate:fire(p)  -- first apply
     local reduced = p:getBodyDamage():getPanicReductionValue()
-    Events.OnPlayerUpdate:fire(p)  -- second apply — should be a no-op
+    Events.OnPlayerUpdate:fire(p)  -- second apply should be a no-op
     assert_eq(p:getBodyDamage():getPanicReductionValue(), reduced,
         "value should not change on second update")
 end)
@@ -4605,6 +4605,7 @@ end)
 -- Group 9: Food-consumption and complex patterns
 
 local ANOREXY_ID = "UniversalTraits:UT_anorexy"
+local COMPETITIVE_EATER_ID = "UniversalTraits:UT_competitiveeater"
 
 test("anorexy applies exactly 0.10 after completed food effects", function()
     local p = MockPlayer({ ANOREXY_ID }, { stress = 0.4 })
@@ -4709,6 +4710,151 @@ test("anorexy runtime source and release copies stay byte-identical", function()
         "Anorexy consumption hook source and release must match")
 end)
 
+test("competitiveeater applies exact relief after completed food effects", function()
+    local p = MockPlayer({ COMPETITIVE_EATER_ID }, { boredom = 50, hunger = 0.8 })
+    local action = {
+        character = p,
+        item = MockItem("Apple"),
+        percentage = 1.0,
+        _onComplete = function(self)
+            self.character:getStats():set(CharacterStat.BOREDOM, 35)
+            self.character:getStats():set(CharacterStat.HUNGER, 0.4)
+        end,
+    }
+    local result = ISEatFoodAction.complete(action)
+    assert_eq(result, true, "completed wrapper must preserve the native result")
+    assert_eq(action._originalCompleteCalls, 1, "native complete must run exactly once")
+    assert_eq(p:getStats():get(CharacterStat.BOREDOM), 25,
+        "Competitive Eater must remove 10 boredom after native food effects")
+    assert_close(p:getStats():get(CharacterStat.HUNGER), 0.35, 0.000001,
+        "Competitive Eater must remove 0.05 hunger after native food effects")
+end)
+
+test("competitiveeater applies once after interrupted partial consumption", function()
+    local p = MockPlayer({ COMPETITIVE_EATER_ID }, { boredom = 40, hunger = 0.7 })
+    local action = {
+        character = p,
+        item = MockItem("Apple"),
+        percentage = 0.5,
+        _onEat = function(self)
+            self.character:getStats():set(CharacterStat.BOREDOM, 18)
+            self.character:getStats():set(CharacterStat.HUNGER, 0.3)
+        end,
+    }
+    ISEatFoodAction.eat(action, action.item, 0.25)
+    assert_eq(action._originalEatCalls, 1, "native partial-consumption path must run exactly once")
+    assert_eq(p:getStats():get(CharacterStat.BOREDOM), 8,
+        "partial consumption must remove 10 boredom once")
+    assert_close(p:getStats():get(CharacterStat.HUNGER), 0.25, 0.000001,
+        "partial consumption must remove 0.05 hunger once")
+end)
+
+test("competitiveeater clamps relief and ignores zero or missing trait", function()
+    local withTrait = MockPlayer({ COMPETITIVE_EATER_ID }, { boredom = 5, hunger = 0.02 })
+    ISEatFoodAction.complete({ character = withTrait, item = MockItem("Apple"), percentage = 1.0 })
+    assert_eq(withTrait:getStats():get(CharacterStat.BOREDOM), 0,
+        "boredom relief must clamp at zero")
+    assert_eq(withTrait:getStats():get(CharacterStat.HUNGER), 0,
+        "hunger relief must clamp at zero")
+
+    local zero = MockPlayer({ COMPETITIVE_EATER_ID }, { boredom = 20, hunger = 0.4 })
+    ISEatFoodAction.eat({ character = zero, item = MockItem("Apple"), percentage = 1.0 },
+        MockItem("Apple"), 0)
+    assert_eq(zero:getStats():get(CharacterStat.BOREDOM), 20,
+        "zero consumed fraction must not apply Competitive Eater")
+    assert_eq(zero:getStats():get(CharacterStat.HUNGER), 0.4,
+        "zero consumed fraction must not change hunger")
+
+    local withoutTrait = MockPlayer({}, { boredom = 20, hunger = 0.4 })
+    ISEatFoodAction.complete({ character = withoutTrait, item = MockItem("Apple"), percentage = 1.0 })
+    assert_eq(withoutTrait:getStats():get(CharacterStat.BOREDOM), 20,
+        "players without Competitive Eater must be unaffected")
+    assert_eq(withoutTrait:getStats():get(CharacterStat.HUNGER), 0.4,
+        "players without Competitive Eater must retain hunger")
+end)
+
+test("competitiveeater no longer polls player updates or food-health state", function()
+    local p = MockPlayer({ COMPETITIVE_EATER_ID }, {
+        boredom = 30,
+        hunger = 0.6,
+        healthFromFoodTimer = 5000,
+    })
+    rebuildFor(p)
+    Events.OnPlayerUpdate:fire(p)
+    assert_eq(p:getStats():get(CharacterStat.BOREDOM), 30,
+        "player updates must not apply boredom relief")
+    assert_eq(p:getStats():get(CharacterStat.HUNGER), 0.6,
+        "player updates must not apply hunger relief")
+    assert_eq(p:getModData()["UT_competitiveeater_prevTimer"], nil,
+        "obsolete food-timer state must not be written")
+    for _, handler in ipairs(UTCore._tickHandlers or {}) do
+        assert_true(handler.id ~= COMPETITIVE_EATER_ID,
+            "Competitive Eater must not retain a tick handler")
+    end
+end)
+
+test("competitiveeater perform wrapper alone does not claim consumption", function()
+    local p = MockPlayer({ COMPETITIVE_EATER_ID }, { boredom = 30, hunger = 0.6 })
+    ISEatFoodAction.perform({ character = p, item = MockItem("Apple"), percentage = 1.0 })
+    assert_eq(p:getStats():get(CharacterStat.BOREDOM), 30,
+        "perform runs before SVN 964 complete and must not apply boredom relief")
+    assert_eq(p:getStats():get(CharacterStat.HUNGER), 0.6,
+        "perform runs before SVN 964 complete and must not apply hunger relief")
+end)
+
+test("competitiveeater and anorexy share one post-consumption call without interference", function()
+    local p = MockPlayer({ COMPETITIVE_EATER_ID, ANOREXY_ID }, {
+        boredom = 30,
+        hunger = 0.6,
+        stress = 0.2,
+    })
+    ISEatFoodAction.complete({ character = p, item = MockItem("Apple"), percentage = 1.0 })
+    assert_eq(p:getStats():get(CharacterStat.BOREDOM), 20,
+        "Competitive Eater boredom relief must apply once")
+    assert_close(p:getStats():get(CharacterStat.HUNGER), 0.55, 0.000001,
+        "Competitive Eater hunger relief must apply once")
+    assert_close(p:getStats():get(CharacterStat.STRESS), 0.30, 0.000001,
+        "Anorexy stress must apply once through the same wrappers")
+end)
+
+test("competitiveeater English, exclusions, and source-release copies match", function()
+    local function readAll(path)
+        local file = assert(io.open(path, "rb"))
+        local content = file:read("*a")
+        file:close()
+        return content
+    end
+    local expected = "You eat with purpose and efficiency. Each time you eat, boredom decreases by 10 points and hunger decreases by 0.05 (5 percent of the hunger meter)."
+    local sourceUI = readAll(base .. "../media/lua/shared/Translate/EN/UI.json")
+    local releaseUI = readAll(base .. "../release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json")
+    assert_eq(sourceUI:match('\"UI_UT_competitiveeaterDesc\"%s*:%s*\"([^\"]+)\"'), expected,
+        "source Competitive Eater copy must state the exact mechanic")
+    assert_eq(releaseUI:match('\"UI_UT_competitiveeaterDesc\"%s*:%s*\"([^\"]+)\"'), expected,
+        "release Competitive Eater copy must state the exact mechanic")
+
+    local state = loadTraitConsistencyState()
+    local exclusions = {}
+    for _, definition in ipairs(state.defs) do
+        exclusions[definition.block_id] = definition.mutually_exclusive_traits
+    end
+    assert_contains(exclusions[COMPETITIVE_EATER_ID], "UniversalTraits:UT_gourmand",
+        "Competitive Eater must exclude Gourmand")
+    assert_contains(exclusions["UniversalTraits:UT_gourmand"], COMPETITIVE_EATER_ID,
+        "Gourmand must reciprocally exclude Competitive Eater")
+
+    local paths = {
+        "lua/shared/UniversalTraits/traits/UT_competitiveeater.lua",
+        "lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+        "lua/shared/Translate/EN/UI.json",
+        "scripts/UT_character_traits.txt",
+    }
+    for _, path in ipairs(paths) do
+        assert_eq(readAll(base .. "../media/" .. path),
+            readAll(base .. "../release/UniversalTraits/42.0/media/" .. path),
+            "Competitive Eater source and release must match for " .. path)
+    end
+end)
+
 test("badteeth applies head pain when food timer > 1000 and rising", function()
     local p = MockPlayer({ "UniversalTraits:UT_badteeth" })
     p:getBodyDamage()._healthFromFoodTimer = 1200  -- > 1000 and > UTCore.getModData default 0
@@ -4722,20 +4868,6 @@ test("badteeth does NOT fire when food timer < 1000", function()
     withActivePlayer(p, function() Events.OnPlayerUpdate:fire(p) end)
     local headPain = p:getBodyDamage():getBodyPart(BodyPartType.Head):getAdditionalPain()
     assert_eq(headPain, 0, "no pain when food timer below 1000")
-end)
-
-test("competitiveeater records boredom and hunger removal on rising food timer", function()
-    local p = MockPlayer({ "UniversalTraits:UT_competitiveeater" })
-    p:getBodyDamage()._healthFromFoodTimer = 100
-    Events.OnPlayerUpdate:fire(p)  -- set prev
-    p:getBodyDamage()._healthFromFoodTimer = 200  -- jump > 50 → trigger
-    Events.OnPlayerUpdate:fire(p)
-    local boredomAccum = p:getStats()._charStatAccum[CharacterStat.BOREDOM]
-    local hungerAccum  = p:getStats()._charStatAccum[CharacterStat.HUNGER]
-    assert_true(type(boredomAccum) == "number" and boredomAccum < 0,
-        "expected boredom charstat removal, got " .. tostring(boredomAccum))
-    assert_true(type(hungerAccum) == "number" and hungerAccum < 0,
-        "expected hunger charstat removal, got " .. tostring(hungerAccum))
 end)
 
 test("sensitivestomach applies torso pain on rising food timer above 1000", function()
@@ -4768,7 +4900,7 @@ test("gourmand OnPlayerUpdate runs without error (smoke test)", function()
 end)
 
 -- ═══════════════════════════════════════════════════════════════════════════════
--- BEHAVIORAL QA TESTS — multi-tick, proving gameplay-visible outcomes
+-- BEHAVIORAL QA TESTS: multi-tick, proving gameplay-visible outcomes
 -- Written to catch bugs like the idealweight compounding feedback loop.
 -- ═══════════════════════════════════════════════════════════════════════════════
 
