@@ -1,0 +1,107 @@
+{
+  "schema": "ut-badteeth-consumption-contract-v1",
+  "trait_id": "UniversalTraits:UT_badteeth",
+  "authority": {
+    "accepted_baseline": "pre-campaign UTMods master",
+    "initial_runtime_implementation": "1da8489b524403589d5f8c411bf50a8504516a09",
+    "accepted_reciprocal_exclusion": "be6eed180bc7f7ece046b84d2083c4bc6b7706e9",
+    "upstream_reference": "MoreTraits 42.15 badteethtrait and creation methods"
+  },
+  "accepted_intent": {
+    "cost": -3,
+    "trigger": "completed or interrupted positive food consumption that increases the food-healing timer above 1000",
+    "head_pain_per_timer_point": 0.01,
+    "pain_cap": 100,
+    "food_effectiveness_change": 0,
+    "exclusions": [
+      "UniversalTraits:UT_albino"
+    ],
+    "runtime_scope": "single-player"
+  },
+  "resolved_findings": [
+    "IR0104-BADTEETH-CROSS-EXCLUSION",
+    "IR0104-BADTEETH-HOTLOOP"
+  ],
+  "retained_runtime_finding": "B02-UT_badteeth-COVERAGE",
+  "partially_resolved_cross_findings": [
+    "XTF0104-EATING-EDGE-POLLING",
+    "XTF0104-EXCLUSION-CONTRACT"
+  ],
+  "engine_evidence": [
+    "PZCodebase/Lua/shared/TimedActions/ISEatFoodAction.lua:126-201",
+    "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6376-6511",
+    "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyDamage.java:552-703,2202-2204,2832-2841",
+    "PZCodebase/Java/source/zombie/characters/IsoPlayer.java:2001,2241"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_badteeth.lua",
+      "sha256": "0F019E50B2ED77353D67ED94AA577A307AED73440C47B5E1582213784C427D81",
+      "bytes": 355
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_badteeth.lua",
+      "sha256": "0F019E50B2ED77353D67ED94AA577A307AED73440C47B5E1582213784C427D81",
+      "bytes": 355
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+      "sha256": "62E90B7CEC140DAFEE37A9A10D8062BE37DA82FD8DA2CC3CB04907B41D3F95DC",
+      "bytes": 13633
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+      "sha256": "62E90B7CEC140DAFEE37A9A10D8062BE37DA82FD8DA2CC3CB04907B41D3F95DC",
+      "bytes": 13633
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "716D778E9040C040DD6D8130920F8249418A95EB6D03483BCF8CEF70A22076E1",
+      "bytes": 36965
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "716D778E9040C040DD6D8130920F8249418A95EB6D03483BCF8CEF70A22076E1",
+      "bytes": 36965
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "F1F619D7163F9B75904F7E717E7563996F036BD8D4D86D68AADD1C67992DFEB4",
+      "bytes": 281644
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_badteeth.md",
+      "sha256": "B97BFE9A03D59E6EC8FCEC5AC749B83458E36D4A78D1ED838483EA960AAFC778",
+      "bytes": 5871
+    }
+  ],
+  "regression_cases": [
+    "exact completed before/after timer delta",
+    "exact interrupted partial-consumption delta",
+    "1000 threshold and rising-edge guards",
+    "trait and positive-consumption guards",
+    "later-meal delta isolation and 100 cap",
+    "no player-update poll, modData, or retained periodic handler",
+    "bridge-read failure cannot block native consumption",
+    "shared Anorexy and Competitive Eater composition",
+    "reciprocal Albino exclusion",
+    "exact English copy and source-release parity"
+  ],
+  "performance_model": "No new loop or handler is added. Two guarded timer reads and one trait lookup occur per actual food-consumption call; body-part reads and one write occur only for an active Bad Teeth player with a qualifying increase.",
+  "runtime_proof": "Unobserved; requires full Exit to Desktop, current-build completed and interrupted food observation, repeated world entry, current-version save/load, rendered English, and profiler capture.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment"
+  ]
+}

@@ -1,10 +1,11 @@
 -- UT_ItemConsumptionHooks.lua
 -- Shared overrides for ISEatFoodAction.perform and ISDrinkFluidAction.perform.
--- Handles seven traits that need to know what the player just consumed:
+-- Handles eight traits that need to know what the player just consumed:
 --   UT_allergic:            food sickness spike on eating any food (not medication)
 --   UT_addictedtocaffeine:  sets UT_hadCaffeine flag when caffeinated item consumed
 --   UT_anorexy:             adds 0.10 stress after food is actually consumed
 --   UT_competitiveeater:    removes 10 boredom and 0.05 hunger after food is consumed
+--   UT_badteeth:            adds head pain proportional to the food-healing timer increase
 --   UT_antivaxxer:          stress spike when non-beta-blocker medication consumed
 --   UT_pillsallergy:        food sickness +15 when any medication is consumed
 --   UT_wildplantsallergy:   food sickness +20 when any foraged item is consumed
@@ -16,6 +17,7 @@
 local CAFFEINE_KEYWORDS = { "Coffee", "EnergyDrink", "Espresso", "Cola", "ChocolateCoffeeBeans" }
 local ANOREXY_ID = "UniversalTraits:UT_anorexy"
 local COMPETITIVE_EATER_ID = "UniversalTraits:UT_competitiveeater"
+local BAD_TEETH_ID = "UniversalTraits:UT_badteeth"
 
 -- Exact InventoryItem:getType() identities for current vanilla medications.
 local MEDICATION_TYPES = {
@@ -185,7 +187,24 @@ end
 -- changes are applied first. A completed action uses complete(); an interrupted
 -- partial action uses eat(). SVN 964 keeps those paths separate, so wrapping both
 -- does not double-apply these traits.
-local function applyPostConsumptionEffects(character, consumedFraction)
+local function readFoodHealingState(character)
+    if not character then return nil, nil end
+
+    local bodyDamage = character:getBodyDamage()
+    if not bodyDamage then return nil, nil end
+
+    local timer = bodyDamage:getHealthFromFoodTimer()
+    if type(timer) ~= "number" then return bodyDamage, nil end
+    return bodyDamage, timer
+end
+
+local function tryReadFoodHealingState(character)
+    local ok, bodyDamage, timer = pcall(readFoodHealingState, character)
+    if not ok then return nil, nil end
+    return bodyDamage, timer
+end
+
+local function applyPostConsumptionEffects(character, consumedFraction, previousFoodTimer)
     if not character or not consumedFraction or consumedFraction <= 0 then return end
 
     local stats = character:getStats()
@@ -200,6 +219,18 @@ local function applyPostConsumptionEffects(character, consumedFraction)
         stats:set(CharacterStat.BOREDOM, math.max(0.0, boredom - 10.0))
         stats:set(CharacterStat.HUNGER, math.max(0.0, hunger - 0.05))
     end
+
+    if UTCore.hasTrait(character, BAD_TEETH_ID) and type(previousFoodTimer) == "number" then
+        local bodyDamage, currentFoodTimer = readFoodHealingState(character)
+        if currentFoodTimer and currentFoodTimer > 1000 and currentFoodTimer > previousFoodTimer then
+            local head = bodyDamage:getBodyPart(BodyPartType.Head)
+            if head then
+                local pain = head:getAdditionalPain()
+                local increase = (currentFoodTimer - previousFoodTimer) * 0.01
+                head:setAdditionalPain(math.min(100.0, pain + increase))
+            end
+        end
+    end
 end
 
 local function hookISEatFoodActionPostConsumption()
@@ -209,8 +240,9 @@ local function hookISEatFoodActionPostConsumption()
         local originalComplete = ISEatFoodAction.complete
         if type(originalComplete) == "function" then
             local function completeWrapper(self)
+                local _, previousFoodTimer = tryReadFoodHealingState(self.character)
                 local result = originalComplete(self)
-                pcall(applyPostConsumptionEffects, self.character, self.percentage or 1.0)
+                pcall(applyPostConsumptionEffects, self.character, self.percentage or 1.0, previousFoodTimer)
                 return result
             end
             ISEatFoodAction.complete = completeWrapper
@@ -222,9 +254,10 @@ local function hookISEatFoodActionPostConsumption()
         local originalEat = ISEatFoodAction.eat
         if type(originalEat) == "function" then
             local function partialWrapper(self, food, percentage)
+                local _, previousFoodTimer = tryReadFoodHealingState(self.character)
                 local result = originalEat(self, food, percentage)
                 local consumedFraction = (self.percentage or 1.0) * (percentage or 0)
-                pcall(applyPostConsumptionEffects, self.character, consumedFraction)
+                pcall(applyPostConsumptionEffects, self.character, consumedFraction, previousFoodTimer)
                 return result
             end
             ISEatFoodAction.eat = partialWrapper

@@ -45,12 +45,12 @@
     }
   },
   "source_artifact_sha256": {
-    "independent_reviews/traits_01_04.json": "FAFB9CB01BC6C494391C0D08A8F45805921FA023CC25298F510BB96D1172C9B0",
+    "independent_reviews/traits_01_04.json": "8003D021E36FA024ED1007B3FB98F3A814A3204E2D7B6435CF1DCDB3C7A182E3",
     "independent_reviews/traits_05_08.json": "1EC23EF9DE7D30A8244E32AE98C8D469A060243D7A1A93AAF8D6E410C13B5530",
     "independent_reviews/traits_09_12.json": "27A52A4BB934EDCCD324FC013C7CC1885085D91F474C3E0BEED192C5018C7805",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "7662955EC097DEFA35D50374254DDA128E3338D6113275FB59F09A21ACA2D3B1",
-    "trait_batches/batch_02.jsonl": "69E1FF6F6A40B2D2F54E3E76DD7651370AC67E50633EC4F959397C66C74335C2",
+    "trait_batches/batch_02.jsonl": "C738089C591B9CA6B1AEB8D31085109357DDB3A4C7D49F82F833B1E5F92AF3D5",
     "trait_batches/batch_03.jsonl": "F8C9E0FD9E273306FEC68C182BD9B6A34D268D7EF47BBD040845FC308AFE169A",
     "trait_batches/batch_04.jsonl": "7BE87A0648404822CC35EE0904E3E4CC43391B4F955363D61BE1E3B8FEC6DA6E",
     "trait_batches/batch_05.jsonl": "6F550AD8CF0BD3BA4E827AD9D5F39F2149C50B4D8A990816451C8E86F58DE5AE",
@@ -61,7 +61,7 @@
     "trait_batches/batch_10.jsonl": "FD77CC372A742BCDEB66FCB6D26BF9622BA4EC439CDB8E9135CAC22B946F3A44",
     "trait_batches/batch_11.jsonl": "11FBFE83557FBD93363F41AC740897040804E74E1063367C55A521DA0D2C98F4",
     "trait_batches/batch_12.jsonl": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47",
-    "translation_audit.json": "C23955B319C452D1D4C54B07C9889124413105CDA02368087429D07D2E18D7E4"
+    "translation_audit.json": "F808449B20E8EA46514911457071C7AF6B4D8F2ABDF428EB9EF46D7B73823E87"
   },
   "counts": {
     "traits": 198,
@@ -70,10 +70,10 @@
     "independent_reviewed_traits": 198,
     "independent_review_findings": 118,
     "independent_review_states": {
-      "accepted": 76,
+      "accepted": 77,
       "confirmed-defect": 38,
       "coverage-gap": 20,
-      "needs-correction": 58,
+      "needs-correction": 57,
       "runtime-unproven": 6
     },
     "overall_states": {
@@ -83,10 +83,10 @@
       "runtime-unproven": 91
     },
     "dimension_states": {
-      "proven-correct": 2686,
+      "proven-correct": 2694,
       "confirmed-defect": 272,
-      "coverage-gap": 800,
-      "runtime-unproven": 994
+      "coverage-gap": 796,
+      "runtime-unproven": 990
     }
   },
   "independent_review_findings": [
@@ -386,7 +386,7 @@
     },
     {
       "id": "IR0104-BADTEETH-CROSS-EXCLUSION",
-      "state": "coverage-gap",
+      "state": "proven-correct",
       "severity": "medium",
       "confidence": "medium",
       "title": "Albino and Bad Teeth exclude each other without an inspected mechanical or design rationale",
@@ -401,13 +401,13 @@
         "design_intent"
       ],
       "reproduction_evidence": "The exclusion is reciprocal, but the traits have unrelated descriptions and runtime mechanics and are not paired in the inspected MET grouping source.",
-      "missing_proof": "No user-approved design note, upstream source-mod record, or gameplay rationale for this exclusion was supplied.",
-      "recommended_correction": "Document the intended incompatibility or remove both exclusion edges after an explicit design decision.",
-      "smallest_regression_test": "Assert the approved exclusion graph and verify both character-creation selection orders."
+      "missing_proof": "Current-build in-game observation remains unrun.",
+      "recommended_correction": "No further static correction is indicated.",
+      "smallest_regression_test": "Covered by the focused Bad Teeth regression cases."
     },
     {
       "id": "IR0104-BADTEETH-HOTLOOP",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "medium",
       "confidence": "high",
       "title": "Bad Teeth polls body and food state every OnPlayerUpdate",
@@ -420,9 +420,9 @@
         "cadence"
       ],
       "reproduction_evidence": "The direct periodic handler has no throttle and repeats body/food checks each update.",
-      "missing_proof": "No profiler capture measures the frame cost.",
-      "recommended_correction": "Use an exact consumption edge or a bounded dispatcher cadence.",
-      "smallest_regression_test": "Count executions over 300 updates and assert the approved upper bound."
+      "missing_proof": "Current-build in-game observation remains unrun.",
+      "recommended_correction": "No further static correction is indicated.",
+      "smallest_regression_test": "Covered by the focused Bad Teeth regression cases."
     },
     {
       "id": "IR0104-BLUNTS-MELEE-DELAY-DESCRIPTION",
@@ -2562,19 +2562,17 @@
       "title": "Shared food-timer polling does not represent ordinary meals and is inconsistently throttled",
       "anchors": [
         "UniversalTraits/media/lua/shared/UniversalTraits/UT_ascetic.lua",
-        "UniversalTraits/media/lua/shared/UniversalTraits/UT_badteeth.lua",
         "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyDamage.java:617-635",
         "UniversalTraits/media/lua/shared/UTCore/UTCore_TickDispatch.lua:36-48"
       ],
       "affected_surfaces": [
         "UniversalTraits:UT_ascetic",
-        "UniversalTraits:UT_badteeth",
         "runtime",
         "cadence",
         "performance",
         "tests"
       ],
-      "reproduction_evidence": "Anorexy and Competitive Eater are resolved through exact post-consumption hooks. Ascetic and Bad Teeth retain healthFromFoodTimer paths that miss ordinary partial meals or depend on special healing conditions.",
+      "reproduction_evidence": "Anorexy, Competitive Eater, and Bad Teeth are resolved through exact post-consumption hooks. Ascetic retains a food-timer polling path pending the explicit stress-unit decision.",
       "missing_proof": "No current-game meal trace establishes that every intended meal reaches hunger zero and raises the timer by more than 50.",
       "recommended_correction": "Use an idempotent exact consumption edge or narrow the descriptions; apply a documented bounded cadence wherever polling remains.",
       "smallest_regression_test": "Exercise partial, fully satiating, exactly-50, and dangerous-uncooked meals while counting handler calls over a fixed update window."
@@ -2586,13 +2584,9 @@
       "confidence": "high",
       "title": "Directional and undocumented exclusions contradict accepted reciprocal-coverage claims",
       "anchors": [
-        "UniversalTraits/media/scripts/UT_character_traits.txt:941-949",
-        "UniversalTraits/media/scripts/UT_character_traits.txt:1777-1785",
         "PZCodebase/Lua/client/OptionScreens/CharacterCreationProfession.lua"
       ],
       "affected_surfaces": [
-        "UniversalTraits:UT_albino",
-        "UniversalTraits:UT_badteeth",
         "UniversalTraits:UT_cangrabless",
         "UniversalTraits:UT_cangrabmore",
         "UniversalTraits:UT_couchdweller",
@@ -2600,7 +2594,7 @@
         "definitions",
         "character_creation"
       ],
-      "reproduction_evidence": "Competitive Eater and Gourmand are now reciprocal. Other reviewed custom/vanilla edges and the undocumented Albino/Bad Teeth and Couch Dweller questions remain open.",
+      "reproduction_evidence": "Competitive Eater/Gourmand and Bad Teeth/Albino are now proven reciprocal and historically grounded. Other reviewed directional or undocumented exclusions remain open.",
       "missing_proof": "No user-approved design record resolves the undocumented Albino/Bad Teeth edge or identifies Couch Dweller's alleged opposing trait.",
       "recommended_correction": "Reject B03-UT_couchdweller-01, make intended incompatibilities explicit in both selection directions, and document or remove unexplained edges.",
       "smallest_regression_test": "Validate the approved exclusion graph and attempt every affected pair in both character-creation selection orders."
@@ -8692,13 +8686,15 @@
           ]
         },
         "definition_parser": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "Complete-file regex parse found one definition; source inventory SHA E93D...F34A3FE reports 198/198 unique definitions and parser fixtures passed."
+            "The complete definition is parsed by the standard-Lua consistency suite and source/release blocks match."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current-build ScriptManager parsing has not been observed in game."
+          ],
           "source_dimensions": [
-            "complete_script_definition_and_parser_validity"
+            "definition_parser"
           ]
         },
         "namespace": {
@@ -8712,57 +8708,61 @@
           ]
         },
         "cost_xp_grants_exclusions": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Cost=-3; XPBoosts=none; exclusions=UT_albino."
+            "Cost remains -3, no XP or grants are added, and Bad Teeth/Albino exclusions are reciprocal in source and release."
           ],
           "missing_proof": [
-            "Counterpart definitions were not exhaustively retrieved within this assigned-trait-only batch, so reverse declarations remain unproven."
+            "none"
           ],
           "source_dimensions": [
-            "cost_XP_grants_exclusions_and_bidirectional_exclusion_behavior"
+            "cost_xp_grants_exclusions"
           ]
         },
         "source_intent": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Source comments/runtime and EN text establish observed intent: UT_badteeth.lua -> periodic OnPlayerUpdate; food timer rising delta adds head pain."
+            "Pre-campaign master, 1da8489, be6eed18, and MoreTraits 42.15 agree on proportional head pain, the threshold, cap, cost, and Albino exclusion."
           ],
           "missing_proof": [
-            "Original source-mod implementation or indexed PRD section proving intended parity was not available for every assigned trait."
+            "none"
           ],
           "source_dimensions": [
-            "source_mod_intent"
+            "source_intent"
           ]
         },
         "runtime_path": {
           "state": "proven-correct",
           "evidence": [
-            "UT_badteeth.lua -> periodic OnPlayerUpdate; food timer rising delta adds head pain"
+            "The shared consumption module records the food-healing timer before native complete/eat, runs native consumption once, then applies Bad Teeth from the exact positive timer delta."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "exact_runtime_path_through_UT_CORE_or_script_only_behavior"
+            "runtime_path"
           ]
         },
         "numbers": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "pain min(100,current+(timer-prev)*0.01), timer>1000"
+            "A resulting timer above 1000 adds exactly 0.01 head pain per timer point gained and caps total head pain at 100."
           ],
           "missing_proof": [
-            "No current in-game observation confirms engine units, tick rate, or bridge behavior."
+            "none"
           ],
           "source_dimensions": [
-            "numerical_behavior"
+            "numbers"
           ]
         },
         "cadence": {
           "state": "proven-correct",
           "evidence": [
-            "UT_badteeth.lua -> periodic OnPlayerUpdate; food timer rising delta adds head pain"
+            "Work is bounded to completed or interrupted positive consumption calls; player updates do not execute Bad Teeth logic."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cadence"
           ]
@@ -8770,124 +8770,130 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
-            "No explicit cooldown in the assigned implementation."
+            "No cooldown is part of the accepted per-consumption contract."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "cooldowns"
+            "cooldown"
           ]
         },
         "reset_save_load": {
           "state": "runtime-unproven",
           "evidence": [
-            "Persistent state uses player/item modData where present; local tables/events reset on process reload."
+            "The correction owns no persistent polling state and unregisters the obsolete player-update handler."
           ],
           "missing_proof": [
-            "No save/load game run verifies persistence, stale-state cleanup, or trait removal behavior."
+            "Current-version in-game save/load and repeated world entry remain unobserved."
           ],
           "source_dimensions": [
-            "reset_and_save_load"
+            "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Current indexed code uses PZ globals/Java methods shown in the runtime path."
+            "SVN 964 exposes ISEatFoodAction.complete/eat, IsoGameCharacter.Eat, BodyDamage.JustAteFood/getHealthFromFoodTimer/getBodyPart, and BodyPart.get/setAdditionalPain on the traced path."
           ],
           "missing_proof": [
-            "Exact current Java symbols were only partially cross-checked; no live Kahlua invocation."
+            "none"
           ],
           "source_dimensions": [
-            "Java_Lua_exposure"
+            "java_lua"
           ]
         },
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "All 12 assigned runtime source files passed Lua 5.4 loadfile syntax compilation."
+            "The implementation uses Kahlua-compatible Lua and verified Java receiver methods."
           ],
           "missing_proof": [
-            "Standard Lua syntax is not Kahlua execution proof."
+            "Current-build Kahlua execution is unobserved."
           ],
           "source_dimensions": [
-            "Kahlua_compatibility"
+            "kahlua"
           ]
         },
         "events": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "UT_badteeth.lua -> periodic OnPlayerUpdate; food timer rising delta adds head pain"
+            "Stable shared sentinels keep complete/eat wrappers single across repeated installation, and the obsolete OnPlayerUpdate registration is removed."
           ],
           "missing_proof": [
-            "No full-relaunch event registration/removal or multiplayer lifecycle run."
+            "none"
           ],
           "source_dimensions": [
-            "event_lifecycle"
+            "events"
           ]
         },
         "stacking_interactions": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Declared exclusions and shared UT_CORE buckets/handlers were inspected where directly reached."
+            "Bad Teeth composes once with Anorexy and Competitive Eater through the shared wrapper and is reciprocally exclusive with Albino."
           ],
           "missing_proof": [
-            "No exhaustive pairwise assigned/foreign-trait runtime matrix."
+            "none"
           ],
           "source_dimensions": [
-            "stacking_and_cross_trait_interactions"
+            "stacking_interactions"
           ]
         },
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "DisabledInMultiplayer=true in the complete definition."
+            "The definition disables the trait in multiplayer and multiplayer support is an explicit product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "multiplayer_restriction"
+            "multiplayer"
           ]
         },
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "EN UI display key exists and matches UIName."
+            "The exact English display name is Bad Teeth."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "display_name"
+            "display"
           ]
         },
         "description": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "EN description matches inspected static numeric/path evidence."
+            "The accepted English copy accurately states eating-triggered head pain proportional to food healing without reducing food effectiveness."
           ],
           "missing_proof": [
-            "No in-game behavior observation."
+            "none"
           ],
           "source_dimensions": [
-            "description_accuracy"
+            "description"
           ]
         },
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "EN display and description keys exist; source inventory lists only EN."
+            "The exact English keys exist in source and release."
           ],
           "missing_proof": [
-            "All non-EN locales are absent."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
-            "localization_coverage_including_absent_locales"
+            "localization"
           ]
         },
         "balance": {
           "state": "runtime-unproven",
           "evidence": [
-            "Cost=-3; behavior=pain min(100,current+(timer-prev)*0.01), timer>1000."
+            "Static behavior is cost -3 with 1 head pain per 100 food-healing timer points above the threshold, capped at 100."
           ],
           "missing_proof": [
-            "No gameplay telemetry, comparative cost model, or in-game balance session."
+            "No gameplay telemetry or comparative balance session exists."
           ],
           "source_dimensions": [
             "balance"
@@ -8896,34 +8902,34 @@
         "performance": {
           "state": "runtime-unproven",
           "evidence": [
-            "Cadence/path: UT_badteeth.lua -> periodic OnPlayerUpdate; food timer rising delta adds head pain."
+            "The per-update poll was removed. Two guarded timer reads and one trait lookup occur only on actual food-consumption calls."
           ],
           "missing_proof": [
-            "No profiler capture on current build."
+            "No current-build profiler capture exists."
           ],
           "source_dimensions": [
-            "performance_risk"
+            "performance"
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Indexed tests include registry inventory/shared contracts and focused cases for several assigned traits; tests were not accepted as sole proof."
+            "Focused tests cover completed and interrupted paths, exact deltas, threshold, guards, cap, composition, failure safety, no polling, exclusions, copy, and parity."
           ],
           "missing_proof": [
-            "No permitted focused command isolated all 17 traits; whole suite was not run because it would execute foreign-trait sources outside the delegated read scope."
+            "none"
           ],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "UTTestMocks provides UTCore/event/PZ boundaries; Java API manifest covers bouncer calls."
+            "Timed-action mocks mutate the food-healing timer inside native callbacks so assertions prove before/after ordering rather than a fabricated player-update event."
           ],
           "missing_proof": [
-            "Mock fidelity was not independently proven against every current Java method/event used."
+            "none"
           ],
           "source_dimensions": [
             "mocks"
@@ -8932,9 +8938,11 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "Per-trait source and 42.0 release Lua SHA-256 match."
+            "Runtime, shared hook, definition, and English source/release pairs are byte-identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_release_parity"
           ]
@@ -8942,13 +8950,13 @@
         "packaging": {
           "state": "coverage-gap",
           "evidence": [
-            "Expected 42.0 source/release locations were checked for assigned per-trait Lua."
+            "All Bad Teeth-owned 42.0 runtime, definition, and English counterparts are present and identical."
           ],
           "missing_proof": [
-            "Full package manifest/mod.info/load-order and live-copy deployment were outside scope."
+            "UniversalTraits package verification remains blocked only by the separately tracked missing source poster."
           ],
           "source_dimensions": [
-            "packaging_integrity"
+            "packaging"
           ]
         }
       },
@@ -8956,14 +8964,15 @@
         "B02-UT_badteeth-COVERAGE"
       ],
       "unknowns": [
-        "Current in-game Build 42.19 execution and logs were not available.",
-        "Non-EN localization is absent.",
-        "Balance and profiler evidence are absent."
+        "Current-build Kahlua execution, full relaunch, repeated world entry, and current-version save/load remain unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory.",
+        "Multiplayer and backward save migration are explicit non-goals."
       ],
-      "translation_terminal_state": "confirmed-defect",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_01_04.json",
-        "review_state": "needs-correction",
+        "review_state": "accepted",
         "omission_finding_ids": [
           "IR0104-BADTEETH-CROSS-EXCLUSION",
           "IR0104-BADTEETH-HOTLOOP"
@@ -8974,10 +8983,9 @@
         ],
         "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [
-          "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-          "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-          "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-          "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
+          "Current-build Kahlua execution, full relaunch, repeated world entry, and current-version save/load remain unobserved.",
+          "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+          "Only English UI localization exists in the closed-world source inventory."
         ]
       }
     },

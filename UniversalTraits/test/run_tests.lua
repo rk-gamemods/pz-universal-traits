@@ -4606,6 +4606,7 @@ end)
 
 local ANOREXY_ID = "UniversalTraits:UT_anorexy"
 local COMPETITIVE_EATER_ID = "UniversalTraits:UT_competitiveeater"
+local BAD_TEETH_ID = "UniversalTraits:UT_badteeth"
 
 test("anorexy applies exactly 0.10 after completed food effects", function()
     local p = MockPlayer({ ANOREXY_ID }, { stress = 0.4 })
@@ -4802,19 +4803,29 @@ test("competitiveeater perform wrapper alone does not claim consumption", functi
         "perform runs before SVN 964 complete and must not apply hunger relief")
 end)
 
-test("competitiveeater and anorexy share one post-consumption call without interference", function()
-    local p = MockPlayer({ COMPETITIVE_EATER_ID, ANOREXY_ID }, {
+test("competitiveeater, anorexy, and badteeth share one post-consumption call without interference", function()
+    local p = MockPlayer({ COMPETITIVE_EATER_ID, ANOREXY_ID, BAD_TEETH_ID }, {
         boredom = 30,
         hunger = 0.6,
         stress = 0.2,
+        healthFromFoodTimer = 1000,
     })
-    ISEatFoodAction.complete({ character = p, item = MockItem("Apple"), percentage = 1.0 })
+    ISEatFoodAction.complete({
+        character = p,
+        item = MockItem("Apple"),
+        percentage = 1.0,
+        _onComplete = function(self)
+            self.character:getBodyDamage():setHealthFromFoodTimer(1500)
+        end,
+    })
     assert_eq(p:getStats():get(CharacterStat.BOREDOM), 20,
         "Competitive Eater boredom relief must apply once")
     assert_close(p:getStats():get(CharacterStat.HUNGER), 0.55, 0.000001,
         "Competitive Eater hunger relief must apply once")
     assert_close(p:getStats():get(CharacterStat.STRESS), 0.30, 0.000001,
         "Anorexy stress must apply once through the same wrappers")
+    assert_close(p:getBodyDamage():getBodyPart(BodyPartType.Head):getAdditionalPain(), 5.0, 0.000001,
+        "Bad Teeth pain must apply once through the same wrappers")
 end)
 
 test("competitiveeater English, exclusions, and source-release copies match", function()
@@ -4855,19 +4866,168 @@ test("competitiveeater English, exclusions, and source-release copies match", fu
     end
 end)
 
-test("badteeth applies head pain when food timer > 1000 and rising", function()
-    local p = MockPlayer({ "UniversalTraits:UT_badteeth" })
-    p:getBodyDamage()._healthFromFoodTimer = 1200  -- > 1000 and > UTCore.getModData default 0
-    withActivePlayer(p, function() Events.OnPlayerUpdate:fire(p) end)
-    local headPain = p:getBodyDamage():getBodyPart(BodyPartType.Head):getAdditionalPain()
-    assert_true(headPain > 0, "expected head pain > 0 after rising food timer above 1000")
+test("badteeth applies exact head pain after completed food healing", function()
+    local p = MockPlayer({ BAD_TEETH_ID }, { healthFromFoodTimer = 800 })
+    local action = {
+        character = p,
+        item = MockItem("Apple"),
+        percentage = 1.0,
+        _onComplete = function(self)
+            self.character:getBodyDamage():setHealthFromFoodTimer(1400)
+        end,
+    }
+    local result = ISEatFoodAction.complete(action)
+    local head = p:getBodyDamage():getBodyPart(BodyPartType.Head)
+    assert_eq(result, true, "completed wrapper must preserve the native result")
+    assert_eq(action._originalCompleteCalls, 1, "native complete must run exactly once")
+    assert_close(head:getAdditionalPain(), 6.0, 0.000001,
+        "a 600-point food-healing increase must add exactly 6 head pain")
 end)
-test("badteeth does NOT fire when food timer < 1000", function()
-    local p = MockPlayer({ "UniversalTraits:UT_badteeth" })
-    p:getBodyDamage()._healthFromFoodTimer = 500
+
+test("badteeth applies exact head pain after interrupted partial consumption", function()
+    local p = MockPlayer({ BAD_TEETH_ID }, { healthFromFoodTimer = 1000 })
+    local action = {
+        character = p,
+        item = MockItem("Apple"),
+        percentage = 0.5,
+        _onEat = function(self)
+            self.character:getBodyDamage():setHealthFromFoodTimer(1250)
+        end,
+    }
+    ISEatFoodAction.eat(action, action.item, 0.4)
+    local head = p:getBodyDamage():getBodyPart(BodyPartType.Head)
+    assert_eq(action._originalEatCalls, 1, "native partial-consumption path must run exactly once")
+    assert_close(head:getAdditionalPain(), 2.5, 0.000001,
+        "a 250-point partial food-healing increase must add exactly 2.5 head pain")
+end)
+
+test("badteeth enforces threshold, rising edge, trait, and consumption guards", function()
+    local belowThreshold = MockPlayer({ BAD_TEETH_ID }, { healthFromFoodTimer = 500 })
+    ISEatFoodAction.complete({
+        character = belowThreshold,
+        item = MockItem("Apple"),
+        percentage = 1.0,
+        _onComplete = function(self)
+            self.character:getBodyDamage():setHealthFromFoodTimer(900)
+        end,
+    })
+    assert_eq(belowThreshold:getBodyDamage():getBodyPart(BodyPartType.Head):getAdditionalPain(), 0,
+        "a timer that remains at or below 1000 must not add pain")
+
+    local flat = MockPlayer({ BAD_TEETH_ID }, { healthFromFoodTimer = 1200 })
+    ISEatFoodAction.complete({ character = flat, item = MockItem("Apple"), percentage = 1.0 })
+    assert_eq(flat:getBodyDamage():getBodyPart(BodyPartType.Head):getAdditionalPain(), 0,
+        "a timer that does not rise must not add pain")
+
+    local withoutTrait = MockPlayer({}, { healthFromFoodTimer = 1000 })
+    ISEatFoodAction.complete({
+        character = withoutTrait,
+        item = MockItem("Apple"),
+        percentage = 1.0,
+        _onComplete = function(self)
+            self.character:getBodyDamage():setHealthFromFoodTimer(2000)
+        end,
+    })
+    assert_eq(withoutTrait:getBodyDamage():getBodyPart(BodyPartType.Head):getAdditionalPain(), 0,
+        "a player without Bad Teeth must be unaffected")
+
+    local zeroConsumption = MockPlayer({ BAD_TEETH_ID }, { healthFromFoodTimer = 1000 })
+    ISEatFoodAction.eat({
+        character = zeroConsumption,
+        item = MockItem("Apple"),
+        percentage = 1.0,
+        _onEat = function(self)
+            self.character:getBodyDamage():setHealthFromFoodTimer(2000)
+        end,
+    }, MockItem("Apple"), 0)
+    assert_eq(zeroConsumption:getBodyDamage():getBodyPart(BodyPartType.Head):getAdditionalPain(), 0,
+        "zero consumption must not add pain")
+end)
+
+test("badteeth accumulates exact meal deltas and caps head pain at 100", function()
+    local p = MockPlayer({ BAD_TEETH_ID }, { healthFromFoodTimer = 1100 })
+    local head = p:getBodyDamage():getBodyPart(BodyPartType.Head)
+    head:setAdditionalPain(95)
+    ISEatFoodAction.complete({
+        character = p,
+        item = MockItem("Apple"),
+        percentage = 1.0,
+        _onComplete = function(self)
+            self.character:getBodyDamage():setHealthFromFoodTimer(1800)
+        end,
+    })
+    assert_eq(head:getAdditionalPain(), 100, "head pain must cap at 100")
+
+    head:setAdditionalPain(10)
+    p:getBodyDamage():setHealthFromFoodTimer(1500)
+    ISEatFoodAction.complete({
+        character = p,
+        item = MockItem("Apple"),
+        percentage = 1.0,
+        _onComplete = function(self)
+            self.character:getBodyDamage():setHealthFromFoodTimer(1900)
+        end,
+    })
+    assert_close(head:getAdditionalPain(), 14.0, 0.000001,
+        "a later 400-point increase must add only its own 4 pain")
+end)
+
+test("badteeth no longer polls player updates or writes timer modData", function()
+    local p = MockPlayer({ BAD_TEETH_ID }, { healthFromFoodTimer = 5000 })
     withActivePlayer(p, function() Events.OnPlayerUpdate:fire(p) end)
-    local headPain = p:getBodyDamage():getBodyPart(BodyPartType.Head):getAdditionalPain()
-    assert_eq(headPain, 0, "no pain when food timer below 1000")
+    local head = p:getBodyDamage():getBodyPart(BodyPartType.Head)
+    assert_eq(head:getAdditionalPain(), 0, "player updates must not apply Bad Teeth")
+    assert_eq(p:getModData()["badteethTimer"], nil, "obsolete timer state must not be written")
+    assert_eq(UTCore._periodicHandlers[BAD_TEETH_ID .. "::OnPlayerUpdate"], nil,
+        "Bad Teeth must not retain an OnPlayerUpdate handler")
+end)
+
+test("badteeth defensive body-damage failure cannot block native consumption", function()
+    local p = MockPlayer({ BAD_TEETH_ID })
+    p.getBodyDamage = function() error("injected body-damage failure") end
+    local action = { character = p, item = MockItem("Apple"), percentage = 1.0 }
+    local result = ISEatFoodAction.complete(action)
+    assert_eq(result, true, "diagnostic read failure must not change the native result")
+    assert_eq(action._originalCompleteCalls, 1, "diagnostic read failure must not skip native consumption")
+end)
+
+test("badteeth copy, exclusions, and source-release copies match", function()
+    local function readAll(path)
+        local file = assert(io.open(path, "rb"))
+        local content = file:read("*a")
+        file:close()
+        return content
+    end
+
+    local expected = "Dental problems make eating painful. Eating causes increasing head pain (proportional to food healing). Food effectiveness is not reduced - it just hurts."
+    local sourceUI = readAll(base .. "../media/lua/shared/Translate/EN/UI.json")
+    local releaseUI = readAll(base .. "../release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json")
+    assert_eq(sourceUI:match('\"UI_UT_badteethDesc\"%s*:%s*\"([^\"]+)\"'), expected,
+        "source Bad Teeth copy must state the accepted effect")
+    assert_eq(releaseUI:match('\"UI_UT_badteethDesc\"%s*:%s*\"([^\"]+)\"'), expected,
+        "release Bad Teeth copy must match source")
+
+    local state = loadTraitConsistencyState()
+    local exclusions = {}
+    for _, definition in ipairs(state.defs) do
+        exclusions[definition.block_id] = definition.mutually_exclusive_traits
+    end
+    assert_contains(exclusions[BAD_TEETH_ID], "UniversalTraits:UT_albino",
+        "Bad Teeth must exclude Albino")
+    assert_contains(exclusions["UniversalTraits:UT_albino"], BAD_TEETH_ID,
+        "Albino must reciprocally exclude Bad Teeth")
+
+    local paths = {
+        "lua/shared/UniversalTraits/traits/UT_badteeth.lua",
+        "lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+        "lua/shared/Translate/EN/UI.json",
+        "scripts/UT_character_traits.txt",
+    }
+    for _, path in ipairs(paths) do
+        assert_eq(readAll(base .. "../media/" .. path),
+            readAll(base .. "../release/UniversalTraits/42.0/media/" .. path),
+            "Bad Teeth source and release must match for " .. path)
+    end
 end)
 
 test("sensitivestomach applies torso pain on rising food timer above 1000", function()
