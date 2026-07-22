@@ -1,110 +1,124 @@
 # UT_owlperson
 
-## Trait Summary
-- UT trait id: UT_owlperson
-- Source mods: MoreSimpleTraits (`mods/MoreSimpleTraits`, trait id `OwlPerson`); SomewhatTraits (`mods/SomewhatTraitsCore`, trait id `NightOwl`) — two independent analogues; UT concept is closer to MoreSimpleTraits (fatigue timing) but the UT mechanic was redesigned to use stress rather than fatigue
-- Source trait ids: `OwlPerson` (MoreSimpleTraits); `NightOwl` (SomewhatTraits)
-- Current cost: -1
-- Scripted: yes
-- Owner: agent
-- Status: complete
+## Audit result
 
-## Source Evidence
-- Source files reviewed:
-  - `c:/Users/Admin/Documents/GIT/GameMods/PZMods/UTMods/research/installed-mods/MoreSimpleTraits/mods/MoreSimpleTraits/media/lua/client/MSTMainFile.lua`
-  - `c:/Users/Admin/Documents/GIT/GameMods/PZMods/UTMods/research/installed-mods/MoreSimpleTraits/mods/MoreSimpleTraits/media/lua/shared/Translate/EN/UI_EN.txt`
-  - `c:/Users/Admin/Documents/GIT/GameMods/PZMods/UTMods/research/installed-mods/SomewhatTraits/mods/SomewhatTraitsCore/media/lua/client/SWSomewhatTraitsCore.lua`
-  - `c:/Users/Admin/Documents/GIT/GameMods/PZMods/UTMods/research/installed-mods/SomewhatTraits/mods/SomewhatTraits/media/lua/shared/Translate/EN/UI_EN.txt`
+- Trait ID: `UniversalTraits:UT_owlperson`
+- Display name: Night Owl
+- Accepted behavior authority: pre-campaign UTMods `master`, especially balance commit `df41a151c99cb2901577aff3c0a8a16013adf004`
+- Cost: -1
+- Exclusion: reciprocal with `UniversalTraits:UT_larkperson`
+- Multiplayer: disabled by definition and outside product scope
+- Overall state: runtime-unproven
+- Static verdict: the critical time-domain defect is already corrected; exact behavior and remaining runtime proof are now separated
 
-### MoreSimpleTraits — OwlPerson
-- Trigger: `Events.EveryTenMinutes.Add(owlperson)` — fires every ten in-game minutes
-- Guard: `player:HasTrait("OwlPerson") and not player:isAsleep()`
-- Night benefit window (18:00–22:00): calls `MSTdecreaseFatigue(player, 0, 0.004)` — reduces fatigue by 0.004 per 10-minute tick
-- Morning penalty window (05:00–09:00): calls `MSTincreaseFatigue(player, 0, 0.004)` — increases fatigue by 0.004 per 10-minute tick
-- Stat affected: fatigue only; no stress modification
-- Description: "Prefers to stay awake in the evenings. Drowsiness accumulates more slowly in the late evening (06:00 p.m.–11:00 p.m.), but faster in the early morning (05:00 a.m.–10:00 a.m.)."
+## Authority and intended outcome
 
-### SomewhatTraits — NightOwl
-- Trigger: `Events.OnTick.Add(SWNightOwl)` — fires every game tick
-- Guard: `hasSWNightOwl` flag set on character build from `character:HasTrait("NightOwl")`
-- Night benefit: reduces panic by `timeMultiplier * 5` per tick and reduces fatigue by `timeMultiplier * dayLengthMultiplier * 0.0001` per tick, but only when `night > 0`
-- Stats affected: panic and fatigue (during night hours only); no stress modification
-- Description: "Requires little sleep. Stays extra alert even when sleeping. At night improves panic loss, slows down fatigue gain."
+MoreSimpleTraits and SomewhatTraits are lineage evidence only. Their Owl/Night Owl concepts modify fatigue or panic on different windows and cadences. UTMods deliberately redesigned the trait around stress.
 
-### Design divergence in UT
-- UT redesigned the mechanic from fatigue/panic to stress — neither source mod touches stress for this trait concept. This is a deliberate UT divergence, not a port.
+Pre-campaign commit `df41a15` is explicit authority for the accepted UTMods balance contract. It changed the daytime penalty from +0.01 to +0.02 so the two 12-hour windows have equal and opposite nominal rates. The accepted outcome is:
 
-## Current UT Evidence
+1. From 18:00 inclusive through 06:00 exclusive, reduce stress by 0.02 per in-game minute, floored at 0.
+2. From 06:00 inclusive through 18:00 exclusive, increase stress by 0.02 per in-game minute, capped at 1.
+3. Apply regardless of sleep or location.
+4. Run only for the current player with Night Owl.
 
-### Structure
-- Registered in character_traits.txt: yes — `character_trait_definition UniversalTraits:UT_owlperson`, `Cost = -1`, `DisabledInMultiplayer = true`, `MutuallyExclusiveTraits = UniversalTraits:UT_larkperson`
-- Mutual exclusion: `UT_owlperson` and `UT_larkperson` are mutually exclusive with each other — correct, these are paired circadian opposites
-- Translation strings present: yes — `UI_UT_owlperson = "Night Owl"`, `UI_UT_owlpersonDesc = "You come alive after dark. Between 6pm and 6am stress decreases by 0.02 per minute. Between 6am and 6pm stress increases by 0.01 per minute."`
-- Runtime Lua file exists: yes — `UT_owlperson.lua`
+The old English statement that the net effect over a full day is zero overstates the rate-balancing decision. Clamps and starting phase mean an observed 24-hour endpoint is not guaranteed to equal its starting value. The corrected copy states equal and opposite rates without promising a guaranteed net result.
 
-### Runtime Trace
-- Files reviewed:
-  - `c:/Users/Admin/Documents/GIT/GameMods/PZMods/UTMods/UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_owlperson.lua`
-  - `c:/Users/Admin/Documents/GIT/GameMods/PZMods/UTMods/UniversalTraits/media/scripts/UT_character_traits.txt`
-  - `c:/Users/Admin/Documents/GIT/GameMods/PZMods/UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI_EN.txt`
-- Event registrations: `Events.EveryOneMinute.Add(onEveryMinute)`
-- UT_CORE hooks used: `UTCore.hasTrait(player, TRAIT_ID)` — no other UT_CORE helpers; stat manipulation is done directly via `stats:setStress()`
-- Runtime chain (plain language):
-  1. `onEveryMinute` fires once per in-game minute for the local player.
-  2. `UTCore.hasTrait(player, "UniversalTraits:UT_owlperson")` — if false, returns immediately.
-  3. Reads `getGameTime():getTimeOfDay()` — a float in [0, 1) where 0.0 = midnight, 0.25 = 06:00, 0.5 = noon, 0.75 = 18:00.
-  4. Night window (`timeOfDay < 0.25` OR `timeOfDay > 0.75`, i.e. 18:00–06:00): calls `stats:setStress(math.max(0, stress - 0.02))` — reduces stress by 0.02, floored at 0.
-  5. Day window (else, i.e. 06:00–18:00): calls `stats:setStress(math.min(1, stress + 0.01))` — increases stress by 0.01, capped at 1.
-- Actual behavior (exact values):
-  - Night (18:00–06:00, 12 hours): −0.02 stress/minute → up to −1.44 stress per night window (full range is 0–1, so the -0.02/min rate clears a full stress bar in 50 minutes under ideal conditions)
-  - Day (06:00–18:00, 12 hours): +0.01 stress/minute → up to +0.72 stress per day window
-  - Net daily swing: strong night recovery, moderate day accumulation; net is negative (beneficial) over a full day cycle if the player is active in both windows
-  - Implementation is fully functional — reads live game time, applies clamped stat changes, no moddata dependency
+## Definition, registration, and text
 
-## Description Integrity
-- Display name check: "Night Owl" — accurate; consistent with both source names ("Owl" in MST, "NightOwl" in SW) and the circadian concept.
-- Description check: "You come alive after dark. Between 6pm and 6am stress decreases by 0.02 per minute. Between 6am and 6pm stress increases by 0.01 per minute."
-  - Time window accuracy: the code uses `timeOfDay < 0.25 or timeOfDay > 0.75`; converting: 0.75 * 24 = 18:00 (6pm), 0.25 * 24 = 06:00 (6am). The description states "6pm–6am" and "6am–6pm" — these match the code exactly.
-  - Rate accuracy: night rate -0.02/min and day rate +0.01/min are stated explicitly and match the code exactly.
-  - Stat accuracy: description says "stress" — code reads `stats:getStress()` and writes `stats:setStress()` — correct.
-  - No missing details. No misleading claims. Description is accurate and complete.
+- Registration: `UniversalTraits/media/registries.lua:217`
+- Definition: `UniversalTraits/media/scripts/UT_character_traits.txt`
+- The definition costs -1, grants no XP or traits, disables multiplayer selection, and excludes Early Bird.
+- Early Bird reciprocally excludes Night Owl.
+- Display key: `UI_UT_owlperson`
+- Description key: `UI_UT_owlpersonDesc`
 
-## Balance Review
-- Upside: -0.02 stress/min during a 12-hour night window; can fully clear maximum stress in ~50 minutes of nighttime play
-- Downside: +0.01 stress/min during a 12-hour day window; will accumulate +0.72 stress over a full day window if uncountered
-- Net daily effect: if both windows run their full 720 minutes, net stress delta = (720 × −0.02) + (720 × +0.01) = −14.4 + 7.2 = −7.2 (clamped at 0 floor/1 ceiling in practice); the trait is a net stress sink over a full day cycle, making it clearly positive at cost -1
-- Cost verdict: -1 is defensible; the trait provides reliable passive stress relief during the longer productive/dangerous hours (night scavenging), with a smaller daytime penalty that most players will counteract through normal play. The net benefit is significant in a survival game where stress accumulates naturally — cost may be slightly underpriced (compare: stress management traits in vanilla are often 0 to +1), but is not egregiously wrong.
-- Uptime: effect is unconditional while the player has the trait and the game clock is in the correct window; no guards for sleep, indoors/outdoors, or activity state
-- Peer comparison (UT_larkperson, the mutual exclusive):
-  - UT_larkperson is the daytime counterpart — the audit of UT_larkperson should confirm whether its rates are symmetric. Asymmetry here (night: -0.02, day: +0.01) means the owlperson is more powerful at its specialty than the larkperson may be at its specialty; this should be cross-checked.
-  - Source mods used fatigue/panic rather than stress; the UT redesign is a clean divergence that interacts better with the PZ stress system
-- Stack or exclusion notes: mutually exclusive with `UT_larkperson` (enforced in the script); can co-exist with any other stress-modifying traits, which could compound the night benefit significantly
-- Multiplayer note: `DisabledInMultiplayer = true` — trait is unavailable in MP; appropriate given the time-of-day mechanic may behave differently with server-side time
+## Runtime map
 
-## Regression Proof
-- Existing test: `UniversalTraits:UT_owlperson` appears in the batch trait list in `run_tests.lua` (line 271, labeled Phase 2 — Timed / Circadian), confirming it is included in the batch registration sweep.
-- What it proves: The trait ID is registered and can be found by the trait registry; the definition block parses without error; mutual exclusion with `UT_larkperson` is declared.
-- Missing proof:
-  1. No test confirms that `onEveryMinute` fires with the correct effect during the night window (stress decreases by 0.02).
-  2. No test confirms the day window increases stress by 0.01.
-  3. No test confirms the `math.max(0, ...)` and `math.min(1, ...)` clamps prevent out-of-range values.
-  4. No test confirms early return when the player does not have the trait.
-  5. No test verifies that `UT_owlperson` and `UT_larkperson` cannot be simultaneously held by the same character.
-- Minimum next tests if needed:
-  - Mock `getGameTime():getTimeOfDay()` returning a night value (e.g. 0.10) and a day value (e.g. 0.50); assert stress decreases and increases respectively by exact amounts.
-  - Assert stress does not go below 0 or above 1 at boundary values.
-  - Assert no effect when `UTCore.hasTrait` returns false.
+1. The shared module registers one local handler with `Events.EveryOneMinute`.
+2. SVN 964 `GameTime` emits `EveryOneMinute` from `GameTime.java:738`.
+3. The handler resolves `getPlayer()` and returns for nil or a player without Night Owl.
+4. It reads `getGameTime():getTimeOfDay()` and current stress through the current `CharacterStat.STRESS` API.
+5. Hours below 6 or at least 18 subtract 0.02 with a zero floor.
+6. Hours from 6 inclusive through 18 exclusive add 0.02 with a one cap.
 
-## Final Verdict
-- Source origin: dual — MoreSimpleTraits (`OwlPerson`, fatigue-based, EveryTenMinutes) and SomewhatTraits (`NightOwl`, fatigue + panic, OnTick); UT deliberately redesigned the mechanic to target stress instead of fatigue or panic
-- UT implementation: correct and complete — the `onEveryMinute` handler reads game time accurately, applies clamped stress deltas of -0.02/min (night) and +0.01/min (day) with correct 18:00–06:00 / 06:00–18:00 windows, and uses a live guard check via `UTCore.hasTrait`; no moddata required; no inert or stub code found
-- Description: accurate — time windows, stat affected, and rates are all stated correctly and match the code exactly
-- Balance: acceptable — net stress sink over a full day cycle; -1 cost is slightly generous but not unreasonable for a trait with a real daytime penalty; larkperson symmetry should be cross-checked
-- Regression proof: present (batch registration); behavioral proof absent — no unit test covers the per-minute stat deltas, clamping, or the early-return guard
-- Action needed: no code fix required; add behavioral unit tests to cover the night and day delta values, boundary clamping, and the no-trait early-return path
-- Open gaps:
-  - No test coverage for the stress delta logic or time-window branching
-  - Larkperson rate symmetry unverified in this audit — if larkperson applies the same asymmetric rates (-0.02 day / +0.01 night), the two traits are balance-equivalent; if rates differ, the pair is unbalanced and cost parity at -1 each may be incorrect
-  - No sleep guard — if the player is asleep during night hours, the -0.02/min stress reduction still applies; whether this is intended is not documented
-  - No outdoor/environmental guard — trait applies identically indoors and outdoors, which may be overly unconditional for a circadian-themed effect
-  - Mutual exclusion with `UT_larkperson` is enforced at the script level; no runtime check confirms a player cannot acquire both traits through mod interaction or console commands
+`GameTime.getTimeOfDay()` is a public float getter at `GameTime.java:1050`. Current engine consumers compare it with hour values, wrap at 24, and derive minutes from the fractional hour. This proves the 0-to-24 domain.
+
+## Findings and resolutions
+
+### B07-UT_owlperson-timeofday-domain: normalized fractions used against an hour clock
+
+- Severity: critical
+- Original reproduction: pre-campaign `master` accepted only values below 0.25 or above 0.75 as night even though the engine supplies hours. Most actual night hours therefore entered the daytime branch.
+- Correction: development commit `2f98749c3ecaa323b5eb037c30a2ad98b43dc834` changed source and release to `< 6 or >= 18` without changing the accepted window.
+- Regression: the shared boundary table covers 00:00, 05:59, 06:00, 17:59, 18:00, and 23:59 on the engine clock.
+- Resolution: implemented and statically validated.
+
+### B07-UT_owlperson-runtime-proof: no matching current-build observation
+
+- Severity: medium
+- Static evidence now proves the source path, engine time domain, numbers, guards, clamps, exclusion, tests, and package parity.
+- Missing proof: full-relaunch current-build Kahlua execution, repeated world entry, current-version save/load, rendered English, balance, and profiler observation.
+- Resolution: runtime-unproven. This is an exact validation requirement, not a confirmed functional defect.
+
+### B07-UT_owlperson-net-zero-copy: guaranteed daily net-zero claim ignored clamps and phase
+
+- Severity: medium
+- Reproduction: equal nominal rates do not guarantee equal starting and ending stress after either branch reaches 0 or 1, or when the observation starts in a different phase.
+- Correction: source and release English now state the exact windows, deltas, clamps, and unconditional scope, and describe the rates as equal and opposite without promising a net endpoint.
+- Regression: the suite asserts the exact sentence and source-release equality.
+- Resolution: implemented and statically validated.
+
+## Numerical, state, and interaction contract
+
+- Night starts at 18:00 inclusive and ends at 06:00 exclusive.
+- Day starts at 06:00 inclusive and ends at 18:00 exclusive.
+- Night delta is -0.02 per in-game minute with a zero floor.
+- Day delta is +0.02 per in-game minute with a one cap.
+- Both windows last 12 nominal hours and use equal absolute rates.
+- There is no cooldown, modData, accumulator, location guard, or sleep guard.
+- Night Owl and Early Bird cannot be selected together.
+- Other stress effects compose through the shared Stats value and engine clamps.
+
+## Test and mock evidence
+
+Focused tests prove:
+
+- exact -0.02 at night and +0.02 during day;
+- lower and upper stress clamps;
+- missing-trait rejection;
+- 06:00 and 18:00 boundary opposition on the 0-to-24 clock;
+- reciprocal Early Bird exclusion;
+- exact English copy and source-release equality.
+
+The GameTime mock exposes a controllable 0-to-24 hour value. Player, Stats, trait, event, and translation fixtures cover the full modeled path. Standard Lua proves the model, not current-build Kahlua execution.
+
+## Lifecycle and performance
+
+The handler is registered once during the normal shared-module load. It runs once per in-game minute, resolves one player, performs constant-time guards, and performs one bounded Stats write for an owner. There are no scans, item mutations, or per-frame hooks.
+
+The trait owns no persistent state. Current-build repeated world entry, same-process manual reload, and save/load behavior remain unobserved. Static performance risk is low, but no profiler capture exists.
+
+## Remaining proof and non-goals
+
+Remaining open proof:
+
+- current-build Kahlua execution after a full desktop relaunch;
+- real 06:00 and 18:00 transitions, clamps, sleep, and location observation;
+- repeated world entry and current-version save/load;
+- rendered English in character creation and the character screen;
+- profiler and gameplay balance observation;
+- non-English localization, because no non-English UniversalTraits locale exists;
+- read-only package verification's separately tracked missing source poster.
+
+Explicit non-goals:
+
+- multiplayer support;
+- backward save migration;
+- deployment or live-copy mutation;
+- restoring upstream fatigue or panic mechanics, source windows, or cadences;
+- changing the accepted cost, exclusion, stress deltas, or windows.
+
+## Final verdict
+
+Night Owl's accepted UTMods outcome is an unconditional circadian stress tradeoff with equal nominal rates in two 12-hour windows. The preserved development correction expresses those windows in the engine's actual hour domain. Exact tests and copy now match that outcome, while current-build execution and observational gaps remain explicitly runtime-unproven.

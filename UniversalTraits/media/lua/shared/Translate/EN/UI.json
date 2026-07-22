@@ -270,7 +270,7 @@
     "UI_UT_noxpsneaky": "No XP: Sneaky",
     "UI_UT_noxpsneakyDesc": "You will never improve at moving silently, no matter how much you practice. Disables XP gain in Sneaking and Lightfoot.",
     "UI_UT_owlperson": "Night Owl",
-    "UI_UT_owlpersonDesc": "You come alive after dark. Between 6pm and 6am stress decreases by 0.02 per minute. Between 6am and 6pm stress increases by 0.02 per minute. Net effect over a full day is zero - purely a lifestyle trait.",
+    "UI_UT_owlpersonDesc": "You come alive after dark. Every minute from 18:00 through 05:59 reduces stress by 0.02, down to 0. Every minute from 06:00 through 17:59 increases stress by 0.02, up to 1. The two 12-hour windows use equal and opposite rates. The effect does not depend on sleep or location.",
     "UI_UT_larkperson": "Early Bird",
     "UI_UT_larkpersonDesc": "You rise with the sun and hit the ground running. Between 6am and 6pm stress decreases by 0.02 per minute. Between 6pm and 6am stress increases by 0.02 per minute. Net effect over a full day is zero - purely a lifestyle trait.",
     "UI_UT_leadfoot": "Lead Foot",

@@ -46,7 +46,7 @@
   },
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "FFCCF3FFB05C9B0A4E0684CD2503D77351D32EC6481F68F4AD6682CC782157A0",
-    "independent_reviews/traits_05_08.json": "E900DBF9AB66501AD15F38CDB6FCB90E6C1B7D33CF9A714037A0F0C2B304209B",
+    "independent_reviews/traits_05_08.json": "B0B92939B0E09B468C555B7434551B4E08D5A3353E63A86A83F415C842DB37E3",
     "independent_reviews/traits_09_12.json": "27A52A4BB934EDCCD324FC013C7CC1885085D91F474C3E0BEED192C5018C7805",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "7B741591E807E09BDE359BECBB8CF8BCBA18A872A9DD6B022EF105975DA78499",
@@ -55,13 +55,13 @@
     "trait_batches/batch_04.jsonl": "7BE87A0648404822CC35EE0904E3E4CC43391B4F955363D61BE1E3B8FEC6DA6E",
     "trait_batches/batch_05.jsonl": "6F550AD8CF0BD3BA4E827AD9D5F39F2149C50B4D8A990816451C8E86F58DE5AE",
     "trait_batches/batch_06.jsonl": "32B529C5117E409EBFC41BF178BB94BFDD8301716D6187AC4950CF983A32CAAB",
-    "trait_batches/batch_07.jsonl": "6BFC2D4966C29749BFF856067ABD0EB3B3F3E6E53E37E72A4A4FE271BE9E892C",
+    "trait_batches/batch_07.jsonl": "0483F4C2595D692E19FD6F60DE04E5D633C7942497A2669CF1B48459C0AFA771",
     "trait_batches/batch_08.jsonl": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A",
     "trait_batches/batch_09.jsonl": "FFB64ADB79BEDD95F4F340F169A2BEB7A1158BF4C1E1602538AC75BA65F7D759",
     "trait_batches/batch_10.jsonl": "FD77CC372A742BCDEB66FCB6D26BF9622BA4EC439CDB8E9135CAC22B946F3A44",
     "trait_batches/batch_11.jsonl": "11FBFE83557FBD93363F41AC740897040804E74E1063367C55A521DA0D2C98F4",
     "trait_batches/batch_12.jsonl": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47",
-    "translation_audit.json": "D4F41532D278A3576075D63AFF409EC7AADA07C2FD4077EF7949544F900CBC18"
+    "translation_audit.json": "5EC792A899943C334EFA80B92AB78F3362D5CD835C8BE2131519090B56689CB8"
   },
   "counts": {
     "traits": 198,
@@ -78,15 +78,15 @@
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 67,
+      "confirmed-defect": 66,
       "coverage-gap": 12,
-      "runtime-unproven": 94
+      "runtime-unproven": 95
     },
     "dimension_states": {
-      "proven-correct": 2727,
-      "confirmed-defect": 266,
-      "coverage-gap": 780,
-      "runtime-unproven": 979
+      "proven-correct": 2737,
+      "confirmed-defect": 258,
+      "coverage-gap": 781,
+      "runtime-unproven": 976
     }
   },
   "independent_review_findings": [
@@ -38517,7 +38517,7 @@
     {
       "trait_id": "UniversalTraits:UT_owlperson",
       "batch": "batch_07",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
@@ -38530,13 +38530,15 @@
           ]
         },
         "definition_parser": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "current registration/definition/EN inventory and scoped source trace"
+            "The complete source and release definitions are byte-identical and parse in the standard-Lua consistency suite."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current-build ScriptManager parsing has not been observed in game."
+          ],
           "source_dimensions": [
-            "script_parser"
+            "definition_parser"
           ]
         },
         "namespace": {
@@ -38552,9 +38554,11 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "current registration/definition/EN inventory and scoped source trace"
+            "Cost is -1; there are no XP boosts or grants; Early Bird is reciprocally excluded; DisabledInMultiplayer is true."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cost_xp_grants_exclusions"
           ]
@@ -38562,116 +38566,118 @@
         "source_intent": {
           "state": "proven-correct",
           "evidence": [
-            "current registration/definition/EN inventory and scoped source trace"
+            "Pre-campaign master and balance commit df41a15 explicitly establish equal absolute +0.02 daytime and -0.02 nighttime stress rates across two 12-hour windows."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_intent"
           ]
         },
         "runtime_path": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "static Lua/script/index evidence only"
+            "EveryOneMinute resolves the current player, gates trait ownership, reads the 0-to-24 engine hour, and performs one bounded stress write in the correct branch."
           ],
           "missing_proof": [
-            "matching in-game B42/Kahlua run with logs/profiler and trait-specific assertions"
+            "none"
           ],
           "source_dimensions": [
-            "runtime_shared_script_only_path"
+            "runtime_path"
           ]
         },
         "numbers": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "static Lua/script/index evidence only"
+            "Night subtracts exactly 0.02 with a zero floor; day adds exactly 0.02 with a one cap."
           ],
           "missing_proof": [
-            "matching in-game B42/Kahlua run with logs/profiler and trait-specific assertions"
+            "none"
           ],
           "source_dimensions": [
-            "numerical_behavior"
+            "numbers"
           ]
         },
         "cadence": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "static Lua/script/index evidence only"
+            "The handler runs once per EveryOneMinute event and performs no per-frame polling."
           ],
           "missing_proof": [
-            "matching in-game B42/Kahlua run with logs/profiler and trait-specific assertions"
+            "none"
           ],
           "source_dimensions": [
-            "cadence_cooldown_reset_save_load"
+            "cadence"
           ]
         },
         "cooldown": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "static Lua/script/index evidence only"
+            "The accepted implementation has no cooldown beyond its minute event cadence."
           ],
           "missing_proof": [
-            "matching in-game B42/Kahlua run with logs/profiler and trait-specific assertions"
+            "none"
           ],
           "source_dimensions": [
-            "cadence_cooldown_reset_save_load"
+            "cooldown"
           ]
         },
         "reset_save_load": {
-          "state": "confirmed-defect",
+          "state": "runtime-unproven",
           "evidence": [
-            "static Lua/script/index evidence only"
+            "The trait owns no persistent state, item mutation, accumulator, or cached baseline."
           ],
           "missing_proof": [
-            "matching in-game B42/Kahlua run with logs/profiler and trait-specific assertions"
+            "Repeated world entry and current-version save/load remain unobserved."
           ],
           "source_dimensions": [
-            "cadence_cooldown_reset_save_load"
+            "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "static Lua/script/index evidence only"
+            "SVN 964 exposes EveryOneMinute, GameTime.getTimeOfDay on a 0-to-24 hour domain, player trait lookup, Stats get/set, and CharacterStat.STRESS used by the path."
           ],
           "missing_proof": [
-            "matching in-game B42/Kahlua run with logs/profiler and trait-specific assertions"
+            "none"
           ],
           "source_dimensions": [
-            "java_lua_kahlua"
+            "java_lua"
           ]
         },
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "static Lua/script/index evidence only"
+            "The implementation uses Kahlua-compatible Lua shapes and verified current Java receiver methods."
           ],
           "missing_proof": [
-            "matching in-game B42/Kahlua run with logs/profiler and trait-specific assertions"
+            "Current-build Kahlua execution is unobserved."
           ],
           "source_dimensions": [
-            "java_lua_kahlua"
+            "kahlua"
           ]
         },
         "events": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "static Lua/script/index evidence only"
+            "The normal shared-module load installs one low-frequency handler, which independently gates every effect on current trait ownership."
           ],
           "missing_proof": [
-            "matching in-game B42/Kahlua run with logs/profiler and trait-specific assertions"
+            "none"
           ],
           "source_dimensions": [
-            "lifecycle"
+            "events"
           ]
         },
         "stacking_interactions": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "static Lua/script/index evidence only"
+            "Night Owl is reciprocally exclusive with Early Bird and otherwise composes through the bounded shared stress value without shared item or global-object mutation."
           ],
           "missing_proof": [
-            "matching in-game B42/Kahlua run with logs/profiler and trait-specific assertions"
+            "none"
           ],
           "source_dimensions": [
             "stacking_interactions"
@@ -38680,103 +38686,107 @@
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "DisabledInMultiplayer=true in definition"
+            "The definition disables the trait in multiplayer and multiplayer support is an explicit product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "multiplayer"
           ]
         },
         "display": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "EN pair present; source inventory lists EN only"
+            "The exact English display name is Night Owl."
           ],
           "missing_proof": [
-            "non-EN locale assets and rendered trait-picker verification"
+            "none"
           ],
           "source_dimensions": [
-            "display_description_localization_absent_locales"
+            "display"
           ]
         },
         "description": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "EN pair present; source inventory lists EN only"
+            "The English copy states the exact windows, deltas, clamps, equal nominal rates, and unconditional sleep/location scope without guaranteeing a net endpoint."
           ],
           "missing_proof": [
-            "non-EN locale assets and rendered trait-picker verification"
+            "none"
           ],
           "source_dimensions": [
-            "display_description_localization_absent_locales"
+            "description"
           ]
         },
         "localization": {
-          "state": "confirmed-defect",
+          "state": "coverage-gap",
           "evidence": [
-            "EN pair present; source inventory lists EN only"
+            "The exact English keys exist in source and release."
           ],
           "missing_proof": [
-            "non-EN locale assets and rendered trait-picker verification"
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
-            "display_description_localization_absent_locales"
+            "localization"
           ]
         },
         "balance": {
           "state": "runtime-unproven",
           "evidence": [
-            "static Lua/script/index evidence only"
+            "Static behavior is cost -1 with equal absolute 0.02 stress rates in two 12-hour windows."
           ],
           "missing_proof": [
-            "matching in-game B42/Kahlua run with logs/profiler and trait-specific assertions"
+            "No gameplay telemetry or comparative balance session exists."
           ],
           "source_dimensions": [
-            "balance_performance"
+            "balance"
           ]
         },
         "performance": {
           "state": "runtime-unproven",
           "evidence": [
-            "static Lua/script/index evidence only"
+            "The low-frequency handler performs constant-time guards and one bounded Stats write for an owner."
           ],
           "missing_proof": [
-            "matching in-game B42/Kahlua run with logs/profiler and trait-specific assertions"
+            "No current-build profiler capture exists."
           ],
           "source_dimensions": [
-            "balance_performance"
+            "performance"
           ]
         },
         "tests": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "static Lua/script/index evidence only"
+            "Focused tests cover exact deltas, both clamps, missing-trait rejection, all hour boundaries, reciprocal exclusion, exact copy, and parity."
           ],
           "missing_proof": [
-            "matching in-game B42/Kahlua run with logs/profiler and trait-specific assertions"
+            "none"
           ],
           "source_dimensions": [
-            "tests_mocks"
+            "tests"
           ]
         },
         "mocks": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "static Lua/script/index evidence only"
+            "The GameTime mock exposes a controllable 0-to-24 hour value, while player, Stats, trait, event, and translation fixtures match the path under test."
           ],
           "missing_proof": [
-            "matching in-game B42/Kahlua run with logs/profiler and trait-specific assertions"
+            "none"
           ],
           "source_dimensions": [
-            "tests_mocks"
+            "mocks"
           ]
         },
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "indexed source and release matches were observed for assigned surfaces"
+            "Night Owl runtime, definition, and English source and 42.0 release pairs are byte-identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_release_parity"
           ]
@@ -38784,10 +38794,10 @@
         "packaging": {
           "state": "coverage-gap",
           "evidence": [
-            "42.0 release paths indexed"
+            "All Night Owl-owned 42.0 runtime, definition, and English counterparts are present and identical."
           ],
           "missing_proof": [
-            "fresh packaged-mod load/game startup proof"
+            "Read-only package verification reports no release drift; UniversalTraits lacks the separately tracked source poster."
           ],
           "source_dimensions": [
             "packaging"
@@ -38799,23 +38809,26 @@
         "B07-UT_owlperson-runtime-proof"
       ],
       "unknowns": [
-        "No authorized in-game/Kahlua execution, multiplayer experiment, profiler capture, or non-EN locale corpus.",
-        "Existing audit prose was treated as advisory and conflicts were resolved against current source."
+        "Current-build Kahlua execution, full relaunch, repeated world entry, and current-version save/load remain unobserved.",
+        "Rendered English, sleep/location behavior, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory.",
+        "Multiplayer and backward save migration are explicit non-goals."
       ],
-      "translation_terminal_state": "confirmed-defect",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_05_08.json",
         "review_state": "accepted",
         "omission_finding_ids": [],
         "cross_finding_ids": [],
         "verified_first_pass_finding_ids": [
-          "B07-UT_owlperson-runtime-proof",
-          "B07-UT_owlperson-timeofday-domain"
+          "B07-UT_owlperson-timeofday-domain",
+          "B07-UT_owlperson-runtime-proof"
         ],
         "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [
-          "No authorized in-game/Kahlua execution, multiplayer experiment, profiler capture, or non-EN locale corpus.",
-          "Existing audit prose was treated as advisory and conflicts were resolved against current source."
+          "Current-build Kahlua execution, full desktop relaunch, repeated world entry, and current-version save/load remain unobserved.",
+          "Rendered English, sleep/location behavior, balance telemetry, and profiler capture remain unobserved.",
+          "Only English UI localization exists in the closed-world source inventory."
         ]
       }
     },

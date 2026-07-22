@@ -3689,14 +3689,15 @@
         "B07-UT_owlperson-timeofday-domain"
       ],
       "verified_finding_ids": [
-        "B07-UT_owlperson-runtime-proof",
-        "B07-UT_owlperson-timeofday-domain"
+        "B07-UT_owlperson-timeofday-domain",
+        "B07-UT_owlperson-runtime-proof"
       ],
       "rejected_finding_ids": [],
       "cross_trait_finding_ids": [],
       "unresolved_proof": [
-        "No authorized in-game/Kahlua execution, multiplayer experiment, profiler capture, or non-EN locale corpus.",
-        "Existing audit prose was treated as advisory and conflicts were resolved against current source."
+        "Current-build Kahlua execution, full desktop relaunch, repeated world entry, and current-version save/load remain unobserved.",
+        "Rendered English, sleep/location behavior, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory."
       ],
       "evidence_anchors": [
         "UniversalTraits/media/registries.lua (UT_owlperson)",
@@ -3705,11 +3706,21 @@
         "trait-deep-audit/campaign/source_inventory.json"
       ],
       "release_parity": {
-        "source_runtime_sha256": "4D914699DD6A22C54843A8B7493399C89FC9BCF37418F3C56C878685ECC48D95",
-        "release_runtime_sha256": "4D914699DD6A22C54843A8B7493399C89FC9BCF37418F3C56C878685ECC48D95",
+        "trait_runtime": "60D7FA2FAC1ABA40BC8619B631398EC089FC4CD8662D69CE77F4A4926483E213",
+        "trait_release": "60D7FA2FAC1ABA40BC8619B631398EC089FC4CD8662D69CE77F4A4926483E213",
+        "definition_runtime": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+        "definition_release": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+        "english_runtime": "A17DA8BB28A5EF86505A90A1C8CA9B7637E42614847DC551FD4C6E3563D2A536",
+        "english_release": "A17DA8BB28A5EF86505A90A1C8CA9B7637E42614847DC551FD4C6E3563D2A536",
         "state": "proven-correct"
       },
-      "omissions": []
+      "omissions": [],
+      "explicit_non_goals": [
+        "multiplayer",
+        "backward save migration",
+        "deployment"
+      ],
+      "resolution_record": "change-impact/owlperson-circadian-contract.json"
     },
     {
       "trait_id": "UniversalTraits:UT_pacer",

@@ -4234,13 +4234,70 @@ test("owlperson reduces stress at night", function()
     setMockTimeOfDay(0)  -- night
     local p = MockPlayer({ "UniversalTraits:UT_owlperson" }, { stress = 0.5 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_true(p:getStats():get(CharacterStat.STRESS) < 0.5, "stress should decrease at night")
+    assert_close(p:getStats():get(CharacterStat.STRESS), 0.48, 0.000001,
+        "night must reduce stress by exactly 0.02")
 end)
 test("owlperson increases stress during day", function()
     setMockTimeOfDay(12)  -- midday
     local p = MockPlayer({ "UniversalTraits:UT_owlperson" }, { stress = 0.3 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_true(p:getStats():get(CharacterStat.STRESS) > 0.3, "stress should increase during day")
+    assert_close(p:getStats():get(CharacterStat.STRESS), 0.32, 0.000001,
+        "day must increase stress by exactly 0.02")
+end)
+
+test("owlperson clamps both stress directions and rejects non-owners", function()
+    setMockTimeOfDay(0)
+    local night = MockPlayer({ "UniversalTraits:UT_owlperson" }, { stress = 0.01 })
+    withActivePlayer(night, function() Events.EveryOneMinute:fire() end)
+    assert_eq(night:getStats():get(CharacterStat.STRESS), 0,
+        "night relief must floor stress at zero")
+
+    setMockTimeOfDay(12)
+    local day = MockPlayer({ "UniversalTraits:UT_owlperson" }, { stress = 0.99 })
+    withActivePlayer(day, function() Events.EveryOneMinute:fire() end)
+    assert_eq(day:getStats():get(CharacterStat.STRESS), 1,
+        "day penalty must cap stress at one")
+
+    local withoutTrait = MockPlayer({}, { stress = 0.5 })
+    withActivePlayer(withoutTrait, function() Events.EveryOneMinute:fire() end)
+    assert_eq(withoutTrait:getStats():get(CharacterStat.STRESS), 0.5,
+        "player without Night Owl must be unaffected")
+end)
+
+test("owlperson English, exclusion, and source-release copies match", function()
+    local function readAll(path)
+        local file = assert(io.open(path, "rb"))
+        local content = file:read("*a")
+        file:close()
+        return content
+    end
+    local expected = "You come alive after dark. Every minute from 18:00 through 05:59 reduces stress by 0.02, down to 0. Every minute from 06:00 through 17:59 increases stress by 0.02, up to 1. The two 12-hour windows use equal and opposite rates. The effect does not depend on sleep or location."
+    local sourceUI = readAll(base .. "../media/lua/shared/Translate/EN/UI.json")
+    local releaseUI = readAll(base .. "../release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json")
+    assert_eq(sourceUI:match('"UI_UT_owlpersonDesc"%s*:%s*"([^"]+)"'), expected,
+        "source Night Owl copy must state the accepted effect")
+    assert_eq(releaseUI:match('"UI_UT_owlpersonDesc"%s*:%s*"([^"]+)"'), expected,
+        "release Night Owl copy must match source")
+
+    local state = loadTraitConsistencyState()
+    local exclusions = {}
+    for _, definition in ipairs(state.defs) do
+        exclusions[definition.block_id] = definition.mutually_exclusive_traits
+    end
+    assert_contains(exclusions["UniversalTraits:UT_owlperson"], "UniversalTraits:UT_larkperson",
+        "Night Owl must exclude Early Bird")
+    assert_contains(exclusions["UniversalTraits:UT_larkperson"], "UniversalTraits:UT_owlperson",
+        "Early Bird must reciprocally exclude Night Owl")
+
+    for _, path in ipairs({
+        "lua/shared/UniversalTraits/traits/UT_owlperson.lua",
+        "lua/shared/Translate/EN/UI.json",
+        "scripts/UT_character_traits.txt",
+    }) do
+        assert_eq(readAll(base .. "../media/" .. path),
+            readAll(base .. "../release/UniversalTraits/42.0/media/" .. path),
+            "Night Owl source and release must match for " .. path)
+    end
 end)
 
 test("day and night traits honor 0..24 clock boundaries", function()
