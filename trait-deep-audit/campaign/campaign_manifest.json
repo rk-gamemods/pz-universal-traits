@@ -40,8 +40,8 @@
     "trait_batches/batch_12.jsonl",
     "translation_audit.json"
   ],
-  "file_count": 114,
-  "total_bytes": 13115418,
+  "file_count": 117,
+  "total_bytes": 13138465,
   "files": [
     {
       "path": "HAPPY_PATH_PRIORITY.md",
@@ -112,6 +112,13 @@
       "byte_semantics": "utf-8-lf",
       "bytes": 3770,
       "sha256": "988F9F9166290A1FF428E0DD2DE62046C8009F3105B2648F39F5D3682231AD9E"
+    },
+    {
+      "path": "change-impact/cleaver-critical-chance-lifecycle.json",
+      "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 4032,
+      "sha256": "7F263A812190566EDA6983029D46DAD1156A77D6AB100866BA02E49168D541FE"
     },
     {
       "path": "change-impact/competitiveeater-consumption-contract.json",
@@ -208,22 +215,22 @@
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2257825,
-      "sha256": "E4F81537950659E473F1825CAC4B87CF1B626558BABEFD5E628958797F207F3B"
+      "bytes": 2257673,
+      "sha256": "53D8488993F5256E4D72700DC06854AD86F896C399ECEFDA68EE4FD84C8BEC56"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2079440,
-      "sha256": "D7ADC1040C6EA06797A36DD7FD12CAD00B34181A4C51D9C1A0810DC764A61336"
+      "bytes": 2079546,
+      "sha256": "0CF3BDD696282FEC227B052E9A9ED2CA3641ACEB0507864F58416C14589597E7"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1276690,
-      "sha256": "1CAF434166B5C810C3A36DBA18CBDB12B5F21F48E2209F095B5CFE2B1835C45D"
+      "bytes": 1276612,
+      "sha256": "EB76D90A2E84EE044DC42F5A78A80AF01D093072351021AC8D3B07BFA3DA90CB"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
@@ -243,8 +250,8 @@
       "path": "independent_reviews/traits_01_04.json",
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
-      "bytes": 671557,
-      "sha256": "FFCCF3FFB05C9B0A4E0684CD2503D77351D32EC6481F68F4AD6682CC782157A0"
+      "bytes": 672410,
+      "sha256": "417C222A68161C10EB07CAEFE38D7D6E5C73E010CCC14431FE732754B34F0DB8"
     },
     {
       "path": "independent_reviews/traits_05_08.json",
@@ -279,21 +286,21 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 3480,
-      "sha256": "60E68CDE5F8FF131190CC16C533E19460B18B95E66047FF088AB3B5F46C02C23"
+      "sha256": "140BDC801F704C076A1EC7C788BD351867CA4D5CC75985971E3A4E90B86080E7"
     },
     {
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2164116,
-      "sha256": "8F6D255BFB38A54775BF6E5CBB2D7E05D16E9377D66C0E7E927A238FB33CC046"
+      "bytes": 2151000,
+      "sha256": "65C73F0B7524F902EBE83485522AB19F6CB123EC4C527AC24E970580B7706E58"
     },
     {
       "path": "remediation_summary.json",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
       "bytes": 1210,
-      "sha256": "3D8DB4FF20A6E9F04B116F7C36BBA7AED64A4A9077004C22419638669FE4D3F7"
+      "sha256": "867AE9630420F8587F14BE53CA06F7EB553B3F64A6C29D9ABA1C5A4909F9D98F"
     },
     {
       "path": "runtime-traces/utcore-wave-01.jsonl",
@@ -513,6 +520,13 @@
       "sha256": "67F91C28EF0C7CFECF4FC43917D4B96B2CA8DE79CF2B2235FBCE9BF8292A46A3"
     },
     {
+      "path": "tests/test_regenerate_cleaver.py",
+      "kind": "regression-test",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 8413,
+      "sha256": "CED9D1920F963C7E6CBDA9F6EFD85CE989E661ACACB8C5EF2F5AA585DF6347C7"
+    },
+    {
       "path": "tests/test_regenerate_competitiveeater.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
@@ -660,6 +674,13 @@
       "sha256": "9E630A22D8F0561E19C4930CEF705154D5F20D48E9A285C9A0BB2D269DD811D2"
     },
     {
+      "path": "tools/regenerate_cleaver.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 22234,
+      "sha256": "31B48345D566E924E9AF04289D522A3FDB81359D59BF56A2571432AAFA5AFF9A"
+    },
+    {
       "path": "tools/regenerate_competitiveeater.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
@@ -768,8 +789,8 @@
       "path": "trait_batches/batch_03.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 109778,
-      "sha256": "F8C9E0FD9E273306FEC68C182BD9B6A34D268D7EF47BBD040845FC308AFE169A"
+      "bytes": 110492,
+      "sha256": "DE80C7E88D64E27AEDFA1248A855290E9892605D7A1800D9933BFFFBD8271DA9"
     },
     {
       "path": "trait_batches/batch_04.jsonl",
@@ -838,8 +859,8 @@
       "path": "translation_audit.json",
       "kind": "translation-audit",
       "byte_semantics": "utf-8-lf",
-      "bytes": 495033,
-      "sha256": "5EC792A899943C334EFA80B92AB78F3362D5CD835C8BE2131519090B56689CB8"
+      "bytes": 495074,
+      "sha256": "7102BECEB4257532881DC2B4628BB7BF069D3C544DA38B4773D41D7A049B9D35"
     }
   ]
 }

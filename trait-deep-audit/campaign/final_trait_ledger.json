@@ -45,13 +45,13 @@
     }
   },
   "source_artifact_sha256": {
-    "independent_reviews/traits_01_04.json": "FFCCF3FFB05C9B0A4E0684CD2503D77351D32EC6481F68F4AD6682CC782157A0",
+    "independent_reviews/traits_01_04.json": "417C222A68161C10EB07CAEFE38D7D6E5C73E010CCC14431FE732754B34F0DB8",
     "independent_reviews/traits_05_08.json": "B0B92939B0E09B468C555B7434551B4E08D5A3353E63A86A83F415C842DB37E3",
     "independent_reviews/traits_09_12.json": "27A52A4BB934EDCCD324FC013C7CC1885085D91F474C3E0BEED192C5018C7805",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "7B741591E807E09BDE359BECBB8CF8BCBA18A872A9DD6B022EF105975DA78499",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
-    "trait_batches/batch_03.jsonl": "F8C9E0FD9E273306FEC68C182BD9B6A34D268D7EF47BBD040845FC308AFE169A",
+    "trait_batches/batch_03.jsonl": "DE80C7E88D64E27AEDFA1248A855290E9892605D7A1800D9933BFFFBD8271DA9",
     "trait_batches/batch_04.jsonl": "7BE87A0648404822CC35EE0904E3E4CC43391B4F955363D61BE1E3B8FEC6DA6E",
     "trait_batches/batch_05.jsonl": "6F550AD8CF0BD3BA4E827AD9D5F39F2149C50B4D8A990816451C8E86F58DE5AE",
     "trait_batches/batch_06.jsonl": "32B529C5117E409EBFC41BF178BB94BFDD8301716D6187AC4950CF983A32CAAB",
@@ -61,7 +61,7 @@
     "trait_batches/batch_10.jsonl": "FD77CC372A742BCDEB66FCB6D26BF9622BA4EC439CDB8E9135CAC22B946F3A44",
     "trait_batches/batch_11.jsonl": "11FBFE83557FBD93363F41AC740897040804E74E1063367C55A521DA0D2C98F4",
     "trait_batches/batch_12.jsonl": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47",
-    "translation_audit.json": "5EC792A899943C334EFA80B92AB78F3362D5CD835C8BE2131519090B56689CB8"
+    "translation_audit.json": "7102BECEB4257532881DC2B4628BB7BF069D3C544DA38B4773D41D7A049B9D35"
   },
   "counts": {
     "traits": 198,
@@ -70,22 +70,22 @@
     "independent_reviewed_traits": 198,
     "independent_review_findings": 118,
     "independent_review_states": {
-      "accepted": 81,
+      "accepted": 82,
       "confirmed-defect": 38,
       "coverage-gap": 20,
-      "needs-correction": 53,
+      "needs-correction": 52,
       "runtime-unproven": 6
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 66,
+      "confirmed-defect": 65,
       "coverage-gap": 12,
-      "runtime-unproven": 95
+      "runtime-unproven": 96
     },
     "dimension_states": {
-      "proven-correct": 2737,
-      "confirmed-defect": 258,
-      "coverage-gap": 781,
+      "proven-correct": 2748,
+      "confirmed-defect": 255,
+      "coverage-gap": 773,
       "runtime-unproven": 976
     }
   },
@@ -590,7 +590,7 @@
     },
     {
       "id": "IR0104-CLEAVER-SHARPNESS-RAW-MISMATCH",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
       "title": "Cleaver caches an effective sharpness-adjusted critical chance and restores it as a raw value",
@@ -606,9 +606,9 @@
         "cross_trait"
       ],
       "reproduction_evidence": "With sharpness other than 1, the getter and setter domains differ; applying/restoring changes the raw base and conflicts with Action Hero.",
-      "missing_proof": "Save/load persistence of the Java field was not observed.",
-      "recommended_correction": "Read/write a raw-domain property through a supported API or avoid persistent item mutation.",
-      "smallest_regression_test": "Repeat apply/restore at sharpness below and above 1, including Action Hero overlap and item transfer."
+      "missing_proof": "Current-build in-game sharpness and transfer observation remains unrun.",
+      "recommended_correction": "No further static correction is indicated.",
+      "smallest_regression_test": "Covered by the focused sharpness, restoration, and Action Hero overlap cases."
     },
     {
       "id": "IR0104-COMPETITIVEEATER-MEAL-DETECTION",
@@ -13587,251 +13587,267 @@
     {
       "trait_id": "UniversalTraits:UT_cleaver",
       "batch": "batch_03",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
           "evidence": [
-            "Current source and release/index evidence agree."
+            "The namespaced registry entry, complete definition, runtime key, and English keys agree."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "registration"
           ]
         },
         "definition_parser": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "Definition block is complete by static inspection; parser was not executed."
+            "The complete source and release definitions are byte-identical and parse in the standard-Lua consistency suite."
           ],
           "missing_proof": [
-            "Current game parser acceptance/run log."
+            "Current-build ScriptManager parsing has not been observed in game."
           ],
           "source_dimensions": [
-            "complete script definition and parser validity"
+            "definition_parser"
           ]
         },
         "namespace": {
           "state": "proven-correct",
           "evidence": [
-            "Current source and release/index evidence agree."
+            "All owned surfaces use UniversalTraits:UT_cleaver."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "namespace"
           ]
         },
         "cost_xp_grants_exclusions": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "30-tick handler mutates Long Blade item critical chance and persists cached base in item modData."
+            "Cost is 3, XPBoosts grants LongBlade=1, there are no grants or exclusions, and DisabledInMultiplayer is true."
           ],
           "missing_proof": [
-            "Independent in-game/runtime proof or focused test where applicable."
+            "none"
           ],
           "source_dimensions": [
-            "cost/XP/grants/exclusions and bidirectional exclusion behavior"
+            "cost_xp_grants_exclusions"
           ]
         },
         "source_intent": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "30-tick handler mutates Long Blade item critical chance and persists cached base in item modData."
+            "Pre-campaign master definition, English, and runtime agree on +1 Long Blade and +10 critical chance for Long Blade weapons."
           ],
           "missing_proof": [
-            "Independent in-game/runtime proof or focused test where applicable."
+            "none"
           ],
           "source_dimensions": [
-            "source-mod intent"
+            "source_intent"
           ]
         },
         "runtime_path": {
           "state": "proven-correct",
           "evidence": [
-            "30-tick handler mutates Long Blade item critical chance and persists cached base in item modData."
+            "The UTCore handler reconciles equipped Long Blade weapons, applies one owner-scoped raw delta, and restores every no-longer-eligible tracked object."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "exact runtime path through UT_CORE or script-only behavior"
+            "runtime_path"
           ]
         },
         "numbers": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "30-tick handler mutates Long Blade item critical chance and persists cached base in item modData."
+            "The effect adds exactly 10 displayed critical-chance points, caps at 100, and records the actual applied raw delta."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "numerical behavior"
+            "numbers"
           ]
         },
         "cadence": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "30-tick handler mutates Long Blade item critical chance and persists cached base in item modData."
+            "UTCore dispatches the light handler every 30 player updates, including vehicle reconciliation."
           ],
           "missing_proof": [
-            "Independent in-game/runtime proof or focused test where applicable."
+            "none"
           ],
           "source_dimensions": [
             "cadence"
           ]
         },
         "cooldown": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "30-tick handler mutates Long Blade item critical chance and persists cached base in item modData."
+            "Cleaver has no cooldown beyond its 30-update reconciliation cadence."
           ],
           "missing_proof": [
-            "Independent in-game/runtime proof or focused test where applicable."
+            "none"
           ],
           "source_dimensions": [
-            "cooldowns"
+            "cooldown"
           ]
         },
         "reset_save_load": {
           "state": "runtime-unproven",
           "evidence": [
-            "30-tick handler mutates Long Blade item critical chance and persists cached base in item modData."
+            "Unequip, swap, unregister, duplicate load, trait-handler deactivation, and invalid-player teardown all use the same delta restoration path; SVN 964 HandWeapon save/load omits criticalChance."
           ],
           "missing_proof": [
-            "A matching Build 42 full-relaunch runtime check/save-load cycle."
+            "A full current-build drop/transfer, repeated-world-entry, death, and save/load observation remains required."
           ],
           "source_dimensions": [
-            "reset and save/load"
+            "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "30-tick handler mutates Long Blade item critical chance and persists cached base in item modData."
+            "SVN 964 proves HandWeapon subcategory, sharpness, displayed getter, raw setter, save/load field list, and script initialization contracts."
           ],
           "missing_proof": [
-            "A matching Build 42 full-relaunch runtime check/save-load cycle."
+            "none"
           ],
           "source_dimensions": [
-            "Java-Lua exposure"
+            "java_lua"
           ]
         },
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "30-tick handler mutates Long Blade item critical chance and persists cached base in item modData."
+            "The implementation uses Kahlua-compatible tables, identity keys, pcall, numeric loops, and verified Java receiver methods."
           ],
           "missing_proof": [
-            "A matching Build 42 full-relaunch runtime check/save-load cycle."
+            "Current-build Kahlua execution is unobserved."
           ],
           "source_dimensions": [
-            "Kahlua compatibility"
+            "kahlua"
           ]
         },
         "events": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "30-tick handler mutates Long Blade item critical chance and persists cached base in item modData."
+            "One reload-safe UTCore registration owns the handler and teardown callback; UTCore rebuild and invalid-player paths invoke teardown."
           ],
           "missing_proof": [
-            "A matching Build 42 full-relaunch runtime check/save-load cycle."
+            "none"
           ],
           "source_dimensions": [
-            "event lifecycle"
+            "events"
           ]
         },
         "stacking_interactions": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "30-tick handler mutates Long Blade item critical chance and persists cached base in item modData."
+            "Identity deduplication and per-owner raw deltas preserve later external changes and compose with Action Hero without overwriting either bonus."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "stacking and cross-trait interactions"
+            "stacking_interactions"
           ]
         },
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "Current source and release/index evidence agree."
+            "The definition disables Cleaver in multiplayer and multiplayer support is an explicit product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "multiplayer restriction"
+            "multiplayer"
           ]
         },
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "Current source and release/index evidence agree."
+            "The exact English display name is Cleaver."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "display name"
+            "display"
           ]
         },
         "description": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "30-tick handler mutates Long Blade item critical chance and persists cached base in item modData."
+            "English exactly states +1 Long Blade and +10 percent critical hit chance for Long Blade attacks."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "description accuracy"
+            "description"
           ]
         },
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "EN UI name/description keys exist; no non-EN locale was present in allowed evidence."
+            "The exact English keys exist in source and release."
           ],
           "missing_proof": [
-            "Localized keys for absent locales or explicit localization policy."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
-            "localization coverage including absent locales"
+            "localization"
           ]
         },
         "balance": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "30-tick handler mutates Long Blade item critical chance and persists cached base in item modData."
+            "Static behavior remains the pre-campaign cost 3, +1 skill, and +10 displayed critical-chance contract."
           ],
           "missing_proof": [
-            "Independent in-game/runtime proof or focused test where applicable."
+            "No gameplay telemetry or comparative balance session exists."
           ],
           "source_dimensions": [
             "balance"
           ]
         },
         "performance": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "30-tick handler mutates Long Blade item critical chance and persists cached base in item modData."
+            "The 30-update handler examines at most two equipped items plus the small tracked-weapon set."
           ],
           "missing_proof": [
-            "Independent in-game/runtime proof or focused test where applicable."
+            "No current-build profiler capture exists."
           ],
           "source_dimensions": [
-            "performance risk"
+            "performance"
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "No assigned-trait focused test execution was authorized/performed; shared helper tests are not independent trait proof."
+            "Focused tests cover exact delta, cap, sharpness domains, category rejection, swap, deduplication, external changes, Action Hero overlap, reload, definition, copy, and parity."
           ],
           "missing_proof": [
-            "Focused assigned-trait regression test and matching engine-faithful mock."
+            "none"
           ],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "No assigned-trait focused test execution was authorized/performed; shared helper tests are not independent trait proof."
+            "MockWeapon reproduces SVN 964's sharpness-adjusted getter, raw setter, subcategory, and raw-field assertion surface."
           ],
           "missing_proof": [
-            "Focused assigned-trait regression test and matching engine-faithful mock."
+            "none"
           ],
           "source_dimensions": [
             "mocks"
@@ -13840,23 +13856,25 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "Current source and release/index evidence agree."
+            "Cleaver runtime, definition, and English source and 42.0 release pairs are byte-identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "source/release parity"
+            "source_release_parity"
           ]
         },
         "packaging": {
-          "state": "runtime-unproven",
+          "state": "coverage-gap",
           "evidence": [
-            "30-tick handler mutates Long Blade item critical chance and persists cached base in item modData."
+            "All Cleaver-owned 42.0 runtime, definition, and English counterparts are present and identical."
           ],
           "missing_proof": [
-            "A matching Build 42 full-relaunch runtime check/save-load cycle."
+            "Read-only package verification reports no release drift; UniversalTraits lacks the separately tracked source poster."
           ],
           "source_dimensions": [
-            "packaging integrity"
+            "packaging"
           ]
         }
       },
@@ -13864,27 +13882,30 @@
         "B03-UT_cleaver-01"
       ],
       "unknowns": [
-        "No Build 42 game launch/runtime log, multiplayer session, or save/load round trip was performed.",
-        "Non-English localization is absent from the allowed/current evidence.",
-        "Parser validity is static-only because the game script parser was not executed."
+        "Current-build Kahlua execution, full relaunch, repeated world entry, death, and current-version save/load remain unobserved.",
+        "Live drop/transfer and concurrent Action Hero interaction remain unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory.",
+        "Multiplayer and backward save migration are explicit non-goals."
       ],
-      "translation_terminal_state": "confirmed-defect",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_01_04.json",
-        "review_state": "needs-correction",
+        "review_state": "accepted",
         "omission_finding_ids": [
           "IR0104-CLEAVER-SHARPNESS-RAW-MISMATCH"
         ],
         "cross_finding_ids": [],
         "verified_first_pass_finding_ids": [
-          "B03-UT_cleaver-01"
+          "B03-UT_cleaver-01",
+          "IR0104-CLEAVER-SHARPNESS-RAW-MISMATCH"
         ],
         "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [
-          "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-          "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-          "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-          "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
+          "Current-build Kahlua execution, full desktop relaunch, repeated world entry, death, and current-version save/load remain unobserved.",
+          "Live drop/transfer and concurrent Action Hero interaction remain unobserved.",
+          "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+          "Only English UI localization exists in the closed-world source inventory."
         ]
       }
     },

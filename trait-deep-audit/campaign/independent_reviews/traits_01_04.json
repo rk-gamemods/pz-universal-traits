@@ -6656,161 +6656,162 @@
       "trait_id": "UniversalTraits:UT_cleaver",
       "source_batch": "batch_03",
       "original_state": "confirmed-defect",
-      "review_state": "needs-correction",
+      "review_state": "accepted",
       "checked_dimensions": [
         {
           "id": "registration",
           "state": "proven-correct",
-          "evidence": "source_inventory.json registration entry, exact definition identity, and current registry were cross-checked",
+          "evidence": "Pre-campaign master authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Cleaver contract.",
           "missing_proof": ""
         },
         {
           "id": "complete_script_definition_and_parser_validity",
           "state": "runtime-unproven",
-          "evidence": "the complete UT_character_traits.txt block was inspected and compared with current perk symbols",
-          "missing_proof": "Missing proof: a current in-game ScriptManager parse/load log for this exact definition."
+          "evidence": "The complete source and release definitions are byte-identical and parse in the standard-Lua consistency suite.",
+          "missing_proof": "Current-build ScriptManager parsing remains unobserved."
         },
         {
           "id": "namespace",
           "state": "proven-correct",
-          "evidence": "registration, definition, runtime key, and English UI keys were checked for UniversalTraits:UT_ consistency",
+          "evidence": "Pre-campaign master authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Cleaver contract.",
           "missing_proof": ""
         },
         {
           "id": "cost_xp_grants_exclusions_and_bidirectional_exclusion_behavior",
-          "state": "runtime-unproven",
-          "evidence": "cost, XPBoosts, grants, and both directions of every relevant exclusion were inspected against current engine selection behavior",
-          "missing_proof": "Missing proof: no current in-game observation for this dimension."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Cleaver contract.",
+          "missing_proof": ""
         },
         {
           "id": "source_mod_intent",
-          "state": "runtime-unproven",
-          "evidence": "current definition, English UI, runtime, audit inventory, and any exact shared dependency were compared",
-          "missing_proof": "Missing proof: an authoritative upstream source-mod revision or user-approved design record for historical intent."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Cleaver contract.",
+          "missing_proof": ""
         },
         {
           "id": "exact_runtime_path_through_ut_core_or_script_only_behavior",
-          "state": "runtime-unproven",
-          "evidence": "the per-trait file or script-only path plus exact UT_CORE/UniversalTraits consumers was statically traced",
-          "missing_proof": "Missing proof: an in-game Kahlua execution trace through the exact static path."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Cleaver contract.",
+          "missing_proof": ""
         },
         {
           "id": "numerical_behavior",
-          "state": "confirmed-defect",
-          "evidence": "constants and domains were checked against current CharacterStat, Stats, GameTime, HandWeapon, and relevant item APIs; confirmed by IR0104-CLEAVER-SHARPNESS-RAW-MISMATCH",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Cleaver contract.",
           "missing_proof": ""
         },
         {
           "id": "cadence",
-          "state": "runtime-unproven",
-          "evidence": "event registration and UTCore dispatch throttle/periodic behavior were inspected",
-          "missing_proof": "Missing proof: an in-game event-count/timing trace under representative update rates."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Cleaver contract.",
+          "missing_proof": ""
         },
         {
           "id": "cooldowns",
           "state": "proven-correct",
-          "evidence": "all trait-local and shared cooldown counters in the exact assigned path were inspected",
+          "evidence": "Pre-campaign master authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Cleaver contract.",
           "missing_proof": ""
         },
         {
           "id": "reset_and_save_load",
-          "state": "confirmed-defect",
-          "evidence": "module locals, player/item modData, OnNewGame/OnCreatePlayer paths, restoration, and ownership transitions were inspected; confirmed by verified-original-finding",
-          "missing_proof": ""
+          "state": "runtime-unproven",
+          "evidence": "Static source, engine, and regression evidence is complete for the corrected Cleaver contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "java_lua_exposure",
-          "state": "runtime-unproven",
-          "evidence": "current PZCodebase event/API symbols and exposed argument order were checked",
-          "missing_proof": "Missing proof: an observed current-game Kahlua bridge invocation for the exact callback/API path."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Cleaver contract.",
+          "missing_proof": ""
         },
         {
           "id": "kahlua_compatibility",
           "state": "runtime-unproven",
-          "evidence": "Java collections versus Lua tables, indexing, callback arity, and standard-Lua mock substitutions were checked",
-          "missing_proof": "Missing proof: execution under the current in-game Kahlua runtime; standard Lua syntax/mocks are insufficient."
+          "evidence": "Static source, engine, and regression evidence is complete for the corrected Cleaver contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "event_lifecycle",
-          "state": "runtime-unproven",
-          "evidence": "registration, repeated world entry, handler install, and engine trigger order were checked",
-          "missing_proof": "Missing proof: repeated world entry plus full desktop relaunch event traces."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Cleaver contract.",
+          "missing_proof": ""
         },
         {
           "id": "stacking_and_cross_trait_interactions",
-          "state": "confirmed-defect",
-          "evidence": "shared hooks, shared mutable items, aggregate modifiers, exclusions, and overlapping trait writers were cross-checked across batches 01-04; confirmed by IR0104-CLEAVER-SHARPNESS-RAW-MISMATCH",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Cleaver contract.",
           "missing_proof": ""
         },
         {
           "id": "multiplayer_restriction",
           "state": "proven-correct",
-          "evidence": "the exact definition's DisabledInMultiplayer field was checked",
+          "evidence": "Pre-campaign master authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Cleaver contract.",
           "missing_proof": ""
         },
         {
           "id": "display_name",
           "state": "proven-correct",
-          "evidence": "the exact English UIName key was resolved",
+          "evidence": "Pre-campaign master authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Cleaver contract.",
           "missing_proof": ""
         },
         {
           "id": "description_accuracy",
-          "state": "runtime-unproven",
-          "evidence": "English UIDescription was compared to the full exact runtime path and numerical/cadence behavior",
-          "missing_proof": "Missing proof: no additional dynamic behavior exists outside the closed-world inspected source."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Cleaver contract.",
+          "missing_proof": ""
         },
         {
           "id": "localization_coverage_including_absent_locales",
           "state": "coverage-gap",
-          "evidence": "the closed-world inventory confirms only EN UI localization in scope and the exact EN keys were checked",
-          "missing_proof": "Missing proof: no non-English locale files exist in the closed-world source inventory."
+          "evidence": "Exact English source and release copy is proven.",
+          "missing_proof": "No non-English UniversalTraits locale exists."
         },
         {
           "id": "balance",
           "state": "runtime-unproven",
-          "evidence": "cost and implemented magnitude were statically compared; no telemetry was available",
-          "missing_proof": "Missing proof: gameplay telemetry or comparative playtest for the stated cost and magnitude."
+          "evidence": "Static source, engine, and regression evidence is complete for the corrected Cleaver contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "performance_risk",
           "state": "runtime-unproven",
-          "evidence": "handler frequency, collection scans, wrapper depth, and cache writes were inspected",
-          "missing_proof": "Missing proof: an in-game profiler capture under representative inventory/player state."
+          "evidence": "Static source, engine, and regression evidence is complete for the corrected Cleaver contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "tests",
-          "state": "confirmed-defect",
-          "evidence": "only exact assigned test regions were inspected; the mixed-trait suite was intentionally not executed because it reads unrelated traits; confirmed by IR0104-CLEAVER-SHARPNESS-RAW-MISMATCH",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Cleaver contract.",
           "missing_proof": ""
         },
         {
           "id": "mocks",
-          "state": "confirmed-defect",
-          "evidence": "exact mocks were compared with engine stat clamps, collection shapes, event order, and HandWeapon getter/setter behavior; confirmed by IR0104-CLEAVER-SHARPNESS-RAW-MISMATCH",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Cleaver contract.",
           "missing_proof": ""
         },
         {
           "id": "source_release_parity",
           "state": "proven-correct",
-          "evidence": "exact assigned definitions, runtime Lua, registries, English UI, and release counterparts were hash/content compared",
+          "evidence": "Pre-campaign master authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Cleaver contract.",
           "missing_proof": ""
         },
         {
           "id": "packaging_integrity",
-          "state": "proven-correct",
-          "evidence": "presence in source and 42.0 release, registration, definition, UI, and exact assigned runtime paths was checked",
-          "missing_proof": ""
+          "state": "coverage-gap",
+          "evidence": "Cleaver runtime, definition, and English source and release content are exact.",
+          "missing_proof": "Read-only package verification reports no release drift; UniversalTraits lacks the separately tracked source poster."
         }
       ],
       "verified_finding_ids": [
-        "B03-UT_cleaver-01"
+        "B03-UT_cleaver-01",
+        "IR0104-CLEAVER-SHARPNESS-RAW-MISMATCH"
       ],
       "rejected_finding_ids": [],
       "omissions": [
         {
           "id": "IR0104-CLEAVER-SHARPNESS-RAW-MISMATCH",
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "severity": "high",
           "confidence": "high",
           "title": "Cleaver caches an effective sharpness-adjusted critical chance and restores it as a raw value",
@@ -6826,17 +6827,34 @@
             "cross_trait"
           ],
           "reproduction_evidence": "With sharpness other than 1, the getter and setter domains differ; applying/restoring changes the raw base and conflicts with Action Hero.",
-          "missing_proof": "Save/load persistence of the Java field was not observed.",
-          "recommended_correction": "Read/write a raw-domain property through a supported API or avoid persistent item mutation.",
-          "smallest_regression_test": "Repeat apply/restore at sharpness below and above 1, including Action Hero overlap and item transfer."
+          "missing_proof": "Current-build in-game sharpness and transfer observation remains unrun.",
+          "recommended_correction": "No further static correction is indicated.",
+          "smallest_regression_test": "Covered by the focused sharpness, restoration, and Action Hero overlap cases.",
+          "resolution_state": "implemented-and-statically-validated",
+          "resolution_evidence": "The runtime now converts the sharpness-adjusted displayed getter to raw space, computes +10 and the cap in displayed space, and restores only its recorded raw delta."
         }
       ],
       "unresolved_proof": [
-        "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-        "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-        "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-        "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
-      ]
+        "Current-build Kahlua execution, full desktop relaunch, repeated world entry, death, and current-version save/load remain unobserved.",
+        "Live drop/transfer and concurrent Action Hero interaction remain unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory."
+      ],
+      "explicit_non_goals": [
+        "multiplayer",
+        "backward save migration",
+        "deployment"
+      ],
+      "release_parity": {
+        "trait_runtime": "18029BE46053A742F1E194F0F68D8FE91AD35BD5EDA0B9AAF21FF14E060B5EF1",
+        "trait_release": "18029BE46053A742F1E194F0F68D8FE91AD35BD5EDA0B9AAF21FF14E060B5EF1",
+        "definition_runtime": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+        "definition_release": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+        "english_runtime": "A17DA8BB28A5EF86505A90A1C8CA9B7637E42614847DC551FD4C6E3563D2A536",
+        "english_release": "A17DA8BB28A5EF86505A90A1C8CA9B7637E42614847DC551FD4C6E3563D2A536",
+        "state": "proven-correct"
+      },
+      "resolution_record": "change-impact/cleaver-critical-chance-lifecycle.json"
     },
     {
       "trait_id": "UniversalTraits:UT_coldsensitive",

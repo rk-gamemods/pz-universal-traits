@@ -1,37 +1,84 @@
 -- UT_cleaver.lua
--- Runtime bonus: +10% crit chance with Long Blade weapons.
---
--- Crit chance is applied directly to weapon item stats:
---   weapon:setCriticalChance(math.min(100, base + 10))
--- Base value is cached in weapon modData (UT_cleaverBaseCrit) on first
--- encounter so the bonus is not compounded across load/saves or weapon swaps.
+-- Runtime bonus: +10 displayed critical-chance points with Long Blade weapons.
+-- Recalculated every 30 player-update dispatches and restored whenever inactive.
 
 local TRAIT_ID = "UniversalTraits:UT_cleaver"
 local CRIT_BONUS = 10
 
-local function applyCritBonus(weapon)
-    if not weapon or not instanceof(weapon, "HandWeapon") then return end
-    pcall(function()
-        local isLongBlade = weapon:getSubCategory() == "Long Blade"
-        if not isLongBlade then return end
+UTCore._cleaverState = UTCore._cleaverState or { trackedWeapons = {} }
+local state = UTCore._cleaverState
 
-        local wmd = weapon:getModData()
-
-        if wmd["UT_cleaverBaseCrit"] == nil then
-            wmd["UT_cleaverBaseCrit"] = weapon:getCriticalChance()
-        end
-
-        local target = math.min(100, wmd["UT_cleaverBaseCrit"] + CRIT_BONUS)
-
-        if weapon:getCriticalChance() ~= target then
-            weapon:setCriticalChance(target)
-        end
+local function isEligible(weapon)
+    if not weapon or not instanceof(weapon, "HandWeapon") then return false end
+    local ok, eligible = pcall(function()
+        return weapon:getSubCategory() == "Long Blade"
     end)
+    return ok and eligible == true
 end
 
-local function onTick(player, tick)
-    applyCritBonus(tick.primaryWeapon)
-    applyCritBonus(tick.secondaryWeapon)
+local function getRawCriticalChance(weapon)
+    local displayed = weapon:getCriticalChance()
+    if not weapon:hasSharpness() then return displayed, 1 end
+
+    local sharpness = weapon:getSharpness()
+    if not sharpness or sharpness <= 0 then return nil, nil end
+    return displayed / sharpness, sharpness
 end
 
-UTCore.registerTickHandler(TRAIT_ID, onTick, { throttle = 30 })
+local function restoreWeapon(weapon)
+    local tracked = state.trackedWeapons[weapon]
+    if not tracked then return end
+
+    local raw = getRawCriticalChance(weapon)
+    if raw then
+        weapon:setCriticalChance(raw - tracked.appliedRawBonus)
+    end
+    state.trackedWeapons[weapon] = nil
+end
+
+local function restoreAllWeapons()
+    local restore = {}
+    for weapon in pairs(state.trackedWeapons) do restore[#restore + 1] = weapon end
+    for i = 1, #restore do restoreWeapon(restore[i]) end
+end
+
+local function boostWeapon(weapon)
+    local raw, sharpness = getRawCriticalChance(weapon)
+    if not raw then return end
+
+    local tracked = state.trackedWeapons[weapon]
+    local baseRaw = raw - (tracked and tracked.appliedRawBonus or 0)
+    local targetDisplayed = math.min(100, baseRaw * sharpness + CRIT_BONUS)
+    local targetRaw = targetDisplayed / sharpness
+    local appliedRawBonus = targetRaw - baseRaw
+
+    weapon:setCriticalChance(targetRaw)
+    state.trackedWeapons[weapon] = { appliedRawBonus = appliedRawBonus }
+end
+
+local function onTick(_player, tick)
+    local primary = tick.primaryWeapon
+    local secondary = tick.secondaryWeapon
+    local current = {}
+
+    if isEligible(primary) then current[primary] = true end
+    if secondary ~= primary and isEligible(secondary) then current[secondary] = true end
+
+    local restore = {}
+    for weapon in pairs(state.trackedWeapons) do
+        if not current[weapon] then restore[#restore + 1] = weapon end
+    end
+    for i = 1, #restore do restoreWeapon(restore[i]) end
+
+    if current[primary] then boostWeapon(primary) end
+    if secondary ~= primary and current[secondary] then boostWeapon(secondary) end
+end
+
+if UTCore.unregisterTickHandler then
+    UTCore.unregisterTickHandler(TRAIT_ID, "reload")
+end
+UTCore.registerTickHandler(TRAIT_ID, onTick, {
+    throttle = 30,
+    vehicleAware = true,
+    teardown = restoreAllWeapons,
+})

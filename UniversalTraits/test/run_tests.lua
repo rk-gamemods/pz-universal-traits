@@ -5751,29 +5751,174 @@ test("sharpshooter does NOT compound bonus on repeated ticks", function()
     assert_eq(weapon:getMaxRange(), 12.5, "sharpshooter range should NOT compound")
 end)
 
--- ─── cleaver: +10% crit on Long Blade weapons ─────────────────────────────────
-test("cleaver adds 10% crit to Long Blade weapon", function()
+-- ─── cleaver: +10 displayed crit on Long Blade weapons ───────────────────────
+local CLEAVER_ID = "UniversalTraits:UT_cleaver"
+local CLEAVER_RUNTIME = "../media/lua/shared/UniversalTraits/traits/UT_cleaver.lua"
+
+local function fireCleaver(player, count)
+    for _ = 1, count or 30 do Events.OnPlayerUpdate:fire(player) end
+end
+
+local function unequipAndRestoreCleaver(player)
+    player:setPrimaryHandItem(nil)
+    player:setSecondaryHandItem(nil)
+    fireCleaver(player, 30)
+end
+
+test("cleaver adds exactly 10 displayed crit and does not compound", function()
     local weapon = MockWeapon("Katana", 0, false, true,
         { criticalChance = 15, subCategory = "Long Blade" })
-    local p = MockPlayer({ "UniversalTraits:UT_cleaver" }, { primaryHandItem = weapon })
-    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
-    assert_eq(weapon:getCriticalChance(), 25, "cleaver should boost crit from 15 to 25")
+    local player = MockPlayer({ CLEAVER_ID }, { primaryHandItem = weapon })
+    fireCleaver(player, 90)
+    assert_eq(weapon:getCriticalChance(), 25, "Cleaver must add exactly 10 displayed points once")
+    unequipAndRestoreCleaver(player)
+    assert_eq(weapon:getCriticalChance(), 15, "unequip must restore the original value")
 end)
 
-test("cleaver does NOT boost non-Long-Blade weapons", function()
-    local weapon = MockWeapon("BaseballBat", 0, false, true,
+test("cleaver caps displayed crit at 100 and restores the capped delta", function()
+    local weapon = MockWeapon("Katana", 0, false, true,
+        { criticalChance = 95, subCategory = "Long Blade" })
+    local player = MockPlayer({ CLEAVER_ID }, { primaryHandItem = weapon })
+    fireCleaver(player, 30)
+    assert_eq(weapon:getCriticalChance(), 100, "Cleaver must cap displayed crit at 100")
+    unequipAndRestoreCleaver(player)
+    assert_eq(weapon:getCriticalChance(), 95, "cap restoration must remove only the applied 5 points")
+end)
+
+test("cleaver converts displayed and raw crit domains for sharp weapons", function()
+    local weapon = MockWeapon("Katana", 0, false, true,
+        { criticalChance = 20, sharpness = 0.5, subCategory = "Long Blade" })
+    local player = MockPlayer({ CLEAVER_ID }, { primaryHandItem = weapon })
+    fireCleaver(player, 30)
+    assert_eq(weapon:getCriticalChance(), 20, "displayed crit must rise from 10 to 20")
+    assert_eq(weapon:getRawCriticalChance(), 40, "raw setter input must account for sharpness")
+    unequipAndRestoreCleaver(player)
+    assert_eq(weapon:getRawCriticalChance(), 20, "sharp weapon raw crit must restore exactly")
+end)
+
+test("cleaver ignores non-Long-Blade and zero-sharpness weapons", function()
+    local blunt = MockWeapon("BaseballBat", 0, false, true,
         { criticalChance = 15, subCategory = "Long Blunt" })
-    local p = MockPlayer({ "UniversalTraits:UT_cleaver" }, { primaryHandItem = weapon })
-    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
-    assert_eq(weapon:getCriticalChance(), 15, "cleaver should NOT affect Long Blunt weapons")
+    local zeroSharp = MockWeapon("Katana", 0, false, true,
+        { criticalChance = 15, sharpness = 0, subCategory = "Long Blade" })
+    local player = MockPlayer({ CLEAVER_ID }, {
+        primaryHandItem = blunt,
+        secondaryHandItem = zeroSharp,
+    })
+    fireCleaver(player, 30)
+    assert_eq(blunt:getCriticalChance(), 15, "Cleaver must not affect Long Blunt weapons")
+    assert_eq(zeroSharp:getRawCriticalChance(), 15, "zero sharpness must be a safe no-op")
 end)
 
-test("cleaver crit does NOT compound over multiple ticks", function()
+test("cleaver restores a swapped weapon and manages its replacement", function()
+    local weaponA = MockWeapon("KatanaA", 0, false, true,
+        { criticalChance = 15, subCategory = "Long Blade" })
+    local weaponB = MockWeapon("KatanaB", 0, false, true,
+        { criticalChance = 30, subCategory = "Long Blade" })
+    local player = MockPlayer({ CLEAVER_ID }, { primaryHandItem = weaponA })
+    fireCleaver(player, 30)
+    player:setPrimaryHandItem(weaponB)
+    fireCleaver(player, 30)
+    assert_eq(weaponA:getCriticalChance(), 15, "swap must restore the former weapon")
+    assert_eq(weaponB:getCriticalChance(), 40, "swap must independently boost the replacement")
+    unequipAndRestoreCleaver(player)
+    assert_eq(weaponB:getCriticalChance(), 30, "replacement must restore on unequip")
+end)
+
+test("cleaver primary-secondary alias applies only once", function()
     local weapon = MockWeapon("Katana", 0, false, true,
         { criticalChance = 15, subCategory = "Long Blade" })
-    local p = MockPlayer({ "UniversalTraits:UT_cleaver" }, { primaryHandItem = weapon })
-    for i = 1, 90 do Events.OnPlayerUpdate:fire(p) end
-    assert_eq(weapon:getCriticalChance(), 25, "crit should NOT compound: still 25")
+    local player = MockPlayer({ CLEAVER_ID }, {
+        primaryHandItem = weapon,
+        secondaryHandItem = weapon,
+    })
+    fireCleaver(player, 30)
+    assert_eq(weapon:getCriticalChance(), 25, "the same equipped object must receive one bonus")
+    unequipAndRestoreCleaver(player)
+end)
+
+test("cleaver restoration preserves later external raw changes", function()
+    local weapon = MockWeapon("Katana", 0, false, true,
+        { criticalChance = 15, subCategory = "Long Blade" })
+    local player = MockPlayer({ CLEAVER_ID }, { primaryHandItem = weapon })
+    fireCleaver(player, 30)
+    weapon:setCriticalChance(30)
+    unequipAndRestoreCleaver(player)
+    assert_eq(weapon:getRawCriticalChance(), 20,
+        "restoration must remove Cleaver's 10-point delta while preserving the later external 5")
+end)
+
+test("cleaver and Action Hero remove only their own overlapping deltas", function()
+    local weapon = MockWeapon("Katana", 0, false, true,
+        { criticalChance = 15, subCategory = "Long Blade" })
+    local enemy = { isDead = function() return false end }
+    local spotted = {
+        size = function() return 3 end,
+        get = function() return enemy end,
+    }
+    local player = MockPlayer({ CLEAVER_ID, "UniversalTraits:UT_actionhero" }, {
+        primaryHandItem = weapon,
+    })
+    player.getSpottedList = function() return spotted end
+    player.DistTo = function() return 1 end
+    fireCleaver(player, 60)
+    assert_eq(weapon:getCriticalChance(), 40, "Cleaver and Action Hero must compose as 15 + 10 + 15")
+
+    UTCore.unregisterTickHandler(CLEAVER_ID, "overlap-test")
+    assert_eq(weapon:getCriticalChance(), 30, "Cleaver teardown must preserve Action Hero's 15")
+    dofile(base .. CLEAVER_RUNTIME)
+
+    player:setPrimaryHandItem(nil)
+    fireCleaver(player, 60)
+    assert_eq(weapon:getCriticalChance(), 15, "Action Hero teardown-by-swap must restore the final baseline")
+end)
+
+test("cleaver duplicate load restores state and leaves one handler", function()
+    local weapon = MockWeapon("Katana", 0, false, true,
+        { criticalChance = 15, subCategory = "Long Blade" })
+    local player = MockPlayer({ CLEAVER_ID }, { primaryHandItem = weapon })
+    fireCleaver(player, 30)
+    assert_eq(weapon:getCriticalChance(), 25, "precondition: Cleaver bonus is active")
+    dofile(base .. CLEAVER_RUNTIME)
+    assert_eq(weapon:getCriticalChance(), 15, "reload teardown must restore the tracked weapon")
+    local registrations = 0
+    for i = 1, #UTCore._tickHandlers do
+        if UTCore._tickHandlers[i].id == CLEAVER_ID then registrations = registrations + 1 end
+    end
+    assert_eq(registrations, 1, "duplicate load must leave exactly one Cleaver handler")
+end)
+
+test("cleaver contract, definition, and source-release copies match", function()
+    local function readAll(path)
+        local file = assert(io.open(path, "rb"))
+        local content = file:read("*a")
+        file:close()
+        return content
+    end
+    local expected = "+1 to Long Blade skill. Long blade attacks have +10 percent critical hit chance."
+    local sourceUI = readAll(base .. "../media/lua/shared/Translate/EN/UI.json")
+    local releaseUI = readAll(base .. "../release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json")
+    assert_eq(sourceUI:match('"UI_UT_cleaverDesc"%s*:%s*"([^"]+)"'), expected,
+        "source Cleaver copy must preserve the accepted effect")
+    assert_eq(releaseUI:match('"UI_UT_cleaverDesc"%s*:%s*"([^"]+)"'), expected,
+        "release Cleaver copy must match source")
+
+    local sourceDefinition = readAll(base .. "../media/scripts/UT_character_traits.txt")
+    local block = sourceDefinition:match("character_trait_definition%s+UniversalTraits:UT_cleaver%s*(%b{})")
+    assert_true(block ~= nil, "Cleaver definition must exist")
+    assert_true(block:find("Cost%s*=%s*3[%s,]"), "Cleaver must retain cost 3")
+    assert_true(block:find("XPBoosts%s*=%s*LongBlade%s*=%s*1[%s,]"),
+        "Cleaver must retain +1 Long Blade")
+
+    for _, path in ipairs({
+        "lua/shared/UniversalTraits/traits/UT_cleaver.lua",
+        "lua/shared/Translate/EN/UI.json",
+        "scripts/UT_character_traits.txt",
+    }) do
+        assert_eq(readAll(base .. "../media/" .. path),
+            readAll(base .. "../release/UniversalTraits/42.0/media/" .. path),
+            "Cleaver source and release must match for " .. path)
+    end
 end)
 
 -- ─── long_blades: +10% crit on Long Blade (redundant with cleaver) ─────────────

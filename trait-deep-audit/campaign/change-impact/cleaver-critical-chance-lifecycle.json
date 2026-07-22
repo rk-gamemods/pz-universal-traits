@@ -1,0 +1,97 @@
+{
+  "schema": "ut-cleaver-critical-chance-lifecycle-v1",
+  "trait_id": "UniversalTraits:UT_cleaver",
+  "authority": {
+    "accepted_baseline": "pre-campaign UTMods master",
+    "accepted_contract": "cost 3, LongBlade=1, +10 displayed critical-chance points on Long Blade weapons",
+    "pz_snapshot": "SVN revision 964; Steam BuildID 23504596 is recorded outside VERSION.json"
+  },
+  "accepted_intent": {
+    "cost": 3,
+    "xp_boosts": {
+      "LongBlade": 1
+    },
+    "weapon_subcategory": "Long Blade",
+    "displayed_critical_chance_delta": 10,
+    "displayed_critical_chance_cap": 100,
+    "dispatch_throttle": 30,
+    "runtime_scope": "single-player"
+  },
+  "resolved_findings": [
+    "B03-UT_cleaver-01",
+    "IR0104-CLEAVER-SHARPNESS-RAW-MISMATCH"
+  ],
+  "engine_evidence": [
+    "PZCodebase/Java/source/zombie/inventory/types/HandWeapon.java:1495-1500,1612-1845",
+    "PZCodebase/Java/source/zombie/scripting/objects/Item.java:2149",
+    "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua:28-177,379-496",
+    "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_cleaver.lua"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_cleaver.lua",
+      "sha256": "18029BE46053A742F1E194F0F68D8FE91AD35BD5EDA0B9AAF21FF14E060B5EF1",
+      "bytes": 2833
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_cleaver.lua",
+      "sha256": "18029BE46053A742F1E194F0F68D8FE91AD35BD5EDA0B9AAF21FF14E060B5EF1",
+      "bytes": 2833
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "A17DA8BB28A5EF86505A90A1C8CA9B7637E42614847DC551FD4C6E3563D2A536",
+      "bytes": 37309
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "A17DA8BB28A5EF86505A90A1C8CA9B7637E42614847DC551FD4C6E3563D2A536",
+      "bytes": 37309
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "sha256": "FF176266CC9075A2222D84AAD1CF05AE6B8DDCF4BF733CBBF8A8C34F5502046C",
+      "bytes": 76718
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "6465449A7A2B05F66BF84E89B159C15DCA0C26ADFC13411E5C110D959C8B8F40",
+      "bytes": 301895
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_cleaver.md",
+      "sha256": "A1466A886CF98017C24A0F8FB69C11EDD78F49DE0DE2E12178C08474611A1076",
+      "bytes": 6353
+    }
+  ],
+  "regression_cases": [
+    "exact +10 displayed critical chance without compounding",
+    "100 cap with exact capped-delta restoration",
+    "sharpness-adjusted getter and raw setter conversion",
+    "non-Long-Blade and zero-sharpness rejection",
+    "swap and unequip restoration",
+    "primary-secondary identity deduplication",
+    "later external raw-field change preservation",
+    "Action Hero overlap and independent restoration",
+    "duplicate load teardown and one registration",
+    "definition, exact English, and source-release parity"
+  ],
+  "performance_model": "One light handler runs every 30 player updates and examines at most two equipped items plus the small tracked-weapon set.",
+  "runtime_proof": "Unobserved; requires full Exit to Desktop, current-build Kahlua, equip/swap/drop/transfer, trait removal, death, repeated world entry, save/load, sharpness, Action Hero overlap, rendered English, balance, and profiler observation.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment",
+    "changing Cleaver cost, skill grant, magnitude, category, or intended stacking"
+  ]
+}
