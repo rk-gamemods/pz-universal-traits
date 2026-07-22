@@ -1,0 +1,98 @@
+{
+  "schema": "ut-anorexy-consumption-contract-v1",
+  "trait_id": "UniversalTraits:UT_anorexy",
+  "authority": {
+    "accepted_baseline": "pre-campaign UTMods master",
+    "original_event_implementation": "e87e49d",
+    "build_42_migration_with_defects": "16e1f1e"
+  },
+  "accepted_intent": {
+    "cost": -6,
+    "trigger": "each completed or interrupted positive food-consumption event",
+    "effect": "+0.10 CharacterStat.STRESS after native food effects",
+    "cap": 1.0,
+    "runtime_scope": "single-player"
+  },
+  "historical_source_boundary": "DTEM confirms eating-related lineage but its dynamic acquisition, passive symptoms, and varying multi-stat penalties were deliberately not restored because pre-campaign UTMods selected one fixed stress effect.",
+  "resolved_findings": [
+    "B01-ANO-SCALE",
+    "B01-ANO-PERF",
+    "IR0104-ANOREXY-MEAL-DETECTION",
+    "XTF0104-ITEM-CONSUMPTION-WRAPPERS"
+  ],
+  "partially_resolved_cross_findings": [
+    "XTF0104-EATING-EDGE-POLLING",
+    "XTF0104-MOCK-ENGINE-DOMAINS"
+  ],
+  "engine_evidence": [
+    "PZCodebase/Lua/shared/TimedActions/ISEatFoodAction.lua:126-176,193-201",
+    "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6380-6507,9690-9710",
+    "PZCodebase/Java/source/zombie/characters/CharacterStat.java:11-33",
+    "PZCodebase/Java/source/zombie/characters/Stats.java:74-87",
+    "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyDamage.java:617-635"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_anorexy.lua",
+      "sha256": "162DF3DBD710A30AB4B5E7D38DC3DEA06B03764903D224C4F507D932C66CB90A",
+      "bytes": 320
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_anorexy.lua",
+      "sha256": "162DF3DBD710A30AB4B5E7D38DC3DEA06B03764903D224C4F507D932C66CB90A",
+      "bytes": 320
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+      "sha256": "B2518861A4283D722C1277F1F7769B5235028EB73E6FA903395A718C4D42B0E8",
+      "bytes": 11592
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+      "sha256": "B2518861A4283D722C1277F1F7769B5235028EB73E6FA903395A718C4D42B0E8",
+      "bytes": 11592
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "2BE0A9998D4894D696F2ADD9238DDAEAE85D206ADBEC1BBBA033064ED8381168",
+      "bytes": 36935
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "2BE0A9998D4894D696F2ADD9238DDAEAE85D206ADBEC1BBBA033064ED8381168",
+      "bytes": 36935
+    },
+    {
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "sha256": "6A07B4BFE0858A3CDBC47A6ED86FDCD5870D4DCD517D73D8D9D8B62C8D72C1ED",
+      "bytes": 76468
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "555F6BA7E60B8C504FF3520C20693A403004D7BA7C4223B727639AF41EB95ACE",
+      "bytes": 268080
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_anorexy.md",
+      "sha256": "8DBB0A5F8DBD8D437F3E4C40463DDE866130252B085903D7FEBF8B6EB49AD430",
+      "bytes": 6169
+    }
+  ],
+  "regression_cases": [
+    "exact +0.10 after native food effects",
+    "stress cap at 1.0",
+    "interrupted partial consumption",
+    "zero consumption and no-trait no-op",
+    "no player-update polling or stale mod data",
+    "perform alone is not consumption",
+    "single wrappers after reload and repeated startup",
+    "exact English copy and source-release parity"
+  ],
+  "performance_model": "No new loop or handler is added. One trait lookup occurs per actual food-consumption call, followed by one stress read and one stress write only for an active Anorexy player.",
+  "runtime_proof": "Unobserved; requires full Exit to Desktop, current-build completed and interrupted food observation, repeated world entry, current-version save/load, rendered English, and profiler capture.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment"
+  ]
+}

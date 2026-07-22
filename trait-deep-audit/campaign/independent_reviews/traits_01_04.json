@@ -2405,7 +2405,7 @@
       "trait_id": "UniversalTraits:UT_anorexy",
       "source_batch": "batch_01",
       "original_state": "confirmed-defect",
-      "review_state": "needs-correction",
+      "review_state": "accepted",
       "checked_dimensions": [
         {
           "id": "registration",
@@ -2433,63 +2433,63 @@
         },
         {
           "id": "source_mod_intent",
-          "state": "runtime-unproven",
-          "evidence": "current definition, English UI, runtime, audit inventory, and any exact shared dependency were compared",
-          "missing_proof": "Missing proof: an authoritative upstream source-mod revision or user-approved design record for historical intent."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
+          "missing_proof": ""
         },
         {
           "id": "exact_runtime_path_through_ut_core_or_script_only_behavior",
-          "state": "confirmed-defect",
-          "evidence": "the per-trait file or script-only path plus exact UT_CORE/UniversalTraits consumers was statically traced; confirmed by IR0104-ANOREXY-MEAL-DETECTION",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "numerical_behavior",
-          "state": "confirmed-defect",
-          "evidence": "constants and domains were checked against current CharacterStat, Stats, GameTime, HandWeapon, and relevant item APIs; confirmed by IR0104-ANOREXY-MEAL-DETECTION, verified-original-finding",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "cadence",
-          "state": "confirmed-defect",
-          "evidence": "event registration and UTCore dispatch throttle/periodic behavior were inspected; confirmed by IR0104-ANOREXY-MEAL-DETECTION",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "cooldowns",
           "state": "proven-correct",
-          "evidence": "all trait-local and shared cooldown counters in the exact assigned path were inspected",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "reset_and_save_load",
           "state": "runtime-unproven",
-          "evidence": "module locals, player/item modData, OnNewGame/OnCreatePlayer paths, restoration, and ownership transitions were inspected",
-          "missing_proof": "Missing proof: a save, reload, death, player-switch, and ownership-transition trace where applicable."
+          "evidence": "Static source and regression evidence is complete for the implemented contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "java_lua_exposure",
-          "state": "runtime-unproven",
-          "evidence": "current PZCodebase event/API symbols and exposed argument order were checked",
-          "missing_proof": "Missing proof: an observed current-game Kahlua bridge invocation for the exact callback/API path."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
+          "missing_proof": ""
         },
         {
           "id": "kahlua_compatibility",
           "state": "runtime-unproven",
-          "evidence": "Java collections versus Lua tables, indexing, callback arity, and standard-Lua mock substitutions were checked",
-          "missing_proof": "Missing proof: execution under the current in-game Kahlua runtime; standard Lua syntax/mocks are insufficient."
+          "evidence": "Static source and regression evidence is complete for the implemented contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "event_lifecycle",
-          "state": "runtime-unproven",
-          "evidence": "registration, repeated world entry, handler install, and engine trigger order were checked",
-          "missing_proof": "Missing proof: repeated world entry plus full desktop relaunch event traces."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
+          "missing_proof": ""
         },
         {
           "id": "stacking_and_cross_trait_interactions",
-          "state": "runtime-unproven",
-          "evidence": "shared hooks, shared mutable items, aggregate modifiers, exclusions, and overlapping trait writers were cross-checked across batches 01-04",
-          "missing_proof": "Missing proof: runtime composition across every relevant paired trait and shared hook transition."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
+          "missing_proof": ""
         },
         {
           "id": "multiplayer_restriction",
@@ -2505,9 +2505,9 @@
         },
         {
           "id": "description_accuracy",
-          "state": "runtime-unproven",
-          "evidence": "English UIDescription was compared to the full exact runtime path and numerical/cadence behavior",
-          "missing_proof": "Missing proof: no additional dynamic behavior exists outside the closed-world inspected source."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
+          "missing_proof": ""
         },
         {
           "id": "localization_coverage_including_absent_locales",
@@ -2518,38 +2518,38 @@
         {
           "id": "balance",
           "state": "runtime-unproven",
-          "evidence": "cost and implemented magnitude were statically compared; no telemetry was available",
-          "missing_proof": "Missing proof: gameplay telemetry or comparative playtest for the stated cost and magnitude."
+          "evidence": "Static source and regression evidence is complete for the implemented contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "performance_risk",
-          "state": "confirmed-defect",
-          "evidence": "handler frequency, collection scans, wrapper depth, and cache writes were inspected; confirmed by verified-original-finding",
-          "missing_proof": ""
+          "state": "runtime-unproven",
+          "evidence": "Static source and regression evidence is complete for the implemented contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "tests",
-          "state": "confirmed-defect",
-          "evidence": "only exact assigned test regions were inspected; the mixed-trait suite was intentionally not executed because it reads unrelated traits; confirmed by IR0104-ANOREXY-MEAL-DETECTION",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "mocks",
-          "state": "confirmed-defect",
-          "evidence": "exact mocks were compared with engine stat clamps, collection shapes, event order, and HandWeapon getter/setter behavior; confirmed by IR0104-ANOREXY-MEAL-DETECTION",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "source_release_parity",
           "state": "proven-correct",
-          "evidence": "exact assigned definitions, runtime Lua, registries, English UI, and release counterparts were hash/content compared",
+          "evidence": "Pre-campaign Git authority, current source, SVN 964 consumption/stat evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "packaging_integrity",
-          "state": "proven-correct",
-          "evidence": "presence in source and 42.0 release, registration, definition, UI, and exact assigned runtime paths was checked",
-          "missing_proof": ""
+          "state": "coverage-gap",
+          "evidence": "Anorexy-owned source/release content is exact.",
+          "missing_proof": "UniversalTraits package verification remains blocked by the separately tracked missing source poster."
         }
       ],
       "verified_finding_ids": [
@@ -2560,7 +2560,7 @@
       "omissions": [
         {
           "id": "IR0104-ANOREXY-MEAL-DETECTION",
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "severity": "high",
           "confidence": "high",
           "title": "Food-timer polling misses ordinary partial meals",
@@ -2576,17 +2576,33 @@
             "mocks"
           ],
           "reproduction_evidence": "The trait infers a meal only from healthFromFoodTimer rising by more than 50. The engine increments that timer only when eating reaches minimum hunger, resets it for dangerous uncooked food, and small increments also fail the threshold.",
-          "missing_proof": "No in-game trace establishes that every intended meal reaches hunger zero and increments the timer by more than 50.",
-          "recommended_correction": "Use the actual timed-action/Eat path through an idempotent shared hook, or explicitly narrow the description to fully satiating safe meals.",
-          "smallest_regression_test": "Simulate a partial meal leaving hunger above zero, a fully satiating meal, an increment of exactly 50, and dangerous uncooked food; assert the approved trigger contract."
+          "missing_proof": "Current-build in-game Kahlua observation remains unrun.",
+          "recommended_correction": "No further static correction is indicated.",
+          "smallest_regression_test": "Covered by completed, partial, zero, no-trait, ordering, no-polling, and reload tests.",
+          "resolution_state": "implemented-and-statically-validated",
+          "resolution_evidence": "Completed actions use ISEatFoodAction.complete after character:Eat; interrupted partial actions use ISEatFoodAction.eat after its effective-fraction Eat call. Neither path relies on healthFromFoodTimer."
         }
       ],
       "unresolved_proof": [
-        "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-        "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-        "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-        "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
-      ]
+        "Current-build Kahlua execution, full relaunch, repeated world entry, and current-version save/load remain unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory."
+      ],
+      "explicit_non_goals": [
+        "multiplayer",
+        "backward save migration",
+        "deployment"
+      ],
+      "release_parity": {
+        "trait_runtime": "162DF3DBD710A30AB4B5E7D38DC3DEA06B03764903D224C4F507D932C66CB90A",
+        "trait_release": "162DF3DBD710A30AB4B5E7D38DC3DEA06B03764903D224C4F507D932C66CB90A",
+        "hook_runtime": "B2518861A4283D722C1277F1F7769B5235028EB73E6FA903395A718C4D42B0E8",
+        "hook_release": "B2518861A4283D722C1277F1F7769B5235028EB73E6FA903395A718C4D42B0E8",
+        "english_runtime": "2BE0A9998D4894D696F2ADD9238DDAEAE85D206ADBEC1BBBA033064ED8381168",
+        "english_release": "2BE0A9998D4894D696F2ADD9238DDAEAE85D206ADBEC1BBBA033064ED8381168",
+        "state": "proven-correct"
+      },
+      "resolution_record": "change-impact/anorexy-consumption-contract.json"
     },
     {
       "trait_id": "UniversalTraits:UT_antigun",
@@ -12154,7 +12170,6 @@
       "confidence": "high",
       "title": "Shared food-timer polling does not represent ordinary meals and is inconsistently throttled",
       "anchors": [
-        "UniversalTraits/media/lua/shared/UniversalTraits/UT_anorexy.lua",
         "UniversalTraits/media/lua/shared/UniversalTraits/UT_ascetic.lua",
         "UniversalTraits/media/lua/shared/UniversalTraits/UT_competitiveeater.lua",
         "UniversalTraits/media/lua/shared/UniversalTraits/UT_badteeth.lua",
@@ -12162,7 +12177,6 @@
         "UniversalTraits/media/lua/shared/UTCore/UTCore_TickDispatch.lua:36-48"
       ],
       "affected_surfaces": [
-        "UniversalTraits:UT_anorexy",
         "UniversalTraits:UT_ascetic",
         "UniversalTraits:UT_competitiveeater",
         "UniversalTraits:UT_badteeth",
@@ -12171,10 +12185,13 @@
         "performance",
         "tests"
       ],
-      "reproduction_evidence": "healthFromFoodTimer rises only when eating reaches minimum hunger and can reset for dangerous uncooked food; ordinary partial meals and increments of 50 or less are missed. Equivalent polling paths were classified inconsistently across batches.",
+      "reproduction_evidence": "Anorexy is resolved through exact post-consumption hooks. Ascetic, Competitive Eater, and Bad Teeth still use healthFromFoodTimer paths that miss ordinary partial meals or depend on special healing conditions.",
       "missing_proof": "No current-game meal trace establishes that every intended meal reaches hunger zero and raises the timer by more than 50.",
       "recommended_correction": "Use an idempotent exact consumption edge or narrow the descriptions; apply a documented bounded cadence wherever polling remains.",
-      "smallest_regression_test": "Exercise partial, fully satiating, exactly-50, and dangerous-uncooked meals while counting handler calls over a fixed update window."
+      "smallest_regression_test": "Exercise partial, fully satiating, exactly-50, and dangerous-uncooked meals while counting handler calls over a fixed update window.",
+      "partial_resolutions": {
+        "UniversalTraits:UT_anorexy": "implemented-and-statically-validated through completed and interrupted post-consumption wrappers"
+      }
     },
     {
       "id": "XTF0104-EXCLUSION-CONTRACT",
@@ -12233,10 +12250,10 @@
     },
     {
       "id": "XTF0104-ITEM-CONSUMPTION-WRAPPERS",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
-      "title": "Shared timed-action wrappers stack across repeated world entries",
+      "title": "Shared timed-action wrappers remain single across repeated installation",
       "anchors": [
         "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua:148-176",
         "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua:184-209",
@@ -12251,10 +12268,12 @@
         "global_mutation",
         "performance"
       ],
-      "reproduction_evidence": "Every OnGameStart captures the current perform method and wraps it again without a sentinel. A second entry chains two wrappers, repeating Allergic, Antivaxxer, and Gordanite effects; Caffeine still traverses redundant layers.",
-      "missing_proof": "The distribution of repeated world entries in ordinary play was not measured; two installer calls deterministically reproduce the chain.",
-      "recommended_correction": "Install each wrapper once, retain the true original once, and make repeated installation a no-op.",
-      "smallest_regression_test": "Fire OnGameStart twice, perform one matching action, and assert one original invocation and one trait effect."
+      "reproduction_evidence": "Stable sentinel fields retain one perform and drink wrapper across repeated startup calls. Anorexy adds separately marked complete and eat wrappers. Focused reload tests call the installer repeatedly and prove all four function identities remain unchanged.",
+      "missing_proof": "Current-build repeated-world-entry observation remains unrun.",
+      "recommended_correction": "No further static correction is indicated.",
+      "smallest_regression_test": "Covered by repeated script load, repeated startup events, stable wrapper identities, and preserved later-owner behavior.",
+      "resolution_state": "implemented-and-statically-validated",
+      "resolution_evidence": "Current source already uses one stable sentinel per wrapper, and the focused reload regression proves the former wrapper chain cannot recur."
     },
     {
       "id": "XTF0104-MOCK-ENGINE-DOMAINS",
@@ -12271,7 +12290,6 @@
       ],
       "affected_surfaces": [
         "UniversalTraits:UT_actionhero",
-        "UniversalTraits:UT_anorexy",
         "UniversalTraits:UT_ascetic",
         "UniversalTraits:UT_axes",
         "UniversalTraits:UT_cleaver",
@@ -12282,7 +12300,10 @@
       "reproduction_evidence": "Mock Stats set/add/remove do not clamp and mock critical chance uses one raw scalar. Current engine clamps normalized stats and returns sharpness-adjusted critical chance while setting raw chance, so passing mock tests mask confirmed numerical defects.",
       "missing_proof": "No Kahlua/in-game boundary test currently supplements these simplified mocks.",
       "recommended_correction": "Make exact mocks engine-faithful for these domains and add negative boundary/order fixtures.",
-      "smallest_regression_test": "Assert stress/hunger clamping and non-unit-sharpness critical apply/restore against fixtures matching current engine source."
+      "smallest_regression_test": "Assert stress/hunger clamping and non-unit-sharpness critical apply/restore against fixtures matching current engine source.",
+      "partial_resolutions": {
+        "UniversalTraits:UT_anorexy": "Anorexy explicitly caps the 0.0 to 1.0 stress domain and regression tests assert the exact boundary without relying on mock add/set clamping."
+      }
     },
     {
       "id": "XTF0104-PREDAMAGE-WEAPON-EVENT",

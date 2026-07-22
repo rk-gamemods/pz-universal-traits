@@ -2683,6 +2683,17 @@ ISEatFoodAction.perform = function(self)
     self._originalPerformCalls = (self._originalPerformCalls or 0) + 1
     return self._originalPerformReturn
 end
+ISEatFoodAction.complete = function(self)
+    self._originalCompleteCalls = (self._originalCompleteCalls or 0) + 1
+    if self._onComplete then self:_onComplete() end
+    if self._originalCompleteReturn == nil then return true end
+    return self._originalCompleteReturn
+end
+ISEatFoodAction.eat = function(self, food, percentage)
+    self._originalEatCalls = (self._originalEatCalls or 0) + 1
+    if self._onEat then self:_onEat(food, percentage) end
+    return self._originalEatReturn
+end
 dofile(base .. "../media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua")
 
 -- Install consumption + fitness hooks (simulates game startup)
@@ -3022,6 +3033,8 @@ end)
 
 test("caffeine consumption hooks are reload-safe and preserve later hook owners", function()
     local eatWrapper = ISEatFoodAction.perform
+    local completeWrapper = ISEatFoodAction.complete
+    local partialWrapper = ISEatFoodAction.eat
     local drinkWrapper = ISDrinkFluidAction.perform
 
     dofile(base .. "../media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua")
@@ -3030,6 +3043,10 @@ test("caffeine consumption hooks are reload-safe and preserve later hook owners"
 
     assert_eq(ISEatFoodAction.perform, eatWrapper,
         "reloading must not stack or replace the installed eat wrapper")
+    assert_eq(ISEatFoodAction.complete, completeWrapper,
+        "reloading must not stack or replace the installed completed-consumption wrapper")
+    assert_eq(ISEatFoodAction.eat, partialWrapper,
+        "reloading must not stack or replace the installed partial-consumption wrapper")
     assert_eq(ISDrinkFluidAction.perform, drinkWrapper,
         "reloading must not stack or replace the installed drink wrapper")
 
@@ -4585,24 +4602,111 @@ test("flimsy clears arm pain when no backpack equipped", function()
     assert_eq(armL:getAdditionalPain(), 0, "arm pain should be cleared when no backpack")
 end)
 
--- ─── Group 9: Food-timer / complex patterns ───────────────────────────────────
+-- Group 9: Food-consumption and complex patterns
 
-test("anorexy records stress via CharacterStat.add on rising food timer", function()
-    local p = MockPlayer({ "UniversalTraits:UT_anorexy" })
-    p:getBodyDamage()._healthFromFoodTimer = 100
-    Events.OnPlayerUpdate:fire(p)   -- first call: sets prevTimer=100, no trigger
-    p:getBodyDamage()._healthFromFoodTimer = 200  -- jump +100 > 50 → triggers
-    Events.OnPlayerUpdate:fire(p)
-    local stressAccum = p:getStats()._charStatAccum[CharacterStat.STRESS]
-    assert_true(type(stressAccum) == "number" and stressAccum > 0,
-        "expected stress charstat addition, got " .. tostring(stressAccum))
+local ANOREXY_ID = "UniversalTraits:UT_anorexy"
+
+test("anorexy applies exactly 0.10 after completed food effects", function()
+    local p = MockPlayer({ ANOREXY_ID }, { stress = 0.4 })
+    local action = {
+        character = p,
+        item = MockItem("Apple"),
+        percentage = 1.0,
+        _onComplete = function(self)
+            self.character:getStats():set(CharacterStat.STRESS, 0.2)
+        end,
+    }
+    local result = ISEatFoodAction.complete(action)
+    assert_eq(result, true, "completed wrapper must preserve the native result")
+    assert_eq(action._originalCompleteCalls, 1, "native complete must run exactly once")
+    assert_close(p:getStats():get(CharacterStat.STRESS), 0.30, 0.000001,
+        "Anorexy must apply after the food's own stress change")
 end)
-test("anorexy does not fire on first update (no prev state)", function()
-    local p = MockPlayer({ "UniversalTraits:UT_anorexy" })
-    p:getBodyDamage()._healthFromFoodTimer = 200  -- no prev → no trigger
+
+test("anorexy caps completed-meal stress at 1.0", function()
+    local p = MockPlayer({ ANOREXY_ID }, { stress = 0.95 })
+    ISEatFoodAction.complete({ character = p, item = MockItem("Apple"), percentage = 1.0 })
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 1.0, "stress must clamp at the engine maximum")
+end)
+
+test("anorexy applies once after interrupted partial consumption", function()
+    local p = MockPlayer({ ANOREXY_ID }, { stress = 0.2 })
+    local action = {
+        character = p,
+        item = MockItem("Apple"),
+        percentage = 0.5,
+        _onEat = function(self)
+            self.character:getStats():set(CharacterStat.STRESS, 0.1)
+        end,
+    }
+    ISEatFoodAction.eat(action, action.item, 0.25)
+    assert_eq(action._originalEatCalls, 1, "native partial-consumption path must run exactly once")
+    assert_close(p:getStats():get(CharacterStat.STRESS), 0.20, 0.000001,
+        "Anorexy must apply after the partial food effect")
+end)
+
+test("anorexy ignores zero consumption and players without the trait", function()
+    local withTrait = MockPlayer({ ANOREXY_ID }, { stress = 0.2 })
+    ISEatFoodAction.eat({ character = withTrait, item = MockItem("Apple"), percentage = 1.0 },
+        MockItem("Apple"), 0)
+    assert_eq(withTrait:getStats():get(CharacterStat.STRESS), 0.2,
+        "zero consumed fraction must not apply Anorexy")
+
+    local withoutTrait = MockPlayer({}, { stress = 0.2 })
+    ISEatFoodAction.complete({ character = withoutTrait, item = MockItem("Apple"), percentage = 1.0 })
+    assert_eq(withoutTrait:getStats():get(CharacterStat.STRESS), 0.2,
+        "players without Anorexy must be unaffected")
+end)
+
+test("anorexy no longer polls OnPlayerUpdate or the food-health timer", function()
+    local p = MockPlayer({ ANOREXY_ID }, { stress = 0.2, healthFromFoodTimer = 5000 })
+    rebuildFor(p)
     Events.OnPlayerUpdate:fire(p)
-    assert_eq(p:getStats()._charStatAccum[CharacterStat.STRESS], nil,
-        "no stress on first call when prev is nil")
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.2,
+        "player updates must not apply the consumption effect")
+    assert_eq(p:getModData()["UT_anorexy_prevTimer"], nil,
+        "obsolete food-timer state must not be written")
+    for _, handler in ipairs(UTCore._tickHandlers or {}) do
+        assert_true(handler.id ~= ANOREXY_ID, "Anorexy must not retain a tick handler")
+    end
+end)
+
+test("anorexy perform wrapper alone does not claim consumption", function()
+    local p = MockPlayer({ ANOREXY_ID }, { stress = 0.2 })
+    ISEatFoodAction.perform({ character = p, item = MockItem("Apple"), percentage = 1.0 })
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.2,
+        "perform runs before SVN 964 complete and must not apply Anorexy")
+end)
+
+test("anorexy English copy states the exact accepted effect", function()
+    local function readDescription(path)
+        local file = assert(io.open(path, "rb"))
+        local content = file:read("*a")
+        file:close()
+        return content:match('\"UI_UT_anorexyDesc\"%s*:%s*\"([^\"]+)\"')
+    end
+    local expected = "Your relationship with food is deeply complicated. Each time you eat, stress increases by 0.10 (10 percent of the stress meter)."
+    local source = readDescription(base .. "../media/lua/shared/Translate/EN/UI.json")
+    local release = readDescription(base .. "../release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json")
+    assert_eq(source, expected, "source Anorexy copy must state the exact mechanic")
+    assert_eq(release, expected, "release Anorexy copy must match source")
+end)
+
+test("anorexy runtime source and release copies stay byte-identical", function()
+    local function readAll(path)
+        local file = assert(io.open(path, "rb"))
+        local content = file:read("*a")
+        file:close()
+        return content
+    end
+    local traitPath = "lua/shared/UniversalTraits/traits/UT_anorexy.lua"
+    local hookPath = "lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua"
+    assert_eq(readAll(base .. "../media/" .. traitPath),
+        readAll(base .. "../release/UniversalTraits/42.0/media/" .. traitPath),
+        "Anorexy trait source and release must match")
+    assert_eq(readAll(base .. "../media/" .. hookPath),
+        readAll(base .. "../release/UniversalTraits/42.0/media/" .. hookPath),
+        "Anorexy consumption hook source and release must match")
 end)
 
 test("badteeth applies head pain when food timer > 1000 and rising", function()

@@ -1656,10 +1656,13 @@ if not _G.Events.OnGameStart then
     }
 end
 
--- ISEatFoodAction stub — must exist before UT_ItemConsumptionHooks wraps perform
+-- ISEatFoodAction stub. All three consumption paths must exist before the
+-- shared item-consumption hooks install their wrappers.
 if not _G.ISEatFoodAction then
     _G.ISEatFoodAction = {
         perform = function(self) end,
+        complete = function(self) return true end,
+        eat = function(self, food, percentage) end,
     }
 end
 

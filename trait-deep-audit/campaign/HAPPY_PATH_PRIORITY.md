@@ -15,13 +15,14 @@ This is the small operational queue for making the mod usable and reliable first
 - Immunocompromised: direct zombie-infection channel correction and reload-safe minute registration completed.
 - Brittle: pre-campaign fracture behavior reconciled; the real weapon-hit argument order, elapsed-time cooldown, exact fracture API, and reload-safe handler are statically proven.
 - Glass Body: restored the pre-campaign all-source +50 percent damage contract through resolved body-health deltas; pre-resolution weapon-event defects, recursive amplification, player replacement, and reload behavior are regression-protected.
+- Anorexy: restored the pre-campaign one-meal +0.10 stress contract through completed and interrupted food-consumption paths; the +10 scale bug, food-timer misses, per-update polling, and wrapper reload behavior are regression-protected.
 
 ## Next Gameplay Blockers
 
 Work one trait at a time. Before changing behavior, prove the accepted pre-campaign intent from `master`. If the intended outcome is not certain, stop and request a decision.
 
-1. `UT_anorexy`: replace or bound the every-update meal detector only after proving the pre-campaign trigger and stress magnitude.
-2. Item-consumption lifecycle: prove whether the shared wrapper still stacks after repeated startup or world-entry lifecycles, then correct the shared infrastructure with focused caller regression tests.
+1. `UT_ascetic`: prove its pre-campaign eating trigger and numerical outcome before replacing the same unreliable food-timer polling pattern.
+2. `UT_competitiveeater`: reconcile its consumption trigger, stat domains, and exclusions without changing accepted intent.
 
 ## Contract Reconciliation Before Any Fix
 
@@ -41,9 +42,9 @@ These records may be stale because later development commits or tests already ch
 ## Current Validation Baseline
 
 - UT_CORE standard-Lua suite: 252 passed.
-- UniversalTraits standard-Lua suite: 448 passed after the Immunocompromised correction.
-- Campaign validator: structurally valid, with the exhaustive queue reduced from 2,380 to 2,360 records by the infection-channel and Brittle reconciliations.
-- Campaign generator tests: 101 passed.
+- UniversalTraits standard-Lua suite: 454 passed after the Anorexy correction.
+- Campaign validator: structurally valid, with 198 traits, 4,752 dimensions, and 2,342 open remediation records.
+- Campaign generator tests: 115 passed.
 - UniversalTraits package content parity: no release issues, but the package verdict is blocked by the missing source poster.
 
 ## Runtime Proof Boundary

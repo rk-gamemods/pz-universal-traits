@@ -354,7 +354,7 @@
     "UI_UT_maniac": "Maniac",
     "UI_UT_maniacDesc": "Combat wakes something up in you. Each time you kill a zombie, stress decreases by -0.15 and boredom decreases by -0.2.",
     "UI_UT_anorexy": "Anorexia",
-    "UI_UT_anorexyDesc": "Your relationship with food is deeply complicated. Eating feels wrong, and your body pays the price for every meal.",
+    "UI_UT_anorexyDesc": "Your relationship with food is deeply complicated. Each time you eat, stress increases by 0.10 (10 percent of the stress meter).",
     "UI_UT_pillsallergy": "Pill Allergy",
     "UI_UT_pillsallergyDesc": "Medicine that helps others can hurt you. Certain pills trigger an adverse reaction instead of the relief they promise.",
     "UI_UT_wildplantsallergy": "Wild Plant Allergy",

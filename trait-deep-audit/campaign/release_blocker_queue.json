@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "remediation_queue_sha256": "e53190e151cd7928bf2604d78bf2ff9e2eb9d9d11194507273eed67e7d4ea95b",
+  "remediation_queue_sha256": "eb2836ee2819d58477b7be0e164f4f564446038245d73dbe05074ce8635fa5e3",
   "category_label": "release-blocker",
   "classification_scope_statement": "Only the queue rows listed by these reviewed semantic identities are classified as release-blocker; all other rows remain unclassified in the exhaustive ledger.",
   "identities": [
@@ -37,22 +37,10 @@
         "finding:IR0104-ANTIVAXXER-HOOK-STACK",
         "finding:IR0104-GORDANITE-HOOK-STACK",
         "finding:IR0104-ADDICTEDTOCAFFEINE-HOOK-STACK",
-        "finding:XTF0104-ITEM-CONSUMPTION-WRAPPERS",
         "dimension:UniversalTraits:UT_pillsallergy:events"
       ],
       "dependencies": [],
-      "evidence_scope": "Shared item-consumption wrappers for affected callers stack across repeated startup or world-entry lifecycles."
-    },
-    {
-      "semantic_identity": "trait:UT_anorexy",
-      "identity_kind": "trait",
-      "status": "open",
-      "priority_reason_code": "unbounded-hot-path-handler",
-      "queue_ids": [
-        "finding:B01-ANO-PERF"
-      ],
-      "dependencies": [],
-      "evidence_scope": "Anorexy performs food-edge detection every player tick without throttling or a direct consumption hook."
+      "evidence_scope": "The shared wrapper sentinel is statically corrected. Caller-specific review records remain queued until their assigned trait closures reconcile them."
     },
     {
       "semantic_identity": "package:Bouncer-I",
