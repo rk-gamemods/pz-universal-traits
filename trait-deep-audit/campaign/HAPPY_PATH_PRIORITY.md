@@ -14,14 +14,14 @@ This is the small operational queue for making the mod usable and reliable first
 - Immune Response: direct zombie-infection channel correction completed; food sickness and zombie fever can no longer be copied into zombie infection.
 - Immunocompromised: direct zombie-infection channel correction and reload-safe minute registration completed.
 - Brittle: pre-campaign fracture behavior reconciled; the real weapon-hit argument order, elapsed-time cooldown, exact fracture API, and reload-safe handler are statically proven.
+- Glass Body: restored the pre-campaign all-source +50 percent damage contract through resolved body-health deltas; pre-resolution weapon-event defects, recursive amplification, player replacement, and reload behavior are regression-protected.
 
 ## Next Gameplay Blockers
 
 Work one trait at a time. Before changing behavior, prove the accepted pre-campaign intent from `master`. If the intended outcome is not certain, stop and request a decision.
 
-1. `UT_glassbody`: correct the hit event and Java-Lua contract while preserving the pre-campaign damage intent.
-2. `UT_anorexy`: replace or bound the every-update meal detector only after proving the pre-campaign trigger and stress magnitude.
-3. Item-consumption lifecycle: prove whether the shared wrapper still stacks after repeated startup or world-entry lifecycles, then correct the shared infrastructure with focused caller regression tests.
+1. `UT_anorexy`: replace or bound the every-update meal detector only after proving the pre-campaign trigger and stress magnitude.
+2. Item-consumption lifecycle: prove whether the shared wrapper still stacks after repeated startup or world-entry lifecycles, then correct the shared infrastructure with focused caller regression tests.
 
 ## Contract Reconciliation Before Any Fix
 
@@ -35,12 +35,12 @@ These records may be stale because later development commits or tests already ch
 - Bouncer I source/release medical-perk drift.
 - Bouncer II source/release medical-perk drift.
 - Antique source/release container API drift.
-- `UniversalTraits/poster.png` is absent from both `master` and `development`; read-only package verification reports `missing-source:poster.png`. An approved source asset is required rather than inventing one.
+- `UniversalTraits/poster.png` and `UT_CORE/poster.png` are absent from both `master` and `development`; read-only package verification reports `missing-source:poster.png` for both packages. Approved source assets are required rather than inventing them.
 - Final UniversalTraits release-tree reconciliation after the functional and package blockers above are closed.
 
 ## Current Validation Baseline
 
-- UT_CORE standard-Lua suite: 248 passed.
+- UT_CORE standard-Lua suite: 252 passed.
 - UniversalTraits standard-Lua suite: 448 passed after the Immunocompromised correction.
 - Campaign validator: structurally valid, with the exhaustive queue reduced from 2,380 to 2,360 records by the infection-channel and Brittle reconciliations.
 - Campaign generator tests: 101 passed.

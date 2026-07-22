@@ -95,10 +95,10 @@
     },
     {
       "path": "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "180a259bf67775c433b63446a000bc5cbbb183cd2b4ee84b9b532c6ea2ceeb5e",
-      "bytes": 2397,
+      "sha256": "3e411385566ad04bcae211dd4ba9917ef91d3e77230ba4179670cde350d59b05",
+      "bytes": 3139,
       "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "release_sha256": "180a259bf67775c433b63446a000bc5cbbb183cd2b4ee84b9b532c6ea2ceeb5e",
+      "release_sha256": "3e411385566ad04bcae211dd4ba9917ef91d3e77230ba4179670cde350d59b05",
       "release_parity": "exact"
     },
     {
@@ -802,13 +802,13 @@
     },
     {
       "path": "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "180a259bf67775c433b63446a000bc5cbbb183cd2b4ee84b9b532c6ea2ceeb5e",
-      "bytes": 2397,
+      "sha256": "3e411385566ad04bcae211dd4ba9917ef91d3e77230ba4179670cde350d59b05",
+      "bytes": 3139,
       "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "release_sha256": "180a259bf67775c433b63446a000bc5cbbb183cd2b4ee84b9b532c6ea2ceeb5e",
+      "release_sha256": "3e411385566ad04bcae211dd4ba9917ef91d3e77230ba4179670cde350d59b05",
       "release_parity": "exact",
-      "source_role": "weapon-hit damage multiplier consumer",
-      "overall_state": "confirmed-defect",
+      "source_role": "resolved all-source body-health damage multiplier",
+      "overall_state": "runtime-unproven",
       "linked_finding_ids": [
         "IC-OM-001",
         "IC-RPF-001",
@@ -818,7 +818,7 @@
       "dimensions": {
         "public_helpers_and_handlers": {
           "classification": "proven-correct",
-          "evidence": "weapon-hit damage multiplier consumer",
+          "evidence": "Current hook, SVN 964 update/body-health evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-RPF-001",
@@ -826,8 +826,8 @@
           ]
         },
         "event_producer_consumer_contracts": {
-          "classification": "confirmed-defect",
-          "evidence": "All registrations/handlers and current producer signatures were traced.",
+          "classification": "proven-correct",
+          "evidence": "Current hook, SVN 964 update/body-health evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-RPF-001",
@@ -836,7 +836,7 @@
         },
         "shared_state_and_moddata": {
           "classification": "proven-correct",
-          "evidence": "Local/global tables and every UT_/vehicle moddata key in this file were reviewed.",
+          "evidence": "Current hook, SVN 964 update/body-health evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-RPF-001",
@@ -845,7 +845,7 @@
         },
         "registration_removal_idempotence": {
           "classification": "proven-correct",
-          "evidence": "Registration fences, removal paths, reload behavior, and duplicate behavior were classified.",
+          "evidence": "Current hook, SVN 964 update/body-health evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-RPF-001",
@@ -854,7 +854,7 @@
         },
         "cadence_throttle_reset_save_load": {
           "classification": "proven-correct",
-          "evidence": "Cadence counters, resets, persistent state, and save/load assumptions were traced.",
+          "evidence": "Current hook, SVN 964 update/body-health evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-RPF-001",
@@ -862,8 +862,8 @@
           ]
         },
         "numerical_behavior": {
-          "classification": "confirmed-defect",
-          "evidence": "Formula direction, clamps, rounding, units, and scaling were reviewed.",
+          "classification": "proven-correct",
+          "evidence": "Current hook, SVN 964 update/body-health evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-RPF-001",
@@ -872,7 +872,7 @@
         },
         "java_lua_kahlua_receiver_methods": {
           "classification": "proven-correct",
-          "evidence": "Receiver names/case and Java or vanilla-Lua surfaces were checked against svn-964 where used.",
+          "evidence": "Current hook, SVN 964 update/body-health evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-RPF-001",
@@ -881,7 +881,7 @@
         },
         "single_player_restriction_assumptions": {
           "classification": "proven-correct",
-          "evidence": "Scoped files consistently use getPlayer/local-player semantics and trait definitions are DisabledInMultiplayer; multiplayer correctness was not inferred.",
+          "evidence": "Current hook, SVN 964 update/body-health evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-RPF-001",
@@ -890,7 +890,7 @@
         },
         "stacking_and_composition": {
           "classification": "proven-correct",
-          "evidence": "Same-surface composition, source buckets, exclusivity, and external-owner risk were reviewed.",
+          "evidence": "Current hook, SVN 964 update/body-health evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-RPF-001",
@@ -898,8 +898,8 @@
           ]
         },
         "performance": {
-          "classification": "proven-correct",
-          "evidence": "Per-tick work, scans, logging, allocation, pcall, and throttles were reviewed.",
+          "classification": "runtime-unproven",
+          "evidence": "The hook reuses the existing central dispatch and adds one aggregate-health getter only for an active multiplier; no profiler capture exists.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-RPF-001",
@@ -907,8 +907,8 @@
           ]
         },
         "tests_and_mocks": {
-          "classification": "coverage-gap",
-          "evidence": "UT_CORE 218/218 and UniversalTraits 374/374 pass; mocks were compared with current producers/receivers and not treated as runtime proof.",
+          "classification": "proven-correct",
+          "evidence": "Current hook, SVN 964 update/body-health evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-RPF-001",
@@ -917,7 +917,7 @@
         },
         "source_release_parity": {
           "classification": "proven-correct",
-          "evidence": "Source and 42.0 release bytes share SHA-256 180a259bf67775c433b63446a000bc5cbbb183cd2b4ee84b9b532c6ea2ceeb5e",
+          "evidence": "Current hook, SVN 964 update/body-health evidence, and focused regression tests prove this static contract.",
           "linked_finding_ids": [
             "IC-VPF-005"
           ]
@@ -3436,7 +3436,7 @@
   "rejected_prior_findings": [
     {
       "id": "IC-RPF-001",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
       "title": "F-CORE-001's proposed argument-order correction is insufficient for DamageMultHook",
@@ -3455,13 +3455,15 @@
         "UniversalTraits:UT_glassbody"
       ],
       "reproduction_or_source_evidence": "The producer fires before processHitDamage. Even with target bound correctly, current health has not fallen, so curHealth >= prevHealth and the hook returns.",
-      "missing_proof": "A replacement post-damage observation strategy still needs live proof.",
+      "missing_proof": "Current-build in-game Kahlua observation remains unrun.",
       "recommended_correction": "Retain the signature fix but defer measurement until after native damage, carrying a bounded pending-hit record.",
       "smallest_regression_test": "With correct event order, fire pre-damage event, apply native loss, run the deferred hook, and assert exactly multiplier-adjusted total loss.",
       "prior_ids": [
         "F-CORE-001"
       ],
-      "disposition": "partially_rejected_and_refined"
+      "disposition": "partially_rejected_and_refined",
+      "resolution_state": "implemented-and-statically-validated",
+      "resolution_evidence": "The hook no longer consumes OnWeaponHitCharacter. Resolved overall body-health deltas drive one bounded extra reduction, with delayed aggregate recalculation modeled in regression tests."
     },
     {
       "id": "IC-RPF-002",
@@ -3500,7 +3502,7 @@
   "omissions": [
     {
       "id": "IC-OM-001",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
       "title": "Damage multiplier observes health before native weapon damage",
@@ -3518,9 +3520,11 @@
         "UniversalTraits:UT_glassbody"
       ],
       "reproduction_or_source_evidence": "OnWeaponHitCharacter precedes processHitDamage; current handler requires curHealth < prevHealth during that callback.",
-      "missing_proof": "No in-game post-damage scheduling proof.",
+      "missing_proof": "Current-build in-game Kahlua observation remains unrun.",
       "recommended_correction": "Capture a pending hit at the producer and reconcile after native damage on the next verified update.",
-      "smallest_regression_test": "Start at 100 health, fire the event before native 10 damage, then reconcile once and assert the configured total loss."
+      "smallest_regression_test": "Start at 100 health, fire the event before native 10 damage, then reconcile once and assert the configured total loss.",
+      "resolution_state": "implemented-and-statically-validated",
+      "resolution_evidence": "The hook no longer consumes OnWeaponHitCharacter. Resolved overall body-health deltas drive one bounded extra reduction, with delayed aggregate recalculation modeled in regression tests."
     },
     {
       "id": "IC-OM-002",

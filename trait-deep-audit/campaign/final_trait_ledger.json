@@ -45,14 +45,14 @@
     }
   },
   "source_artifact_sha256": {
-    "independent_reviews/traits_01_04.json": "35499EB19322F19CB40455DF35EBD42734814A7E2E08AC3659966B5074E4DB8C",
+    "independent_reviews/traits_01_04.json": "E9E6BD628AB65BF2A7D122CD58940BD2252D5EEF269A742D908097735FCA4719",
     "independent_reviews/traits_05_08.json": "1EC23EF9DE7D30A8244E32AE98C8D469A060243D7A1A93AAF8D6E410C13B5530",
     "independent_reviews/traits_09_12.json": "27A52A4BB934EDCCD324FC013C7CC1885085D91F474C3E0BEED192C5018C7805",
     "source_inventory.json": "47781D8C6AE00795C0DD5CFF8F89E295F49826BB57B64DC9DCD6DE6A767941C9",
     "trait_batches/batch_01.jsonl": "4FA9A60E8D86362B22C33D2BD2DC334565EB564071514576AAD0E90F7FF4BB81",
     "trait_batches/batch_02.jsonl": "69E1FF6F6A40B2D2F54E3E76DD7651370AC67E50633EC4F959397C66C74335C2",
     "trait_batches/batch_03.jsonl": "33481D2A1F6227C331C16BA8B5CCB006099D07A15649099B8EC0627887679337",
-    "trait_batches/batch_04.jsonl": "2A7857094C09D1CAD329C8DC2BDA2B96DE56FD6A6AF0866F323D7D6B3C377217",
+    "trait_batches/batch_04.jsonl": "7BE87A0648404822CC35EE0904E3E4CC43391B4F955363D61BE1E3B8FEC6DA6E",
     "trait_batches/batch_05.jsonl": "6F550AD8CF0BD3BA4E827AD9D5F39F2149C50B4D8A990816451C8E86F58DE5AE",
     "trait_batches/batch_06.jsonl": "B9CE9F693D06BD0D4D7F4510410496BB334F0D8BEA9C2DDD79236617CA3C9E6F",
     "trait_batches/batch_07.jsonl": "6BFC2D4966C29749BFF856067ABD0EB3B3F3E6E53E37E72A4A4FE271BE9E892C",
@@ -61,7 +61,7 @@
     "trait_batches/batch_10.jsonl": "FD77CC372A742BCDEB66FCB6D26BF9622BA4EC439CDB8E9135CAC22B946F3A44",
     "trait_batches/batch_11.jsonl": "11FBFE83557FBD93363F41AC740897040804E74E1063367C55A521DA0D2C98F4",
     "trait_batches/batch_12.jsonl": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47",
-    "translation_audit.json": "BC12EABD348135ECDED9B1CC3693F475E1C99781931A4C39B54900959C4009E6"
+    "translation_audit.json": "AA3DB9C3A5493EE60F92407A096EA13F54C01595265203A296E43ED09299349A"
   },
   "counts": {
     "traits": 198,
@@ -70,23 +70,23 @@
     "independent_reviewed_traits": 198,
     "independent_review_findings": 118,
     "independent_review_states": {
-      "accepted": 73,
+      "accepted": 74,
       "confirmed-defect": 38,
       "coverage-gap": 20,
-      "needs-correction": 61,
+      "needs-correction": 60,
       "runtime-unproven": 6
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 73,
+      "confirmed-defect": 72,
       "coverage-gap": 12,
-      "runtime-unproven": 88
+      "runtime-unproven": 89
     },
     "dimension_states": {
-      "proven-correct": 2664,
-      "confirmed-defect": 281,
-      "coverage-gap": 809,
-      "runtime-unproven": 998
+      "proven-correct": 2670,
+      "confirmed-defect": 276,
+      "coverage-gap": 806,
+      "runtime-unproven": 1000
     }
   },
   "independent_review_findings": [
@@ -792,7 +792,7 @@
     },
     {
       "id": "IR0104-GLASSBODY-PREDAMAGE-TIMING",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
       "title": "Glass Body reads health before the current weapon damage is applied",
@@ -806,9 +806,9 @@
         "damage"
       ],
       "reproduction_evidence": "Even with corrected callback parameters, OnWeaponHitCharacter fires before processHitDamage/hitConsequences. Current health is unchanged, so the hook returns or misattributes an earlier between-tick loss; falls do not emit this weapon event.",
-      "missing_proof": "",
-      "recommended_correction": "Use a supported post-damage/deferred delta path or modify damage through a valid pre-application hook.",
-      "smallest_regression_test": "Model exact engine order: fire event, then apply base damage; assert the corrected implementation multiplies only the current resolved hit and separately handles falls if promised."
+      "missing_proof": "Current-build in-game Kahlua observation remains unrun.",
+      "recommended_correction": "No further static correction is indicated.",
+      "smallest_regression_test": "Covered by resolved-loss, recursion, healing, lethal-cap, player-replacement, and reload tests."
     },
     {
       "id": "IR0104-GORDANITE-DOUBLE-CALORIES",
@@ -2693,10 +2693,10 @@
     },
     {
       "id": "XTF0104-PREDAMAGE-WEAPON-EVENT",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
-      "title": "Brittle and Glass Body rely on a weapon event that fires before damage resolution",
+      "title": "Glass Body leaves the pre-damage event; Brittle eligibility remains separately governed",
       "anchors": [
         "UniversalTraits/media/lua/shared/UTCore/UTCore_FractureHook.lua:32-67",
         "UniversalTraits/media/lua/shared/UTCore/UTCore_DamageMultHook.lua:39-47",
@@ -2710,10 +2710,10 @@
         "tests",
         "mocks"
       ],
-      "reproduction_evidence": "OnWeaponHitCharacter fires before avoid/no-damage checks and before processHitDamage. Brittle can roll on a zero/cancelled contact; Glass Body reads pre-hit health and therefore misses or misattributes the current loss.",
-      "missing_proof": "No supported post-resolution hook was identified in the assigned implementation; falls also do not emit this weapon event.",
-      "recommended_correction": "Require positive resolved damage for Brittle and redesign Glass Body around a supported post-damage/deferred delta or valid pre-application hook.",
-      "smallest_regression_test": "Model exact engine order for a cancelled hit, a positive hit, and a fall; assert only intended resolved damage is modified."
+      "reproduction_evidence": "Glass Body now observes resolved all-source body-health deltas and has no weapon-event listener. Brittle retains its accepted pre-resolution trigger, with cancelled-contact policy isolated under IR0104-BRITTLE-PREDAMAGE-ELIGIBILITY.",
+      "missing_proof": "Current-build Glass Body observation and the separate Brittle policy decision remain open.",
+      "recommended_correction": "No shared correction remains. Preserve the separate Brittle policy question.",
+      "smallest_regression_test": "Glass Body resolved-loss tests and Brittle producer-order tests cover the separated paths."
     },
     {
       "id": "XTF0104-SOURCE-RELEASE-DRIFT",
@@ -20676,7 +20676,7 @@
     {
       "trait_id": "UniversalTraits:UT_glassbody",
       "batch": "batch_04",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
@@ -20695,7 +20695,7 @@
           ],
           "missing_proof": [],
           "source_dimensions": [
-            "complete script definition and parser validity"
+            "definition_parser"
           ]
         },
         "namespace": {
@@ -20716,50 +20716,53 @@
           ],
           "missing_proof": [],
           "source_dimensions": [
-            "cost/XP/grants/exclusions and bidirectional exclusion behavior"
+            "cost_xp_grants_exclusions"
           ]
         },
         "source_intent": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_glassbody.lua comments/implementation"
+            "Pre-campaign master is the accepted authority: cost -10 and all incoming resolved body-health loss multiplied by 1.5. More Traits confirms all-source lineage; its extra scratches and fractures were not restored."
           ],
           "missing_proof": [
-            "No authoritative upstream source-mod snapshot was included in the allowed evidence set."
+            "none"
           ],
           "source_dimensions": [
-            "source-mod intent"
+            "source_intent"
           ]
         },
         "runtime_path": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "IsoGameCharacter.java:6768 emits OnWeaponHitCharacter(wielder, target, weapon, damageSplit).",
-            "UTCore_DamageMultHook.lua:29 declares onWeaponHitCharacter(attacker, weapon, target); its target parameter therefore receives the weapon and line 31 returns because target ~= player.",
-            "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_glassbody.lua sets player modData UT_damageMult=1.5 on OnNewGame."
+            "OnNewGame writes UT_damageMult=1.5. The existing central update dispatch compares resolved overall body health, applies only the extra 50 percent through ReduceGeneralHealth, and stores the expected aggregate so its own reduction is not multiplied again."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "exact runtime path through UT_CORE or script-only behavior"
+            "runtime_path"
           ]
         },
         "numbers": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Cost=-10; XP=none",
-            "The configured multiplier is 1.5, but the event-argument mismatch prevents the additional lost*(1.5-1.0) health reduction from executing for real engine events."
+            "A resolved loss L applies min(L*0.5, remaining health), producing 1.5*L total loss when the player survives and never reducing below zero."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "numerical behavior"
+            "numbers"
           ]
         },
         "cadence": {
           "state": "proven-correct",
           "evidence": [
-            "OnNewGame marker UT_damageMult=1.5, consumed by UTCore_DamageMultHook"
+            "The hook reuses UT_CORE's single central player-update dispatch and performs one aggregate-health read per update only while a valid multiplier is active."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cadence"
           ]
@@ -20767,139 +20770,154 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
-            "No explicit cooldown beyond documented event/throttle"
+            "No cooldown is part of the accepted always-on damage contract."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "cooldowns"
+            "cooldown"
           ]
         },
         "reset_save_load": {
           "state": "runtime-unproven",
           "evidence": [
-            "modData/item-state paths inspected; standard-Lua tests only"
+            "Tracking is transient, resets for a replacement player or invalid marker, and is explicitly reset on same-process hook reload; the persistent multiplier remains in player mod data."
           ],
           "missing_proof": [
-            "No real save/reload and trait-removal game run."
+            "Current-version in-game save/load and full relaunch remain unobserved; backward save migration is a non-goal."
           ],
           "source_dimensions": [
-            "reset and save/load"
+            "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Current Java emission order is wielder,target,weapon,damageSplit; Lua handler order is attacker,weapon,target."
+            "SVN 964 exposes BodyDamage.getOverallBodyHealth and ReduceGeneralHealth. IsoPlayer emits OnPlayerUpdate before the following IsoGameCharacter update recalculates overall body health."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "Java-Lua exposure"
+            "java_lua"
           ]
         },
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "all runtime trait Lua files compile in standard Lua; zero-based Java collection loops inspected"
+            "The implementation uses Kahlua-compatible Lua and verified Java receiver methods."
           ],
           "missing_proof": [
-            "Standard Lua is not Kahlua runtime proof."
+            "Current-build Kahlua execution is unobserved."
           ],
           "source_dimensions": [
-            "Kahlua compatibility"
+            "kahlua"
           ]
         },
         "events": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "The handler is registered on Events.OnWeaponHitCharacter, but its parameter order disagrees with the engine event contract and it returns before applying damage."
+            "One stable core dispatcher delegates to the current callback across reloads, and any obsolete weapon listener is removed. Focused tests prove the handler count remains stable."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "event lifecycle"
+            "events"
           ]
         },
         "stacking_interactions": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "OnNewGame marker UT_damageMult=1.5, consumed by UTCore_DamageMultHook",
-            "declared exclusions=UT_analgesia"
+            "Closed-world search finds one UT_damageMult writer and one consumer; the trait is reciprocally exclusive with UT_analgesia."
           ],
           "missing_proof": [
-            "No exhaustive multi-trait or third-party-mod interaction matrix."
+            "none"
           ],
           "source_dimensions": [
-            "stacking and cross-trait interactions"
+            "stacking_interactions"
           ]
         },
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "DisabledInMultiplayer=true"
+            "The trait is disabled in multiplayer and multiplayer support is an explicit product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "multiplayer restriction"
+            "multiplayer"
           ]
         },
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "EN UI key resolves to 'Glass Body'"
+            "The exact English display name is Glass Body."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "display name"
+            "display"
           ]
         },
         "description": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "EN promises all incoming damage x1.5; the actual OnWeaponHitCharacter path is disabled by argument-order mismatch."
+            "The English all-incoming-damage and +50 percent claims match the accepted resolved body-health multiplier."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "description accuracy"
+            "description"
           ]
         },
         "localization": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "source inventory records EN as the only locale; name and description keys exist in EN"
+            "The exact English keys exist in source and release."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "No non-English UniversalTraits locale exists."
+          ],
           "source_dimensions": [
-            "localization coverage including absent locales"
+            "localization"
           ]
         },
         "balance": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "Cost=-10; mechanics=OnNewGame marker UT_damageMult=1.5, consumed by UTCore_DamageMultHook"
+            "Static behavior is cost -10 and 1.5 times resolved incoming body-health loss."
           ],
           "missing_proof": [
-            "No gameplay telemetry, comparative pick-rate data, or explicit accepted balance rubric."
+            "No gameplay telemetry or comparative balance session exists."
           ],
           "source_dimensions": [
             "balance"
           ]
         },
         "performance": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "OnNewGame marker UT_damageMult=1.5, consumed by UTCore_DamageMultHook"
+            "No new loop was added. The existing central dispatch adds one Lua marker check for inactive players and one aggregate-health getter for an active Glass Body player."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "No current-build profiler capture exists."
+          ],
           "source_dimensions": [
-            "performance risk"
+            "performance"
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "UniversalTraits suite passed 374/0, but its glassbody test only proves UT_damageMult is written on new game and does not fire OnWeaponHitCharacter in real engine argument order."
+            "Resolved all-source loss, exact multiplier, recursion prevention, healing, lethal cap, player replacement, and same-process reload are regression-protected."
           ],
           "missing_proof": [
-            "A regression test using (wielder,target,weapon,damageSplit) is absent."
+            "none"
           ],
           "source_dimensions": [
             "tests"
@@ -20908,9 +20926,11 @@
         "mocks": {
           "state": "proven-correct",
           "evidence": [
-            "UTTestMocks.lua boundaries used by the suite; mocks preserve zero-based Java lists where applicable"
+            "The focused body-damage mock separates immediate body-part reduction from the later aggregate-health recalculation, matching SVN 964 ordering."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "mocks"
           ]
@@ -20918,23 +20938,25 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "per-trait source and 42.0 release SHA-256 hashes match"
+            "Trait runtime, shared hook, and English source/release pairs are byte-identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "source/release parity"
+            "source_release_parity"
           ]
         },
         "packaging": {
           "state": "coverage-gap",
           "evidence": [
-            "assigned per-trait release file exists and hash-matches source"
+            "All Glass Body-owned 42.0 runtime and English counterparts are present and identical."
           ],
           "missing_proof": [
-            "Shared release registries/scripts/translations were outside the allowed release-read scope."
+            "UniversalTraits and UT_CORE package verification remain blocked only by separately tracked missing source posters."
           ],
           "source_dimensions": [
-            "packaging integrity"
+            "packaging"
           ]
         }
       },
@@ -20942,14 +20964,15 @@
         "B04-glassbody-EVENT-ORDER"
       ],
       "unknowns": [
-        "The defect is statically proven from current engine emission and Lua handler signatures; no live game run was performed.",
-        "Only EN localization exists in the bounded source inventory.",
-        "Shared release packaging surfaces were not read because the delegation forbids them."
+        "Current-build Kahlua execution, full relaunch, and current-version save/load remain unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Damage and healing within one engine update are observed as their net aggregate health change.",
+        "Multiplayer and backward save migration are explicit non-goals."
       ],
-      "translation_terminal_state": "confirmed-defect",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_01_04.json",
-        "review_state": "needs-correction",
+        "review_state": "accepted",
         "omission_finding_ids": [
           "IR0104-GLASSBODY-PREDAMAGE-TIMING"
         ],
@@ -20959,10 +20982,9 @@
         ],
         "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [
-          "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-          "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-          "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-          "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
+          "Current-build Kahlua execution, full relaunch, and current-version save/load remain unobserved.",
+          "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+          "Only English UI localization exists in the closed-world source inventory."
         ]
       }
     },

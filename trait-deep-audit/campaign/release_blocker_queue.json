@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "remediation_queue_sha256": "8e9633d2a8dec2bbdc83c52d61a9272d2fe3c6e0e8931f7b3bc20626803c7ddc",
+  "remediation_queue_sha256": "e53190e151cd7928bf2604d78bf2ff9e2eb9d9d11194507273eed67e7d4ea95b",
   "category_label": "release-blocker",
   "classification_scope_statement": "Only the queue rows listed by these reviewed semantic identities are classified as release-blocker; all other rows remain unclassified in the exhaustive ledger.",
   "identities": [
@@ -14,18 +14,6 @@
       ],
       "dependencies": [],
       "evidence_scope": "Unwavering translation text contains a character rejected by the Translator load guard."
-    },
-    {
-      "semantic_identity": "trait:UT_glassbody-hit-handler",
-      "identity_kind": "trait",
-      "status": "open",
-      "priority_reason_code": "invalid-hit-handler-contract",
-      "queue_ids": [
-        "dimension:UniversalTraits:UT_glassbody:events",
-        "dimension:UniversalTraits:UT_glassbody:java_lua"
-      ],
-      "dependencies": [],
-      "evidence_scope": "Glass Body hit handling has confirmed event and Java-Lua contract defects."
     },
     {
       "semantic_identity": "event-registry:timed-action-added",

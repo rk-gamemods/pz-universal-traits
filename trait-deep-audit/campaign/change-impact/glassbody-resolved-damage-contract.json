@@ -1,0 +1,96 @@
+{
+  "schema": "ut-glassbody-resolved-damage-contract-v1",
+  "trait_id": "UniversalTraits:UT_glassbody",
+  "authority": "pre-campaign UTMods master",
+  "accepted_intent": {
+    "cost": -10,
+    "scope": "all resolved incoming body-health loss",
+    "multiplier": 1.5,
+    "exclusion": "UniversalTraits:UT_analgesia",
+    "runtime_scope": "single-player"
+  },
+  "historical_source_boundary": "More Traits confirms all-source lineage. Its extra scratch and fracture effects are evidence only and were not restored because pre-campaign UTMods master selected a flat +50 percent total-health penalty.",
+  "resolved_findings": [
+    "B04-glassbody-EVENT-ORDER",
+    "IR0104-GLASSBODY-PREDAMAGE-TIMING",
+    "XTF0104-PREDAMAGE-WEAPON-EVENT",
+    "IC-RPF-001",
+    "IC-OM-001"
+  ],
+  "engine_evidence": [
+    "PZCodebase/Java/source/zombie/characters/IsoPlayer.java:2241",
+    "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6768-6791,9737",
+    "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyDamage.java:1060-1073,2419,2465-2478"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_glassbody.lua",
+      "sha256": "F72B0DC0D21AF27755E576E142F50FF834A82BA38742BC64FCA32EE2BFBC1AC5",
+      "bytes": 280
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_glassbody.lua",
+      "sha256": "F72B0DC0D21AF27755E576E142F50FF834A82BA38742BC64FCA32EE2BFBC1AC5",
+      "bytes": 280
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
+      "sha256": "3E411385566AD04BCAE211DD4BA9917EF91D3E77230BA4179670CDE350D59B05",
+      "bytes": 3139
+    },
+    {
+      "path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
+      "sha256": "3E411385566AD04BCAE211DD4BA9917EF91D3E77230BA4179670CDE350D59B05",
+      "bytes": 3139
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "C8A3B1E644300DD354A9F2E98F110AC91267EC2B9172A7FCF9253FF3E59D1FEE",
+      "bytes": 36923
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "C8A3B1E644300DD354A9F2E98F110AC91267EC2B9172A7FCF9253FF3E59D1FEE",
+      "bytes": 36923
+    },
+    {
+      "path": "UT_CORE/test/run_tests.lua",
+      "sha256": "109777A2CEB770F8A1737D4853FAA20F28473DA85C275F76F6599FBEF9EDBE89",
+      "bytes": 101721
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "364A554767C69E4DCE976272EF0519E1E535A0CD1014471693B1454D588632C3",
+      "bytes": 263229
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_glassbody.md",
+      "sha256": "259225DD40C577671561D5FA9624CF47ED72B8385CFC060DFB74B3AC4FE7796F",
+      "bytes": 6871
+    }
+  ],
+  "regression_cases": [
+    "exact 1.5 trait marker",
+    "resolved all-source health loss",
+    "no recursive multiplication",
+    "multiplier at one",
+    "healing baseline reset",
+    "lethal extra-damage cap",
+    "replacement player baseline",
+    "same-process hook reload"
+  ],
+  "preserved_surfaces": [
+    "trait cost",
+    "all-source scope",
+    "+50 percent multiplier",
+    "reciprocal Analgesia exclusion",
+    "registration and English copy"
+  ],
+  "performance_model": "No new loop or handler is added. The existing central dispatch performs one marker lookup for inactive players and one aggregate-health getter per active Glass Body update.",
+  "runtime_proof": "Unobserved; requires full Exit to Desktop, current-build multi-source damage observation, current-version save/load, rendered English, and profiler capture.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment"
+  ]
+}

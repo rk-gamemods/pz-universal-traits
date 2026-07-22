@@ -1,78 +1,74 @@
 # UT_glassbody
 
-## Trait Summary
-- UT trait id: UT_glassbody
-- Source mod: More Traits (ToadTraits / MoreTraits)
-- Source trait id: ToadTraits:glassbody
-- Current cost: -10
-- Scripted: yes
-- Owner: agent
-- Status: complete
+## Accepted Contract
 
-## Source Evidence
-- Source files reviewed:
-  - `research/installed-mods/MoreTraits/mods/More Traits/42.15/media/scripts/ToadTraits.txt` (script definition)
-  - `research/installed-mods/MoreTraits/mods/More Traits/42.15/media/lua/shared/MoreTraits .lua` (runtime implementation)
-  - `research/installed-mods/MoreTraits/mods/More Traits/42.15/media/lua/shared/Translate/EN/UI_EN.txt` (source strings)
-- Source trigger path: `Events.OnPlayerUpdate` fires `OnPlayerUpdate`, which calls `GlassBody(player, playerData)` each frame when the player has the trait. A separate `Events.OnPlayerGetDamage` listener (`MTPlayerHit`) also checks for the trait but does not duplicate the GlassBody call; the damage amplification is applied inside `GlassBody` on the update loop.
-- Source behavior: On each player update tick, the mod reads `bodyDamage:getOverallBodyHealth()` and compares it to the previously stored value. If HP dropped and the drop was between 0 and 50 HP, it rolls a 33% chance to apply a secondary wound to a random body part. The additional damage applied is `difference * 2` (doubling the detected drop). If the drop exceeds 0.33 HP the secondary effect is a fracture (`fractureTime = ZombRand(20) + 10`); if between 0.1 and 0.33 it is a scratch. Lucky/Unlucky modifiers shift the 33% chance and woundstrength by ±5 per luck impact level. The effect is suppressed while the player is asleep or the time multiplier exceeds 4.0. The source description claims ×2 total damage from all sources, scratch-from-minor-injuries, broken-bone-from-short-falls, and encumbrance damage — all delivered through this secondary wound system, not a direct multiplier. The cost in source is -10 with `DisabledInMultiplayer = false`.
+- Authority: pre-campaign UTMods `master`.
+- Trait ID: `UniversalTraits:UT_glassbody`.
+- Cost: -10.
+- Exclusion: `UniversalTraits:UT_analgesia`, declared reciprocally.
+- Intended outcome: all incoming damage reduces overall body health by 1.5 times the ordinary resolved loss.
+- Setup: `Events.OnNewGame` writes `UT_damageMult = 1.5` to player mod data.
+- Scope: single-player. Multiplayer and backward save migration are explicit non-goals.
 
-## Current UT Evidence
-### Structure
-- Registered in registries.lua: yes
-- Defined in UT_character_traits.txt: yes
-- Translation strings present: yes
-- Exclusions/grants correct: yes — mutually exclusive with `UniversalTraits:UT_analgesia` (bidirectional, confirmed in both definitions)
-- Runtime Lua file exists: yes
+The pre-campaign English description promises "All incoming damage" at a 1.5 multiplier. The pre-campaign shared implementation attempted to consume the same marker, so weapon-only behavior is not an accepted narrowing of intent.
 
-### Runtime Trace
-- Files reviewed:
-  - `media/lua/shared/UniversalTraits/traits/UT_glassbody.lua`
-  - `media/scripts/UT_character_traits.txt` (lines 1228–1237)
-  - `media/lua/shared/Translate/EN/UI_EN.txt` (lines 368–369)
-- Event registrations: `Events.OnNewGame.Add(onNewGame)`
-- UT_CORE hooks used: `UTCore.hasTrait`
-- Runtime chain (plain language):
-  1. On new game start, `onNewGame` fires.
-  2. If the player has `UniversalTraits:UT_glassbody`, the function writes `player:getModData()["UT_damageMult"] = 1.5` into the player's mod data.
-  3. No further events are registered. The trait solely relies on whatever downstream system reads `UT_damageMult` from mod data and applies it as a damage multiplier.
-- Actual behavior (exact values): Sets `UT_damageMult = 1.5` (+50% incoming damage). One-shot on new game only; no update loop, no per-hit recalculation, no fracture, no scratch, no encumbrance check, no luck interaction.
+## Historical Source Boundary
 
-## Description Integrity
-- Display name check: "Glass Body" — matches intent and source name ("Made of Glass" in source). Acceptable rename.
-- Description check: "Your body feels like it was built to break. All incoming damage is multiplied by ×1.5 (+50% damage taken)." — accurately reflects the UT implementation (a flat 1.5× multiplier flag). However, it is a narrower promise than the source trait, which also caused scratches, fractures, and encumbrance damage.
-- Missing or misleading details: The description does not mention that the multiplier is only applied at new-game start and has no effect on saves loaded mid-game or characters created outside `OnNewGame`. The description also does not flag that the trait only functions if a consuming system reads `UT_damageMult` from mod data — if that system is absent or not loaded, the trait silently does nothing.
+More Traits 42.15 is supporting lineage evidence, not the authority for this port. Its `glassbody` implementation observes overall body-health loss and its English copy says damage from all sources. It also adds probabilistic scratches and fractures. Pre-campaign UTMods deliberately replaced that larger mechanic with a flat +50 percent total-health penalty, so the extra wound behavior was not restored.
 
-## Balance Review
-- Upside: none — pure downside trait
-- Downside: +50% incoming damage from all sources (×1.5 multiplier stored in mod data), permanent for the life of the character
-- Uptime: always-on (100%), provided the downstream damage-multiplier system reads the flag
-- Peer comparison:
-  - `UT_brittle` costs -6 and applies a narrower physical debuff
-  - `UT_analgesia` costs +12 (mutually exclusive positive counterpart)
-  - Source `ToadTraits:glassbody` cost was also -10, confirming cost was ported directly
-- Stack or exclusion notes: Mutually exclusive with `UT_analgesia`. No stated exclusion from other damage-modifier traits (`UT_brittle` can be taken alongside, stacking debuffs).
-- Cost verdict: justified — -10 for a permanent +50% damage-taken multiplier with no conditions or uptime limits is consistent with the source cost and comparable to peer traits at similar price points, assuming the multiplier system actually applies it.
+## Corrected Runtime Trace
+
+1. `UT_glassbody.lua` handles `OnNewGame` and writes the exact multiplier `1.5` only for a player with the trait.
+2. UT_CORE already owns one central `OnPlayerUpdate` dispatch. `UTCore_DamageMultHook.lua` installs one stored core-dispatch callback and does not add a second update loop.
+3. If `UT_damageMult` is absent, non-finite, or at most 1.0, the callback clears its transient baseline and returns.
+4. For an active multiplier, the callback reads `BodyDamage:getOverallBodyHealth()` and establishes a baseline for the current player object.
+5. A later resolved health decrease is multiplied by applying `(previousHealth - currentHealth) * (multiplier - 1)` through `BodyDamage:ReduceGeneralHealth()`.
+6. Extra damage is capped at the remaining health. Healing replaces the baseline and is never treated as damage.
+7. The callback stores the expected post-reduction health because `ReduceGeneralHealth()` changes body parts immediately while `calculateOverallHealth()` refreshes the aggregate later. This prevents the hook from multiplying its own extra damage on the next update.
+8. Player replacement, missing state, invalid health, and same-process Lua reload establish a fresh baseline instead of attributing old health to a new session.
+9. Reload removes any obsolete pre-resolution `OnWeaponHitCharacter` listener left by an earlier version. A stable dispatcher wrapper swaps to the current callback without adding another core handler.
+
+## Engine Contract
+
+- SVN 964 `IsoPlayer.updateInternal2()` emits `OnPlayerUpdate` before `IsoPlayer.updateInternal1()` continues into `IsoGameCharacter.update()`.
+- `IsoGameCharacter.update()` calls `BodyDamage.Update()`, which processes body damage and recalculates `overallBodyHealth` from the body parts.
+- The following central update therefore observes the resolved aggregate loss. The correction is source-agnostic because it measures the resulting body-health change, not a source-specific event payload.
+- SVN 964 emits `OnWeaponHitCharacter` and `OnPlayerGetDamage(..., "WEAPONHIT", ...)` before cancellation, avoidance, `noDamage`, and `processHitDamage`. Those events cannot safely supply resolved weapon damage.
+- Other `OnPlayerGetDamage` producers use inconsistent timing and payload semantics. Avoiding them prevents weapon cancellation defects and covers sources that are represented only by body-health changes.
+- `BodyDamage.ReduceGeneralHealth(float)` is public to Lua and distributes the extra loss across body parts. `BodyDamage.calculateOverallHealth()` later recomputes the aggregate from those parts.
+
+## Corrected Defects
+
+- The pre-campaign callback bound the weapon and target arguments in the wrong order, so real weapon hits returned without applying the trait.
+- Correcting only that order was still insufficient because the weapon events occur before resolved damage and can fire for cancelled or avoided hits.
+- The intermediate development implementation used pre-resolution `damageSplit`, so it could penalize cancelled contacts, ignored final armor and damage processing, and covered weapon hits only.
+- The replacement measures resolved overall health and restores the promised all-source scope.
+- The old tests simulated base damage before firing a pre-damage event. The corrected tests model resolved aggregate health, delayed `calculateOverallHealth()`, healing, lethal caps, player replacement, exact multiplier setup, and reload idempotence.
+
+## Performance Contract
+
+- No new event loop, process, timer, inventory scan, body-part scan, allocation-heavy queue, or background worker was added.
+- The existing central update already obtains player mod data and the body-damage object once per frame for all UT_CORE handlers.
+- An inactive player pays one Lua table lookup and simple validation. An active Glass Body player adds one `getOverallBodyHealth()` field read and performs a reduction only after actual health loss.
+- Static bounds are small, but a current-build profiler capture remains required for empirical runtime proof.
 
 ## Regression Proof
-- Existing test: `run_tests.lua` line 250 — `UT_glassbody` appears in the `expected_ids` list used by the "all 198 trait IDs registered with CharacterTrait" test and the "total registration count is 198" test.
-- What it proves: The trait ID is registered in `registries.lua` and `CharacterTrait` sees it. Confirms the trait exists and is enumerable. Does not prove runtime behavior.
-- Missing proof:
-  - No test verifies that `onNewGame` sets `UT_damageMult = 1.5` on a player with the trait.
-  - No test verifies that a player without the trait does not receive `UT_damageMult`.
-  - No test verifies the mutual exclusion with `UT_analgesia` is enforced.
-  - No test verifies that the consuming damage system reads and applies `UT_damageMult` correctly.
-- Minimum next test if needed: Mock a player with `UT_glassbody`, call `onNewGame(player)`, assert `player:getModData()["UT_damageMult"] == 1.5`. Mock a player without the trait and assert `UT_damageMult` is nil after the same call.
 
-## Final Verdict
-- Source origin: proven — `ToadTraits:glassbody` from MoreTraits confirmed with matching cost (-10), trait ID structure, and display name lineage
-- UT implementation: simplified — the source applied a complex per-tick wound system (fractures, scratches, encumbrance damage, luck interaction, sleep suppression); the UT version replaces all of that with a single mod-data flag (`UT_damageMult = 1.5`) written once at new-game start
-- Description: incomplete — accurate for the UT implementation as written, but does not disclose that the effect is new-game-only, does not warn that it is inert without a consuming system, and omits the secondary wound behaviors present in the source
-- Balance: justified — cost matches source and is proportionate to the stated penalty
-- Regression proof: partially protected — registration is proven; runtime behavior is unproven
-- Action needed: test fix, doc fix
-- Open gaps:
-  - No behavioral test for `onNewGame` setting `UT_damageMult`
-  - Description should note the new-game-only application and dependency on a consuming damage-multiplier system
-  - Confirm whether `OnLoadedPlayer` or a similar event should also set the flag (currently characters loaded from save after a restart would not have the flag re-applied unless the consuming system persists it)
-  - `DisabledInMultiplayer` is `true` in UT; source had `false` — divergence should be a conscious decision, not an oversight
+- UT_CORE standard-Lua suite: 252 passed, 0 failed.
+- UniversalTraits standard-Lua suite: 448 passed, 0 failed.
+- Focused coverage proves exact +50 percent resolved loss, no recursive multiplication, multiplier-at-one no-op, healing baseline reset, lethal cap, player replacement, same-process reload idempotence, and exact `UT_damageMult = 1.5` setup.
+- Source and 42.0 release copies of the shared hook are byte-identical.
+- Source and 42.0 release copies of the trait runtime and English UI remain byte-identical.
+- Read-only package verification reports no release-content drift. Both UniversalTraits and UT_CORE remain separately blocked by missing source `poster.png` assets that are also absent from pre-campaign `master`.
+
+## Remaining Runtime Proof
+
+- Execute under the current Kahlua runtime after a full Exit to Desktop and relaunch.
+- Observe weapon damage, a cancelled or avoided weapon contact, falling, fire, bleeding, and one periodic survival-stat damage source.
+- Confirm each resolved loss totals 1.5 times ordinary damage and that the hook never multiplies a cancelled or zero-health-loss contact.
+- Save and reload a current-version Glass Body character, then verify that the transient baseline initializes without immediate damage and the next real loss is multiplied once.
+- Capture a representative profiler sample. Rendered English and balance telemetry remain unobserved.
+
+## Verdict
+
+The accepted all-source +50 percent damage contract is statically reconciled and regression-protected. Current-build in-game behavior, save/load, rendering, and performance remain explicitly runtime-unproven. No deployment was performed.

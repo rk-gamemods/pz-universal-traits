@@ -3591,10 +3591,10 @@ test("fasthands sets UT_transferSpeedMult < 1 on new game", function()
     assert_true(type(v) == "number" and v < 1.0, "expected UT_transferSpeedMult < 1.0, got " .. tostring(v))
 end)
 
-test("glassbody sets UT_damageMult > 1 on new game", function()
+test("glassbody sets the exact 1.5 damage multiplier on new game", function()
     local p = fireNewGame("UniversalTraits:UT_glassbody")
     local v = p:getModData()["UT_damageMult"]
-    assert_true(type(v) == "number" and v > 1.0, "expected UT_damageMult > 1.0, got " .. tostring(v))
+    assert_eq(v, 1.5, "expected UT_damageMult=1.5")
 end)
 
 -- ─── Group 2: OnNewGame XP / modifiers ───────────────────────────────────────

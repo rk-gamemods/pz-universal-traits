@@ -54,6 +54,11 @@ end
 local function assert_true(v, msg)
     if not v then error((msg or "expected true, got falsy"), 2) end
 end
+local function assert_close(a, b, epsilon, msg)
+    if math.abs(a - b) > epsilon then
+        error((msg or "values differ") .. " expected=" .. tostring(b) .. " got=" .. tostring(a), 2)
+    end
+end
 local function withActivePlayer(player, fn)
     local originalGetPlayer = _G.getPlayer
     _G.getPlayer = function() return player end
@@ -1771,43 +1776,96 @@ end)
 
 -- ===== DamageMultHook tests =====
 
-test("DamageMultHook applies extra health loss on weapon hit", function()
+local function makeDamageMultPlayer(multiplier, initialHealth)
     local p = MockPlayer({})
-    p:setHealth(100)
-    p:getModData()["UT_damageMult"] = 1.5
-    _G.getPlayer = function() return p end
-    Events.OnPlayerUpdate.fire(p)   -- store prevHealth = 100
-    p:setHealth(80)                  -- simulate 20 damage taken
-    Events.OnWeaponHitCharacter.fire(nil, p, nil, 20)
-    _G.getPlayer = function() return nil end
-    -- lost=20; extra = 20*(1.5-1.0)=10; final = 80-10 = 70
-    assert(math.abs(p:getHealth() - 70) < 0.01,
-        "expected health 70 (extra 10 from 1.5x mult), got " .. tostring(p:getHealth()))
+    local reportedHealth = initialHealth or 100
+    local bodyPartHealth = reportedHealth
+    local reductions = {}
+    local bodyDamage = {
+        getOverallBodyHealth = function() return reportedHealth end,
+        ReduceGeneralHealth = function(_, amount)
+            reductions[#reductions + 1] = amount
+            bodyPartHealth = math.max(0, bodyPartHealth - amount)
+        end,
+    }
+    p:setBodyDamage(bodyDamage)
+    p:getModData()["UT_damageMult"] = multiplier
+    return p, {
+        setResolvedHealth = function(value)
+            reportedHealth = value
+            bodyPartHealth = value
+        end,
+        flushBodyPartHealth = function()
+            reportedHealth = bodyPartHealth
+        end,
+        getBodyPartHealth = function() return bodyPartHealth end,
+        reductions = reductions,
+    }
+end
+
+test("DamageMultHook applies +50 percent to resolved all-source health loss", function()
+    local p, health = makeDamageMultPlayer(1.5, 100)
+    Events.OnPlayerUpdate.fire(p) -- establish the baseline
+    health.setResolvedHealth(80)  -- any engine damage source resolved 20 health loss
+    Events.OnPlayerUpdate.fire(p)
+    assert_eq(#health.reductions, 1, "expected one extra-damage application")
+    assert_close(health.reductions[1], 10, 0.0001, "expected 50 percent extra damage")
+    assert_close(health.getBodyPartHealth(), 70, 0.0001, "expected 30 total damage")
+end)
+
+test("DamageMultHook does not multiply its own deferred body-part reduction", function()
+    local p, health = makeDamageMultPlayer(1.5, 100)
+    Events.OnPlayerUpdate.fire(p)
+    health.setResolvedHealth(80)
+    Events.OnPlayerUpdate.fire(p)
+    health.flushBodyPartHealth() -- mirrors the next BodyDamage.calculateOverallHealth
+    Events.OnPlayerUpdate.fire(p)
+    assert_eq(#health.reductions, 1, "expected no recursive extra-damage application")
 end)
 
 test("DamageMultHook does nothing when mult is 1.0", function()
-    local p = MockPlayer({})
-    p:setHealth(100)
-    p:getModData()["UT_damageMult"] = 1.0
-    _G.getPlayer = function() return p end
+    local p, health = makeDamageMultPlayer(1.0, 100)
     Events.OnPlayerUpdate.fire(p)
-    p:setHealth(80)
-    Events.OnWeaponHitCharacter.fire(nil, p, nil, 20)
-    _G.getPlayer = function() return nil end
-    assert_eq(p:getHealth(), 80, "expected no extra loss when mult=1.0")
+    health.setResolvedHealth(80)
+    Events.OnPlayerUpdate.fire(p)
+    assert_eq(#health.reductions, 0, "expected no extra loss when mult=1.0")
 end)
 
-test("DamageMultHook does not fire for a different target", function()
-    local p = MockPlayer({})
-    p:setHealth(100)
-    p:getModData()["UT_damageMult"] = 2.0
-    _G.getPlayer = function() return p end
+test("DamageMultHook resets its baseline after healing", function()
+    local p, health = makeDamageMultPlayer(1.5, 70)
     Events.OnPlayerUpdate.fire(p)
-    p:setHealth(80)
-    local otherTarget = MockPlayer({})
-    Events.OnWeaponHitCharacter.fire(nil, otherTarget, nil, 20)
-    _G.getPlayer = function() return nil end
-    assert_eq(p:getHealth(), 80, "expected no extra loss when target is another character")
+    health.setResolvedHealth(90)
+    Events.OnPlayerUpdate.fire(p)
+    health.setResolvedHealth(80)
+    Events.OnPlayerUpdate.fire(p)
+    assert_close(health.reductions[1], 5, 0.0001, "expected only later 10-point loss multiplied")
+end)
+
+test("DamageMultHook caps extra damage at remaining health", function()
+    local p, health = makeDamageMultPlayer(3.0, 10)
+    Events.OnPlayerUpdate.fire(p)
+    health.setResolvedHealth(4)
+    Events.OnPlayerUpdate.fire(p)
+    assert_close(health.reductions[1], 4, 0.0001, "expected extra damage capped at remaining health")
+    assert_close(health.getBodyPartHealth(), 0, 0.0001, "expected zero body-part health")
+end)
+
+test("DamageMultHook initializes a replacement player without cross-attributing loss", function()
+    local first, firstHealth = makeDamageMultPlayer(1.5, 100)
+    local second, secondHealth = makeDamageMultPlayer(1.5, 35)
+    Events.OnPlayerUpdate.fire(first)
+    Events.OnPlayerUpdate.fire(second)
+    assert_eq(#firstHealth.reductions, 0, "expected no loss on the first player")
+    assert_eq(#secondHealth.reductions, 0, "expected replacement player to establish a baseline")
+end)
+
+test("DamageMultHook reload replaces behavior without adding a dispatcher", function()
+    local coreCount = UTCore.getCoreHandlerCount()
+    local weaponCount = Events.OnWeaponHitCharacter._handlerCount()
+    dofile(base .. "../media/lua/shared/UTCore/UTCore_DamageMultHook.lua")
+    assert_eq(UTCore.getCoreHandlerCount(), coreCount, "expected one stored core dispatcher")
+    assert_eq(Events.OnWeaponHitCharacter._handlerCount(), weaponCount,
+        "expected no damage-multiplier weapon listener after reload")
 end)
 
 -- ===== FractureHook tests =====

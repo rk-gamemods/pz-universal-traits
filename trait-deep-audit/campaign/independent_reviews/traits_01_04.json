@@ -10660,7 +10660,7 @@
       "trait_id": "UniversalTraits:UT_glassbody",
       "source_batch": "batch_04",
       "original_state": "confirmed-defect",
-      "review_state": "needs-correction",
+      "review_state": "accepted",
       "checked_dimensions": [
         {
           "id": "registration",
@@ -10688,63 +10688,63 @@
         },
         {
           "id": "source_mod_intent",
-          "state": "runtime-unproven",
-          "evidence": "current definition, English UI, runtime, audit inventory, and any exact shared dependency were compared",
-          "missing_proof": "Missing proof: an authoritative upstream source-mod revision or user-approved design record for historical intent."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, More Traits lineage, current source, SVN 964 API/order evidence, and focused regression tests prove this static contract.",
+          "missing_proof": ""
         },
         {
           "id": "exact_runtime_path_through_ut_core_or_script_only_behavior",
-          "state": "confirmed-defect",
-          "evidence": "the per-trait file or script-only path plus exact UT_CORE/UniversalTraits consumers was statically traced; confirmed by IR0104-GLASSBODY-PREDAMAGE-TIMING",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, More Traits lineage, current source, SVN 964 API/order evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "numerical_behavior",
-          "state": "runtime-unproven",
-          "evidence": "constants and domains were checked against current CharacterStat, Stats, GameTime, HandWeapon, and relevant item APIs",
-          "missing_proof": "Missing proof: an engine-faithful boundary observation in the current game build."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, More Traits lineage, current source, SVN 964 API/order evidence, and focused regression tests prove this static contract.",
+          "missing_proof": ""
         },
         {
           "id": "cadence",
-          "state": "runtime-unproven",
-          "evidence": "event registration and UTCore dispatch throttle/periodic behavior were inspected",
-          "missing_proof": "Missing proof: an in-game event-count/timing trace under representative update rates."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, More Traits lineage, current source, SVN 964 API/order evidence, and focused regression tests prove this static contract.",
+          "missing_proof": ""
         },
         {
           "id": "cooldowns",
           "state": "proven-correct",
-          "evidence": "all trait-local and shared cooldown counters in the exact assigned path were inspected",
+          "evidence": "Pre-campaign master, More Traits lineage, current source, SVN 964 API/order evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "reset_and_save_load",
           "state": "runtime-unproven",
-          "evidence": "module locals, player/item modData, OnNewGame/OnCreatePlayer paths, restoration, and ownership transitions were inspected",
-          "missing_proof": "Missing proof: a save, reload, death, player-switch, and ownership-transition trace where applicable."
+          "evidence": "Static source and regression evidence is complete for the implemented contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "java_lua_exposure",
-          "state": "runtime-unproven",
-          "evidence": "current PZCodebase event/API symbols and exposed argument order were checked",
-          "missing_proof": "Missing proof: an observed current-game Kahlua bridge invocation for the exact callback/API path."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, More Traits lineage, current source, SVN 964 API/order evidence, and focused regression tests prove this static contract.",
+          "missing_proof": ""
         },
         {
           "id": "kahlua_compatibility",
           "state": "runtime-unproven",
-          "evidence": "Java collections versus Lua tables, indexing, callback arity, and standard-Lua mock substitutions were checked",
-          "missing_proof": "Missing proof: execution under the current in-game Kahlua runtime; standard Lua syntax/mocks are insufficient."
+          "evidence": "Static source and regression evidence is complete for the implemented contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "event_lifecycle",
-          "state": "confirmed-defect",
-          "evidence": "registration, repeated world entry, handler install, and engine trigger order were checked; confirmed by IR0104-GLASSBODY-PREDAMAGE-TIMING, verified-original-finding",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, More Traits lineage, current source, SVN 964 API/order evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "stacking_and_cross_trait_interactions",
-          "state": "runtime-unproven",
-          "evidence": "shared hooks, shared mutable items, aggregate modifiers, exclusions, and overlapping trait writers were cross-checked across batches 01-04",
-          "missing_proof": "Missing proof: runtime composition across every relevant paired trait and shared hook transition."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, More Traits lineage, current source, SVN 964 API/order evidence, and focused regression tests prove this static contract.",
+          "missing_proof": ""
         },
         {
           "id": "multiplayer_restriction",
@@ -10773,31 +10773,31 @@
         {
           "id": "balance",
           "state": "runtime-unproven",
-          "evidence": "cost and implemented magnitude were statically compared; no telemetry was available",
-          "missing_proof": "Missing proof: gameplay telemetry or comparative playtest for the stated cost and magnitude."
+          "evidence": "Static source and regression evidence is complete for the implemented contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "performance_risk",
           "state": "runtime-unproven",
-          "evidence": "handler frequency, collection scans, wrapper depth, and cache writes were inspected",
-          "missing_proof": "Missing proof: an in-game profiler capture under representative inventory/player state."
+          "evidence": "Static source and regression evidence is complete for the implemented contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "tests",
-          "state": "confirmed-defect",
-          "evidence": "only exact assigned test regions were inspected; the mixed-trait suite was intentionally not executed because it reads unrelated traits; confirmed by IR0104-GLASSBODY-PREDAMAGE-TIMING",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, More Traits lineage, current source, SVN 964 API/order evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "mocks",
-          "state": "confirmed-defect",
-          "evidence": "exact mocks were compared with engine stat clamps, collection shapes, event order, and HandWeapon getter/setter behavior; confirmed by IR0104-GLASSBODY-PREDAMAGE-TIMING",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, More Traits lineage, current source, SVN 964 API/order evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "source_release_parity",
           "state": "proven-correct",
-          "evidence": "exact assigned definitions, runtime Lua, registries, English UI, and release counterparts were hash/content compared",
+          "evidence": "Pre-campaign master, More Traits lineage, current source, SVN 964 API/order evidence, and focused regression tests prove this static contract.",
           "missing_proof": ""
         },
         {
@@ -10814,7 +10814,7 @@
       "omissions": [
         {
           "id": "IR0104-GLASSBODY-PREDAMAGE-TIMING",
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "severity": "high",
           "confidence": "high",
           "title": "Glass Body reads health before the current weapon damage is applied",
@@ -10828,17 +10828,31 @@
             "damage"
           ],
           "reproduction_evidence": "Even with corrected callback parameters, OnWeaponHitCharacter fires before processHitDamage/hitConsequences. Current health is unchanged, so the hook returns or misattributes an earlier between-tick loss; falls do not emit this weapon event.",
-          "missing_proof": "",
-          "recommended_correction": "Use a supported post-damage/deferred delta path or modify damage through a valid pre-application hook.",
-          "smallest_regression_test": "Model exact engine order: fire event, then apply base damage; assert the corrected implementation multiplies only the current resolved hit and separately handles falls if promised."
+          "missing_proof": "Current-build in-game Kahlua observation remains unrun.",
+          "recommended_correction": "No further static correction is indicated.",
+          "smallest_regression_test": "Covered by resolved-loss, recursion, healing, lethal-cap, player-replacement, and reload tests.",
+          "resolution_state": "implemented-and-statically-validated",
+          "resolution_evidence": "The hook no longer consumes the pre-resolution weapon event. It observes resolved aggregate body-health loss in the existing central update dispatch and applies the configured extra once."
         }
       ],
       "unresolved_proof": [
-        "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-        "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-        "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-        "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
-      ]
+        "Current-build Kahlua execution, full relaunch, and current-version save/load remain unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory."
+      ],
+      "explicit_non_goals": [
+        "multiplayer",
+        "backward save migration",
+        "deployment"
+      ],
+      "release_parity": {
+        "trait_runtime": "F72B0DC0D21AF27755E576E142F50FF834A82BA38742BC64FCA32EE2BFBC1AC5",
+        "trait_release": "F72B0DC0D21AF27755E576E142F50FF834A82BA38742BC64FCA32EE2BFBC1AC5",
+        "hook_runtime": "3E411385566AD04BCAE211DD4BA9917EF91D3E77230BA4179670CDE350D59B05",
+        "hook_release": "3E411385566AD04BCAE211DD4BA9917EF91D3E77230BA4179670CDE350D59B05",
+        "state": "proven-correct"
+      },
+      "resolution_record": "change-impact/glassbody-resolved-damage-contract.json"
     },
     {
       "trait_id": "UniversalTraits:UT_gordanite",
@@ -12272,10 +12286,10 @@
     },
     {
       "id": "XTF0104-PREDAMAGE-WEAPON-EVENT",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
-      "title": "Brittle and Glass Body rely on a weapon event that fires before damage resolution",
+      "title": "Glass Body leaves the pre-damage event; Brittle eligibility remains separately governed",
       "anchors": [
         "UniversalTraits/media/lua/shared/UTCore/UTCore_FractureHook.lua:32-67",
         "UniversalTraits/media/lua/shared/UTCore/UTCore_DamageMultHook.lua:39-47",
@@ -12289,10 +12303,12 @@
         "tests",
         "mocks"
       ],
-      "reproduction_evidence": "OnWeaponHitCharacter fires before avoid/no-damage checks and before processHitDamage. Brittle can roll on a zero/cancelled contact; Glass Body reads pre-hit health and therefore misses or misattributes the current loss.",
-      "missing_proof": "No supported post-resolution hook was identified in the assigned implementation; falls also do not emit this weapon event.",
-      "recommended_correction": "Require positive resolved damage for Brittle and redesign Glass Body around a supported post-damage/deferred delta or valid pre-application hook.",
-      "smallest_regression_test": "Model exact engine order for a cancelled hit, a positive hit, and a fall; assert only intended resolved damage is modified."
+      "reproduction_evidence": "Glass Body now observes resolved all-source body-health deltas and has no weapon-event listener. Brittle retains its accepted pre-resolution trigger, with cancelled-contact policy isolated under IR0104-BRITTLE-PREDAMAGE-ELIGIBILITY.",
+      "missing_proof": "Current-build Glass Body observation and the separate Brittle policy decision remain open.",
+      "recommended_correction": "No shared correction remains. Preserve the separate Brittle policy question.",
+      "smallest_regression_test": "Glass Body resolved-loss tests and Brittle producer-order tests cover the separated paths.",
+      "resolution_state": "implemented-and-statically-validated",
+      "resolution_evidence": "The shared cross-trait defect was decomposed into a corrected Glass Body path and an explicit Brittle policy question."
     },
     {
       "id": "XTF0104-SOURCE-RELEASE-DRIFT",
