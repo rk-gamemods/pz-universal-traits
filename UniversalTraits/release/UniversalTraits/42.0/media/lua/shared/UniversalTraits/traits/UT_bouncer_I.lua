@@ -31,7 +31,6 @@ local BASE_SEC_II    = 220
 local SEC_PER_STR_I  = 10
 local SEC_PER_STR_II = 20
 local MIN_CD_SEC     = 10
-local TICKS_PER_SEC  = 60
 
 local SNAPSHOT_KEY = "UT_bouncer_snapshot"
 local COOLDOWN_KEY = "UT_bouncer_cooldown"
@@ -131,8 +130,7 @@ local function computeCooldown(player, isTierII)
     local strength = 0
     pcall(function() strength = player:getPerkLevel(Perks.Strength) end)
     local cdSec = math.max(MIN_CD_SEC, baseSec - strength * secPerStr)
-    local storedCooldown = isTierII and cdSec * TICKS_PER_SEC or cdSec
-    return storedCooldown, strength, cdSec
+    return cdSec, strength, cdSec
 end
 
 local function onTick(player, tick)
@@ -148,16 +146,11 @@ local function onTick(player, tick)
         return
     end
 
-    -- Tier I is specified in real-world seconds, so use the engine's
-    -- frame-rate-adjusted elapsed-seconds delta. Tier II remains unchanged
-    -- until its separate trait pass.
+    -- Both tiers are specified in real-world seconds, so use the engine's
+    -- frame-rate-adjusted elapsed-seconds delta.
     if md[COOLDOWN_KEY] > 0 then
-        if isTierII then
-            md[COOLDOWN_KEY] = md[COOLDOWN_KEY] - 1
-        else
-            local elapsed = getGameTime():getRealworldSecondsSinceLastUpdate()
-            md[COOLDOWN_KEY] = math.max(0, md[COOLDOWN_KEY] - elapsed)
-        end
+        local elapsed = getGameTime():getRealworldSecondsSinceLastUpdate()
+        md[COOLDOWN_KEY] = math.max(0, md[COOLDOWN_KEY] - elapsed)
         -- Cooldown just expired this tick: re-baseline the snapshot.
         -- Whatever exists now is treated as pre-existing and ignored
         -- on future ticks.

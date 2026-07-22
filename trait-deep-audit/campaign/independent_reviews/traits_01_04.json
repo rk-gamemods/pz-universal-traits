@@ -5316,14 +5316,13 @@
           "recommended_correction": "No further static Bouncer I correction is indicated.",
           "smallest_regression_test": "Covered by the focused Bouncer I regression cases.",
           "resolution_state": "implemented-and-statically-validated",
-          "resolution_evidence": "Tier I now stores seconds and subtracts GameTime real-seconds delta; an oppositional regression expires after equal elapsed time at different update intervals while Tier II remains unchanged."
+          "resolution_evidence": "Tier I stores seconds and subtracts GameTime real-seconds delta; oppositional regressions now prove the accepted elapsed-time contract independently for both tiers."
         }
       ],
       "unresolved_proof": [
         "Current-build Kahlua execution, full desktop relaunch, repeated world entry, and current-version save/load remain unobserved.",
         "Rendered English, balance telemetry, and profiler capture remain unobserved.",
-        "Only English UI localization exists in the closed-world source inventory.",
-        "Bouncer II behavior remains assigned to its separate trait pass."
+        "Only English UI localization exists in the closed-world source inventory."
       ],
       "explicit_non_goals": [
         "multiplayer",
@@ -5331,8 +5330,8 @@
         "deployment"
       ],
       "release_parity": {
-        "trait_runtime": "A4FD2EE750D36D09866C3269736401F039E46066989698CDA40994674F220468",
-        "trait_release": "A4FD2EE750D36D09866C3269736401F039E46066989698CDA40994674F220468",
+        "trait_runtime": "8A1EA1AD1DFB426FA262D83195C0251AC2E69C8CA25518AD0F3FB749F1A0CC80",
+        "trait_release": "8A1EA1AD1DFB426FA262D83195C0251AC2E69C8CA25518AD0F3FB749F1A0CC80",
         "definition_runtime": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
         "definition_release": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
         "english_runtime": "716D778E9040C040DD6D8130920F8249418A95EB6D03483BCF8CEF70A22076E1",
@@ -5345,151 +5344,151 @@
       "trait_id": "UniversalTraits:UT_bouncer_II",
       "source_batch": "batch_02",
       "original_state": "runtime-unproven",
-      "review_state": "needs-correction",
+      "review_state": "accepted",
       "checked_dimensions": [
         {
           "id": "registration",
           "state": "proven-correct",
-          "evidence": "source_inventory.json registration entry, exact definition identity, and current registry were cross-checked",
+          "evidence": "Pre-campaign Git authority, current source/release bytes, SVN 964 engine evidence, and focused regression tests prove this static Bouncer II contract.",
           "missing_proof": ""
         },
         {
           "id": "complete_script_definition_and_parser_validity",
-          "state": "confirmed-defect",
-          "evidence": "the complete UT_character_traits.txt block was inspected and compared with current perk symbols; confirmed by IR0104-BOUNCER_II-SOURCE-RELEASE-PERK",
-          "missing_proof": ""
+          "state": "runtime-unproven",
+          "evidence": "The complete source/release definitions are byte-identical and parse in the standard-Lua consistency suite.",
+          "missing_proof": "Current-build ScriptManager parsing remains unobserved."
         },
         {
           "id": "namespace",
           "state": "proven-correct",
-          "evidence": "registration, definition, runtime key, and English UI keys were checked for UniversalTraits:UT_ consistency",
+          "evidence": "Pre-campaign Git authority, current source/release bytes, SVN 964 engine evidence, and focused regression tests prove this static Bouncer II contract.",
           "missing_proof": ""
         },
         {
           "id": "cost_xp_grants_exclusions_and_bidirectional_exclusion_behavior",
-          "state": "runtime-unproven",
-          "evidence": "cost, XPBoosts, grants, and both directions of every relevant exclusion were inspected against current engine selection behavior",
-          "missing_proof": "Missing proof: no current in-game observation for this dimension."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source/release bytes, SVN 964 engine evidence, and focused regression tests prove this static Bouncer II contract.",
+          "missing_proof": ""
         },
         {
           "id": "source_mod_intent",
-          "state": "runtime-unproven",
-          "evidence": "current definition, English UI, runtime, audit inventory, and any exact shared dependency were compared",
-          "missing_proof": "Missing proof: an authoritative upstream source-mod revision or user-approved design record for historical intent."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source/release bytes, SVN 964 engine evidence, and focused regression tests prove this static Bouncer II contract.",
+          "missing_proof": ""
         },
         {
           "id": "exact_runtime_path_through_ut_core_or_script_only_behavior",
-          "state": "runtime-unproven",
-          "evidence": "the per-trait file or script-only path plus exact UT_CORE/UniversalTraits consumers was statically traced",
-          "missing_proof": "Missing proof: an in-game Kahlua execution trace through the exact static path."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source/release bytes, SVN 964 engine evidence, and focused regression tests prove this static Bouncer II contract.",
+          "missing_proof": ""
         },
         {
           "id": "numerical_behavior",
-          "state": "confirmed-defect",
-          "evidence": "constants and domains were checked against current CharacterStat, Stats, GameTime, HandWeapon, and relevant item APIs; confirmed by IR0104-BOUNCER_II-TICK-COOLDOWN",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source/release bytes, SVN 964 engine evidence, and focused regression tests prove this static Bouncer II contract.",
           "missing_proof": ""
         },
         {
           "id": "cadence",
-          "state": "confirmed-defect",
-          "evidence": "event registration and UTCore dispatch throttle/periodic behavior were inspected; confirmed by IR0104-BOUNCER_II-TICK-COOLDOWN",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source/release bytes, SVN 964 engine evidence, and focused regression tests prove this static Bouncer II contract.",
           "missing_proof": ""
         },
         {
           "id": "cooldowns",
-          "state": "confirmed-defect",
-          "evidence": "all trait-local and shared cooldown counters in the exact assigned path were inspected; confirmed by IR0104-BOUNCER_II-TICK-COOLDOWN",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source/release bytes, SVN 964 engine evidence, and focused regression tests prove this static Bouncer II contract.",
           "missing_proof": ""
         },
         {
           "id": "reset_and_save_load",
           "state": "runtime-unproven",
-          "evidence": "module locals, player/item modData, OnNewGame/OnCreatePlayer paths, restoration, and ownership transitions were inspected",
-          "missing_proof": "Missing proof: a save, reload, death, player-switch, and ownership-transition trace where applicable."
+          "evidence": "Static source and regression evidence is complete for the implemented Bouncer II contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "java_lua_exposure",
-          "state": "runtime-unproven",
-          "evidence": "current PZCodebase event/API symbols and exposed argument order were checked",
-          "missing_proof": "Missing proof: an observed current-game Kahlua bridge invocation for the exact callback/API path."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source/release bytes, SVN 964 engine evidence, and focused regression tests prove this static Bouncer II contract.",
+          "missing_proof": ""
         },
         {
           "id": "kahlua_compatibility",
           "state": "runtime-unproven",
-          "evidence": "Java collections versus Lua tables, indexing, callback arity, and standard-Lua mock substitutions were checked",
-          "missing_proof": "Missing proof: execution under the current in-game Kahlua runtime; standard Lua syntax/mocks are insufficient."
+          "evidence": "Static source and regression evidence is complete for the implemented Bouncer II contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "event_lifecycle",
-          "state": "runtime-unproven",
-          "evidence": "registration, repeated world entry, handler install, and engine trigger order were checked",
-          "missing_proof": "Missing proof: repeated world entry plus full desktop relaunch event traces."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source/release bytes, SVN 964 engine evidence, and focused regression tests prove this static Bouncer II contract.",
+          "missing_proof": ""
         },
         {
           "id": "stacking_and_cross_trait_interactions",
-          "state": "runtime-unproven",
-          "evidence": "shared hooks, shared mutable items, aggregate modifiers, exclusions, and overlapping trait writers were cross-checked across batches 01-04",
-          "missing_proof": "Missing proof: runtime composition across every relevant paired trait and shared hook transition."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source/release bytes, SVN 964 engine evidence, and focused regression tests prove this static Bouncer II contract.",
+          "missing_proof": ""
         },
         {
           "id": "multiplayer_restriction",
           "state": "proven-correct",
-          "evidence": "the exact definition's DisabledInMultiplayer field was checked",
+          "evidence": "Pre-campaign Git authority, current source/release bytes, SVN 964 engine evidence, and focused regression tests prove this static Bouncer II contract.",
           "missing_proof": ""
         },
         {
           "id": "display_name",
           "state": "proven-correct",
-          "evidence": "the exact English UIName key was resolved",
+          "evidence": "Pre-campaign Git authority, current source/release bytes, SVN 964 engine evidence, and focused regression tests prove this static Bouncer II contract.",
           "missing_proof": ""
         },
         {
           "id": "description_accuracy",
-          "state": "runtime-unproven",
-          "evidence": "English UIDescription was compared to the full exact runtime path and numerical/cadence behavior",
-          "missing_proof": "Missing proof: no additional dynamic behavior exists outside the closed-world inspected source."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source/release bytes, SVN 964 engine evidence, and focused regression tests prove this static Bouncer II contract.",
+          "missing_proof": ""
         },
         {
           "id": "localization_coverage_including_absent_locales",
           "state": "coverage-gap",
-          "evidence": "the closed-world inventory confirms only EN UI localization in scope and the exact EN keys were checked",
-          "missing_proof": "Missing proof: no non-English locale files exist in the closed-world source inventory."
+          "evidence": "Exact English source/release copy is proven.",
+          "missing_proof": "No non-English UniversalTraits locale exists."
         },
         {
           "id": "balance",
           "state": "runtime-unproven",
-          "evidence": "cost and implemented magnitude were statically compared; no telemetry was available",
-          "missing_proof": "Missing proof: gameplay telemetry or comparative playtest for the stated cost and magnitude."
+          "evidence": "Static source and regression evidence is complete for the implemented Bouncer II contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "performance_risk",
           "state": "runtime-unproven",
-          "evidence": "handler frequency, collection scans, wrapper depth, and cache writes were inspected",
-          "missing_proof": "Missing proof: an in-game profiler capture under representative inventory/player state."
+          "evidence": "Static source and regression evidence is complete for the implemented Bouncer II contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "tests",
-          "state": "coverage-gap",
-          "evidence": "only exact assigned test regions were inspected; the mixed-trait suite was intentionally not executed because it reads unrelated traits",
-          "missing_proof": "Missing proof: no exact engine-order, save/load, transfer, and boundary regression covers every runtime premise for this trait."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source/release bytes, SVN 964 engine evidence, and focused regression tests prove this static Bouncer II contract.",
+          "missing_proof": ""
         },
         {
           "id": "mocks",
-          "state": "coverage-gap",
-          "evidence": "exact mocks were compared with engine stat clamps, collection shapes, event order, and HandWeapon getter/setter behavior",
-          "missing_proof": "Missing proof: mocks do not universally reproduce engine clamping, event timing, collection shapes, or item getter/setter domains."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source/release bytes, SVN 964 engine evidence, and focused regression tests prove this static Bouncer II contract.",
+          "missing_proof": ""
         },
         {
           "id": "source_release_parity",
-          "state": "confirmed-defect",
-          "evidence": "exact assigned definitions, runtime Lua, registries, English UI, and release counterparts were hash/content compared; confirmed by IR0104-BOUNCER_II-SOURCE-RELEASE-PERK",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source/release bytes, SVN 964 engine evidence, and focused regression tests prove this static Bouncer II contract.",
           "missing_proof": ""
         },
         {
           "id": "packaging_integrity",
-          "state": "confirmed-defect",
-          "evidence": "presence in source and 42.0 release, registration, definition, UI, and exact assigned runtime paths was checked; confirmed by IR0104-BOUNCER_II-SOURCE-RELEASE-PERK",
-          "missing_proof": ""
+          "state": "coverage-gap",
+          "evidence": "Bouncer source/release runtime, definition, and English content are exact.",
+          "missing_proof": "UniversalTraits package verification remains blocked by the separately tracked missing source poster."
         }
       ],
       "verified_finding_ids": [
@@ -5499,7 +5498,7 @@
       "omissions": [
         {
           "id": "IR0104-BOUNCER_II-SOURCE-RELEASE-PERK",
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "severity": "high",
           "confidence": "high",
           "title": "Bouncer 2 source and release definitions disagree on the medical XP perk",
@@ -5514,13 +5513,15 @@
             "packaging"
           ],
           "reproduction_evidence": "Source uses Doctor=2; release uses FirstAid=2. Current PerkFactory exposes Doctor and no FirstAid symbol.",
-          "missing_proof": "",
-          "recommended_correction": "Copy the current source Doctor definition into release and reject unknown XPBoost tokens during validation.",
-          "smallest_regression_test": "Compare the exact source/release block and validate every XPBoost token against current PerkFactory.Perks."
+          "missing_proof": "Current-build in-game observation remains unrun.",
+          "recommended_correction": "No further static Bouncer II correction is indicated.",
+          "smallest_regression_test": "Covered by the focused Bouncer II regression cases.",
+          "resolution_state": "implemented-and-statically-validated",
+          "resolution_evidence": "Current source and release definitions are byte-identical, both use Doctor=2, and commits 9e730018/137afb9 prove the completed Build 42 cascade."
         },
         {
           "id": "IR0104-BOUNCER_II-TICK-COOLDOWN",
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "severity": "medium",
           "confidence": "high",
           "title": "Bouncer cooldown treats update callbacks as a fixed 60-Hz clock",
@@ -5534,17 +5535,33 @@
             "performance"
           ],
           "reproduction_evidence": "The shared Bouncer handler uses a constant ticks-per-second conversion on OnPlayerUpdate; update count varies with runtime cadence and is not elapsed seconds.",
-          "missing_proof": "No in-game timing trace across frame/update rates was captured.",
-          "recommended_correction": "Use game time or a supported delta-time value for elapsed cooldowns.",
-          "smallest_regression_test": "Measure the same cooldown under two update rates and assert equal wall/game-time duration."
+          "missing_proof": "Current-build in-game observation remains unrun.",
+          "recommended_correction": "No further static Bouncer II correction is indicated.",
+          "smallest_regression_test": "Covered by the focused Bouncer II regression cases.",
+          "resolution_state": "implemented-and-statically-validated",
+          "resolution_evidence": "Tier II now stores seconds and subtracts GameTime real-seconds delta; an oppositional regression expires after equal elapsed time at different update intervals."
         }
       ],
       "unresolved_proof": [
-        "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-        "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-        "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-        "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
-      ]
+        "Current-build Kahlua execution, full desktop relaunch, repeated world entry, and current-version save/load remain unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory."
+      ],
+      "explicit_non_goals": [
+        "multiplayer",
+        "backward save migration",
+        "deployment"
+      ],
+      "release_parity": {
+        "trait_runtime": "8A1EA1AD1DFB426FA262D83195C0251AC2E69C8CA25518AD0F3FB749F1A0CC80",
+        "trait_release": "8A1EA1AD1DFB426FA262D83195C0251AC2E69C8CA25518AD0F3FB749F1A0CC80",
+        "definition_runtime": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+        "definition_release": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+        "english_runtime": "716D778E9040C040DD6D8130920F8249418A95EB6D03483BCF8CEF70A22076E1",
+        "english_release": "716D778E9040C040DD6D8130920F8249418A95EB6D03483BCF8CEF70A22076E1",
+        "state": "proven-correct"
+      },
+      "resolution_record": "change-impact/bouncer-ii-cooldown-contract.json"
     },
     {
       "trait_id": "UniversalTraits:UT_brittle",

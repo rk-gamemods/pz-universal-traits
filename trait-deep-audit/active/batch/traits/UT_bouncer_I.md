@@ -37,7 +37,7 @@ The accepted authority is pre-campaign UTMods `master`, not the original upstrea
 
 The accepted Tier I cooldown was previously multiplied by 60 and decremented once per `OnPlayerUpdate`. That assumes player updates occur at exactly 60 Hz. `IsoPlayer.update()` supplies no such fixed-rate contract, so frame or update cadence changed the real cooldown duration.
 
-The correction stores Tier I cooldown seconds directly and subtracts the engine's real-seconds delta. It deliberately leaves Bouncer II's tick representation unchanged for the separate Bouncer II trait pass. The traits are mutually exclusive, so their different stored units cannot interact during normal selection.
+The correction stores Tier I cooldown seconds directly and subtracts the engine's real-seconds delta. The later isolated Bouncer II pass applied the same accepted elapsed-time contract to Tier II, so both mutually exclusive tiers now use one stored unit and one countdown path.
 
 The older package-perk finding was stale before this correction. Current source and release both use the valid Build 42 `Doctor` perk token. Git history proves this was an already-completed source/release cascade, not a new intent decision.
 
@@ -73,7 +73,7 @@ The standard-Lua suite covers:
 - injury-at-expiry baseline behavior;
 - Strength 0, 5, and 10 Tier I formulas;
 - a quarter-second plus three-quarter-second oppositional timing case that expires after one total elapsed second rather than a fixed update count;
-- Tier II remaining tick-based during the Bouncer I pass;
+- the independently reviewed Tier II elapsed-time contract;
 - source/release runtime parity;
 - definition, English, and perk-token consistency.
 
@@ -87,4 +87,4 @@ The static path and standard-Lua regression suite prove the corrected contract. 
 - representative in-game profiler capture;
 - gameplay balance telemetry.
 
-No multiplayer, backward save migration, deployment, or Bouncer II behavioral correction is part of this trait pass.
+No multiplayer, backward save migration, or deployment is part of this trait pass. Bouncer II was reviewed and corrected independently afterward.

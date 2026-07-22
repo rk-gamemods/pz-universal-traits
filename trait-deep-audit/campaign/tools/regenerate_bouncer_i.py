@@ -131,7 +131,7 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
         ),
         "stacking_interactions": _dimension(
             "proven-correct",
-            "Bouncer I and II are reciprocally selection-exclusive; this pass changes only the Tier I cooldown branch and proves Tier II still decrements by one tick.",
+            "Bouncer I and II are reciprocally selection-exclusive and both independently reviewed tiers use the same elapsed-seconds storage and countdown contract.",
         ),
         "multiplayer": _dimension(
             "not-applicable",
@@ -159,7 +159,7 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
         ),
         "tests": _dimension(
             "proven-correct",
-            "Focused tests cover every downgrade, infection state, snapshot boundary, formulas, elapsed-time opposition, companion isolation, and source-release contracts.",
+            "Focused tests cover every downgrade, infection state, snapshot boundary, formulas, elapsed-time opposition for both tiers, and source-release contracts.",
         ),
         "mocks": _dimension(
             "proven-correct",
@@ -191,7 +191,6 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
         "Current-build Kahlua execution, full relaunch, repeated world entry, and current-version save/load remain unobserved.",
         "Rendered English, balance telemetry, and profiler capture remain unobserved.",
         "Only English UI localization exists in the closed-world source inventory.",
-        "Bouncer II behavior remains assigned to its separate trait pass.",
         "Multiplayer and backward save migration are explicit non-goals.",
     ]
     row["validation"] = {
@@ -229,9 +228,6 @@ def _plan_translation(root: Path, campaign: Path, plan: dict[str, bytes]) -> Non
             )
             row["terminal_state"] = "runtime-unproven"
             row["terminal_state_reasons"] = ["rendered English not observed in game"]
-        else:
-            row["terminal_state"] = "coverage-gap"
-            row["terminal_state_reasons"] = ["Bouncer II semantic review remains separate"]
 
     source_definition = _metadata(root, SOURCE_DEFINITION)
     release_definition = _metadata(root, RELEASE_DEFINITION)
@@ -378,7 +374,7 @@ def _plan_review(root: Path, campaign: Path, plan: dict[str, bytes]) -> None:
 
     omission_evidence = {
         OMISSIONS[0]: "Current source and release definitions are byte-identical, both use Doctor=1, and commits 9e730018/137afb9 prove the completed Build 42 cascade.",
-        OMISSIONS[1]: "Tier I now stores seconds and subtracts GameTime real-seconds delta; an oppositional regression expires after equal elapsed time at different update intervals while Tier II remains unchanged.",
+        OMISSIONS[1]: "Tier I stores seconds and subtracts GameTime real-seconds delta; oppositional regressions now prove the accepted elapsed-time contract independently for both tiers.",
     }
     for omission_id, evidence in omission_evidence.items():
         omission = _exactly_one(row["omissions"], "id", omission_id, relative)
@@ -396,7 +392,6 @@ def _plan_review(root: Path, campaign: Path, plan: dict[str, bytes]) -> None:
         "Current-build Kahlua execution, full desktop relaunch, repeated world entry, and current-version save/load remain unobserved.",
         "Rendered English, balance telemetry, and profiler capture remain unobserved.",
         "Only English UI localization exists in the closed-world source inventory.",
-        "Bouncer II behavior remains assigned to its separate trait pass.",
     ]
     row["explicit_non_goals"] = ["multiplayer", "backward save migration", "deployment"]
     row["release_parity"] = {
@@ -491,7 +486,7 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
                 "simultaneous injury ordering and one-per-cooldown behavior",
                 "Strength 0, 5, and 10 formulas",
                 "equal elapsed-time expiry across different update intervals",
-                "Bouncer II tick behavior unchanged",
+                "independently reviewed Tier II elapsed-time behavior",
                 "valid Doctor perk and exact source-release parity",
             ],
             "performance_model": (
@@ -500,7 +495,7 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
             "runtime_proof": (
                 "Unobserved; requires full Exit to Desktop, current-build injury observations, repeated world entry, current-version save/load, rendered English, and profiler capture."
             ),
-            "non_goals": ["multiplayer", "backward save migration", "deployment", "Bouncer II behavior"],
+            "non_goals": ["multiplayer", "backward save migration", "deployment"],
         }
     )
 

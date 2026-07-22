@@ -1,0 +1,107 @@
+{
+  "schema": "ut-bouncer-ii-cooldown-contract-v1",
+  "trait_id": "UniversalTraits:UT_bouncer_II",
+  "authority": {
+    "accepted_baseline": "pre-campaign UTMods master",
+    "injury_downgrade_intent": "d10b240",
+    "tier_ii_formula_and_infection_history": "7627f7e",
+    "doctor_source_correction": "9e730018",
+    "doctor_release_correction": "137afb9"
+  },
+  "accepted_intent": {
+    "cost": 6,
+    "xp_boosts": {
+      "Strength": 2,
+      "Doctor": 2
+    },
+    "exclusions": [
+      "UniversalTraits:UT_bouncer_I"
+    ],
+    "trigger": "first new qualifying injury after the ready snapshot",
+    "downgrades": {
+      "bite": "deep wound time 20",
+      "deep wound": "scratch",
+      "fracture": "fracture time multiplied by 0.5"
+    },
+    "cooldown_seconds": "max(10, 220 - Strength * 20)",
+    "infection": "preserve snapshot infection; clear infection introduced with a new bite",
+    "runtime_scope": "single-player"
+  },
+  "resolved_findings": [
+    "IR0104-BOUNCER_II-SOURCE-RELEASE-PERK",
+    "IR0104-BOUNCER_II-TICK-COOLDOWN"
+  ],
+  "retained_runtime_finding": "B02-UT_bouncer_II-COVERAGE",
+  "engine_evidence": [
+    "PZCodebase/Java/source/zombie/characters/IsoPlayer.java:2241",
+    "PZCodebase/Java/source/zombie/GameTime.java:195-201",
+    "PZCodebase/Java/source/zombie/Lua/LuaManager.java:7840-7843",
+    "PZCodebase/Lua/shared/TimedActions/ISRestAction.lua:26",
+    "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_bouncer_I.lua",
+      "sha256": "8A1EA1AD1DFB426FA262D83195C0251AC2E69C8CA25518AD0F3FB749F1A0CC80",
+      "bytes": 7161
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_bouncer_I.lua",
+      "sha256": "8A1EA1AD1DFB426FA262D83195C0251AC2E69C8CA25518AD0F3FB749F1A0CC80",
+      "bytes": 7161
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "716D778E9040C040DD6D8130920F8249418A95EB6D03483BCF8CEF70A22076E1",
+      "bytes": 36965
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "716D778E9040C040DD6D8130920F8249418A95EB6D03483BCF8CEF70A22076E1",
+      "bytes": 36965
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "sha256": "FF176266CC9075A2222D84AAD1CF05AE6B8DDCF4BF733CBBF8A8C34F5502046C",
+      "bytes": 76718
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "E0B2F7E46D6C76329821B4D53661CC19BE96538F00DCEDFDF7C055AE806DBD2C",
+      "bytes": 283504
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_bouncer_II.md",
+      "sha256": "08FA9A4E3319324453A5020C779FF9A8D52349F99C2F56C764CDE8E201F49B4D",
+      "bytes": 6493
+    }
+  ],
+  "regression_cases": [
+    "first-update and cooldown-expiry snapshots",
+    "bite, deep wound, and fracture mappings",
+    "infection clearing and preservation",
+    "simultaneous injury ordering and one-per-cooldown behavior",
+    "Strength 5, 9, and 10 Tier II formulas",
+    "equal elapsed-time expiry across different update intervals",
+    "retained Tier I elapsed-time behavior",
+    "valid Doctor perk and exact source-release parity"
+  ],
+  "performance_model": "During Tier II cooldown, one GameTime real-seconds delta read occurs per active player update and no injury collection is scanned. The ready path reuses UTCore's shared injury view.",
+  "runtime_proof": "Unobserved; requires full Exit to Desktop, current-build injury observations, repeated world entry, current-version save/load, rendered English, and profiler capture.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment",
+    "Bouncer I behavior"
+  ]
+}

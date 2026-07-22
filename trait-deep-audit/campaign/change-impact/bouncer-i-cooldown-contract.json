@@ -53,13 +53,13 @@
   "files": [
     {
       "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_bouncer_I.lua",
-      "sha256": "A4FD2EE750D36D09866C3269736401F039E46066989698CDA40994674F220468",
-      "bytes": 7436
+      "sha256": "8A1EA1AD1DFB426FA262D83195C0251AC2E69C8CA25518AD0F3FB749F1A0CC80",
+      "bytes": 7161
     },
     {
       "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_bouncer_I.lua",
-      "sha256": "A4FD2EE750D36D09866C3269736401F039E46066989698CDA40994674F220468",
-      "bytes": 7436
+      "sha256": "8A1EA1AD1DFB426FA262D83195C0251AC2E69C8CA25518AD0F3FB749F1A0CC80",
+      "bytes": 7161
     },
     {
       "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
@@ -88,13 +88,13 @@
     },
     {
       "path": "UniversalTraits/test/run_tests.lua",
-      "sha256": "B70650F299F32562F8DDEF2C1802EF8138480932BE41F683DC5797DBF7898E42",
-      "bytes": 283356
+      "sha256": "E0B2F7E46D6C76329821B4D53661CC19BE96538F00DCEDFDF7C055AE806DBD2C",
+      "bytes": 283504
     },
     {
       "path": "trait-deep-audit/active/batch/traits/UT_bouncer_I.md",
-      "sha256": "16E7952A6E690FC48F0865FD3EC54588FC9438C8AADCB309AB6687872FE56792",
-      "bytes": 6582
+      "sha256": "6AC268B098947ABD9561B8B40F65C7EC0E48FC5612D30A648582F6FC6E8161C6",
+      "bytes": 6575
     }
   ],
   "regression_cases": [
@@ -104,7 +104,7 @@
     "simultaneous injury ordering and one-per-cooldown behavior",
     "Strength 0, 5, and 10 formulas",
     "equal elapsed-time expiry across different update intervals",
-    "Bouncer II tick behavior unchanged",
+    "independently reviewed Tier II elapsed-time behavior",
     "valid Doctor perk and exact source-release parity"
   ],
   "performance_model": "During Tier I cooldown, one GameTime real-seconds delta read occurs per active player update and no injury collection is scanned. The ready path reuses UTCore's shared injury view.",
@@ -112,7 +112,6 @@
   "non_goals": [
     "multiplayer",
     "backward save migration",
-    "deployment",
-    "Bouncer II behavior"
+    "deployment"
   ]
 }
