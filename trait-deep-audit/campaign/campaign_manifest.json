@@ -40,8 +40,8 @@
     "trait_batches/batch_12.jsonl",
     "translation_audit.json"
   ],
-  "file_count": 108,
-  "total_bytes": 13061142,
+  "file_count": 111,
+  "total_bytes": 13088977,
   "files": [
     {
       "path": "HAPPY_PATH_PRIORITY.md",
@@ -149,6 +149,13 @@
       "sha256": "0EAACC1F9046114326892FD3C06AB92D332B27C9F9B992606931E5A2BFDAAFDD"
     },
     {
+      "path": "change-impact/martial-event-and-formula-contract.json",
+      "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 4562,
+      "sha256": "3BE0BA3AC2AB84B7E66F5120F83DF79FC4BFF3B539A4EC59F5FDF4DCBF924BEA"
+    },
+    {
       "path": "change-impact/motionsickness-stale-runtime-finding-resolution.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
@@ -194,22 +201,22 @@
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2258115,
-      "sha256": "209845D48FAF2D257E0AD61A0DAE94AD09750E3FC6177C09DE352B939C5FB5D3"
+      "bytes": 2257387,
+      "sha256": "9E6461BBE1C4FE1F9CB30448802F5225C473B79CBF1BF8696CA26B9BC7C49A27"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2079057,
-      "sha256": "B0B907CF86882DD9F7C4781624C9A83151116EF8963E9CE30AE2276158879642"
+      "bytes": 2078595,
+      "sha256": "ABA2BEEF4310BC7C0AFA4BF9C04DE0FE73C124449159A15042B9C288BA027CF6"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1276381,
-      "sha256": "0EF0BE3A630796E4A81A6167B3E91AC8FF644F113DE27A981FEA31F4C6E9610E"
+      "bytes": 1275994,
+      "sha256": "DEE3BC624AFA49AA677755E6AF8DA9A90E26A9C0FF778063E91FA2B703C42C79"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
@@ -236,8 +243,8 @@
       "path": "independent_reviews/traits_05_08.json",
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
-      "bytes": 253051,
-      "sha256": "1EC23EF9DE7D30A8244E32AE98C8D469A060243D7A1A93AAF8D6E410C13B5530"
+      "bytes": 254132,
+      "sha256": "E900DBF9AB66501AD15F38CDB6FCB90E6C1B7D33CF9A714037A0F0C2B304209B"
     },
     {
       "path": "independent_reviews/traits_09_12.json",
@@ -265,21 +272,21 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 3480,
-      "sha256": "40A2A155D9BBE934EF81250635A79800E2DFDB68646B12C44AF92F33B7E98717"
+      "sha256": "C1DE7B739C3E6AAF291AFF96252DF610EB9029A4B16AF208FB6D2964F93E0DD6"
     },
     {
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2183439,
-      "sha256": "007D292FB3462B062B3711F34D0848F2D66CEE33A6B9116E11C08FEB3222DE25"
+      "bytes": 2175571,
+      "sha256": "6CF51016B7FC734FB38A3AF5F88F92A0A8B4C413E2B150FCA5F84FFB3EC03CBD"
     },
     {
       "path": "remediation_summary.json",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1209,
-      "sha256": "3B60755ED495E60838FB6986522809109D168377008705A40E4E4A59D3BE79C0"
+      "bytes": 1210,
+      "sha256": "D5ECBAFE57573F4A7A0DFEA9DEFE02A5DD8EA8267DF68069C34A3A26726986B3"
     },
     {
       "path": "runtime-traces/utcore-wave-01.jsonl",
@@ -527,6 +534,13 @@
       "sha256": "405CFA8E8EB012539E87FDFE7A89EBAD6568DA01989E15AD7D8FFFA9985C64AD"
     },
     {
+      "path": "tests/test_regenerate_martial.py",
+      "kind": "regression-test",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 8364,
+      "sha256": "59A6E647B2678DEDEBA12BCAD5AEA4397698CAA95825A8EDDF4AD6F9905D198B"
+    },
+    {
       "path": "tests/test_regenerate_motionsickness.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
@@ -667,6 +681,13 @@
       "sha256": "9B1ED695D9C54F82D011EF41E3750CFDD0E40CAC499BFD9959821C38969FAC51"
     },
     {
+      "path": "tools/regenerate_martial.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 21588,
+      "sha256": "EE54A84D786026DCF585A722056907BB5D6976283B16618707E9B1692F7ED3FC"
+    },
+    {
       "path": "tools/regenerate_motionsickness.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
@@ -747,8 +768,8 @@
       "path": "trait_batches/batch_06.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 107011,
-      "sha256": "B9CE9F693D06BD0D4D7F4510410496BB334F0D8BEA9C2DDD79236617CA3C9E6F"
+      "bytes": 108383,
+      "sha256": "32B529C5117E409EBFC41BF178BB94BFDD8301716D6187AC4950CF983A32CAAB"
     },
     {
       "path": "trait_batches/batch_07.jsonl",
@@ -796,8 +817,8 @@
       "path": "translation_audit.json",
       "kind": "translation-audit",
       "byte_semantics": "utf-8-lf",
-      "bytes": 494559,
-      "sha256": "C95CA5BC8D483422D88BDE7815987CD321E66C60CE1D81FC02F9F75E90E23298"
+      "bytes": 494871,
+      "sha256": "D4F41532D278A3576075D63AFF409EC7AADA07C2FD4077EF7949544F900CBC18"
     }
   ]
 }

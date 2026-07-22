@@ -2156,7 +2156,7 @@
       "trait_id": "UniversalTraits:UT_martial",
       "source_batch": "batch_06",
       "original_state": "confirmed-defect",
-      "review_state": "needs-correction",
+      "review_state": "accepted",
       "checked_dimensions": [
         "membership_registration_definition_ui",
         "runtime_and_exact_shared_dependencies",
@@ -2180,8 +2180,9 @@
       "rejected_finding_ids": [],
       "cross_trait_finding_ids": [],
       "unresolved_proof": [
-        "No Build 42 game/Kahlua, multiplayer, save-load, profiler/balance, rendered UI, or non-EN locale evidence.",
-        "Existing audit records were treated only as leads, not proof."
+        "Current-build Kahlua execution, full desktop relaunch, repeated world entry, and current-version save/load remain unobserved.",
+        "Real sound and blood feedback, rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory."
       ],
       "evidence_anchors": [
         "source_inventory.json",
@@ -2193,14 +2194,20 @@
         "UniversalTraits/release/UniversalTraits/42.0/media"
       ],
       "release_parity": {
-        "source_runtime_sha256": "E68108BB31A8C92FD7979727E150A038BCA8CF56DD9D1D60BF478B13A4CE82BA",
-        "release_runtime_sha256": "E68108BB31A8C92FD7979727E150A038BCA8CF56DD9D1D60BF478B13A4CE82BA",
+        "trait_runtime": "00E768D4CEE92A82BC4525D251436B44437301C25851BA3BABA39C466FA78ED7",
+        "trait_release": "00E768D4CEE92A82BC4525D251436B44437301C25851BA3BABA39C466FA78ED7",
+        "integration_runtime": "33572584CA9B180DD9E07F84553EEAD12C59679A882118D1FA98107D5A504B45",
+        "integration_release": "33572584CA9B180DD9E07F84553EEAD12C59679A882118D1FA98107D5A504B45",
+        "definition_runtime": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+        "definition_release": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+        "english_runtime": "1C92DE4424EBCF86D0FE123AE87C19F773C674DA327339CF8543A55437667FC5",
+        "english_release": "1C92DE4424EBCF86D0FE123AE87C19F773C674DA327339CF8543A55437667FC5",
         "state": "proven-correct"
       },
       "omissions": [
         {
           "id": "IR0508-OM-011",
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "severity": "high",
           "confidence": "high",
           "premise": "Beyond the recorded event-argument defect, EN documents 0.6/0.2 damage, 3x criticals, and +5% crit per level; source uses 0.5/3.0 and +8 percentage points per level.",
@@ -2214,12 +2221,20 @@
             "balance"
           ],
           "reproduction_evidence": "At level 0 source normal/crit are 0.5/3.0 (6x); at level 10 they are 1.0/6.0 with 85% crit chance, contradicting EN.",
-          "missing_proof": "Live outcome is blocked by the separately verified event-signature defect.",
-          "recommended_correction": "Choose authoritative combat numbers and align code/comments/EN after fixing the event signature.",
-          "smallest_regression_test": "Force normal/crit at levels 0 and 10 and assert exact EN values, plus one live bare-hand hit.",
-          "title": "Martial Artist description contradicts combat math"
+          "missing_proof": "Rendered current-build English remains unobserved.",
+          "recommended_correction": "No further static correction is indicated.",
+          "smallest_regression_test": "Covered by exact Martial Artist numeric and English-copy regressions.",
+          "title": "Martial Artist description contradicts combat math",
+          "resolution_state": "implemented-and-statically-validated",
+          "resolution_evidence": "Retune commit d92ca9c is pre-campaign authority for the exact formulas; corrected English and exact formula regressions now match it without changing runtime behavior."
         }
-      ]
+      ],
+      "explicit_non_goals": [
+        "multiplayer",
+        "backward save migration",
+        "deployment"
+      ],
+      "resolution_record": "change-impact/martial-event-and-formula-contract.json"
     },
     {
       "trait_id": "UniversalTraits:UT_melancholic",

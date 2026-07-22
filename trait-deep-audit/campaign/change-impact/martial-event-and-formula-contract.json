@@ -1,0 +1,109 @@
+{
+  "schema": "ut-martial-event-and-formula-contract-v1",
+  "trait_id": "UniversalTraits:UT_martial",
+  "authority": {
+    "accepted_baseline": "pre-campaign UTMods master",
+    "accepted_retune": "d92ca9cacd70692479f101b4224a9c5bd4bba64d",
+    "event_signature_correction": "2f98749c3ecaa323b5eb037c30a2ad98b43dc834",
+    "pz_snapshot": "SVN revision 964; Steam BuildID 23504596 is recorded outside VERSION.json"
+  },
+  "accepted_intent": {
+    "cost": 5,
+    "xp_boosts": {
+      "Fitness": 1,
+      "SmallBlunt": 1
+    },
+    "trigger": "each bare-hand OnWeaponHitCharacter event",
+    "normal_bonus": "(0.5 + 0.05 * SmallBlunt level) * (pre-drain endurance + 0.35)",
+    "critical_bonus": "(3.0 + 0.3 * SmallBlunt level) * (pre-drain endurance + 0.35)",
+    "critical_chance_percent": "5 + 8 * SmallBlunt level",
+    "direct_endurance_cost": 0.001,
+    "xp_multiplier": 2,
+    "mundane": "suppresses bonus damage, XP, and feedback",
+    "runtime_scope": "single-player"
+  },
+  "resolved_findings": [
+    "UT6-MARTIAL-EVENT",
+    "IR0508-OM-011"
+  ],
+  "engine_evidence": [
+    "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6747-6790",
+    "PZCodebase/Java/source/zombie/characters/IsoLivingCharacter.java:18,187-201",
+    "PZCodebase/Java/source/zombie/inventory/types/HandWeapon.java:2654-2655"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_martial.lua",
+      "sha256": "00E768D4CEE92A82BC4525D251436B44437301C25851BA3BABA39C466FA78ED7",
+      "bytes": 3439
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_martial.lua",
+      "sha256": "00E768D4CEE92A82BC4525D251436B44437301C25851BA3BABA39C466FA78ED7",
+      "bytes": 3439
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_batteringram.lua",
+      "sha256": "33572584CA9B180DD9E07F84553EEAD12C59679A882118D1FA98107D5A504B45",
+      "bytes": 3144
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_batteringram.lua",
+      "sha256": "33572584CA9B180DD9E07F84553EEAD12C59679A882118D1FA98107D5A504B45",
+      "bytes": 3144
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "1C92DE4424EBCF86D0FE123AE87C19F773C674DA327339CF8543A55437667FC5",
+      "bytes": 37237
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "1C92DE4424EBCF86D0FE123AE87C19F773C674DA327339CF8543A55437667FC5",
+      "bytes": 37237
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "sha256": "FF176266CC9075A2222D84AAD1CF05AE6B8DDCF4BF733CBBF8A8C34F5502046C",
+      "bytes": 76718
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "AAD5E93D8665B076CAFC5309ABBD37A43957D24A8A3451D8D165D58F1FE00FD2",
+      "bytes": 292108
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_martial.md",
+      "sha256": "D3E5EFB674E5548722EB37FA4C15A71B7BDA13958AFC7DF57F30C9985867812C",
+      "bytes": 8570
+    }
+  ],
+  "regression_cases": [
+    "exact four-argument engine event order",
+    "level-5 critical damage and endurance snapshot order",
+    "level-10 normal damage at half endurance",
+    "level-0 and level-10 critical chance boundaries",
+    "weapon and trait rejection",
+    "Mundane suppression for direct and synergy callers",
+    "Battering Ram shared-helper delegation",
+    "exact English copy and source-release parity"
+  ],
+  "performance_model": "One constant-time listener runs per weapon-hit event; rejected hits exit after simple guards, and qualifying hits perform no scans or per-frame work.",
+  "runtime_proof": "Unobserved; requires full Exit to Desktop, current-build bare-hand and Battering Ram observation, repeated world entry, current-version save/load, rendered English, balance, and profiler capture.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment",
+    "changing accepted damage, chance, endurance, XP, cost, or XP-boost values"
+  ]
+}

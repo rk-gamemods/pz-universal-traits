@@ -1680,6 +1680,7 @@ end)
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_martial.lua")
 
 test("martial deals bonus damage with bare hands (guaranteed crit)", function()
+    resetMockZombRand()
     -- SmallBlunt level=5 → critChance = (5+40)*0.01 = 0.45 → 45%
     -- ZombRand always returns 0 → 0 < 45 → crit fires
     -- Crit damage: 3.0 + (5 * 0.3) = 4.5, endurance 1.0 → 4.5 * 1.35 = 6.075
@@ -1692,8 +1693,43 @@ test("martial deals bonus damage with bare hands (guaranteed crit)", function()
 
     Events.OnWeaponHitCharacter:fire(player, target, weapon, 1)
 
-    assert_true(target:getHealth() < 100,
-        "expected health < 100 after martial crit, got " .. tostring(target:getHealth()))
+    assert_close(target:getHealth(), 93.925, 0.000001,
+        "level-5 crit must add exactly 6.075 damage at full endurance")
+    assert_close(player:getStats():get(CharacterStat.ENDURANCE), 0.999, 0.000001,
+        "bare-hand event must spend exactly 0.001 endurance after snapshotting damage scaling")
+end)
+
+test("martial normal bonus uses level and pre-drain endurance exactly", function()
+    setMockZombRandDefault(99)
+    local player = MockPlayer({ "UniversalTraits:UT_martial" }, { endurance = 0.5 })
+    player:setPerkLevel(Perks.SmallBlunt, 10)
+    local target = MockTarget(100)
+
+    Events.OnWeaponHitCharacter:fire(player, target, MockWeaponSimple("BareHands"), 1)
+
+    assert_close(target:getHealth(), 99.15, 0.000001,
+        "(0.5 + 10*0.05) * (0.5 + 0.35) must add exactly 0.85 damage")
+    assert_close(player:getStats():get(CharacterStat.ENDURANCE), 0.499, 0.000001,
+        "event must spend exactly 0.001 endurance")
+    resetMockZombRand()
+end)
+
+test("martial critical chance honors exact skill boundaries", function()
+    local cases = {
+        { level = 0, roll = 4, expected = true },
+        { level = 0, roll = 5, expected = false },
+        { level = 10, roll = 84, expected = true },
+        { level = 10, roll = 85, expected = false },
+    }
+    for _, case in ipairs(cases) do
+        setMockZombRandSequence({ case.roll })
+        local player = MockPlayer({ "UniversalTraits:UT_martial" })
+        player:setPerkLevel(Perks.SmallBlunt, case.level)
+        local _, isCrit = UT_martial.applyBonusDamage(player, MockTarget(100), 1.0)
+        assert_eq(isCrit, case.expected,
+            "unexpected crit classification at level " .. case.level .. " roll " .. case.roll)
+    end
+    resetMockZombRand()
 end)
 
 test("martial skips when weapon is not BareHands", function()
@@ -1707,6 +1743,51 @@ test("martial skips when weapon is not BareHands", function()
 
     assert_eq(target:getHealth(), 100,
         "expected health unchanged when weapon is not BareHands")
+end)
+
+test("martial skips without the trait and Mundane suppresses direct callers", function()
+    resetMockZombRand()
+    local withoutTrait = MockPlayer({})
+    local eventTarget = MockTarget(100)
+    Events.OnWeaponHitCharacter:fire(
+        withoutTrait, eventTarget, MockWeaponSimple("BareHands"), 1
+    )
+    assert_eq(eventTarget:getHealth(), 100, "event path must require Martial Artist")
+    assert_eq(withoutTrait:getStats():get(CharacterStat.ENDURANCE), 1,
+        "rejected event must not spend endurance")
+
+    local mundane = MockPlayer({ "UniversalTraits:UT_martial", "UniversalTraits:UT_mundane" })
+    local directTarget = MockTarget(100)
+    local damage, isCrit = UT_martial.applyBonusDamage(mundane, directTarget, 1.0)
+    assert_eq(damage, 0, "Mundane must suppress direct and synergy bonus damage")
+    assert_eq(isCrit, nil, "suppressed call must not report a critical hit")
+    assert_eq(directTarget:getHealth(), 100, "Mundane must leave target health unchanged")
+end)
+
+test("martial English copy and source-release pairs state the accepted formulas", function()
+    local function readAll(path)
+        local file = assert(io.open(path, "rb"))
+        local content = file:read("*a")
+        file:close()
+        return content
+    end
+    local expected = "Your hands are lethal weapons. Each bare-hand hit spends 0.001 endurance and adds damage scaled by Short Blunt and pre-drain endurance. Normal bonus damage is 0.5 plus 0.05 per level; critical bonus damage is 3.0 plus 0.3 per level. Critical chance is 5 percent plus 8 percentage points per level. The damage multiplier is pre-drain endurance plus 0.35. Each hit grants Short Blunt experience equal to twice the bonus damage. Mundane disables the bonus."
+    local sourceUI = readAll(base .. "../media/lua/shared/Translate/EN/UI.json")
+    local releaseUI = readAll(base .. "../release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json")
+    assert_eq(sourceUI:match('"UI_UT_martialDesc"%s*:%s*"([^"]+)"'), expected,
+        "source Martial Artist copy must state the accepted formulas")
+    assert_eq(releaseUI:match('"UI_UT_martialDesc"%s*:%s*"([^"]+)"'), expected,
+        "release Martial Artist copy must match source")
+
+    for _, path in ipairs({
+        "lua/shared/UniversalTraits/traits/UT_martial.lua",
+        "lua/shared/Translate/EN/UI.json",
+        "scripts/UT_character_traits.txt",
+    }) do
+        assert_eq(readAll(base .. "../media/" .. path),
+            readAll(base .. "../release/UniversalTraits/42.0/media/" .. path),
+            "Martial Artist source and release must match for " .. path)
+    end
 end)
 
 -- ===== Task 7: SomewhatTraits behavior ports =====

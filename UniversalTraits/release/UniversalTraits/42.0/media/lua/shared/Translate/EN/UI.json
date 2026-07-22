@@ -38,7 +38,7 @@
     "UI_UT_trekker": "Trekker",
     "UI_UT_trekkerDesc": "+1 to Fitness and Sprinting. Walking does not drain endurance, and the extra walking calorie burn is reduced back to the normal passive rate.",
     "UI_UT_martial": "Martial Artist",
-    "UI_UT_martialDesc": "Your hands are lethal weapons. Bare-hand strikes have a chance to land a critical hit dealing 3× damage (0.6 vs 0.2 base). Critical hit chance scales with Short Blunt skill (5 percent base + 5 percent per level). All damage scaled by endurance (×0.35 at empty to ×1.35 at full). Grants Short Blunt experience on each hit.",
+    "UI_UT_martialDesc": "Your hands are lethal weapons. Each bare-hand hit spends 0.001 endurance and adds damage scaled by Short Blunt and pre-drain endurance. Normal bonus damage is 0.5 plus 0.05 per level; critical bonus damage is 3.0 plus 0.3 per level. Critical chance is 5 percent plus 8 percentage points per level. The damage multiplier is pre-drain endurance plus 0.35. Each hit grants Short Blunt experience equal to twice the bonus damage. Mundane disables the bonus.",
     "UI_UT_bladetwirl": "Blade Twirl",
     "UI_UT_bladetwirlDesc": "+1 to Long Blade and Small Blade.",
     "UI_UT_blunttwirl": "Blunt Twirl",
