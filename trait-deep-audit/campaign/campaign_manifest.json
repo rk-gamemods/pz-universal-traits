@@ -40,8 +40,8 @@
     "trait_batches/batch_12.jsonl",
     "translation_audit.json"
   ],
-  "file_count": 102,
-  "total_bytes": 12996896,
+  "file_count": 105,
+  "total_bytes": 13035539,
   "files": [
     {
       "path": "HAPPY_PATH_PRIORITY.md",
@@ -77,6 +77,13 @@
       "byte_semantics": "utf-8-lf",
       "bytes": 4557,
       "sha256": "1E9428A7AD290F9FB3690D44F82C1073064B9BE37AB118D315755499522F68AD"
+    },
+    {
+      "path": "change-impact/batteringram-knockdown-lifecycle-contract.json",
+      "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 4823,
+      "sha256": "C03B0D9CE36F3150ECAF09BCA29006B88B08BD0729711E5BD5ECFA5AF5E16609"
     },
     {
       "path": "change-impact/bouncer-i-cooldown-contract.json",
@@ -180,22 +187,22 @@
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2257291,
-      "sha256": "396FD54AF50422B71416AA2CB2086D7A20CB2A469EBA7297162B3916860EDD2F"
+      "bytes": 2258315,
+      "sha256": "2500A67C9206D98A7850CC019DC95FCA67E78963409687933CE8510183F044FC"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2078908,
-      "sha256": "6D38166AB5DE9062C080FAF6E8F7096652F997F0F2F0705D9C05D624C422DAAE"
+      "bytes": 2079518,
+      "sha256": "C0B0869816388B86820E52DF69226490F773BB409AB9B53F9F5EE1F799155E22"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1276335,
-      "sha256": "0E75CA8B7ADA66BE135E0CF3810F45365368CB96A67B238E7322349B55334782"
+      "bytes": 1276711,
+      "sha256": "A60F297E394C73A9ACD294EBAC67CC272CFCF6519C5FD5B4D8ED53DF4E055C36"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
@@ -215,8 +222,8 @@
       "path": "independent_reviews/traits_01_04.json",
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
-      "bytes": 670438,
-      "sha256": "EBD9719172A12B9799139D47BECCC1C9F590775CF7A0E0EC865F76080E647E04"
+      "bytes": 671073,
+      "sha256": "DCBA20D384DA58AB554A1E5D738862064F042CCB71CA7674DA8B0FC25023C573"
     },
     {
       "path": "independent_reviews/traits_05_08.json",
@@ -251,21 +258,21 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 3480,
-      "sha256": "CB4C9CC3E1C6B302BDAF0CBBB6CF11C0BDD2596971071FAF870918D92C9E5AF3"
+      "sha256": "BBA7C60223F434BEF268A798A7BA2FB55F725A9DB69A29134268A3615D6A307C"
     },
     {
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2200026,
-      "sha256": "A51699E218144ABE6A5FBF1107D82D397189DD75D4E34C733412BDFC59934636"
+      "bytes": 2192226,
+      "sha256": "94EBB98FFF0024D3DD1D7056A9A8E22A4681EB1C3E6B6EB0F40E216C041184EE"
     },
     {
       "path": "remediation_summary.json",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
       "bytes": 1209,
-      "sha256": "B162A6C0F029A91D5D35A61953BA6D4FB40C44FA1CA3966976D6E88E176AAB42"
+      "sha256": "777639B9CF1B8947DB973F91DADD914F01E9838169FE93CF5D1B00C24D2CCB70"
     },
     {
       "path": "runtime-traces/utcore-wave-01.jsonl",
@@ -450,6 +457,13 @@
       "sha256": "527C751DC9692FEA3A7CA31F398683D3130A52E37D0767B369CAF795BB409E40"
     },
     {
+      "path": "tests/test_regenerate_batteringram.py",
+      "kind": "regression-test",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 8589,
+      "sha256": "36DB5983532727B44B0821C25D71286701B57C6461671D9D1469378C8CF8EC84"
+    },
+    {
       "path": "tests/test_regenerate_bouncer_i.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
@@ -569,6 +583,13 @@
       "sha256": "A97162CCD51021F46939563F5EBB51EC425D24AB0A66830002648866F4B8520A"
     },
     {
+      "path": "tools/regenerate_batteringram.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 27255,
+      "sha256": "33F4FF26783C575DD63B88168FCF7F9369F5D17CEEECDBC235B8576336109F0B"
+    },
+    {
       "path": "tools/regenerate_bouncer_i.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
@@ -677,8 +698,8 @@
       "path": "trait_batches/batch_02.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 115371,
-      "sha256": "349C4E313F7E2C3EAE626339B81675A06CA4C9BFDA6A62E07A1C0374E9C6EA12"
+      "bytes": 118239,
+      "sha256": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE"
     },
     {
       "path": "trait_batches/batch_03.jsonl",
@@ -754,8 +775,8 @@
       "path": "translation_audit.json",
       "kind": "translation-audit",
       "byte_semantics": "utf-8-lf",
-      "bytes": 494207,
-      "sha256": "8971991805997912DF1913CD52DEC28F8132D8359CBFB0D21331F0B496FAB15E"
+      "bytes": 494470,
+      "sha256": "F18E3A2F2B953B2FE08275116F87759B6C1267BFF6BF689BC864CAA7937E3BB9"
     }
   ]
 }

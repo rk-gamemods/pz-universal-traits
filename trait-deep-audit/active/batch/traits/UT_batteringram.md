@@ -1,83 +1,145 @@
 # UT_batteringram
 
-## Trait Summary
-- UT trait id: UT_batteringram
-- Source mod: More Traits (ToadTraits)
-- Source trait id: ToadTraits:batteringram
-- Current cost: 7
-- Scripted: yes
-- Owner: agent
-- Status: complete
+## Audit result
 
-## Source Evidence
-- Source files reviewed:
-  - `research/installed-mods/MoreTraits/mods/More Traits/42.13/media/scripts/ToadTraits.txt` (lines 89–97)
-  - `research/installed-mods/MoreTraits/mods/More Traits/42.13/media/lua/shared/MoreTraits .lua` (lines 3666–3764, `BatteringRam` function)
-  - `research/installed-mods/MoreTraits/mods/More Traits/42.13/media/lua/shared/Translate/EN/UI_EN.txt` (lines 221–222)
-- Source trigger path: OnPlayerUpdate tick loop → `BatteringRam(player, playerData)` called every frame when trait is present; evaluates `player:isSprinting()` and scans `player:getSpottedList()` for zombies within distance 1.0.
-- Source behavior:
-  - While sprinting (not running) AND legs are uninjured (no fractures on upper/lower legs or feet): enables ghost mode so the player passes through zombies; disables ghost mode when no zombies are within 2 tiles or the player is in a tree tile.
-  - For each spotted zombie within distance 1.0 that has not been hit in the last 5 seconds: calls `setKnockedDown(true)`, `setStaggerBack(true)`, `setHitForce(2.0)`, `reportEvent("wasHit")`; drains endurance by `(10 / fitness) * 0.01` per zombie hit (at Fitness 1: 0.10/hit; at Fitness 5: 0.02/hit; at Fitness 10: 0.01/hit).
-  - Martial combo (gated by sandbox var `BatteringRamMartialCombo` AND trait `ToadTraits:martial`): deals `(ZombRand(10,61)/100) * damageMult` damage; damageMult tiers: 1.0 (endurance ≥ 0.75), 0.75 (< 0.75), 0.5 (< 0.5), 0.25 (< 0.25).
-  - Disabled if any leg body part has a fracture.
-  - Description in source: "While Sprinting (not running), you knockdown zombies in your path. Every zombie you knockdown depletes some endurance depending upon your Fitness level. Note: This trait overrides the Spear's charge ability."
+- Trait ID: `UniversalTraits:UT_batteringram`
+- Source lineage: More Traits / `ToadTraits:batteringram`
+- Accepted behavior authority: pre-campaign UTMods `master`
+- Cost: 7
+- Multiplayer: disabled by definition and outside product scope
+- Overall state: runtime-unproven
+- Static verdict: the accepted knockdown-only behavior is now accurately described and protected against stale callback ownership
 
-## Current UT Evidence
-### Structure
-- Registered in registries.lua: yes
-- Defined in UT_character_traits.txt: yes
-- Translation strings present: yes
-- Exclusions/grants correct: N/A (no MutuallyExclusiveTraits block in UT definition; source also had none)
-- Runtime Lua file exists: yes
+## Authority and intended outcome
 
-### Runtime Trace
-- Files reviewed:
-  - `media/lua/shared/UniversalTraits/traits/UT_batteringram.lua`
-  - `test/run_tests.lua` (lines 883–949)
-- Event registrations: `UTCore.declareZombieCollisionHandler(TRAIT_ID, onZombieCollision)` — registered via UTCore on `OnCreatePlayer`; deregistered when trait is absent.
-- UT_CORE hooks used: `UTCore_ZombieCollisionHook` (rising-edge detection of `player:isBumped()` + `player:getBumpedChr() == zombie`); `UTCore.hasTrait`; `UTCore.declareZombieCollisionHandler`.
-- Runtime chain (plain language):
-  1. On player creation, UTCore registers `onZombieCollision` as the collision callback for this trait (only if the player has the trait).
-  2. Each time UTCore_ZombieCollisionHook fires (player physically bumps a zombie), `onZombieCollision(player, zombie)` is called.
-  3. If the player is neither sprinting nor running, the function returns immediately — no effect.
-  4. Otherwise: clears `setBumpType("")` and `setBumpFall(false)` to cancel the native stagger/trip animation; calls `zombie:knockDown(false)` to knock the zombie down.
-  5. Drains endurance by a fixed 0.05 per collision (`stats:setEndurance(math.max(0, endurance - 0.05))`).
-  6. If the player also has `UT_martial`, delegates to `UT_martial.applyBonusDamage(player, zombie, endurance)` for collision damage.
-- Actual behavior (exact values): endurance drain = 0.05 per collision (flat, not fitness-scaled; ~20 collisions before fully exhausted from full endurance). Knockdown fires on actual physics bump, not on proximity scan. Ghost mode is not used. No fracture gate.
+The installed More Traits source is lineage evidence, not the current behavior authority. Its older implementation used sprint-only ghost mode, a leg-fracture gate, a spotted-zombie scan, fitness-scaled endurance loss, and optional Martial synergy.
 
-## Description Integrity
-- Display name check: "Battering Ram" — matches intent.
-- Description check: "You hit like a freight train. Push force on shoves and knockbacks is increased by +50%." — this description is entirely wrong. The UT implementation does not modify push force or shove/knockback at all. The actual behavior is: while sprinting or running, physially bumping a zombie knocks it down instead of staggering the player, at a cost of 0.05 endurance per collision.
-- Missing or misleading details: (1) The description claims "+50% push force on shoves and knockbacks" which is not implemented anywhere in the Lua file. (2) The actual mechanics — collision knockdown, stagger/trip immunity, endurance drain per collision, UT_martial synergy — are completely absent from the description. (3) The UT removes the fracture gate and ghost-mode mechanic that the source had; the description does not acknowledge this simplification. (4) The endurance cost (0.05/hit, flat, ~20 hits) is not mentioned.
+UTMods deliberately evolved away from that implementation before this campaign. Commit `2b03dc140bfdc61322135b59f1e6cd80d6b3770a` is the controlling pre-campaign decision. Its subject is `fix!: remove setBumpedChr guard - root cause of permanent freezes`, and its body explicitly defines ZombieCollisionHook v4 as a breaking, knockdown-only defense. It removed all player bump-state manipulation after four documented freeze paths. Restoring promised trip or stagger immunity would reverse that accepted decision and reintroduce the unsafe design class.
 
-## Balance Review
-- Upside: Converts all sprint/run zombie collisions from stagger-the-player into knockdown-the-zombie; player is immune to bump stagger and fall animation during these. Enables offense-through-crowd navigation. With UT_martial synergy, also deals bonus damage on each collision.
-- Downside: 0.05 endurance drain per collision; at full endurance (1.0) the player can absorb ~20 collisions before exhaustion. No fracture gate (source had one). Only active while sprinting or running — walking into zombies does nothing.
-- Uptime: 100% while trait is equipped and player is sprinting/running and bumps a zombie. Endurance is the limiting resource.
-- Peer comparison: Cost 7 points. Other 7-cost offensive traits (if any exist at that tier) should provide comparable or lesser combat advantage. Knocking down zombies on collision and negating the stagger-trip penalty is a strong defensive-offensive hybrid effect. The UT_martial synergy adds free damage on every eligible collision. The cost of 7 appears reasonable for a sprint-combat rework trait, but the description mismatch makes comparison unreliable for players.
-- Stack or exclusion notes: No mutual exclusions declared. Stacks with UT_martial for bonus collision damage. No cap on how many zombies can be knocked down per sprint.
-- Cost verdict: justified (behavior is consistent with a 7-point trait, but the description mismatch must be fixed before this can be confirmed definitively)
+The accepted net outcome is therefore:
 
-## Regression Proof
-- Existing test: 5 tests in `test/run_tests.lua` (lines 883–949):
-  1. "batteringram: NOT registered when player lacks the trait" — verifies callback is absent without the trait.
-  2. "batteringram knocks zombie down when player is sprinting" — verifies `knockDown` is called once.
-  3. "batteringram cancels bump state when player is sprinting" — verifies `bumpType` is cleared to `""`.
-  4. "batteringram drains endurance on each collision" — verifies endurance < 1.0 after one collision.
-  5. "batteringram with UT_martial damages zombie on collision" — verifies zombie health reduced when both traits are active.
-- What it proves: Registration gating, knockdown on sprint, stagger cancellation, endurance drain, and UT_martial synergy are all exercised.
-- Missing proof: (1) No test verifies the "not running" branch (running but not sprinting should also trigger — test only uses `_sprinting`). (2) No test verifies behavior at endurance = 0 (floor clamping). (3) No test covers the case where `player:getStats()` returns nil (early return guard). (4) No test verifies the callback is deregistered on trait removal (only absence-at-creation is tested).
-- Minimum next test if needed: Add a test for `player._running = true` (not sprinting) to confirm the running branch also fires knockdown; and a test at endurance 0.02 to confirm `math.max(0, ...)` clamps correctly.
+1. While running or sprinting, a newly encountered live zombie within 0.7 tiles is knocked down once per encounter.
+2. Running drains 0.05 endurance.
+3. Sprinting drains 0.03 endurance and attempts 0.15 direct zombie health damage.
+4. Martial Artist additionally delegates to its existing `applyBonusDamage` contract.
+5. The trait does not manipulate `bumpedChr`, `bumpType`, `bumpFall`, `blockMovement`, or `bumpDone`, so normal engine trip or stagger remains possible.
 
-## Final Verdict
-- Source origin: proven (ToadTraits:batteringram from More Traits mod, cost 7, same name)
-- UT implementation: simplified (ghost-mode collision pass-through replaced with UTCore_ZombieCollisionHook; fracture gate removed; fitness-scaled endurance drain replaced with flat 0.05; proximity scan replaced with engine bump event; sandbox-var gating on martial combo removed)
-- Description: misleading (claims "+50% push force on shoves and knockbacks" — this is not implemented; actual behavior is sprint collision knockdown with endurance drain)
-- Balance: justified
-- Regression proof: partially protected (core happy path covered; running-not-sprinting branch, endurance floor, nil-stats guard, and deregistration on removal are untested)
-- Action needed: doc fix, test fix
-- Open gaps:
-  - Description must be rewritten to reflect actual behavior: sprint/run collision knockdown, stagger/trip immunity, 0.05 endurance drain per hit, UT_martial synergy.
-  - The "+50% push force" claim in the current description has no backing code — its origin is unknown; either it was carried over from an unrelated draft or it describes a mechanic that was never implemented.
-  - Tests for the running (non-sprint) branch, endurance floor clamping, nil-stats guard, and trait-removal deregistration are missing.
-  - The source fracture gate (disabled when legs are fractured) was not ported; it is unclear whether this was intentional. No documentation of the omission exists.
+## Definition, registration, and text
+
+- Registration: `UniversalTraits/media/registries.lua:165`
+- Definition: `UniversalTraits/media/scripts/UT_character_traits.txt:1217-1225`
+- The definition is a non-profession trait, costs 7, has no XP boosts, grants, or mutual exclusions, and is disabled in multiplayer.
+- Display key: `UI_UT_batteringram`
+- Description key: `UI_UT_batteringramDesc`
+- Source and 42.0 release text are required to be byte-identical.
+
+The previous English description promised that collision knockdown happened instead of player stagger and claimed immunity to trip and stagger. The v4 source explicitly did not provide that outcome. The corrected text states the exact numbers, Martial Artist interaction, and lack of bump immunity.
+
+## Runtime map
+
+### Declaration and ownership
+
+`UT_batteringram.lua:61` declares one handler through `UTCore.declareZombieCollisionHandler`. `UTCore_ZombieCollisionHook.lua:219-230` receives `OnCreatePlayer` and now reconciles the declared handler with the current player's trait set. `UTCore_ZombieCollisionHook.lua:238-260` repeats that reconciliation every ten `EveryOneMinute` events to repair callback-table drift or trait-set changes.
+
+The callback also checks `UTCore.hasTrait(player, TRAIT_ID)` before applying any effect. This is a defense at the effect boundary if another caller retains the function after its registration is no longer valid.
+
+### Per-update path
+
+1. `IsoPlayer.update` emits `OnPlayerUpdate` at `PZCodebase/Java/source/zombie/characters/IsoPlayer.java:2241`.
+2. UTCore dispatches `ZombieCollisionHook` at priority 0.
+3. If no collision callbacks are active, the hook returns after one counter check.
+4. If the player is not running or sprinting, the hook clears per-encounter dedup state and returns.
+5. Otherwise, it examines the 3 by 3 square neighborhood around the current square.
+6. It accepts only live `IsoZombie` objects on the same height within 0.7 tiles.
+7. `player.modData.UT_handledZombies` deduplicates each zombie while it remains in range. Leaving range or stopping resets eligibility.
+8. On first entry, the hook invokes every active callback through `pcall`.
+9. Battering Ram verifies trait ownership and movement again, calls `zombie:knockDown(true)`, applies the running or sprinting numbers, and optionally invokes Martial Artist.
+
+### Engine bump path
+
+`IsoPlayer.update` calls `separate()` later at line 2646. `IsoMovingObject.separate()` still evaluates player movement and `getBumpedChr() != obj` at lines 1198 and 1216. `IsoZombie.knockDown(boolean)` exists at line 4916, but the state change does not establish that all later separation and bump conditions are suppressed during the same update.
+
+Because v4 never writes the player's bump fields, the static call graph proves knockdown behavior but does not prove trip or stagger immunity. The description must not promise immunity.
+
+## Confirmed defects and corrections
+
+### B02-UT_batteringram-01: stale player-facing contract
+
+- Severity: high
+- Reproduction: compare the former English immunity promise with v4 source and the engine ordering above.
+- Root cause: the description was not updated when pre-campaign commit `2b03dc1` deliberately removed bump suppression.
+- Correction: English source and release now state the exact knockdown-only contract and numerical effects.
+- Regression: the UniversalTraits suite asserts the exact English value, source-release equality, no player bump-state mutation, and engine event ordering.
+- Resolution: implemented and statically validated.
+
+### B02-UT_batteringram-02: callback ownership leaked across players
+
+- Severity: high
+- Reproduction before correction: create a player with Battering Ram, fire `OnCreatePlayer`, then create a player without the trait and fire `OnCreatePlayer` again. The declaration logic only added callbacks, so the old callback remained active. The callback itself did not recheck ownership.
+- Effect: a later player without Battering Ram could receive knockdown, damage, and endurance behavior from the previous player's registration.
+- Correction: both `OnCreatePlayer` and periodic integrity handling now register eligible declarations and unregister ineligible declarations. The trait callback independently rejects a player without the trait.
+- Regression: UT_CORE covers player switch and periodic trait loss. UniversalTraits retains the function, calls it with a non-owner, proves no zombie effect, then proves current-player reconciliation removes it and restores the count to zero.
+- Resolution: implemented and statically validated.
+
+## Numerical and interaction contract
+
+- Collision range: strictly less than 0.7 tiles.
+- Vertical tolerance: at most 0.3.
+- Running endurance drain: 0.05, floored at zero.
+- Sprinting endurance drain: 0.03, floored at zero.
+- Sprint direct damage attempt: 0.15 health.
+- A nil Stats receiver does not undo knockdown or sprint damage; the handler reports that the effect ran and skips endurance and Martial processing.
+- Martial Artist receives the post-drain endurance value and owns its own bonus-damage formula.
+- The hook deduplicates by the zombie object's `tostring` identity for the current encounter.
+- No persistent cooldown exists. Dedup state is temporary player modData and is rebuilt from current proximity.
+
+## Test and mock evidence
+
+The focused UniversalTraits tests cover:
+
+- absent-trait rejection and registration removal;
+- sprint and run activation, walking no-op, range and height boundaries;
+- live-zombie filtering and Java-list iteration;
+- once-per-encounter dedup and reset after stopping or leaving range;
+- exact 0.03 sprint drain, 0.05 run drain, and zero floor;
+- sprint damage and Martial Artist delegation;
+- nil Stats behavior and callback return values;
+- no mutation of player bump state;
+- exact English source/release copy;
+- `OnPlayerUpdate` ordering before engine `separate()` and the current bump guard symbols.
+
+The UT_CORE suite separately proves declaration idempotence, missing-handler repair, current-player removal, periodic trait-loss removal, callback count reconciliation, no-handler fast return, Java-list traversal, distance handling, dedup, dead-zombie filtering, and callback error containment.
+
+These standard-Lua mocks preserve zero-based Java-list access for moving objects. They prove the modeled call contract, not current-build Kahlua execution.
+
+## Performance and lifecycle assessment
+
+The no-handler path is O(1). With Battering Ram active, the hook runs on each player update while moving and searches at most nine grid squares plus their moving-object lists. It invokes the trait only for a new live zombie inside the collision radius. The integrity path runs once per ten `EveryOneMinute` events and iterates the small declaration table.
+
+This is structurally bounded by local square occupancy, but no current-build profiler capture exists. Performance therefore remains runtime-unproven.
+
+Repeated player or world entry is statically reconciled, and the callback has a local ownership fence. Full desktop relaunch, current-version save/load, and repeated-world-entry execution remain unobserved in the game.
+
+## Remaining proof and non-goals
+
+Remaining open proof:
+
+- current-build Kahlua execution after a full desktop relaunch;
+- rendered English in character creation and the character screen;
+- repeated world entry and current-version save/load observation;
+- profiler capture under a dense local zombie population;
+- gameplay balance observation for cost 7 and the fixed numerical effects;
+- non-English localization, because no non-English UniversalTraits locale exists;
+- read-only package verification reports no source-release drift, but both UniversalTraits and UT_CORE lack their separately tracked source poster.
+
+Explicit non-goals:
+
+- multiplayer support;
+- backward save migration;
+- deployment or live-copy mutation;
+- restoring the upstream More Traits ghost-mode or fracture-gate implementation;
+- restoring player bump-state suppression without separate user approval of a changed intended outcome.
+
+## Final verdict
+
+The accepted pre-campaign trait is a proactive, knockdown-only collision effect, not trip or stagger immunity. Its text now matches that intended outcome. The callback lifecycle no longer leaks the effect to a later player without the trait, and the effect boundary has an independent trait-ownership guard. Static source, engine trace, focused regressions, and source-release parity support the correction. Current-build runtime, rendered UI, performance, and balance proof remain explicitly open.

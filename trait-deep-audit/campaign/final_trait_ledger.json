@@ -45,12 +45,12 @@
     }
   },
   "source_artifact_sha256": {
-    "independent_reviews/traits_01_04.json": "EBD9719172A12B9799139D47BECCC1C9F590775CF7A0E0EC865F76080E647E04",
+    "independent_reviews/traits_01_04.json": "DCBA20D384DA58AB554A1E5D738862064F042CCB71CA7674DA8B0FC25023C573",
     "independent_reviews/traits_05_08.json": "1EC23EF9DE7D30A8244E32AE98C8D469A060243D7A1A93AAF8D6E410C13B5530",
     "independent_reviews/traits_09_12.json": "27A52A4BB934EDCCD324FC013C7CC1885085D91F474C3E0BEED192C5018C7805",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "7662955EC097DEFA35D50374254DDA128E3338D6113275FB59F09A21ACA2D3B1",
-    "trait_batches/batch_02.jsonl": "349C4E313F7E2C3EAE626339B81675A06CA4C9BFDA6A62E07A1C0374E9C6EA12",
+    "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
     "trait_batches/batch_03.jsonl": "F8C9E0FD9E273306FEC68C182BD9B6A34D268D7EF47BBD040845FC308AFE169A",
     "trait_batches/batch_04.jsonl": "7BE87A0648404822CC35EE0904E3E4CC43391B4F955363D61BE1E3B8FEC6DA6E",
     "trait_batches/batch_05.jsonl": "6F550AD8CF0BD3BA4E827AD9D5F39F2149C50B4D8A990816451C8E86F58DE5AE",
@@ -61,12 +61,12 @@
     "trait_batches/batch_10.jsonl": "FD77CC372A742BCDEB66FCB6D26BF9622BA4EC439CDB8E9135CAC22B946F3A44",
     "trait_batches/batch_11.jsonl": "11FBFE83557FBD93363F41AC740897040804E74E1063367C55A521DA0D2C98F4",
     "trait_batches/batch_12.jsonl": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47",
-    "translation_audit.json": "8971991805997912DF1913CD52DEC28F8132D8359CBFB0D21331F0B496FAB15E"
+    "translation_audit.json": "F18E3A2F2B953B2FE08275116F87759B6C1267BFF6BF689BC864CAA7937E3BB9"
   },
   "counts": {
     "traits": 198,
     "unique_traits": 198,
-    "findings": 163,
+    "findings": 164,
     "independent_reviewed_traits": 198,
     "independent_review_findings": 118,
     "independent_review_states": {
@@ -78,15 +78,15 @@
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 70,
+      "confirmed-defect": 69,
       "coverage-gap": 12,
-      "runtime-unproven": 91
+      "runtime-unproven": 92
     },
     "dimension_states": {
-      "proven-correct": 2710,
-      "confirmed-defect": 272,
-      "coverage-gap": 786,
-      "runtime-unproven": 984
+      "proven-correct": 2717,
+      "confirmed-defect": 271,
+      "coverage-gap": 782,
+      "runtime-unproven": 982
     }
   },
   "independent_review_findings": [
@@ -8992,7 +8992,7 @@
     {
       "trait_id": "UniversalTraits:UT_batteringram",
       "batch": "batch_02",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
@@ -9005,13 +9005,15 @@
           ]
         },
         "definition_parser": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "Complete-file regex parse found one definition; source inventory SHA E93D...F34A3FE reports 198/198 unique definitions and parser fixtures passed."
+            "The complete source and release definitions are byte-identical and parse in the standard-Lua consistency suite."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current-build ScriptManager parsing has not been observed in game."
+          ],
           "source_dimensions": [
-            "complete_script_definition_and_parser_validity"
+            "definition_parser"
           ]
         },
         "namespace": {
@@ -9027,53 +9029,59 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "Cost=7; XPBoosts=none; exclusions=none."
+            "Cost is 7; there are no XP boosts, grants, or exclusions; DisabledInMultiplayer is true."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "cost_XP_grants_exclusions_and_bidirectional_exclusion_behavior"
+            "cost_xp_grants_exclusions"
           ]
         },
         "source_intent": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Source comments/runtime and EN text establish observed intent: UT_batteringram.lua -> declareZombieCollisionHandler -> UTCore_ZombieCollisionHook proximity callback."
+            "Pre-campaign master and commit 2b03dc1 establish the accepted v4 knockdown-only behavior and explicitly reject player bump-state manipulation after permanent-freeze failures."
           ],
           "missing_proof": [
-            "Original source-mod implementation or indexed PRD section proving intended parity was not available for every assigned trait."
+            "none"
           ],
           "source_dimensions": [
-            "source_mod_intent"
+            "source_intent"
           ]
         },
         "runtime_path": {
           "state": "proven-correct",
           "evidence": [
-            "UT_batteringram.lua -> declareZombieCollisionHandler -> UTCore_ZombieCollisionHook proximity callback"
+            "IsoPlayer OnPlayerUpdate reaches the UTCore collision dispatcher, which scans nine local squares, deduplicates new live zombies inside 0.7 tiles, and calls the trait handler before engine separate()."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "exact_runtime_path_through_UT_CORE_or_script_only_behavior"
+            "runtime_path"
           ]
         },
         "numbers": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "run drain .05;sprint drain .03;sprint zombie damage .15"
+            "Running drains 0.05 endurance; sprinting drains 0.03 and attempts 0.15 zombie health damage; endurance is floored at zero."
           ],
           "missing_proof": [
-            "No current in-game observation confirms engine units, tick rate, or bridge behavior."
+            "none"
           ],
           "source_dimensions": [
-            "numerical_behavior"
+            "numbers"
           ]
         },
         "cadence": {
           "state": "proven-correct",
           "evidence": [
-            "UT_batteringram.lua -> declareZombieCollisionHandler -> UTCore_ZombieCollisionHook proximity callback"
+            "The hook runs through the single UTCore player-update dispatcher and fires the trait once when each live zombie newly enters collision range."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cadence"
           ]
@@ -9081,122 +9089,130 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
-            "No explicit cooldown in the assigned implementation."
+            "The accepted implementation has encounter deduplication but no time-based cooldown."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "cooldowns"
+            "cooldown"
           ]
         },
         "reset_save_load": {
           "state": "runtime-unproven",
           "evidence": [
-            "Persistent state uses player/item modData where present; local tables/events reset on process reload."
+            "OnCreatePlayer and the periodic integrity pass reconcile callback ownership; stopping or leaving range rebuilds temporary dedup state."
           ],
           "missing_proof": [
-            "No save/load game run verifies persistence, stale-state cleanup, or trait removal behavior."
+            "Current-version repeated world entry and save/load remain unobserved."
           ],
           "source_dimensions": [
-            "reset_and_save_load"
+            "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Current indexed code uses PZ globals/Java methods shown in the runtime path."
+            "SVN 964 exposes IsoPlayer OnPlayerUpdate, IsoMovingObject separate bump guards, IsoZombie knockDown, Java moving-object list access, Stats get/set, and position and health methods used by the path."
           ],
           "missing_proof": [
-            "Exact current Java symbols were only partially cross-checked; no live Kahlua invocation."
+            "none"
           ],
           "source_dimensions": [
-            "Java_Lua_exposure"
+            "java_lua"
           ]
         },
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "All 12 assigned runtime source files passed Lua 5.4 loadfile syntax compilation."
+            "The implementation uses Kahlua-compatible Lua shapes and verified current Java receiver methods."
           ],
           "missing_proof": [
-            "Standard Lua syntax is not Kahlua execution proof."
+            "Current-build Kahlua execution is unobserved."
           ],
           "source_dimensions": [
-            "Kahlua_compatibility"
+            "kahlua"
           ]
         },
         "events": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "UT_batteringram.lua -> declareZombieCollisionHandler -> UTCore_ZombieCollisionHook proximity callback"
+            "OnCreatePlayer and periodic integrity handling now both add eligible declarations and remove ineligible ones; the callback independently rejects a player without the trait."
           ],
           "missing_proof": [
-            "No full-relaunch event registration/removal or multiplayer lifecycle run."
+            "none"
           ],
           "source_dimensions": [
-            "event_lifecycle"
+            "events"
           ]
         },
         "stacking_interactions": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "UT_martial synergy exists; collision lifecycle conflict noted."
+            "The only intended trait interaction is Martial Artist delegation with post-drain endurance; the focused suite proves that path and callback ownership isolation."
           ],
           "missing_proof": [
-            "No exhaustive pairwise assigned/foreign-trait runtime matrix."
+            "none"
           ],
           "source_dimensions": [
-            "stacking_and_cross_trait_interactions"
+            "stacking_interactions"
           ]
         },
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "DisabledInMultiplayer=true in the complete definition."
+            "The definition disables the trait in multiplayer and multiplayer support is an explicit product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "multiplayer_restriction"
+            "multiplayer"
           ]
         },
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "EN UI display key exists and matches UIName."
+            "The exact English display name is Battering Ram."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "display_name"
+            "display"
           ]
         },
         "description": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "See finding for concrete mismatch."
+            "The English copy states the exact v4 knockdown, endurance, sprint-damage, Martial Artist, and no-bump-immunity contract."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "description_accuracy"
+            "description"
           ]
         },
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "EN display and description keys exist; source inventory lists only EN."
+            "The exact English keys exist in source and release."
           ],
           "missing_proof": [
-            "All non-EN locales are absent."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
-            "localization_coverage_including_absent_locales"
+            "localization"
           ]
         },
         "balance": {
           "state": "runtime-unproven",
           "evidence": [
-            "Cost=7; behavior=run drain .05;sprint drain .03;sprint zombie damage .15."
+            "Static behavior is cost 7 with fixed 0.05 running drain, 0.03 sprint drain, 0.15 sprint damage, and Martial Artist synergy."
           ],
           "missing_proof": [
-            "No gameplay telemetry, comparative cost model, or in-game balance session."
+            "No gameplay telemetry or comparative balance session exists."
           ],
           "source_dimensions": [
             "balance"
@@ -9205,34 +9221,34 @@
         "performance": {
           "state": "runtime-unproven",
           "evidence": [
-            "Cadence/path: UT_batteringram.lua -> declareZombieCollisionHandler -> UTCore_ZombieCollisionHook proximity callback."
+            "The inactive path is O(1); the active moving path scans nine local squares and deduplicates callback work per nearby zombie encounter."
           ],
           "missing_proof": [
-            "No profiler capture on current build."
+            "No current-build dense-population profiler capture exists."
           ],
           "source_dimensions": [
-            "performance_risk"
+            "performance"
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Indexed tests include registry inventory/shared contracts and focused cases for several assigned traits; tests were not accepted as sole proof."
+            "Focused UT_CORE and UniversalTraits tests cover lifecycle ownership, movement modes, range and height, dead filtering, dedup, exact numbers, Martial synergy, error containment, engine ordering, no bump mutation, and exact English copy."
           ],
           "missing_proof": [
-            "No permitted focused command isolated all 17 traits; whole suite was not run because it would execute foreign-trait sources outside the delegated read scope."
+            "none"
           ],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "UTTestMocks provides UTCore/event/PZ boundaries; Java API manifest covers bouncer calls."
+            "Collision mocks preserve zero-based Java moving-object list access, spatial values, zombie identity, Stats domains, event ownership, and current method contracts used by the handler."
           ],
           "missing_proof": [
-            "Mock fidelity was not independently proven against every current Java method/event used."
+            "none"
           ],
           "source_dimensions": [
             "mocks"
@@ -9241,9 +9257,11 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "Per-trait source and 42.0 release Lua SHA-256 match."
+            "Trait runtime, collision-hook runtime, definition, and English source and 42.0 release pairs are byte-identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_release_parity"
           ]
@@ -9251,39 +9269,41 @@
         "packaging": {
           "state": "coverage-gap",
           "evidence": [
-            "Expected 42.0 source/release locations were checked for assigned per-trait Lua."
+            "All Battering Ram-owned 42.0 runtime, collision-hook, definition, and English counterparts are present and identical."
           ],
           "missing_proof": [
-            "Full package manifest/mod.info/load-order and live-copy deployment were outside scope."
+            "Read-only package verification reports no release drift; UniversalTraits and UT_CORE each lack the separately tracked source poster."
           ],
           "source_dimensions": [
-            "packaging_integrity"
+            "packaging"
           ]
         }
       },
       "finding_ids": [
-        "B02-UT_batteringram-01"
+        "B02-UT_batteringram-01",
+        "B02-UT_batteringram-02"
       ],
       "unknowns": [
-        "Current in-game Build 42.19 execution and logs were not available.",
-        "Non-EN localization is absent.",
-        "Balance and profiler evidence are absent."
+        "Current-build Kahlua execution, full relaunch, repeated world entry, and current-version save/load remain unobserved.",
+        "Rendered English, balance telemetry, and dense-population profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory.",
+        "Multiplayer and backward save migration are explicit non-goals."
       ],
-      "translation_terminal_state": "coverage-gap",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_01_04.json",
         "review_state": "accepted",
         "omission_finding_ids": [],
         "cross_finding_ids": [],
         "verified_first_pass_finding_ids": [
-          "B02-UT_batteringram-01"
+          "B02-UT_batteringram-01",
+          "B02-UT_batteringram-02"
         ],
         "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [
-          "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-          "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-          "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-          "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
+          "Current-build Kahlua execution, full desktop relaunch, repeated world entry, and current-version save/load remain unobserved.",
+          "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+          "Only English UI localization exists in the closed-world source inventory."
         ]
       }
     },

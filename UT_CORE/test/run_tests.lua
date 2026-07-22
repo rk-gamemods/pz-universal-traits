@@ -874,7 +874,7 @@ end)
 
 -- XPHook: Java enum object regression (Kahlua __concat crash)
 -- These tests pass a MockJavaPerk (table with __tostring, no __concat) as the perk
--- argument — the same type the real PZ engine sends. If any XPHook code path uses
+-- argument - the same type the real PZ engine sends. If any XPHook code path uses
 -- '..' directly on `perk` instead of tostring(perk), it crashes here in standard Lua
 -- exactly as it would crash in Kahlua with "__concat not defined for operands".
 
@@ -1000,7 +1000,7 @@ test("SpeedHook teleport guard skips when pending delta > 5", function()
     player:moveTo(0, 0)
     player:setNextX(10.0)   -- delta=10 > TELEPORT_GUARD=5
     Events.OnPlayerMove.fire()
-    -- Should NOT scale — teleport guard skips
+    -- Should NOT scale - teleport guard skips
     assert(math.abs(player:getNextX() - 10.0) < 0.01, "nextX should be unchanged (teleport guard)")
     _G.getPlayer = function() return nil end
 end)
@@ -1034,8 +1034,8 @@ test("SpeedHook never calls setX (no position-pinning bug)", function()
     player:setNextY(4.0)  -- pending delta = 1.0
     Events.OnPlayerMove.fire()
     -- x must remain exactly 5.0 (setX was never called)
-    assert_eq(player:getX(), 5.0, "x must not change — SpeedHook must not call setX")
-    assert_eq(player:getY(), 3.0, "y must not change — SpeedHook must not call setY")
+    assert_eq(player:getX(), 5.0, "x must not change - SpeedHook must not call setX")
+    assert_eq(player:getY(), 3.0, "y must not change - SpeedHook must not call setY")
     _G.getPlayer = function() return nil end
 end)
 
@@ -1682,7 +1682,7 @@ test("ZombieCollisionHook clears handled set when player stops running", functio
     Events.OnPlayerUpdate.fire(p)
     assert_true(p:getModData().UT_handledZombies ~= nil, "handled set should exist while running")
 
-    -- Player stops running — handled set should be cleared for fresh start
+    -- Player stops running - handled set should be cleared for fresh start
     p:setRunning(false)
     Events.OnPlayerUpdate.fire(p)
     _G._mockCell = nil
@@ -1706,7 +1706,7 @@ test("ZombieCollisionHook ignores dead zombies", function()
     Events.OnPlayerUpdate.fire(p)
     assert_eq(callCount, 1, "expected callback for live zombie")
 
-    -- Kill the zombie — corpse stays on the square
+    -- Kill the zombie - corpse stays on the square
     z:setDead(true)
     p:getModData().UT_handledZombies = nil  -- reset dedup so we'd fire again IF it were alive
     Events.OnPlayerUpdate.fire(p)
@@ -1728,11 +1728,32 @@ end)
 
 test("declareZombieCollisionHandler does NOT register for player without trait", function()
     UTCore._zombieCollisionCallbacks = {}
+    UTCore._zombieCollisionCallbackCount = 0
     UTCore.declareZombieCollisionHandler("UniversalTraits:UT_test_notrait", function() end)
     local p = MockPlayer({})
     Events.OnCreatePlayer.fire(0, p)
     assert_eq(UTCore._zombieCollisionCallbacks["UniversalTraits:UT_test_notrait"], nil,
         "expected no callback for player lacking the trait")
+end)
+
+test("declareZombieCollisionHandler removes stale callback on player switch", function()
+    UTCore._zombieCollisionCallbacks = {}
+    UTCore._zombieCollisionCallbackCount = 0
+    local traitId = "UniversalTraits:UT_test_player_switch"
+    local fn = function() end
+    UTCore.declareZombieCollisionHandler(traitId, fn)
+
+    Events.OnCreatePlayer.fire(0, MockPlayer({ traitId }))
+    assert_eq(UTCore._zombieCollisionCallbacks[traitId], fn,
+        "expected callback for the first player")
+    assert_eq(UTCore._zombieCollisionCallbackCount, 1,
+        "expected one active callback")
+
+    Events.OnCreatePlayer.fire(0, MockPlayer({}))
+    assert_eq(UTCore._zombieCollisionCallbacks[traitId], nil,
+        "expected callback removed for the next player without the trait")
+    assert_eq(UTCore._zombieCollisionCallbackCount, 0,
+        "expected reconciled callback count")
 end)
 
 test("integrity check re-registers cleared declared handler", function()
@@ -1752,6 +1773,26 @@ test("integrity check re-registers cleared declared handler", function()
 
     assert_eq(UTCore._zombieCollisionCallbacks["UniversalTraits:UT_test_integrity"], fn,
         "expected integrity check to re-register the cleared callback")
+    _G.getPlayer = function() return nil end
+end)
+
+test("integrity check removes declared handler after trait loss", function()
+    UTCore._zombieCollisionCallbacks = {}
+    UTCore._zombieCollisionCallbackCount = 0
+    local traitId = "UniversalTraits:UT_test_integrity_removal"
+    local fn = function() end
+    UTCore.declareZombieCollisionHandler(traitId, fn)
+    local activePlayer = MockPlayer({ traitId })
+    Events.OnCreatePlayer.fire(0, activePlayer)
+    assert_eq(UTCore._zombieCollisionCallbacks[traitId], fn)
+
+    _G.getPlayer = function() return MockPlayer({}) end
+    for _ = 1, 10 do Events.EveryOneMinute.fire() end
+
+    assert_eq(UTCore._zombieCollisionCallbacks[traitId], nil,
+        "expected integrity reconciliation to remove the inactive callback")
+    assert_eq(UTCore._zombieCollisionCallbackCount, 0,
+        "expected reconciled callback count")
     _G.getPlayer = function() return nil end
 end)
 
@@ -2101,7 +2142,7 @@ test("profiledHandler catches and logs errors", function()
         error("test explosion")
     end)
     setMockTimestampMs(400)
-    -- Should NOT throw — error is caught
+    -- Should NOT throw - error is caught
     wrapped("fake_player")
     local stats = UTCore.getPerfStats()
     assert_eq(stats["ErrorHook"].count, 1)

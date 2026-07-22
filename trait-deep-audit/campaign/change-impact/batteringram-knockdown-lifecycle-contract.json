@@ -1,0 +1,111 @@
+{
+  "schema": "ut-batteringram-knockdown-lifecycle-contract-v1",
+  "trait_id": "UniversalTraits:UT_batteringram",
+  "authority": {
+    "accepted_baseline": "pre-campaign UTMods master",
+    "knockdown_only_decision": "2b03dc140bfdc61322135b59f1e6cd80d6b3770a",
+    "pz_snapshot": "SVN revision 964; Steam BuildID 23504596 is recorded outside VERSION.json"
+  },
+  "accepted_intent": {
+    "cost": 7,
+    "trigger": "each new live zombie entering 0.7-tile range while running or sprinting",
+    "running_endurance_drain": 0.05,
+    "sprinting_endurance_drain": 0.03,
+    "sprinting_zombie_damage": 0.15,
+    "martial_artist": "delegate normal bonus damage with post-drain endurance",
+    "player_bump_state": "never manipulated; normal trip or stagger remains possible",
+    "runtime_scope": "single-player"
+  },
+  "resolved_findings": [
+    "B02-UT_batteringram-01",
+    "B02-UT_batteringram-02"
+  ],
+  "engine_evidence": [
+    "PZCodebase/Java/source/zombie/characters/IsoPlayer.java:2241,2646",
+    "PZCodebase/Java/source/zombie/iso/IsoMovingObject.java:1198,1216",
+    "PZCodebase/Java/source/zombie/characters/IsoZombie.java:4916",
+    "UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_batteringram.lua",
+      "sha256": "33572584CA9B180DD9E07F84553EEAD12C59679A882118D1FA98107D5A504B45",
+      "bytes": 3144
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_batteringram.lua",
+      "sha256": "33572584CA9B180DD9E07F84553EEAD12C59679A882118D1FA98107D5A504B45",
+      "bytes": 3144
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua",
+      "sha256": "A97C0B40175A0E9C7908A53292ACCD39E145CD041C905D2C46863A10AC0B8BBF",
+      "bytes": 11516
+    },
+    {
+      "path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua",
+      "sha256": "A97C0B40175A0E9C7908A53292ACCD39E145CD041C905D2C46863A10AC0B8BBF",
+      "bytes": 11516
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "AB1F518D49E1CFE494ADE7CD0AA5DFB4F61E6AD8290F7DA64AA78242F2A4D4C4",
+      "bytes": 37080
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "AB1F518D49E1CFE494ADE7CD0AA5DFB4F61E6AD8290F7DA64AA78242F2A4D4C4",
+      "bytes": 37080
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "E268AD823AE14A8D276EFF56D390B716749DF16DBA13EEBED0AB7CB73F746616",
+      "bytes": 285401
+    },
+    {
+      "path": "UT_CORE/test/run_tests.lua",
+      "sha256": "871393777B3CF8D11296BC90F982B5AE7455F9096347C9B01F9AB56A83D8DA97",
+      "bytes": 103493
+    },
+    {
+      "path": "UniversalTraits/test/test_batteringram_engine_stack.lua",
+      "sha256": "D6D16290841A671318652E9BA5512AA91E7C5DD2E67D4190DAECD7019EC4E536",
+      "bytes": 10238
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_batteringram.md",
+      "sha256": "DBCED69D98CDE0A62ADAA29B55A8BA727614176AEEA3435FA357CCC43795FA71",
+      "bytes": 10381
+    }
+  ],
+  "regression_cases": [
+    "active player to inactive player callback removal",
+    "retained callback rejects a non-owner",
+    "periodic removal after trait loss",
+    "sprint, run, walking, range, height, dead-zombie, and Java-list paths",
+    "per-encounter dedup and reset",
+    "exact endurance and sprint-damage numbers",
+    "Martial Artist delegation and nil Stats handling",
+    "no player bump-state mutation and engine update ordering",
+    "exact English copy and source-release parity"
+  ],
+  "performance_model": "The inactive path performs one callback-count check. The active moving path scans nine local squares and invokes trait work once per newly encountered live zombie. Integrity reconciliation runs once per ten EveryOneMinute events over the small declaration table.",
+  "runtime_proof": "Unobserved; requires full Exit to Desktop, current-build collision and player-switch observation, repeated world entry, current-version save/load, rendered English, balance, and profiler capture.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment",
+    "restoring upstream ghost mode or fracture gating",
+    "restoring player bump suppression"
+  ]
+}

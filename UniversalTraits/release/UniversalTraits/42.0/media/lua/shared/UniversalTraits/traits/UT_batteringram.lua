@@ -6,7 +6,7 @@
 -- It only detects nearby zombies and fires this callback, which operates
 -- exclusively on ZOMBIES (knockDown, setHealth) and PLAYER STATS (endurance).
 -- If the engine's normal bump fires anyway, the BumpedState lifecycle handles
--- recovery — that's designed game mechanics, not something we prevent.
+-- recovery - that's designed game mechanics, not something we prevent.
 --
 -- The callback fires when a zombie enters collision range (proximity-based),
 -- NOT on bump rising edge. This means the trait effect (knockdown, damage)
@@ -24,12 +24,15 @@ local SPRINT_DAMAGE          = 0.15   -- direct health damage to zombie on sprin
 -- Called when a zombie enters collision range while player is running/sprinting.
 -- The hook already filters for movement state; double-check as safety.
 local function onZombieCollision(player, zombie)
+    -- The shared callback table survives repeated world entry. Refuse stale or
+    -- externally retained callbacks when the current player lacks the trait.
+    if not UTCore.hasTrait(player, TRAIT_ID) then return false end
     local sprinting = player:isSprinting()
     -- Only trigger while actively sprinting or running (walking into a zombie does nothing)
     if not sprinting and not player:isRunning() then return false end
 
     -- Knock the zombie down. hitFromBehind=true selects the faster
-    -- "slammed forward" animation — visually matches a charging impact.
+    -- "slammed forward" animation - visually matches a charging impact.
     zombie:knockDown(true)
 
     -- Sprint bonus: direct impact damage from the charge
@@ -37,7 +40,7 @@ local function onZombieCollision(player, zombie)
         pcall(function() zombie:setHealth(zombie:getHealth() - SPRINT_DAMAGE) end)
     end
 
-    -- Drain endurance per collision — sprinting is more efficient (momentum)
+    -- Drain endurance per collision - sprinting is more efficient (momentum)
     local stats = player:getStats()
     if not stats then return true end
     local drain = sprinting and ENDURANCE_DRAIN_SPRINT or ENDURANCE_DRAIN_RUN
@@ -50,9 +53,9 @@ local function onZombieCollision(player, zombie)
         UT_martial.applyBonusDamage(player, zombie, endurance)
     end
 
-    return true  -- signal: collision was handled
+    return true  -- signal that the trait effect ran
 end
 
--- Declare collision handler — UTCore handles OnCreatePlayer registration,
--- save/load persistence, and integrity self-healing automatically.
+-- Declare collision handler. UTCore handles current-player registration and
+-- periodic reconciliation automatically.
 UTCore.declareZombieCollisionHandler(TRAIT_ID, onZombieCollision)

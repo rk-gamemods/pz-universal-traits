@@ -2095,21 +2095,38 @@ end)
 
 -- ===== UT_batteringram collision tests =====
 UTCore._zombieCollisionCallbacks = {}  -- reset before batteringram tests
+UTCore._zombieCollisionCallbackCount = 0
 -- Load the collision hook so declareZombieCollisionHandler is available
 dofile(base .. "../../UT_CORE/media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_batteringram.lua")
 
 local function fireRamCollision(player, zombie)
     local fn = UTCore._zombieCollisionCallbacks["UniversalTraits:UT_batteringram"]
-    if fn then fn(player, zombie) end
+    if fn then return fn(player, zombie) end
+    return false
 end
 
-test("batteringram: NOT registered when player lacks the trait", function()
+test("batteringram callback and registration do not survive trait loss", function()
     UTCore._zombieCollisionCallbacks = {}
-    local player = MockPlayer({})  -- no trait
-    Events.OnCreatePlayer:fire(0, player)
+    UTCore._zombieCollisionCallbackCount = 0
+    local activePlayer = MockPlayer({ "UniversalTraits:UT_batteringram" })
+    Events.OnCreatePlayer:fire(0, activePlayer)
+    local callback = UTCore._zombieCollisionCallbacks["UniversalTraits:UT_batteringram"]
+    assert_true(callback ~= nil, "expected callback for the active trait owner")
+
+    local inactivePlayer = MockPlayer({})
+    inactivePlayer._sprinting = true
+    local zombie = MockZombie()
+    assert_eq(callback(inactivePlayer, zombie), false,
+        "a retained callback must reject a player without the trait")
+    assert_eq(#zombie:getKnockDownCalls(), 0,
+        "a retained callback must not affect a player without the trait")
+
+    Events.OnCreatePlayer:fire(0, inactivePlayer)
     assert_true(UTCore._zombieCollisionCallbacks["UniversalTraits:UT_batteringram"] == nil,
-        "expected callback NOT registered when trait absent")
+        "current-player reconciliation must remove the stale callback")
+    assert_eq(UTCore._zombieCollisionCallbackCount, 0,
+        "callback count must match the reconciled callback table")
 end)
 
 test("batteringram knocks zombie down when player is sprinting", function()
@@ -2124,7 +2141,7 @@ test("batteringram knocks zombie down when player is sprinting", function()
         "expected knockDown(true) for charging impact animation")
 end)
 
-test("batteringram does NOT manipulate bump state (v3 preemptive)", function()
+test("batteringram does NOT manipulate player bump state", function()
     local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
     Events.OnCreatePlayer:fire(0, player)
     player._sprinting = true
@@ -2134,16 +2151,16 @@ test("batteringram does NOT manipulate bump state (v3 preemptive)", function()
     player._blockMovement = true
     local zombie = MockZombie()
     fireRamCollision(player, zombie)
-    -- v3b: callback no longer touches bump state; prevention uses knockDown + setBumpedChr
+    -- The accepted v4 callback affects the zombie and endurance only.
     assert_eq(player._bumpType, "stagger",
-        "v3 callback should NOT clear bumpType")
+        "callback should NOT clear bumpType")
     assert_eq(player._bumpedChr, originalZombie,
-        "v3 callback should NOT change bumpedChr")
+        "callback should NOT change bumpedChr")
     assert_eq(player._blockMovement, true,
-        "v3 callback should NOT clear blockMovement")
+        "callback should NOT clear blockMovement")
 end)
 
-test("batteringram returns true to activate bump suppression", function()
+test("batteringram reports that its collision effect ran", function()
     local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
     Events.OnCreatePlayer:fire(0, player)
     player._sprinting = true
@@ -2151,7 +2168,7 @@ test("batteringram returns true to activate bump suppression", function()
     local fn = UTCore._zombieCollisionCallbacks["UniversalTraits:UT_batteringram"]
     local result = fn(player, zombie)
     assert_eq(result, true,
-        "expected callback to return true for bump suppression")
+        "expected callback to report that the trait effect ran")
 end)
 
 test("batteringram returns false when player is not sprinting or running", function()
@@ -2233,17 +2250,31 @@ test("batteringram with UT_martial damages zombie on collision", function()
         "expected zombie health reduced by martial synergy, got " .. tostring(zombie:getHealth()))
 end)
 
--- ===== INTEGRATION: verify the engine's re-bump guard is preserved =====
+test("batteringram English copy states the exact knockdown-only contract", function()
+    local expected = "You're a human freight train. While running or sprinting, entering collision range knocks each new nearby zombie down and drains endurance. Running drains 0.05 endurance; sprinting drains 0.03 and deals 0.15 impact damage. Martial Artist also applies its normal bonus damage. This does not prevent the game's normal trip or stagger."
+    local source = io.open(base .. "../media/lua/shared/Translate/EN/UI.json", "r")
+    local release = io.open(base .. "../release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json", "r")
+    assert_true(source ~= nil and release ~= nil, "expected both English translation files")
+    local sourceText = source:read("*a")
+    local releaseText = release:read("*a")
+    source:close()
+    release:close()
+    assert_true(sourceText:find(expected, 1, true) ~= nil,
+        "source English must state the exact Battering Ram contract")
+    assert_eq(releaseText, sourceText, "Battering Ram English source and release must match")
+end)
+
+-- ===== INTEGRATION: prove the v4 hook does not claim bump immunity =====
 -- The PZ tick order (from decompiled IsoPlayer.updateInternal2) is:
 --   1. doDeferredMovement(): movement applied
 --   2. OnPlayerUpdate: our hook fires here
 --   3. separate() collision detection: re-detects overlap, re-sets bumpType
 --   4. stateMachine.update(): BumpedState enters if bumpType set
 --
--- The fix relies on the engine's OWN re-bump guard in separate() (line 1222):
+-- The engine's own re-bump guard in separate() checks:
 --   if getBumpedChr() != obj then bump = true
--- By preserving bumpedChr (NOT clearing it), separate() skips re-bumping for
--- the same zombie. No teleportation, no setX/setY. The player moves naturally.
+-- The v4 hook never sets bumpedChr, so it cannot promise immunity. A pre-existing
+-- engine guard still blocks only the exact zombie already recorded by the engine.
 
 --- Simulates PZ's separate() re-bump guard.
 --- Returns true if the same zombie WOULD re-trigger a bump (i.e., bumpedChr
@@ -2253,16 +2284,16 @@ local function wouldSeparateRebump(player, zombie)
     return player:getBumpedChr() ~= zombie
 end
 
-test("INTEGRATION: v3 callback does not touch bumpedChr", function()
+test("INTEGRATION: v4 trait callback does not touch bumpedChr", function()
     local player = MockPlayer({ "UniversalTraits:UT_batteringram" })
     Events.OnCreatePlayer:fire(0, player)
     player._sprinting = true
     local zombie = MockZombie()
     player:setBumpedChr(zombie)
     fireRamCollision(player, zombie)
-    -- v3: callback doesn't touch bump state at all
+    -- v4: callback does not touch player bump state.
     assert_eq(player:getBumpedChr(), zombie,
-        "v3 callback must not modify bumpedChr")
+        "v4 callback must not modify bumpedChr")
 end)
 
 test("INTEGRATION: engine guard allows bump from DIFFERENT zombie (cluster case)", function()

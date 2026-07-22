@@ -1,14 +1,14 @@
 -- UTCore_ZombieCollisionHook.lua
 -- Zombie collision detection and trait callback dispatch.
 --
--- STRATEGY (v4 — "knockdown only, never touch player bump state"):
+-- STRATEGY (v4 - "knockdown only, never touch player bump state"):
 --   Previous versions (v1–v3b) tried to PREVENT BumpedState entry by
 --   calling player:setBumpedChr(zombie) each tick. This was architecturally
 --   broken because:
---     1. The guard only protects against ONE zombie — separate() checks ALL
+--     1. The guard only protects against ONE zombie - separate() checks ALL
 --        moving objects, so zombie B can trigger a bump while A is guarded.
 --     2. Clearing setBumpedChr during an active BumpedState corrupts the
---        state machine — BumpDone never fires → permanent freeze.
+--        state machine - BumpDone never fires → permanent freeze.
 --     3. Tick ordering: zombies can enter range between OnPlayerUpdate and
 --        separate(), bypassing the guard entirely.
 --
@@ -28,9 +28,9 @@
 --
 -- Trait API (preferred):
 --   UTCore.declareZombieCollisionHandler(traitId, fn)
---     Called at file-load time. Declares intent — the handler is automatically
---     registered via OnCreatePlayer when the player has the trait, and
---     self-healed by a periodic integrity check if ever cleared.
+--     Called at file-load time. Declares intent - the handler is automatically
+--     reconciled via OnCreatePlayer for the current player, and self-healed
+--     by a periodic integrity check if the active callback drifts.
 --
 -- Low-level API (UTCore internal use):
 --   UTCore.registerZombieCollisionHandler(traitId, fn)
@@ -52,8 +52,8 @@ local COLLISION_RANGE = 0.7
 -- Debug logging
 ---------------------------------------------------------------------------
 -- Toggle at runtime:
---   UTCore.setCollisionDebug(true)     — global toggle
---   player:getModData().UT_DEBUG_COLLISIONS = true  — per-save toggle
+--   UTCore.setCollisionDebug(true)     - global toggle
+--   player:getModData().UT_DEBUG_COLLISIONS = true  - per-save toggle
 
 function UTCore.setCollisionDebug(enabled)
     UTCore._debugCollisions = enabled ~= false
@@ -75,10 +75,10 @@ end
 ---------------------------------------------------------------------------
 
 --- Declare a zombie collision handler for a trait. Call once at file-load time.
---- The handler is automatically registered on OnCreatePlayer (new game + save load)
---- and re-registered by the integrity check if the callbacks table is ever cleared.
+--- OnCreatePlayer reconciles the handler with the current player's trait set.
+--- The integrity check restores a missing eligible handler or removes an ineligible one.
 ---   traitId:   full trait ID, e.g. "UniversalTraits:UT_batteringram"
----   handlerFn: function(player, zombie) — called when zombie enters collision range
+---   handlerFn: function(player, zombie) - called when zombie enters collision range
 function UTCore.declareZombieCollisionHandler(traitId, handlerFn)
     _declarations[traitId] = handlerFn
 end
@@ -104,7 +104,7 @@ end
 -- Zombie detection
 ---------------------------------------------------------------------------
 
--- Use PZ's instanceof() for a clean Java class check — no exceptions thrown.
+-- Use PZ's instanceof() for a clean Java class check - no exceptions thrown.
 -- The pcall(chr:isAlwaysKnockedDown) approach logged Java RuntimeExceptions
 -- for every non-zombie MovingObject even though pcall caught them in Lua.
 local function isZombie(chr)
@@ -214,25 +214,24 @@ end
 -- Auto-registration from declarations
 ---------------------------------------------------------------------------
 
--- OnCreatePlayer fires on BOTH new game and save load.
--- Registers collision handlers for every declared trait the player actually has.
+-- OnCreatePlayer fires on both new game and save load.
+-- Reconciles every declared handler with the current player's trait set.
 local function onCreatePlayer(_playerIndex, player)
     if not player then return end
     for traitId, fn in pairs(_declarations) do
         if UTCore.hasTrait(player, traitId) then
-            if UTCore._zombieCollisionCallbacks[traitId] == nil then
-                UTCore._zombieCollisionCallbackCount = UTCore._zombieCollisionCallbackCount + 1
-            end
-            UTCore._zombieCollisionCallbacks[traitId] = fn
+            UTCore.registerZombieCollisionHandler(traitId, fn)
+        else
+            UTCore.unregisterZombieCollisionHandler(traitId)
         end
     end
 end
 
 Events.OnCreatePlayer.Add(onCreatePlayer)
 
--- Integrity check: every 10 game-minutes (~10 real seconds), verify that
--- declared handlers are still present in the live callbacks table.
--- Re-registers any missing ones. Cost: one pairs() over declarations
+-- Integrity check: every 10 game-minutes (~10 real seconds), reconcile
+-- declared handlers with the current player's trait set.
+-- Restores missing eligible handlers and removes ineligible ones. Cost: one pairs() over declarations
 -- (typically < 5 entries) + one hasTrait + one table lookup each.
 local _integrityCounter = 0
 
@@ -246,10 +245,9 @@ local function integrityCheck()
 
     for traitId, fn in pairs(_declarations) do
         if UTCore.hasTrait(player, traitId) then
-            if not UTCore._zombieCollisionCallbacks[traitId] then
-                UTCore._zombieCollisionCallbacks[traitId] = fn
-                UTCore._zombieCollisionCallbackCount = UTCore._zombieCollisionCallbackCount + 1
-            end
+            UTCore.registerZombieCollisionHandler(traitId, fn)
+        else
+            UTCore.unregisterZombieCollisionHandler(traitId)
         end
     end
 

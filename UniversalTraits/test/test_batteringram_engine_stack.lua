@@ -1,5 +1,5 @@
 -- test_batteringram_engine_stack.lua
--- Engine contracts + behavioral tests for preemptive runningTime bump prevention.
+-- Engine contracts and behavioral tests for the v4 knockdown-only collision path.
 -- Run via: dofile from UniversalTraits/test/run_tests.lua
 
 local PZ_JAVA = "C:/Users/Admin/Documents/GIT/GameMods/PZMods/PZCodebase/Java/source/zombie/"
@@ -32,7 +32,7 @@ end)
 
 test("ENGINE CONTRACT [RAM]: separate() checks WalkSpeed for bump", function()
     assertContains(isoMovingObjectSrc, "WalkSpeed",
-        "separate() must check WalkSpeed — bump requires WalkSpeed > 0.2")
+        "separate() must check WalkSpeed - bump requires WalkSpeed > 0.2")
 end)
 
 test("ENGINE CONTRACT [RAM]: OnPlayerUpdate fires before separate()", function()
@@ -49,11 +49,11 @@ end)
 
 test("ENGINE CONTRACT [RAM]: separate() checks getBumpedChr for re-bump guard", function()
     assertContains(isoMovingObjectSrc, "getBumpedChr",
-        "separate() uses getBumpedChr() != obj — our hook sets this via setBumpedChr")
+        "separate() uses getBumpedChr() != obj; the v4 hook deliberately does not set it")
 end)
 
 -- =====================================================================
--- BEHAVIORAL: preemptive runningTime prevention
+-- BEHAVIORAL: proactive zombie knockdown without player bump mutation
 -- =====================================================================
 
 local function makeEventTable()
@@ -107,20 +107,7 @@ local function setupCollision(playerOpts)
     return player, zombie
 end
 
--- Setup: player at (5,5,0), zombie at (5.3,5,0) = within 0.7 range
-local function setupCollision(playerOpts)
-    local zombie = MockZombie({ x = 5.3, y = 5, z = 0 })
-    local sq = MockCollisionSquare(5, 5, 0, { zombie })
-    _G._mockCell = MockCell({ ["5,5,0"] = sq })
-    playerOpts = playerOpts or {}
-    playerOpts.x = 5
-    playerOpts.y = 5
-    playerOpts.square = sq
-    local player = MockPlayer({ "UniversalTraits:UT_batteringram" }, playerOpts)
-    return player, zombie
-end
-
-test("PREEMPT: knockdown fires when sprinting near zombie (v4)", function()
+test("COLLISION: knockdown fires when sprinting near zombie (v4)", function()
     withFreshHook(function()
         local player, zombie = setupCollision()
         Events.OnCreatePlayer:fire(0, player)
@@ -128,14 +115,14 @@ test("PREEMPT: knockdown fires when sprinting near zombie (v4)", function()
         Events.OnPlayerUpdate:fire(player)
         -- v4: hook must NOT touch player bump state
         assert_eq(player:getBumpedChr(), nil,
-            "v4 hook must NOT set bumpedChr — knockdown-only defense")
+            "v4 hook must NOT set bumpedChr; knockdown does not guarantee bump immunity")
         -- Callback should have knocked down the zombie
         assert_true(zombie:isKnockedDown(),
             "batteringram should knock down zombie on sprint collision")
     end)
 end)
 
-test("PREEMPT: knockdown fires when running near zombie (v4)", function()
+test("COLLISION: knockdown fires when running near zombie (v4)", function()
     withFreshHook(function()
         local player, zombie = setupCollision()
         Events.OnCreatePlayer:fire(0, player)
@@ -148,7 +135,7 @@ test("PREEMPT: knockdown fires when running near zombie (v4)", function()
     end)
 end)
 
-test("PREEMPT: setBumpedChr NOT set when walking (not running/sprinting)", function()
+test("COLLISION: setBumpedChr NOT set when walking (not running/sprinting)", function()
     withFreshHook(function()
         local player, zombie = setupCollision()
         Events.OnCreatePlayer:fire(0, player)
@@ -159,9 +146,9 @@ test("PREEMPT: setBumpedChr NOT set when walking (not running/sprinting)", funct
     end)
 end)
 
-test("PREEMPT: setBumpedChr NOT set when no zombies in range", function()
+test("COLLISION: setBumpedChr NOT set when no zombies in range", function()
     withFreshHook(function()
-        -- Zombie at (10,10) — far from player at (5,5)
+        -- Zombie at (10,10) - far from player at (5,5)
         local zombie = MockZombie({ x = 10, y = 10, z = 0 })
         local sq = MockCollisionSquare(5, 5, 0, {})
         _G._mockCell = MockCell({ ["5,5,0"] = sq })
@@ -175,7 +162,7 @@ test("PREEMPT: setBumpedChr NOT set when no zombies in range", function()
     end)
 end)
 
-test("PREEMPT: zombie knocked down when entering range while sprinting", function()
+test("COLLISION: zombie knocked down when entering range while sprinting", function()
     withFreshHook(function()
         local player, zombie = setupCollision()
         Events.OnCreatePlayer:fire(0, player)
@@ -186,7 +173,7 @@ test("PREEMPT: zombie knocked down when entering range while sprinting", functio
     end)
 end)
 
-test("PREEMPT: zombie NOT re-knocked on subsequent ticks (dedup)", function()
+test("COLLISION: zombie NOT re-knocked on subsequent ticks (dedup)", function()
     withFreshHook(function()
         local player, zombie = setupCollision()
         Events.OnCreatePlayer:fire(0, player)
@@ -199,7 +186,7 @@ test("PREEMPT: zombie NOT re-knocked on subsequent ticks (dedup)", function()
     end)
 end)
 
-test("PREEMPT: endurance drained on collision", function()
+test("COLLISION: endurance drained on collision", function()
     withFreshHook(function()
         local player, zombie = setupCollision()
         Events.OnCreatePlayer:fire(0, player)
@@ -210,7 +197,7 @@ test("PREEMPT: endurance drained on collision", function()
     end)
 end)
 
-test("PREEMPT: sprint deals direct damage to zombie", function()
+test("COLLISION: sprint deals direct damage to zombie", function()
     withFreshHook(function()
         local player, zombie = setupCollision()
         Events.OnCreatePlayer:fire(0, player)
@@ -221,7 +208,7 @@ test("PREEMPT: sprint deals direct damage to zombie", function()
     end)
 end)
 
-test("PREEMPT: no bump state manipulation (no setBumpType/setBumpFall)", function()
+test("COLLISION: no bump state manipulation (no setBumpType/setBumpFall)", function()
     withFreshHook(function()
         local player, zombie = setupCollision()
         Events.OnCreatePlayer:fire(0, player)
@@ -229,7 +216,7 @@ test("PREEMPT: no bump state manipulation (no setBumpType/setBumpFall)", functio
         player._bumpType = "stagger"
         player._bumpFall = true
         Events.OnPlayerUpdate:fire(player)
-        -- The new approach does NOT touch bump state at all
+        -- The v4 path does not touch player bump state.
         assert_eq(player._bumpType, "stagger",
             "new approach should NOT manipulate bumpType")
         assert_eq(player._bumpFall, true,
@@ -237,7 +224,7 @@ test("PREEMPT: no bump state manipulation (no setBumpType/setBumpFall)", functio
     end)
 end)
 
-test("PREEMPT: dedup resets when player stops running", function()
+test("COLLISION: dedup resets when player stops running", function()
     withFreshHook(function()
         local player, zombie = setupCollision()
         Events.OnCreatePlayer:fire(0, player)
@@ -255,7 +242,7 @@ test("PREEMPT: dedup resets when player stops running", function()
     end)
 end)
 
-test("PREEMPT: walking player does NOT trigger callback", function()
+test("COLLISION: walking player does NOT trigger callback", function()
     withFreshHook(function()
         local player, zombie = setupCollision()
         Events.OnCreatePlayer:fire(0, player)

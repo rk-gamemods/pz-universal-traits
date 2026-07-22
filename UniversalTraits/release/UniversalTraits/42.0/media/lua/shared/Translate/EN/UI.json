@@ -214,7 +214,7 @@
     "UI_UT_slack": "Slack",
     "UI_UT_slackDesc": "Effort was never really your thing. +40 percent work duration on all crafting and building actions (actions take 40 percent longer).",
     "UI_UT_batteringram": "Battering Ram",
-    "UI_UT_batteringramDesc": "You're a human freight train. When sprinting or running into a zombie you knock it down instead of being staggered. You are immune to trip and stagger effects during these collisions. Each collision drains endurance.",
+    "UI_UT_batteringramDesc": "You're a human freight train. While running or sprinting, entering collision range knocks each new nearby zombie down and drains endurance. Running drains 0.05 endurance; sprinting drains 0.03 and deals 0.15 impact damage. Martial Artist also applies its normal bonus damage. This does not prevent the game's normal trip or stagger.",
     "UI_UT_fitted": "Fitted",
     "UI_UT_fittedDesc": "Reduces the weight of each worn clothing item by 50%. Removes run and combat speed penalties from worn items. Effect updates every ~1 second.",
     "UI_UT_glassbody": "Glass Body",
