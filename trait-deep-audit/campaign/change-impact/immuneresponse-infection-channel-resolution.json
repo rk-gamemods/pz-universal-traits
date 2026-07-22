@@ -1,0 +1,62 @@
+{
+  "schema": "ut-immuneresponse-infection-channel-resolution-v1",
+  "trait_id": "UniversalTraits:UT_immuneresponse",
+  "finding_id": "B05-IMMUNERESP-001",
+  "authority": "pre-campaign UTMods master; upstream SomewhatTraits behavior is historical evidence only",
+  "accepted_intent": {
+    "cost": 6,
+    "infection_reduction": 3,
+    "infection_floor": 0,
+    "fatigue_reduction": 0.02,
+    "cadence": "every 10 in-game minutes",
+    "infection_channel": "CharacterStat.ZOMBIE_INFECTION",
+    "scope": "single-player"
+  },
+  "engine_evidence": [
+    "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyDamage.java:1664-1667",
+    "PZCodebase/Java/source/zombie/characters/CharacterStat.java:35"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_immuneresponse.lua",
+      "sha256": "438343AADCBB3138462D7220B0D708AB1DF3E3295561523D0D701C0AFB781B26",
+      "bytes": 699
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_immuneresponse.lua",
+      "sha256": "438343AADCBB3138462D7220B0D708AB1DF3E3295561523D0D701C0AFB781B26",
+      "bytes": 699
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "D0661E1D2BD4CFCA7BBB6E51F7033734230A6E7DE077133AD87EE24C9DF02337",
+      "bytes": 36950
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "D0661E1D2BD4CFCA7BBB6E51F7033734230A6E7DE077133AD87EE24C9DF02337",
+      "bytes": 36950
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "6A9EC333B26B6F5A35B4FF04E837B39CE6C49AB545947961B3500BE2336EE853",
+      "bytes": 261201
+    }
+  ],
+  "counterexamples": [
+    "food sickness above zero with zero zombie infection",
+    "zombie fever above the underlying zombie infection",
+    "zombie infection below the reduction floor"
+  ],
+  "preserved_surfaces": [
+    "trait cost",
+    "cadence",
+    "infection reduction and floor",
+    "fatigue reduction",
+    "registration",
+    "grants and exclusions",
+    "single-player scope"
+  ],
+  "static_validation": "Producer-faithful standard-Lua coverage and exact source/release parity.",
+  "runtime_proof": "Unobserved; requires full Exit to Desktop and current-build in-game cadence and save/load checks."
+}

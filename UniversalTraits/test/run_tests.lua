@@ -2459,6 +2459,44 @@ test("immuneresponse reduces infection and fatigue every ten minutes", function(
         "expected fatigue to drop by 0.02")
 end)
 
+test("immuneresponse never converts food sickness into zombie infection", function()
+    local player = MockPlayer({ "UniversalTraits:UT_immuneresponse" }, {
+        foodSickness = 80,
+        zombieInfection = 0,
+        fatigue = 0.4,
+    })
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_INFECTION), 0,
+        "expected food sickness not to create zombie infection")
+    assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 80,
+        "expected food sickness channel to remain unchanged")
+end)
+
+test("immuneresponse ignores zombie fever when reducing zombie infection", function()
+    local player = MockPlayer({ "UniversalTraits:UT_immuneresponse" }, {
+        zombieFever = 80,
+        zombieInfection = 10,
+    })
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_INFECTION), 7,
+        "expected direct infection reduction from 10 to 7")
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_FEVER), 80,
+        "expected zombie fever channel to remain unchanged")
+end)
+
+test("immuneresponse floors zombie infection at zero", function()
+    local player = MockPlayer({ "UniversalTraits:UT_immuneresponse" }, { zombieInfection = 2 })
+    withActivePlayer(player, function()
+        Events.EveryTenMinutes:fire()
+    end)
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_INFECTION), 0,
+        "expected infection reduction to floor at zero")
+end)
+
 test("immunocompromised marks the trait and increases infection over time", function()
     local player = fireNewGame("UniversalTraits:UT_immunocompromised")
     player:getStats():set(CharacterStat.ZOMBIE_INFECTION, 50)

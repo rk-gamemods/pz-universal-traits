@@ -304,7 +304,7 @@
     "UI_UT_melancholic": "Melancholic",
     "UI_UT_melancholicDesc": "The world feels muted and grey. A quiet sadness colors everything you do.",
     "UI_UT_immuneresponse": "Immune Response",
-    "UI_UT_immuneresponseDesc": "Your body fights back hard and fast. When illness takes hold, your immune system kicks into overdrive and burns it out sooner.",
+    "UI_UT_immuneresponseDesc": "Every 10 in-game minutes, zombie infection is reduced by 3, to a minimum of 0, and fatigue is reduced by 0.02.",
     "UI_UT_ravenous": "Ravenous",
     "UI_UT_ravenousDesc": "Your appetite is relentless. Every 10 in-game minutes, hunger increases by +0.1.",
     "UI_UT_optimist": "Optimist",
