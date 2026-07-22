@@ -975,6 +975,20 @@ if not _G.Events.OnNewGame then
     }
 end
 
+if not _G.Events.OnSave then
+    local _saveHandlers = {}
+    _G.Events.OnSave = {
+        Add = function(fn) table.insert(_saveHandlers, fn) end,
+        Remove = function(fn)
+            for i = #_saveHandlers, 1, -1 do
+                if _saveHandlers[i] == fn then table.remove(_saveHandlers, i) end
+            end
+        end,
+        fire = function(...) fireHandlers(_G.Events.OnSave, _saveHandlers, ...) end,
+        getHandlerCount = function() return #_saveHandlers end,
+    }
+end
+
 if not _G.Events.OnCreatePlayer then
     local _createPlayerHandlers = {}
     _G.Events.OnCreatePlayer = {

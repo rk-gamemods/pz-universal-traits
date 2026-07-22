@@ -52,7 +52,7 @@
     "UI_UT_cruelty": "Cruelty",
     "UI_UT_crueltyDesc": "You strike without mercy or hesitation. Start at level 1 in every melee weapon skill.",
     "UI_UT_sharpshooter": "Sharpshooter",
-    "UI_UT_sharpshooterDesc": "+2 to Aiming. Firearms have +25 percent accuracy and effective range.",
+    "UI_UT_sharpshooterDesc": "+2 to Aiming. Equipped firearms have 25 percent more hit chance and effective range.",
     "UI_UT_problunt": "Pro: Blunt",
     "UI_UT_probluntDesc": "Specialised training with blunt weapons. +2 to Long Blunt and Short Blunt.",
     "UI_UT_problade": "Pro: Blade",

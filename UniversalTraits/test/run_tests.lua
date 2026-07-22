@@ -5851,30 +5851,166 @@ test("hardy recovers after resting 10 minutes below fatigue 0.3", function()
     assert_true(p:getModData()["UT_hardyBonus"] ~= nil, "hardy should enter bonus phase")
 end)
 
--- ─── sharpshooter: +25% hit chance and range on ranged weapons ─────────────────
-test("sharpshooter boosts hit chance by 25%", function()
+-- ─── sharpshooter: +25% hit chance and range on equipped firearms ──────────────
+local SHARPSHOOTER_ID = "UniversalTraits:UT_sharpshooter"
+local SHARPSHOOTER_RUNTIME = "../media/lua/shared/UniversalTraits/traits/UT_sharpshooter.lua"
+
+local function fireSharpshooter(player, count)
+    for _ = 1, count or 30 do Events.OnPlayerUpdate:fire(player) end
+end
+
+local function unequipAndRestoreSharpshooter(player)
+    player:setPrimaryHandItem(nil)
+    player:setSecondaryHandItem(nil)
+    fireSharpshooter(player, 30)
+end
+
+test("sharpshooter applies exact relative bonuses without compounding", function()
     local weapon = MockWeapon("Pistol", 0, false, false,
         { isRanged = true, hitChance = 40, maxRange = 10.0, subCategory = "Pistol" })
-    local p = MockPlayer({ "UniversalTraits:UT_sharpshooter" }, { primaryHandItem = weapon })
-    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
-    assert_eq(weapon:getHitChance(), 50, "sharpshooter should boost hit chance from 40 to 50")
+    local player = MockPlayer({ SHARPSHOOTER_ID }, { primaryHandItem = weapon })
+    fireSharpshooter(player, 90)
+    assert_eq(weapon:getHitChance(), 50, "40 hit chance must become 50 exactly once")
+    assert_eq(weapon:getMaxRange(), 12.5, "10 range must become 12.5 exactly once")
+    unequipAndRestoreSharpshooter(player)
+    assert_eq(weapon:getHitChance(), 40, "unequip must restore hit chance")
+    assert_eq(weapon:getMaxRange(), 10.0, "unequip must restore range")
 end)
 
-test("sharpshooter boosts max range by 25%", function()
-    local weapon = MockWeapon("Pistol", 0, false, false,
-        { isRanged = true, hitChance = 40, maxRange = 10.0, subCategory = "Pistol" })
-    local p = MockPlayer({ "UniversalTraits:UT_sharpshooter" }, { primaryHandItem = weapon })
-    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
-    assert_eq(weapon:getMaxRange(), 12.5, "sharpshooter should boost range from 10 to 12.5")
+test("sharpshooter floors hit chance, caps at 100, and restores actual deltas", function()
+    local weapon = MockWeapon("Rifle", 0, false, false,
+        { isRanged = true, hitChance = 81, maxRange = 20.0, subCategory = "Firearm" })
+    local player = MockPlayer({ SHARPSHOOTER_ID }, { primaryHandItem = weapon })
+    fireSharpshooter(player, 30)
+    assert_eq(weapon:getHitChance(), 100, "81 times 1.25 must cap at 100")
+    assert_eq(weapon:getMaxRange(), 25.0, "range must retain the uncapped 25 percent bonus")
+    unequipAndRestoreSharpshooter(player)
+    assert_eq(weapon:getHitChance(), 81, "the capped 19-point delta must restore exactly")
+    assert_eq(weapon:getMaxRange(), 20.0, "range must restore exactly")
+
+    local floorWeapon = MockWeapon("Pistol", 0, false, false,
+        { isRanged = true, hitChance = 41, maxRange = 8.0 })
+    player:setPrimaryHandItem(floorWeapon)
+    fireSharpshooter(player, 30)
+    assert_eq(floorWeapon:getHitChance(), 51, "integer hit chance must floor 51.25 to 51")
+    unequipAndRestoreSharpshooter(player)
+    assert_eq(floorWeapon:getHitChance(), 41, "floored delta must restore exactly")
 end)
 
-test("sharpshooter does NOT compound bonus on repeated ticks", function()
+test("sharpshooter ignores non-ranged weapons", function()
+    local weapon = MockWeapon("BaseballBat", 0, false, true,
+        { isRanged = false, hitChance = 40, maxRange = 2.0 })
+    local player = MockPlayer({ SHARPSHOOTER_ID }, { primaryHandItem = weapon })
+    fireSharpshooter(player, 60)
+    assert_eq(weapon:getHitChance(), 40, "melee hit chance must not change")
+    assert_eq(weapon:getMaxRange(), 2.0, "melee range must not change")
+end)
+
+test("sharpshooter restores swapped weapons and deduplicates hand aliases", function()
+    local weaponA = MockWeapon("Pistol", 0, false, false,
+        { isRanged = true, hitChance = 40, maxRange = 10.0 })
+    local weaponB = MockWeapon("Rifle", 0, false, false,
+        { isRanged = true, hitChance = 60, maxRange = 20.0 })
+    local player = MockPlayer({ SHARPSHOOTER_ID }, {
+        primaryHandItem = weaponA,
+        secondaryHandItem = weaponA,
+    })
+    fireSharpshooter(player, 30)
+    assert_eq(weaponA:getHitChance(), 50, "one object in both hands must receive one bonus")
+    assert_eq(weaponA:getMaxRange(), 12.5, "one object in both hands must receive one range bonus")
+
+    player:setPrimaryHandItem(weaponB)
+    player:setSecondaryHandItem(nil)
+    fireSharpshooter(player, 30)
+    assert_eq(weaponA:getHitChance(), 40, "swap must restore the former weapon")
+    assert_eq(weaponA:getMaxRange(), 10.0, "swap must restore the former range")
+    assert_eq(weaponB:getHitChance(), 75, "swap must independently boost the replacement")
+    assert_eq(weaponB:getMaxRange(), 25.0, "replacement range must be boosted")
+    unequipAndRestoreSharpshooter(player)
+    assert_eq(weaponB:getHitChance(), 60, "replacement hit chance must restore")
+    assert_eq(weaponB:getMaxRange(), 20.0, "replacement range must restore")
+end)
+
+test("sharpshooter restoration preserves later additive weapon changes", function()
     local weapon = MockWeapon("Pistol", 0, false, false,
-        { isRanged = true, hitChance = 40, maxRange = 10.0, subCategory = "Pistol" })
-    local p = MockPlayer({ "UniversalTraits:UT_sharpshooter" }, { primaryHandItem = weapon })
-    for i = 1, 60 do Events.OnPlayerUpdate:fire(p) end  -- two full cycles
-    assert_eq(weapon:getHitChance(), 50, "sharpshooter should NOT compound: still 50 after 60 ticks")
-    assert_eq(weapon:getMaxRange(), 12.5, "sharpshooter range should NOT compound")
+        { isRanged = true, hitChance = 40, maxRange = 10.0 })
+    local player = MockPlayer({ SHARPSHOOTER_ID }, { primaryHandItem = weapon })
+    fireSharpshooter(player, 30)
+    weapon:setHitChance(55)
+    weapon:setMaxRange(14.5)
+    unequipAndRestoreSharpshooter(player)
+    assert_eq(weapon:getHitChance(), 45,
+        "restoration must remove Sharpshooter's 10 while preserving the later external 5")
+    assert_eq(weapon:getMaxRange(), 12.0,
+        "restoration must remove Sharpshooter's 2.5 while preserving the later external 2")
+end)
+
+test("sharpshooter restores serialized fields before save and reapplies later", function()
+    local weapon = MockWeapon("Pistol", 0, false, false,
+        { isRanged = true, hitChance = 40, maxRange = 10.0 })
+    local player = MockPlayer({ SHARPSHOOTER_ID }, { primaryHandItem = weapon })
+    fireSharpshooter(player, 30)
+    Events.OnSave:fire()
+    assert_eq(weapon:getHitChance(), 40, "OnSave must expose the unmodified serialized hit chance")
+    assert_eq(weapon:getMaxRange(), 10.0, "OnSave must expose the unmodified serialized range")
+    fireSharpshooter(player, 30)
+    assert_eq(weapon:getHitChance(), 50, "the next eligible dispatch must reapply hit chance")
+    assert_eq(weapon:getMaxRange(), 12.5, "the next eligible dispatch must reapply range")
+    unequipAndRestoreSharpshooter(player)
+end)
+
+test("sharpshooter duplicate load restores state and leaves one registration", function()
+    local weapon = MockWeapon("Pistol", 0, false, false,
+        { isRanged = true, hitChance = 40, maxRange = 10.0 })
+    local player = MockPlayer({ SHARPSHOOTER_ID }, { primaryHandItem = weapon })
+    local saveHandlerCount = Events.OnSave.getHandlerCount()
+    fireSharpshooter(player, 30)
+    dofile(base .. SHARPSHOOTER_RUNTIME)
+    assert_eq(weapon:getHitChance(), 40, "reload teardown must restore hit chance")
+    assert_eq(weapon:getMaxRange(), 10.0, "reload teardown must restore range")
+    assert_eq(Events.OnSave.getHandlerCount(), saveHandlerCount,
+        "duplicate load must replace, not stack, the save handler")
+    local registrations = 0
+    for i = 1, #UTCore._tickHandlers do
+        if UTCore._tickHandlers[i].id == SHARPSHOOTER_ID then
+            registrations = registrations + 1
+        end
+    end
+    assert_eq(registrations, 1, "duplicate load must leave one tick handler")
+end)
+
+test("sharpshooter contract, definition, and source-release copies match", function()
+    local function readAll(path)
+        local file = assert(io.open(path, "rb"))
+        local content = file:read("*a")
+        file:close()
+        return content
+    end
+    local expected = "+2 to Aiming. Equipped firearms have 25 percent more hit chance and effective range."
+    local sourceUI = readAll(base .. "../media/lua/shared/Translate/EN/UI.json")
+    local releaseUI = readAll(base .. "../release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json")
+    assert_eq(sourceUI:match('"UI_UT_sharpshooterDesc"%s*:%s*"([^"]+)"'), expected,
+        "source Sharpshooter description must state the accepted effect")
+    assert_eq(releaseUI:match('"UI_UT_sharpshooterDesc"%s*:%s*"([^"]+)"'), expected,
+        "release Sharpshooter description must match source")
+
+    local sourceDefinition = readAll(base .. "../media/scripts/UT_character_traits.txt")
+    local block = sourceDefinition:match(
+        "character_trait_definition%s+UniversalTraits:UT_sharpshooter%s*(%b{})")
+    assert_true(block ~= nil, "Sharpshooter definition must exist")
+    assert_true(block:find("Cost%s*=%s*4[%s,]"), "Sharpshooter must retain cost 4")
+    assert_true(block:find("XPBoosts%s*=%s*Aiming%s*=%s*2[%s,]"),
+        "Sharpshooter must retain +2 Aiming")
+
+    for _, path in ipairs({
+        "lua/shared/UniversalTraits/traits/UT_sharpshooter.lua",
+        "lua/shared/Translate/EN/UI.json",
+        "scripts/UT_character_traits.txt",
+    }) do
+        assert_eq(readAll(base .. "../media/" .. path),
+            readAll(base .. "../release/UniversalTraits/42.0/media/" .. path),
+            "Sharpshooter source and release must match for " .. path)
+    end
 end)
 
 -- ─── cleaver: +10 displayed crit on Long Blade weapons ───────────────────────

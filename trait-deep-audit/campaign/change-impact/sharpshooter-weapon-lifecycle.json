@@ -1,0 +1,95 @@
+{
+  "schema": "ut-sharpshooter-weapon-lifecycle-v1",
+  "trait_id": "UniversalTraits:UT_sharpshooter",
+  "authority": {
+    "accepted_baseline": "pre-campaign UTMods master",
+    "accepted_contract": "cost 4, Aiming=2, equipped ranged HandWeapons receive 1.25 hit-chance and maximum-range multipliers",
+    "pz_snapshot": "SVN revision 964; Steam BuildID 23504596 is recorded outside VERSION.json"
+  },
+  "accepted_intent": {
+    "cost": 4,
+    "xp_boosts": {
+      "Aiming": 2
+    },
+    "weapon_scope": "equipped ranged HandWeapon",
+    "hit_chance_formula": "min(100, floor(base * 1.25))",
+    "maximum_range_formula": "base * 1.25",
+    "dispatch_throttle": 30,
+    "runtime_scope": "single-player"
+  },
+  "resolved_findings": [
+    "B10-SHARPSHOOTER-001"
+  ],
+  "engine_evidence": [
+    "PZCodebase/Java/source/zombie/inventory/types/HandWeapon.java:959-974,1543-1548,1612-1790,2068-2110",
+    "PZCodebase/Java/source/zombie/GameWindow.java:1020-1085",
+    "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua:28-177,379-496",
+    "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sharpshooter.lua"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sharpshooter.lua",
+      "sha256": "40A26610B4B4D8305989F99EF6EA10B59BF3CD01B50589DB9C24BF8C19871390",
+      "bytes": 2803
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_sharpshooter.lua",
+      "sha256": "40A26610B4B4D8305989F99EF6EA10B59BF3CD01B50589DB9C24BF8C19871390",
+      "bytes": 2803
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "36CFFAB27EE8C94B365D10342ECDBBE56B9B0CC9492A22EBE50F1C223B0268A4",
+      "bytes": 37463
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "36CFFAB27EE8C94B365D10342ECDBBE56B9B0CC9492A22EBE50F1C223B0268A4",
+      "bytes": 37463
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "sha256": "26B3C4A9F6411DA18749D7B7C444422162BC984766503860D17F26759F7A4FFB",
+      "bytes": 77211
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "082CE976C5F401211D7DE4D0D4AD9D353BC3BA643EBFA1C1951AE403905694C5",
+      "bytes": 314324
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_sharpshooter.md",
+      "sha256": "7BA312B7EC4BFE393B90C12A8530AC0C8606D71F58F33750C6A1773D44F55463",
+      "bytes": 5887
+    }
+  ],
+  "regression_cases": [
+    "exact relative hit chance and range without compounding",
+    "integer flooring and 100 hit-chance cap",
+    "non-ranged rejection",
+    "swap and unequip restoration",
+    "primary-secondary identity deduplication",
+    "later additive weapon-field change preservation",
+    "pre-save restoration and next-dispatch reapplication",
+    "duplicate load teardown and one tick/save registration",
+    "definition, exact English, and source-release parity"
+  ],
+  "performance_model": "One light handler runs every 30 player updates over at most two equipped objects plus the small tracked set; OnSave performs one bounded event-driven restoration.",
+  "runtime_proof": "Unobserved; requires full Exit to Desktop, current-build Kahlua, equip/swap/drop/transfer, trait removal, death, repeated world entry, weapon-part changes, save/load, rendered English, balance, and profiler observation.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment",
+    "changing Sharpshooter cost, Aiming grant, magnitude, ranged scope, or intended stacking"
+  ]
+}

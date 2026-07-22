@@ -47,7 +47,7 @@
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "417C222A68161C10EB07CAEFE38D7D6E5C73E010CCC14431FE732754B34F0DB8",
     "independent_reviews/traits_05_08.json": "B0B92939B0E09B468C555B7434551B4E08D5A3353E63A86A83F415C842DB37E3",
-    "independent_reviews/traits_09_12.json": "FEF9499654AC4A042700EA409E0CBD823E8A3513D925F756BD4883FEDD11C379",
+    "independent_reviews/traits_09_12.json": "51B092F2E86347E7F6EEC63EBD3D9210FDCBFEA05053FBFBE4DD814C49E8FFF9",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "7B741591E807E09BDE359BECBB8CF8BCBA18A872A9DD6B022EF105975DA78499",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
@@ -58,10 +58,10 @@
     "trait_batches/batch_07.jsonl": "0483F4C2595D692E19FD6F60DE04E5D633C7942497A2669CF1B48459C0AFA771",
     "trait_batches/batch_08.jsonl": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A",
     "trait_batches/batch_09.jsonl": "7493EABBF27471F551A42E6B750D8927EC80B36404B51ED6E7CBC74349EAFE44",
-    "trait_batches/batch_10.jsonl": "FD77CC372A742BCDEB66FCB6D26BF9622BA4EC439CDB8E9135CAC22B946F3A44",
+    "trait_batches/batch_10.jsonl": "33304EC69C6072CE027BFD779AB0E2332EEDE70DC56B6920468F46BC4A2ABE31",
     "trait_batches/batch_11.jsonl": "11FBFE83557FBD93363F41AC740897040804E74E1063367C55A521DA0D2C98F4",
     "trait_batches/batch_12.jsonl": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47",
-    "translation_audit.json": "21B7C6D5DF3E9BF0F641F7B90485780EE0BF6204F38F9408230E0CDEE0BEA6C8"
+    "translation_audit.json": "665380BC589E8ADE18E3010A46E42609D4BDD1C0BAA0C345DA70090CD5134C51"
   },
   "counts": {
     "traits": 198,
@@ -71,22 +71,22 @@
     "independent_review_findings": 118,
     "independent_review_states": {
       "accepted": 82,
-      "confirmed-defect": 38,
+      "confirmed-defect": 37,
       "coverage-gap": 20,
       "needs-correction": 52,
-      "runtime-unproven": 6
+      "runtime-unproven": 7
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 65,
+      "confirmed-defect": 64,
       "coverage-gap": 12,
-      "runtime-unproven": 96
+      "runtime-unproven": 97
     },
     "dimension_states": {
-      "proven-correct": 2747,
-      "confirmed-defect": 253,
-      "coverage-gap": 773,
-      "runtime-unproven": 979
+      "proven-correct": 2752,
+      "confirmed-defect": 249,
+      "coverage-gap": 771,
+      "runtime-unproven": 980
     }
   },
   "independent_review_findings": [
@@ -49928,24 +49928,28 @@
     {
       "trait_id": "UniversalTraits:UT_sharpshooter",
       "batch": "batch_10",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
           "evidence": [
-            "One registration at registries.lua:44."
+            "The namespaced registry entry, complete definition, runtime key, and English keys agree."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "registration"
           ]
         },
         "definition_parser": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "Complete definition 293-303 parses."
+            "The complete source and release definitions are byte-identical and parse in the standard-Lua consistency suite."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current-build ScriptManager parsing has not been observed in game."
+          ],
           "source_dimensions": [
             "definition_parser"
           ]
@@ -49953,9 +49957,11 @@
         "namespace": {
           "state": "proven-correct",
           "evidence": [
-            "All assigned identifiers agree."
+            "All owned surfaces use UniversalTraits:UT_sharpshooter."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "namespace"
           ]
@@ -49963,30 +49969,34 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "Cost 4; XPBoosts Aiming=2; no grants/exclusions."
+            "Cost is 4, XPBoosts grants Aiming=2, there are no grants or exclusions, and DisabledInMultiplayer is true."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "cost_xp_grants_exclusions_reverse_exclusions"
+            "cost_xp_grants_exclusions"
           ]
         },
         "source_intent": {
           "state": "proven-correct",
           "evidence": [
-            "Current comment and EN promise +25% firearm hit chance and range."
+            "Pre-campaign master definition, English, and runtime agree on +2 Aiming and 25 percent more hit chance and effective range for equipped firearms."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_intent"
           ]
         },
         "runtime_path": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "UTCore tick handler every 30 ticks mutates equipped HandWeapon fields, caching originals in item modData."
+            "One UTCore handler reconciles at most two equipped ranged HandWeapons and owns only its applied hit-chance and maximum-range deltas."
           ],
           "missing_proof": [
-            "Run the packaged trait in Project Zomboid Build 42 after a full desktop exit and relaunch, then capture the cited runtime-path state change and an error-free Lua log."
+            "none"
           ],
           "source_dimensions": [
             "runtime_path"
@@ -49995,20 +50005,22 @@
         "numbers": {
           "state": "proven-correct",
           "evidence": [
-            "Hit chance floor(base*1.25), cap 100; max range base*1.25; +2 Aiming."
+            "Hit chance is min(100, floor(base * 1.25)); raw maximum range is base * 1.25; restoration removes the actual applied deltas."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "numbers"
           ]
         },
         "cadence": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Every 30 OnPlayerUpdate ticks; not vehicle-aware."
+            "The light vehicle-aware reconciliation runs every 30 player updates; OnSave performs one bounded pre-serialization restoration."
           ],
           "missing_proof": [
-            "Instrument the trait in Project Zomboid Build 42 and capture its event, tick, or time intervals during normal play and fast-forward."
+            "none"
           ],
           "source_dimensions": [
             "cadence"
@@ -50017,19 +50029,23 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
-            "None."
+            "Sharpshooter has no cooldown beyond its reconciliation cadence."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cooldown"
           ]
         },
         "reset_save_load": {
-          "state": "confirmed-defect",
+          "state": "runtime-unproven",
           "evidence": [
-            "Cached base and mutated weapon fields persist on the item; no restore path on trait removal/transfer."
+            "Swap, unequip, trait deactivation, invalid-player teardown, unregister, reload, and OnSave use one delta-restoration path; SVN 964 serializes both changed fields only after OnSave fires."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "A full current-build save/load, drop/transfer, death, and repeated-world-entry observation remains required."
+          ],
           "source_dimensions": [
             "reset_save_load"
           ]
@@ -50037,9 +50053,11 @@
         "java_lua": {
           "state": "proven-correct",
           "evidence": [
-            "Verified HandWeapon int hitChance and float maxRange getters/setters; item modData is persistent."
+            "SVN 964 proves the integer hit-chance field, float maximum-range field, additive weapon-part changes, field serialization, and pre-cell-save OnSave ordering."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "java_lua"
           ]
@@ -50047,42 +50065,46 @@
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "Valid Java calls inside pcall; pcall can hide failures."
+            "The implementation uses Kahlua-compatible tables, identity keys, numeric loops, and directly verified Java receiver methods."
           ],
           "missing_proof": [
-            "Load and exercise the cited path under Project Zomboid Build 42 Kahlua after a full desktop exit and relaunch, preserving an error-free Lua log."
+            "Current-build Kahlua execution is unobserved."
           ],
           "source_dimensions": [
             "kahlua"
           ]
         },
         "events": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Active-handler rebuild gates future writes, but already-mutated items remain changed."
+            "One reload-safe UTCore registration and one replace-on-reload OnSave callback own all application and cleanup paths."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "lifecycle"
+            "events"
           ]
         },
         "stacking_interactions": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Direct mutation can conflict with attachments/repairs/other mods and transfers the benefit with the item."
+            "Identity deduplication and per-field deltas preserve later additive weapon-part or mod changes without transferring the owner-bound bonus."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "stacking_interactions"
           ]
         },
         "multiplayer": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "DisabledInMultiplayer=true; item mutation/network behavior untested."
+            "The definition disables Sharpshooter in multiplayer and multiplayer support is an explicit product non-goal."
           ],
           "missing_proof": [
-            "Create and exercise the trait in a Build 42 multiplayer session and verify availability, authority, synchronization, and network-visible effects."
+            "none"
           ],
           "source_dimensions": [
             "multiplayer"
@@ -50091,9 +50113,11 @@
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "EN display name Sharpshooter."
+            "The exact English display name is Sharpshooter."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "display"
           ]
@@ -50101,9 +50125,11 @@
         "description": {
           "state": "proven-correct",
           "evidence": [
-            "Correctly states +2 Aiming and +25% while trait semantics are assumed."
+            "English exactly states +2 Aiming and 25 percent more hit chance and effective range for equipped firearms."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "description"
           ]
@@ -50111,56 +50137,58 @@
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "EN pair only."
+            "The exact English keys exist in source and release."
           ],
           "missing_proof": [
-            "Inventory both assigned UI keys in every supported non-English locale and run the localization completeness check."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
-            "localization_absent_locales"
+            "localization"
           ]
         },
         "balance": {
-          "state": "confirmed-defect",
+          "state": "runtime-unproven",
           "evidence": [
-            "Permanent transferable item mutation exceeds the intended owner-bound benefit."
+            "Static behavior remains the pre-campaign cost 4, +2 Aiming, and 1.25 field-multiplier contract."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "No gameplay telemetry or comparative balance session exists."
+          ],
           "source_dimensions": [
             "balance"
           ]
         },
         "performance": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "Two equipped-item checks every 30 ticks; pcall per ranged weapon."
+            "The 30-update handler examines at most two equipped objects plus the small tracked set; OnSave is event-driven and bounded."
           ],
           "missing_proof": [
-            "Profile the cited active and inactive paths with 00_ModProfiler and compare results with a documented acceptance threshold."
+            "No current-build profiler capture exists."
           ],
           "source_dimensions": [
             "performance"
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Tests cover hit/range/non-compounding only; no restoration/transfer/attachment baseline changes."
+            "Focused tests cover exact math, flooring, cap, ranged gating, swap, aliasing, external additive changes, save restoration, reload, definition, English, and parity."
           ],
           "missing_proof": [
-            "Add and run the smallest regression test named by the associated finding or unknown."
+            "none"
           ],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "MockWeapon reproduces getters/setters but not item persistence, attachments, ownership or network sync."
+            "MockWeapon reproduces the two mutable field domains and Events.OnSave reproduces add/remove/fire registration for lifecycle proof."
           ],
           "missing_proof": [
-            "Update the focused mock boundary to reproduce the cited engine event, signature, timing, indexing, or persistence semantics, then rerun the affected test."
+            "none"
           ],
           "source_dimensions": [
             "mocks"
@@ -50169,19 +50197,23 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "Assigned definition/UI/runtime match release."
+            "Sharpshooter runtime, definition, and English source and 42.0 release pairs are byte-identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_release_parity"
           ]
         },
         "packaging": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "Runtime file present in source and release."
+            "All Sharpshooter-owned 42.0 runtime, definition, and English counterparts are present and identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Read-only package verification reports no release drift; UniversalTraits lacks the separately tracked source poster."
+          ],
           "source_dimensions": [
             "packaging"
           ]
@@ -50191,13 +50223,16 @@
         "B10-SHARPSHOOTER-001"
       ],
       "unknowns": [
-        "Interaction with weapon parts that change these fields after first cache is untested.",
-        "Network replication of direct field mutation is unproven."
+        "Current-build Kahlua execution, full relaunch, repeated world entry, death, and current-version save/load remain unobserved.",
+        "Live drop/transfer and weapon-part attachment or removal while active remain unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory.",
+        "Multiplayer and backward save migration are explicit non-goals."
       ],
-      "translation_terminal_state": "confirmed-defect",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_09_12.json",
-        "review_state": "confirmed-defect",
+        "review_state": "runtime-unproven",
         "omission_finding_ids": [],
         "cross_finding_ids": [
           "IR0912-FINDING-STATE-001",
