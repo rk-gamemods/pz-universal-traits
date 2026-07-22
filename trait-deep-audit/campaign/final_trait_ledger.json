@@ -46,14 +46,14 @@
   },
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "4F7338C65D9EC8C15B9D3E749A9A82ADB60F09D968265F4E0A09E65660E93326",
-    "independent_reviews/traits_05_08.json": "26EC3B639FB5EE22F3E3AFEA29AEE029647169AE6CBBD0F39D4F54C5C5001E4E",
+    "independent_reviews/traits_05_08.json": "1EC23EF9DE7D30A8244E32AE98C8D469A060243D7A1A93AAF8D6E410C13B5530",
     "independent_reviews/traits_09_12.json": "27A52A4BB934EDCCD324FC013C7CC1885085D91F474C3E0BEED192C5018C7805",
     "source_inventory.json": "47781D8C6AE00795C0DD5CFF8F89E295F49826BB57B64DC9DCD6DE6A767941C9",
     "trait_batches/batch_01.jsonl": "4FA9A60E8D86362B22C33D2BD2DC334565EB564071514576AAD0E90F7FF4BB81",
     "trait_batches/batch_02.jsonl": "8B1EAD1B3C9B6C33F0A40B0A78455432E3604F5C5023ECF1585CCE5CC18AAE4D",
     "trait_batches/batch_03.jsonl": "33481D2A1F6227C331C16BA8B5CCB006099D07A15649099B8EC0627887679337",
     "trait_batches/batch_04.jsonl": "2A7857094C09D1CAD329C8DC2BDA2B96DE56FD6A6AF0866F323D7D6B3C377217",
-    "trait_batches/batch_05.jsonl": "93C659EF213EC9486C1804B545501282D63CEB965DB470A5BDFC6337F3AA0C06",
+    "trait_batches/batch_05.jsonl": "6F550AD8CF0BD3BA4E827AD9D5F39F2149C50B4D8A990816451C8E86F58DE5AE",
     "trait_batches/batch_06.jsonl": "B9CE9F693D06BD0D4D7F4510410496BB334F0D8BEA9C2DDD79236617CA3C9E6F",
     "trait_batches/batch_07.jsonl": "6BFC2D4966C29749BFF856067ABD0EB3B3F3E6E53E37E72A4A4FE271BE9E892C",
     "trait_batches/batch_08.jsonl": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A",
@@ -61,7 +61,7 @@
     "trait_batches/batch_10.jsonl": "FD77CC372A742BCDEB66FCB6D26BF9622BA4EC439CDB8E9135CAC22B946F3A44",
     "trait_batches/batch_11.jsonl": "11FBFE83557FBD93363F41AC740897040804E74E1063367C55A521DA0D2C98F4",
     "trait_batches/batch_12.jsonl": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47",
-    "translation_audit.json": "887DB41639D94FD27C9CAAE46104FE3EE30202788E72DCC277F341D1C4458A3F"
+    "translation_audit.json": "9CE80F799BA3043258ABC7568B9632CDBFD4FA1CCFF4718CFA106C91C6BDFF6E"
   },
   "counts": {
     "traits": 198,
@@ -78,15 +78,15 @@
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 75,
+      "confirmed-defect": 74,
       "coverage-gap": 12,
-      "runtime-unproven": 86
+      "runtime-unproven": 87
     },
     "dimension_states": {
-      "proven-correct": 2651,
+      "proven-correct": 2654,
       "confirmed-defect": 288,
-      "coverage-gap": 813,
-      "runtime-unproven": 1000
+      "coverage-gap": 811,
+      "runtime-unproven": 999
     }
   },
   "independent_review_findings": [
@@ -25844,7 +25844,7 @@
     {
       "trait_id": "UniversalTraits:UT_immunocompromised",
       "batch": "batch_05",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
@@ -25897,7 +25897,7 @@
         "source_intent": {
           "state": "proven-correct",
           "evidence": [
-            "Source/comment and shipped behavior reviewed: apparent sickness +1 into zombie infection."
+            "Pre-campaign master establishes the fixed zombie-infection increase and new-game marker; upstream MoreTraits wound behavior is not restored."
           ],
           "missing_proof": [
             "none"
@@ -25909,7 +25909,7 @@
         "runtime_path": {
           "state": "proven-correct",
           "evidence": [
-            "Per-trait runtime traced: apparent sickness +1 into zombie infection."
+            "EveryOneMinute reads and writes only CharacterStat.ZOMBIE_INFECTION, adds exactly 1 when above zero, and caps the value at 100."
           ],
           "missing_proof": [
             "none"
@@ -25921,7 +25921,7 @@
         "numbers": {
           "state": "proven-correct",
           "evidence": [
-            "apparent sickness +1 into zombie infection"
+            "EveryOneMinute reads and writes only CharacterStat.ZOMBIE_INFECTION, adds exactly 1 when above zero, and caps the value at 100."
           ],
           "missing_proof": [
             "none"
@@ -25967,12 +25967,12 @@
           ]
         },
         "java_lua": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Current PZ symbols checked for non-obvious calls; Java collections treated zero-based."
+            "SVN 964 CharacterStat exposes ZOMBIE_INFECTION on a 0..100 domain; getApparentInfectionLevel is no longer called."
           ],
           "missing_proof": [
-            "No live Kahlua bridge execution."
+            "none"
           ],
           "source_dimensions": [
             "java_lua"
@@ -25993,10 +25993,10 @@
         "events": {
           "state": "proven-correct",
           "evidence": [
-            "Handlers register at module load on OnNewGame + EveryOneMinute; no explicit removal observed."
+            "The minute callback removes its prior same-process registration before adding the current function; the new-game marker is idempotent."
           ],
           "missing_proof": [
-            "No repeated require/reload or player-switch runtime proof."
+            "none"
           ],
           "source_dimensions": [
             "event_lifecycle"
@@ -26041,7 +26041,7 @@
         "description": {
           "state": "proven-correct",
           "evidence": [
-            "EN description compared independently with script/runtime: apparent sickness +1 into zombie infection."
+            "English copy states the exact cadence, existing-infection condition, increase, and cap."
           ],
           "missing_proof": [
             "none"
@@ -26087,24 +26087,24 @@
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Assigned references and focused assertions in UniversalTraits/test/run_tests.lua inspected; registration inventory coverage exists."
+            "Regression tests cover direct increase, cap, food-sickness isolation, zombie-fever isolation, marker creation, and reload idempotence."
           ],
           "missing_proof": [
-            "Standard-Lua mocks do not prove Kahlua/engine integration or every boundary/reset path."
+            "none"
           ],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "UTCoreMocks boundaries inspected through directly reached tests."
+            "The mock reproduces SVN 964 apparent-infection composition and separate CharacterStat channels, so the former cross-channel write fails the counterexamples."
           ],
           "missing_proof": [
-            "Mocks can diverge from current Java overloads; humanhamster demonstrates this risk."
+            "none"
           ],
           "source_dimensions": [
             "mocks"
@@ -26113,7 +26113,7 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "Per-trait source and release Lua hashes are equal."
+            "Assigned source and release runtime files are byte-identical."
           ],
           "missing_proof": [
             "none"
@@ -26139,11 +26139,11 @@
         "B05-IMMUNOCOMP-001"
       ],
       "unknowns": [
-        "No matching Build 42.19 in-game/Kahlua execution, save-load cycle, multiplayer execution, or profiler trace.",
-        "No non-English locale coverage.",
-        "No empirical balance telemetry."
+        "Full Kahlua execution and current-version save/load remain unobserved.",
+        "Rendered English copy remains unobserved in game.",
+        "No empirical balance telemetry exists."
       ],
-      "translation_terminal_state": "coverage-gap",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_05_08.json",
         "review_state": "accepted",
@@ -26154,9 +26154,9 @@
         ],
         "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [
-          "No matching Build 42.19 in-game/Kahlua execution, save-load cycle, multiplayer execution, or profiler trace.",
-          "No non-English locale coverage.",
-          "No empirical balance telemetry."
+          "Full Kahlua execution and current-version save/load remain unobserved.",
+          "Rendered English copy remains unobserved in game.",
+          "No empirical balance telemetry exists."
         ]
       }
     },

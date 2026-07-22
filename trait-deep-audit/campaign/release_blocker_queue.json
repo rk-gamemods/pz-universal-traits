@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "remediation_queue_sha256": "7e70c237b961df172fead7eae03fcd89eb179d9f1a45df0b3c61b67ff46d95a6",
+  "remediation_queue_sha256": "62e1727c9ec7de7fdbadb365a5b5d2250c647bab6b9e165509aad2f9c59476f9",
   "category_label": "release-blocker",
   "classification_scope_statement": "Only the queue rows listed by these reviewed semantic identities are classified as release-blocker; all other rows remain unclassified in the exhaustive ledger.",
   "identities": [
@@ -14,17 +14,6 @@
       ],
       "dependencies": [],
       "evidence_scope": "Unwavering translation text contains a character rejected by the Translator load guard."
-    },
-    {
-      "semantic_identity": "trait:UT_immunocompromised",
-      "identity_kind": "trait",
-      "status": "open",
-      "priority_reason_code": "infection-state-corruption",
-      "queue_ids": [
-        "finding:B05-IMMUNOCOMP-001"
-      ],
-      "dependencies": [],
-      "evidence_scope": "Immunocompromised can promote food sickness or fever into zombie infection state."
     },
     {
       "semantic_identity": "shared-hook:UTCore_FractureHook",

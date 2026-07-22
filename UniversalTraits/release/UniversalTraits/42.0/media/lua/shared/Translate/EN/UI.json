@@ -344,7 +344,7 @@
     "UI_UT_addictedtocaffeine": "Caffeine Addict",
     "UI_UT_addictedtocaffeineDesc": "Without recent caffeine, stress increases by +0.06 every 10 in-game minutes. Consuming caffeine prevents the next increase.",
     "UI_UT_immunocompromised": "Immunocompromised",
-    "UI_UT_immunocompromisedDesc": "Your immune system is not up to the task. Infections take hold more easily and your body struggles to fight back.",
+    "UI_UT_immunocompromisedDesc": "Every in-game minute, existing zombie infection increases by 1, up to a maximum of 100.",
     "UI_UT_fearful": "Fearful",
     "UI_UT_fearfulDesc": "Fear comes quickly and hits hard. Each time a panic event fires, panic is increased by an additional +0.2.",
     "UI_UT_nervouswreck": "Nervous Wreck",

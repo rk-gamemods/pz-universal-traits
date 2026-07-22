@@ -1206,9 +1206,9 @@
       "rejected_finding_ids": [],
       "cross_trait_finding_ids": [],
       "unresolved_proof": [
-        "No matching Build 42.19 in-game/Kahlua execution, save-load cycle, multiplayer execution, or profiler trace.",
-        "No non-English locale coverage.",
-        "No empirical balance telemetry."
+        "Full Kahlua execution and current-version save/load remain unobserved.",
+        "Rendered English copy remains unobserved in game.",
+        "No empirical balance telemetry exists."
       ],
       "evidence_anchors": [
         "UniversalTraits/media/registries.lua registration for UniversalTraits:UT_immunocompromised",
@@ -1219,11 +1219,17 @@
         "local/PZCodebase-61973d88 current API symbols where invoked"
       ],
       "release_parity": {
-        "source_runtime_sha256": "2CC1C184740F95F03E2CFD638B92A5E3D6FAA210439B7B703F2F590BFE8D5B86",
-        "release_runtime_sha256": "2CC1C184740F95F03E2CFD638B92A5E3D6FAA210439B7B703F2F590BFE8D5B86",
+        "source_runtime_sha256": "003E780F8CEC21950569DE6A30F0CB11B800DD99CC52DE9F53066819BF1E8BB7",
+        "release_runtime_sha256": "003E780F8CEC21950569DE6A30F0CB11B800DD99CC52DE9F53066819BF1E8BB7",
         "state": "proven-correct"
       },
-      "omissions": []
+      "omissions": [],
+      "repair_resolution": {
+        "state": "implemented-and-statically-validated",
+        "finding_id": "B05-IMMUNOCOMP-001",
+        "producer_contract": "EveryOneMinute; direct CharacterStat.ZOMBIE_INFECTION only",
+        "remaining_proof": "Current-build in-game execution after a full relaunch is unobserved."
+      }
     },
     {
       "trait_id": "UniversalTraits:UT_improviser",

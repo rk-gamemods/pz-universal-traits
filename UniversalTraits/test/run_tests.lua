@@ -2504,8 +2504,59 @@ test("immunocompromised marks the trait and increases infection over time", func
         Events.EveryOneMinute:fire()
     end)
     assert_eq(player:getModData()["UT_immunocompromised"], true, "expected immunocompromised flag")
-    assert_true(math.abs(player:getBodyDamage():getApparentInfectionLevel() - 51) < 0.1,
-        "expected infection to increase by 1 (50→51)")
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_INFECTION), 51,
+        "expected direct infection increase from 50 to 51")
+end)
+
+test("immunocompromised never converts food sickness into zombie infection", function()
+    local player = MockPlayer({ "UniversalTraits:UT_immunocompromised" }, {
+        foodSickness = 80,
+        zombieInfection = 0,
+    })
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+    end)
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_INFECTION), 0,
+        "expected food sickness not to create zombie infection")
+    assert_eq(player:getStats():get(CharacterStat.FOOD_SICKNESS), 80,
+        "expected food sickness channel to remain unchanged")
+end)
+
+test("immunocompromised ignores zombie fever when increasing zombie infection", function()
+    local player = MockPlayer({ "UniversalTraits:UT_immunocompromised" }, {
+        zombieFever = 80,
+        zombieInfection = 10,
+    })
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+    end)
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_INFECTION), 11,
+        "expected direct infection increase from 10 to 11")
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_FEVER), 80,
+        "expected zombie fever channel to remain unchanged")
+end)
+
+test("immunocompromised caps zombie infection at 100", function()
+    local player = MockPlayer({ "UniversalTraits:UT_immunocompromised" }, {
+        zombieInfection = 99.5,
+    })
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+    end)
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_INFECTION), 100,
+        "expected infection increase to cap at 100")
+end)
+
+test("immunocompromised same-process reload keeps one minute handler", function()
+    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_immunocompromised.lua")
+    local player = MockPlayer({ "UniversalTraits:UT_immunocompromised" }, {
+        zombieInfection = 50,
+    })
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+    end)
+    assert_eq(player:getStats():get(CharacterStat.ZOMBIE_INFECTION), 51,
+        "expected one 1-point increase after reload")
 end)
 
 test("superimmune reduces underlying zombie infection by exactly two", function()

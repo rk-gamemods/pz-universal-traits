@@ -1,0 +1,63 @@
+{
+  "schema": "ut-immunocompromised-infection-channel-resolution-v1",
+  "trait_id": "UniversalTraits:UT_immunocompromised",
+  "finding_id": "B05-IMMUNOCOMP-001",
+  "authority": "pre-campaign UTMods master; upstream MoreTraits behavior is historical evidence only",
+  "accepted_intent": {
+    "cost": -6,
+    "infection_increase": 1,
+    "infection_cap": 100,
+    "cadence": "every in-game minute",
+    "infection_channel": "CharacterStat.ZOMBIE_INFECTION",
+    "new_game_marker": "UT_immunocompromised=true",
+    "scope": "single-player"
+  },
+  "engine_evidence": [
+    "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyDamage.java:1664-1667",
+    "PZCodebase/Java/source/zombie/characters/CharacterStat.java:35"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_immunocompromised.lua",
+      "sha256": "003E780F8CEC21950569DE6A30F0CB11B800DD99CC52DE9F53066819BF1E8BB7",
+      "bytes": 1052
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_immunocompromised.lua",
+      "sha256": "003E780F8CEC21950569DE6A30F0CB11B800DD99CC52DE9F53066819BF1E8BB7",
+      "bytes": 1052
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "C8A3B1E644300DD354A9F2E98F110AC91267EC2B9172A7FCF9253FF3E59D1FEE",
+      "bytes": 36923
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "C8A3B1E644300DD354A9F2E98F110AC91267EC2B9172A7FCF9253FF3E59D1FEE",
+      "bytes": 36923
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "7888D7DBDB33CBCEFD9A143723A37322CCF5FA50D2BBA8E2CB3E2A2A40A167F6",
+      "bytes": 263265
+    }
+  ],
+  "counterexamples": [
+    "food sickness above zero with zero zombie infection",
+    "zombie fever above the underlying zombie infection",
+    "zombie infection near the maximum",
+    "same-process module reload"
+  ],
+  "preserved_surfaces": [
+    "trait cost",
+    "cadence",
+    "infection increase and cap",
+    "new-game marker",
+    "registration",
+    "grants and exclusions",
+    "single-player scope"
+  ],
+  "static_validation": "Producer-faithful standard-Lua coverage, reload proof, and exact source/release parity.",
+  "runtime_proof": "Unobserved; requires full Exit to Desktop and current-build in-game cadence and save/load checks."
+}
