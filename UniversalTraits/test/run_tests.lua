@@ -3399,6 +3399,93 @@ test("scardycat panic cascade fires when panic rises by 5 or more", function()
         "panic cascade should add 15 when panic rises >= 5 in a minute (got " .. tostring(panic) .. ")")
 end)
 
+test("scardycat panic cascade does not retrigger its own bonus", function()
+    local player = MockPlayer({ "UniversalTraits:UT_scardycat" }, { panic = 10 })
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+        player:getStats():set(CharacterStat.PANIC, 20)
+        Events.EveryOneMinute:fire()
+        assert_eq(player:getStats():get(CharacterStat.PANIC), 35,
+            "first external rise should add exactly 15 panic points")
+        Events.EveryOneMinute:fire()
+    end)
+    assert_eq(player:getStats():get(CharacterStat.PANIC), 35,
+        "the trait-owned bonus must become the next comparison baseline")
+end)
+
+test("scardycat panic cascade responds to a fresh external rise", function()
+    local player = MockPlayer({ "UniversalTraits:UT_scardycat" }, { panic = 10 })
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+        player:getStats():set(CharacterStat.PANIC, 20)
+        Events.EveryOneMinute:fire()
+        player:getStats():set(CharacterStat.PANIC, 40)
+        Events.EveryOneMinute:fire()
+    end)
+    assert_eq(player:getStats():get(CharacterStat.PANIC), 55,
+        "a new external rise of at least 5 points should trigger one new bonus")
+end)
+
+test("scardycat panic cascade caps at 100 without repeating", function()
+    local player = MockPlayer({ "UniversalTraits:UT_scardycat" }, { panic = 80 })
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+        player:getStats():set(CharacterStat.PANIC, 90)
+        Events.EveryOneMinute:fire()
+        Events.EveryOneMinute:fire()
+    end)
+    assert_eq(player:getStats():get(CharacterStat.PANIC), 100,
+        "panic should cap at 100 and remain there")
+end)
+
+test("scardycat duplicate load leaves one periodic and one tick handler", function()
+    local player = MockPlayer({ "UniversalTraits:UT_scardycat" }, { panic = 10 })
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+    end)
+
+    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_scardycat.lua")
+
+    withActivePlayer(player, function()
+        player:getStats():set(CharacterStat.PANIC, 20)
+        Events.EveryOneMinute:fire()
+    end)
+    assert_eq(player:getStats():get(CharacterStat.PANIC), 35,
+        "duplicate load must apply the panic cascade exactly once")
+
+    local periodic = UTCore._periodicHandlers[
+        "UniversalTraits:UT_scardycat::EveryOneMinute"
+    ]
+    assert_true(periodic ~= nil, "duplicate load must retain the periodic handler")
+
+    local registrations = 0
+    for i = 1, #UTCore._tickHandlers do
+        if UTCore._tickHandlers[i].id == "UniversalTraits:UT_scardycat" then
+            registrations = registrations + 1
+        end
+    end
+    assert_eq(registrations, 1,
+        "duplicate load must leave exactly one Scaredy Cat tick handler")
+end)
+
+test("scardycat trait loss clears the panic comparison baseline", function()
+    local traitId = "UniversalTraits:UT_scardycat"
+    local trait = CharacterTrait.get(ResourceLocation.of(traitId))
+    local player = MockPlayer({ traitId }, { panic = 10 })
+
+    withActivePlayer(player, function()
+        Events.EveryOneMinute:fire()
+        player:getCharacterTraits():remove(trait)
+        player:getStats():set(CharacterStat.PANIC, 50)
+        Events.EveryOneMinute:fire()
+        player:getCharacterTraits():add(trait)
+        Events.EveryOneMinute:fire()
+    end)
+
+    assert_eq(player:getStats():get(CharacterStat.PANIC), 50,
+        "reacquiring the trait must establish a fresh baseline without a bonus")
+end)
+
 test("scardycat no cascade when panic does not rise by 5", function()
     local player = MockPlayer({ "UniversalTraits:UT_scardycat" }, { panic = 20 })
     withActivePlayer(player, function()
@@ -3409,6 +3496,45 @@ test("scardycat no cascade when panic does not rise by 5", function()
     local panic = player:getStats():get(CharacterStat.PANIC)
     assert_true(panic < 30,
         "no cascade should fire when panic rose less than 5 (got " .. tostring(panic) .. ")")
+end)
+
+test("scardycat contract and source-release copies match", function()
+    local function readAll(path)
+        local handle = assert(io.open(path, "rb"))
+        local content = handle:read("*a")
+        handle:close()
+        return content
+    end
+
+    local sourceRuntime = readAll(base ..
+        "../media/lua/shared/UniversalTraits/traits/UT_scardycat.lua")
+    local releaseRuntime = readAll(base ..
+        "../release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_scardycat.lua")
+    local sourceUi = readAll(base .. "../media/lua/shared/Translate/EN/UI.json")
+    local releaseUi = readAll(base ..
+        "../release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json")
+    local sourceDefinitions = readAll(base .. "../media/scripts/UT_character_traits.txt")
+    local releaseDefinitions = readAll(base ..
+        "../release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt")
+
+    assert_true(sourceUi:find(
+        "When panic rises by at least 5 points between one-minute checks, 15 additional panic points are added.",
+        1, true) ~= nil, "English copy must state the exact panic threshold and bonus")
+    local definition = sourceDefinitions:match(
+        "character_trait_definition UniversalTraits:UT_scardycat%s*(%b{})"
+    )
+    assert_true(definition ~= nil, "Scaredy Cat definition must exist")
+    assert_true(definition:find("Cost = -3", 1, true) ~= nil,
+        "Scaredy Cat must retain its pre-campaign cost of -3")
+    assert_true(definition:find(
+        "MutuallyExclusiveTraits = UniversalTraits:UT_flailer;base:desensitized",
+        1, true) ~= nil, "Scaredy Cat must retain both intended exclusions")
+    assert_eq(sourceRuntime, releaseRuntime,
+        "Scaredy Cat runtime source and release copies must match")
+    assert_eq(sourceUi, releaseUi,
+        "Scaredy Cat English source and release copies must match")
+    assert_eq(sourceDefinitions, releaseDefinitions,
+        "Scaredy Cat definition source and release copies must match")
 end)
 
 -- ===== UT_melancholic behavioral tests (code changed: raises unhappiness) =====

@@ -47,7 +47,7 @@
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "417C222A68161C10EB07CAEFE38D7D6E5C73E010CCC14431FE732754B34F0DB8",
     "independent_reviews/traits_05_08.json": "B0B92939B0E09B468C555B7434551B4E08D5A3353E63A86A83F415C842DB37E3",
-    "independent_reviews/traits_09_12.json": "27A52A4BB934EDCCD324FC013C7CC1885085D91F474C3E0BEED192C5018C7805",
+    "independent_reviews/traits_09_12.json": "FEF9499654AC4A042700EA409E0CBD823E8A3513D925F756BD4883FEDD11C379",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "7B741591E807E09BDE359BECBB8CF8BCBA18A872A9DD6B022EF105975DA78499",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
@@ -57,11 +57,11 @@
     "trait_batches/batch_06.jsonl": "32B529C5117E409EBFC41BF178BB94BFDD8301716D6187AC4950CF983A32CAAB",
     "trait_batches/batch_07.jsonl": "0483F4C2595D692E19FD6F60DE04E5D633C7942497A2669CF1B48459C0AFA771",
     "trait_batches/batch_08.jsonl": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A",
-    "trait_batches/batch_09.jsonl": "FFB64ADB79BEDD95F4F340F169A2BEB7A1158BF4C1E1602538AC75BA65F7D759",
+    "trait_batches/batch_09.jsonl": "7493EABBF27471F551A42E6B750D8927EC80B36404B51ED6E7CBC74349EAFE44",
     "trait_batches/batch_10.jsonl": "FD77CC372A742BCDEB66FCB6D26BF9622BA4EC439CDB8E9135CAC22B946F3A44",
     "trait_batches/batch_11.jsonl": "11FBFE83557FBD93363F41AC740897040804E74E1063367C55A521DA0D2C98F4",
     "trait_batches/batch_12.jsonl": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47",
-    "translation_audit.json": "7102BECEB4257532881DC2B4628BB7BF069D3C544DA38B4773D41D7A049B9D35"
+    "translation_audit.json": "21B7C6D5DF3E9BF0F641F7B90485780EE0BF6204F38F9408230E0CDEE0BEA6C8"
   },
   "counts": {
     "traits": 198,
@@ -83,10 +83,10 @@
       "runtime-unproven": 96
     },
     "dimension_states": {
-      "proven-correct": 2748,
-      "confirmed-defect": 255,
+      "proven-correct": 2747,
+      "confirmed-defect": 253,
       "coverage-gap": 773,
-      "runtime-unproven": 976
+      "runtime-unproven": 979
     }
   },
   "independent_review_findings": [
@@ -47867,29 +47867,35 @@
         "registration": {
           "state": "proven-correct",
           "evidence": [
-            "proven"
+            "Registry, definition, runtime, and English keys agree."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "registration"
           ]
         },
         "definition_parser": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "proven complete; base:desensitized resolves via CharacterTrait.registerBase"
+            "Source and release definitions are byte-identical and standard-Lua tests prove cost and exclusions."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current-build ScriptManager parsing remains unobserved."
+          ],
           "source_dimensions": [
-            "complete_script_definition_parser_validity"
+            "definition_parser"
           ]
         },
         "namespace": {
           "state": "proven-correct",
           "evidence": [
-            "proven exact"
+            "All owned surfaces use UniversalTraits:UT_scardycat."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "namespace"
           ]
@@ -47897,26 +47903,23 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "absent",
-            "flailer and base:desensitized",
-            "flailer explicitly reverses; current Java updateMutualExclusiveTraits symmetrizes the vanilla desensitized edge",
-            "proven: -3"
+            "Cost is -3, there are no XP boosts or grants, and exclusions retain UT_flailer plus base:desensitized."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "bidirectional_exclusions",
-            "cost",
-            "exclusions",
-            "grants",
-            "xp"
+            "cost_xp_grants_exclusions"
           ]
         },
         "source_intent": {
           "state": "proven-correct",
           "evidence": [
-            "panic cascade plus involuntary audible scream"
+            "Pre-campaign master defines the accepted minute-window panic cascade and living-spotted-zombie scream mechanics."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_intent"
           ]
@@ -47924,29 +47927,35 @@
         "runtime_path": {
           "state": "proven-correct",
           "evidence": [
-            "EveryOneMinute panic polling plus unthrottled central OnPlayerUpdate enemy-count/random scream path"
+            "One UTCore periodic handler owns panic sampling and one UTCore tick handler owns living-enemy scream checks."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "runtime_utcore_or_script_only_path"
+            "runtime_path"
           ]
         },
         "numbers": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "PANIC is 0..100; threshold 5 and bonus 15 are scale-correct, but stored baseline causes repeated bonuses"
+            "Fresh panic rises of at least 5 add exactly 15 and cap at 100; scream requires 9 living enemies and ZombRand(100) below 3."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "numerical_behavior"
+            "numbers"
           ]
         },
         "cadence": {
           "state": "confirmed-defect",
           "evidence": [
-            "panic once per game minute; scream chance evaluated every update tick while 9+ living enemies"
+            "Panic samples once per in-game minute, but scream rolls remain tied to player-update frequency."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "A user-approved frame-rate-independent scream frequency is required."
+          ],
           "source_dimensions": [
             "cadence"
           ]
@@ -47954,19 +47963,23 @@
         "cooldown": {
           "state": "confirmed-defect",
           "evidence": [
-            "120 update ticks stored in player modData after a scream; duration is frame-rate dependent"
+            "The accepted 120-player-update cooldown remains update-rate dependent."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "A user-approved wall-clock or game-time calibration is required."
+          ],
           "source_dimensions": [
-            "cooldowns"
+            "cooldown"
           ]
         },
         "reset_save_load": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "cooldown persists; local prevPanic table resets on Lua process reload and establishes a fresh first-minute baseline"
+            "Trait loss, player-object change, and duplicate load reset or preserve the correct transient panic baseline in deterministic tests."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current-build full relaunch and save/load remain unobserved."
+          ],
           "source_dimensions": [
             "reset_save_load"
           ]
@@ -47974,19 +47987,23 @@
         "java_lua": {
           "state": "proven-correct",
           "evidence": [
-            "Java spotted list is correctly traversed 0-based in shared helper; addSound six-argument signature verified"
+            "The current panic domain, Java spotted-list traversal, dead filtering, and six-argument addSound contract are statically verified."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "java_lua"
           ]
         },
         "kahlua": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "compiles; pcall guards world sound only"
+            "The corrected code uses Kahlua-compatible scalar table state and verified receiver methods."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current-build Kahlua execution remains unobserved."
+          ],
           "source_dimensions": [
             "kahlua"
           ]
@@ -47994,19 +48011,23 @@
         "events": {
           "state": "proven-correct",
           "evidence": [
-            "minute event has no args; central dispatch receives player"
+            "The keyed periodic registry replaces reload closures and explicit tick unregistration leaves one handler."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "event_lifecycle"
+            "events"
           ]
         },
         "stacking_interactions": {
           "state": "proven-correct",
           "evidence": [
-            "panic bonus stacks on current panic; sound and Say both occur on success"
+            "The post-bonus baseline prevents self-cascade while allowing a later external panic rise to trigger once."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "stacking_interactions"
           ]
@@ -48014,9 +48035,11 @@
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "disabled"
+            "The definition disables multiplayer and multiplayer is an explicit product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "multiplayer"
           ]
@@ -48024,39 +48047,47 @@
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "Scaredy Cat"
+            "The exact English display name is Scaredy Cat."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "display"
           ]
         },
         "description": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "defect: claims each panic event, while code polls net minute rise; scream cadence omitted"
+            "English states the actual minute threshold, point domain, living-enemy threshold, update-based chance, and cooldown unit."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "description"
           ]
         },
         "localization": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "EN pair present; all non-EN absent"
+            "The exact English keys exist in source and release."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "No non-English UniversalTraits locale exists."
+          ],
           "source_dimensions": [
-            "localization_absent_locales"
+            "localization"
           ]
         },
         "balance": {
           "state": "confirmed-defect",
           "evidence": [
-            "-3 points; repeated panic and frame-rate-sensitive scream probability make effect much harsher than a simple 3% event"
+            "Cost and effect magnitudes are unchanged, but real-time scream frequency varies with update rate."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "User-approved calibration and live balance observation remain required."
+          ],
           "source_dimensions": [
             "balance"
           ]
@@ -48064,32 +48095,34 @@
         "performance": {
           "state": "confirmed-defect",
           "evidence": [
-            "enemy list built lazily, but random roll runs every update tick while crowded"
+            "Living enemies use the shared tick cache, but eligibility and RNG still execute on every active player update."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "A user-approved fixed cadence and profiler capture remain required."
+          ],
           "source_dimensions": [
             "performance"
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "tests cover one cascade and enemy threshold/dead filtering, but not repeat suppression, cooldown duration, or probability cadence"
+            "Focused tests cover one-shot cascade, fresh rises, cap, trait loss, duplicate load, living/dead thresholds, definition, English, and parity."
           ],
           "missing_proof": [
-            "No in-game trace is needed to establish the deterministic recurrence; only presentation timing remains unobserved. | Whether the intended contract is actual panic events or minute-window deltas. | Actual PZ update frequency distribution under different performance conditions."
+            "none"
           ],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "0-based spotted-list mock is correct; default deterministic RNG masks real cumulative probability"
+            "Mocks preserve the 0-through-100 panic domain, 0-based Java list access, dead filtering, and deterministic RNG boundary."
           ],
           "missing_proof": [
-            "No in-game trace is needed to establish the deterministic recurrence; only presentation timing remains unobserved. | Whether the intended contract is actual panic events or minute-window deltas. | Actual PZ update frequency distribution under different performance conditions."
+            "none"
           ],
           "source_dimensions": [
             "mocks"
@@ -48098,19 +48131,23 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "pass, including defects"
+            "Runtime, definition, and English source and 42.0 release pairs are byte-identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_release_parity"
           ]
         },
         "packaging": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "runtime present and identical"
+            "All trait-owned 42.0 runtime, definition, and English counterparts are present and identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Read-only package verification reports no release drift; UniversalTraits lacks the separately tracked source poster."
+          ],
           "source_dimensions": [
             "packaging"
           ]
@@ -48122,10 +48159,12 @@
         "B09-SCARDYCAT-003"
       ],
       "unknowns": [
-        "Chosen intended panic trigger contract",
-        "Actual update-rate distribution in live play"
+        "User decision: approved frame-rate-independent scream roll interval, probability, and cooldown duration.",
+        "Current-build full relaunch, Kahlua execution, save/load, world sound, rendered English, and profiler observation remain unrun.",
+        "Only English UI localization exists in the closed-world source inventory.",
+        "Multiplayer and backward save migration are explicit non-goals."
       ],
-      "translation_terminal_state": "coverage-gap",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_09_12.json",
         "review_state": "confirmed-defect",

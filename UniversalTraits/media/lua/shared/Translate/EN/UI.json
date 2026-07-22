@@ -350,7 +350,7 @@
     "UI_UT_nervouswreck": "Nervous Wreck",
     "UI_UT_nervouswreckDesc": "Your nerves are always close to the edge. Each panic event adds +0.3 to panic. Additionally, every 10 in-game minutes while stress is above 0.7, panic increases by +0.05.",
     "UI_UT_scardycat": "Scaredy Cat",
-    "UI_UT_scardycatDesc": "You startle easily and panic often. Each time a panic event fires, panic is increased by an additional +0.15. When surrounded by many zombies, you may involuntarily scream and attract attention.",
+    "UI_UT_scardycatDesc": "You startle easily and panic often. When panic rises by at least 5 points between one-minute checks, 15 additional panic points are added. When at least 9 living zombies are spotted, each eligible player update has a 3 percent chance to make you scream and attract attention. After a scream, this chance pauses for 120 player updates.",
     "UI_UT_maniac": "Maniac",
     "UI_UT_maniacDesc": "Combat wakes something up in you. Each time you kill a zombie, stress decreases by -0.15 and boredom decreases by -0.2.",
     "UI_UT_anorexy": "Anorexia",

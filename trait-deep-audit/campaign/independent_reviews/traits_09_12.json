@@ -1105,7 +1105,26 @@
         "RP0912-SAVELOAD-001",
         "RP0912-BALANCE-PERF-001",
         "RP0912-LOCALE-001"
-      ]
+      ],
+      "repair_resolution": {
+        "state": "partially-implemented-and-statically-validated",
+        "resolved_finding_ids": [
+          "B09-SCARDYCAT-001",
+          "B09-SCARDYCAT-002"
+        ],
+        "open_finding_ids": [
+          "B09-SCARDYCAT-003"
+        ],
+        "remaining_decision": "User approval is required before replacing the accepted update-based scream cadence."
+      },
+      "release_parity": {
+        "source_runtime_sha256": "10AB98C9D4C2CA96690DAB503B09DD89FB6FA35118F81144F5DADA60A716B3EA",
+        "release_runtime_sha256": "10AB98C9D4C2CA96690DAB503B09DD89FB6FA35118F81144F5DADA60A716B3EA",
+        "source_english_sha256": "BA1461F64021ABB00116BDC96A2FA15291A2EAB8C11936A3F7CCB4DC0FA032FD",
+        "release_english_sha256": "BA1461F64021ABB00116BDC96A2FA15291A2EAB8C11936A3F7CCB4DC0FA032FD",
+        "state": "proven-correct"
+      },
+      "resolution_record": "change-impact/scardycat-panic-lifecycle.json"
     },
     {
       "accepted_overall_state": "proven-correct",

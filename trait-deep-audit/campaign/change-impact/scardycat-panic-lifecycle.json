@@ -1,0 +1,91 @@
+{
+  "schema": "ut-scardycat-panic-lifecycle-v1",
+  "trait_id": "UniversalTraits:UT_scardycat",
+  "authority": {
+    "accepted_baseline": "pre-campaign UTMods master",
+    "accepted_contract": "cost -3; minute-window +15 panic cascade; 9-living-enemy update-based scream",
+    "pz_snapshot": "SVN revision 964; Steam BuildID 23504596 is recorded outside VERSION.json"
+  },
+  "accepted_intent": {
+    "cost": -3,
+    "panic_threshold_points": 5,
+    "panic_bonus_points": 15,
+    "panic_cap": 100,
+    "panic_interval": "EveryOneMinute",
+    "living_enemy_threshold": 9,
+    "scream_roll": "ZombRand(100) < 3 on each eligible player update",
+    "scream_cooldown": "120 player updates",
+    "world_sound": {
+      "radius": 15,
+      "volume": 15
+    },
+    "runtime_scope": "single-player"
+  },
+  "resolved_findings": [
+    "B09-SCARDYCAT-001",
+    "B09-SCARDYCAT-002"
+  ],
+  "open_findings": [
+    "B09-SCARDYCAT-003"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_scardycat.lua",
+      "sha256": "10AB98C9D4C2CA96690DAB503B09DD89FB6FA35118F81144F5DADA60A716B3EA",
+      "bytes": 2207
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_scardycat.lua",
+      "sha256": "10AB98C9D4C2CA96690DAB503B09DD89FB6FA35118F81144F5DADA60A716B3EA",
+      "bytes": 2207
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "BA1461F64021ABB00116BDC96A2FA15291A2EAB8C11936A3F7CCB4DC0FA032FD",
+      "bytes": 37448
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "BA1461F64021ABB00116BDC96A2FA15291A2EAB8C11936A3F7CCB4DC0FA032FD",
+      "bytes": 37448
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "BDE6ADF1299FDB7702EC2653416191C6F8AF4E72BBF1D8D128850E19522A78EC",
+      "bytes": 307480
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_scardycat.md",
+      "sha256": "52CB06D038AC5980E8E977B363B377B3B996E583134A12511010026CFDFA4C53",
+      "bytes": 7169
+    }
+  ],
+  "regression_cases": [
+    "one bonus after one fresh panic rise",
+    "no self-retrigger",
+    "later external rise triggers once",
+    "100-point cap",
+    "trait-loss baseline reset",
+    "duplicate load keeps one periodic and one tick handler",
+    "living and dead enemy thresholds",
+    "cost, exclusions, exact English, and source-release parity"
+  ],
+  "remaining_decision": "Select a frame-rate-independent scream interval, probability, and cooldown before changing the accepted update-based timing.",
+  "runtime_proof": "Unobserved; requires full Exit to Desktop, current-build Kahlua, panic changes, trait loss, save/load, audible world sound, rendered English, update-frequency profiling, and balance observation.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment",
+    "changing cost, exclusions, panic threshold, panic bonus, enemy threshold, or sound magnitude"
+  ]
+}

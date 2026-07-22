@@ -1,31 +1,38 @@
 -- UT_scardycat.lua
 -- Scaredy Cat: two independent mechanics.
 --
--- 1. Panic cascade: the next time panic rises by >= 0.05 in a single minute,
---    an additional +0.15 is added. Fires at most once per minute.
+-- 1. Panic cascade: when panic rises by at least 5 points between minute
+--    checks, an additional 15 points are added. The post-bonus value becomes
+--    the next baseline, so the trait cannot retrigger its own increase.
 --
--- 2. Involuntary scream: when 8+ zombies are spotted and the 3% chance fires,
+-- 2. Involuntary scream: when 9+ living zombies are spotted and the 3% chance fires,
 --    addSound() creates world-audible noise (radius 15). Cooldown: 120 ticks.
 
 local TRAIT_ID = "UniversalTraits:UT_scardycat"
 
-local prevPanic = {}
+UTCore._scardycatState = UTCore._scardycatState or {}
+local state = UTCore._scardycatState
 
-local function onEveryMinute()
-    local player = getPlayer()
-    if not player then return end
-    if not UTCore.hasTrait(player, TRAIT_ID) then return end
+local function onEveryMinute(player)
+    if state.player ~= player then
+        state.player = player
+        state.previousPanic = nil
+    end
+    if not UTCore.hasTrait(player, TRAIT_ID) then
+        state.previousPanic = nil
+        return
+    end
 
     local stats = player:getStats()
     local current = stats:get(CharacterStat.PANIC)
-    local playerId = tostring(player)
-    local prev = prevPanic[playerId]
+    local prev = state.previousPanic
 
     if prev ~= nil and (current - prev) >= 5 then
-        stats:set(CharacterStat.PANIC, math.min(100, current + 15))
+        current = math.min(100, current + 15)
+        stats:set(CharacterStat.PANIC, current)
     end
 
-    prevPanic[playerId] = current
+    state.previousPanic = current
 end
 
 local function onTick(player, tick)
@@ -53,5 +60,8 @@ local function onTick(player, tick)
     end
 end
 
-Events.EveryOneMinute.Add(onEveryMinute)
+if UTCore.unregisterTickHandler then
+    UTCore.unregisterTickHandler(TRAIT_ID, "reload")
+end
+UTCore.registerPeriodicHandler(TRAIT_ID, "EveryOneMinute", onEveryMinute)
 UTCore.registerTickHandler(TRAIT_ID, onTick)
