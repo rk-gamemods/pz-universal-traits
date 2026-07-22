@@ -318,7 +318,7 @@
     "UI_UT_accmetabolism": "Accelerated Metabolism",
     "UI_UT_accmetabolismDesc": "Everything runs fast inside you. Every 10 in-game minutes, hunger increases by +0.05 and thirst increases by +0.03.",
     "UI_UT_albino": "Albino",
-    "UI_UT_albinoDesc": "You lack melanin and sunlight has always been your enemy. Prolonged outdoor exposure causes real physical harm.",
+    "UI_UT_albinoDesc": "Sunlight wears you down. Every minute spent outdoors from 06:00 through 17:59 adds 0.03 stress and 0.02 fatigue, up to each meter's maximum.",
     "UI_UT_fibromyalgia": "Fibromyalgia",
     "UI_UT_fibromyalgiaDesc": "Chronic pain is your constant companion. Everyday exertion costs more than it should, and bad days can be genuinely debilitating.",
     "UI_UT_bigorexia": "Bigorexia",

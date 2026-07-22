@@ -1,134 +1,134 @@
 # UT_albino
 
-## Trait Summary
-- UT trait id: `UniversalTraits:UT_albino`
-- Source mod: MoreTraits (ToadTraits)
-- Source trait id: `ToadTraits:albino`
-- Current cost: -4
-- Scripted: yes
-- Owner: agent
-- Status: complete
+## Audit result
 
-## Source Evidence
-- Source files reviewed:
-  - `MoreTraits/mods/More Traits/42.13/media/scripts/ToadTraits.txt` — script definition
-  - `MoreTraits/mods/More Traits/42.13/media/registries.lua` — `ToadTraitsRegistries.albino = CharacterTrait.register("ToadTraits:albino")`
-  - `MoreTraits/mods/More Traits/42.13/media/lua/shared/MoreTraits .lua` — functions `albino()` and `AlbinoTimer()`, lines 2302–2352 and 2355–2382
-  - `MoreTraits/mods/More Traits/42/media/lua/shared/Translate/EN/UI_EN.txt` — source display name and description
-- Source trigger path:
-  - `albino(player, playerdata)` — called inside `OnPlayerUpdate(player)`, which is wired to `Events.OnPlayerUpdate`. Runs every game tick (throttled in multiplayer by a 1000ms timestamp guard).
-  - `AlbinoTimer(player, playerdata)` — called inside `EveryOneMinute()`, which is wired to `Events.EveryOneMinute`. Runs once per in-game minute.
-- Source behavior:
-  - **AlbinoTimer** (EveryOneMinute): accumulates `AlbinoTimeSpentOutside` (0–40 cap) when the player is outside between in-game hours 8–17. Increment is +1 per minute bare, +0.5 per minute holding an umbrella. Decrements by 1/minute when outside at night, by 2/minute when indoors. Tracks time-weighted UV exposure as a pain budget.
-  - **albino** (OnPlayerUpdate, ~every tick with multiplayer throttle): reads `AlbinoTimeSpentOutside` as `modpain`. Computes `finalPain`:
-    - Outside, daytime (tod 8–17): `finalPain = modpain` (bare) or `modpain / 1.5` (umbrella). Triggers halo text announce on first tick pain crosses PAIN < 25.
-    - Outside, nighttime: `finalPain = modpain / 2` (recovery halved).
-    - Indoors: `finalPain = modpain / 4` (fast recovery).
-  - Sets head body-part `additionalPain` to `finalPain` directly (singleplayer). In multiplayer sends a client command to server for body-part pain. No stress or fatigue effect.
-  - Source cost: **-5**. Source exclusion: `MutuallyExclusiveTraits = ToadTraits:badteeth`. Source display name: "Sun Sensitivity". Source multiplayer flag: `DisabledInMultiplayer = false`.
+- Trait ID: `UniversalTraits:UT_albino`
+- Source lineage: More Traits / `ToadTraits:albino`
+- Accepted behavior authority: pre-campaign UTMods `master`
+- Cost: -4
+- Exclusion: reciprocal with `UniversalTraits:UT_badteeth`
+- Multiplayer: disabled by definition and outside product scope
+- Overall state: runtime-unproven
+- Static verdict: the daylight-domain defect is fixed, exact behavior is tested and described, and no intended behavior was changed
 
-## Current UT Evidence
-### Structure
-- Registered in registries.lua: yes — `UTTraitsRegistries.UT_albino = CharacterTrait.register("UniversalTraits:UT_albino")` at line 257
-- Defined in UT_character_traits.txt: yes — `character_trait_definition UniversalTraits:UT_albino { IsProfessionTrait = false, DisabledInMultiplayer = true, CharacterTrait = UniversalTraits:UT_albino, Cost = -4, UIName = UI_UT_albino, UIDescription = UI_UT_albinoDesc, }`
-- Translation strings present: yes — `UI_UT_albino = "Albino"` and `UI_UT_albinoDesc = "You lack melanin and sunlight has always been your enemy. Prolonged outdoor exposure causes real physical harm."` (UI_EN.txt lines 548–549)
-- Exclusions/grants correct: N/A — no `MutuallyExclusiveTraits` or `GrantedTraits` defined in UT script block; source had `MutuallyExclusiveTraits = ToadTraits:badteeth` which does not translate to UT namespace, so omission is correct
-- Runtime Lua file exists: yes — `media/lua/shared/UniversalTraits/traits/UT_albino.lua`
+## Authority and intended outcome
 
-### Runtime Trace
-- Files reviewed:
-  - `media/lua/shared/UniversalTraits/traits/UT_albino.lua` (25 lines, complete)
-  - `UT_CORE/media/lua/shared/UTCore/UTCore_API.lua` — `UTCore.hasTrait` definition
-  - `test/UTTestMocks.lua` lines 199–204 — test stub for `UTCore.hasTrait`
-- Event registrations:
-  - `Events.EveryOneMinute.Add(handler)` — raw direct registration, NOT via `UTCore.registerPeriodicHandler`
-- UT_CORE hooks used:
-  - `UTCore.hasTrait(player, TRAIT_ID)` — nil-safe wrapper: checks `player:getTraits():contains(traitId)`; returns false if player or traits is nil
-- Runtime chain (plain language):
-  1. Every in-game minute PZ fires `Events.EveryOneMinute`.
-  2. `handler()` runs (no arguments — calls `getPlayer()` internally, singleplayer only).
-  3. Guard: if no player, exit. If player does not have `UniversalTraits:UT_albino`, exit.
-  4. If `player:isOutside()` is true: read `getGameTime():getTimeOfDay()`. If value is between 0.25 and 0.75 (inclusive):
-     - Call `player:getStats():setStress(math.min(1, currentStress + 0.03))`.
-     - Call `player:getStats():setFatigue(math.min(1, currentFatigue + 0.02))`.
-     - Set `player:getModData()["UT_albinoDamage"] = true`.
-     - Otherwise (outside but outside the daytime band): set `UT_albinoDamage = false`.
-  5. If `player:isOutside()` is false: set `UT_albinoDamage = false`.
-- Actual behavior (exact values):
-  - Cadence: once per in-game minute.
-  - Daytime window: `timeOfDay >= 0.25 and timeOfDay <= 0.75` — this is a 0.0–1.0 fractional day scale. 0.25 = 06:00, 0.75 = 18:00 (a 12-hour window, roughly dawn to dusk). **This is a different scale from the source** which used integer hours `tod > 8 and tod < 17` (08:00–17:00, a 9-hour window).
-  - Effect when active: +0.03 stress per minute, +0.02 fatigue per minute. Capped at 1.0 by `math.min`.
-  - Effect when inactive (indoors or night): no reduction applied — stress and fatigue recover at their natural rates.
-  - Moddata flag `UT_albinoDamage` is set true when actively taking effect, false otherwise. This flag is not read by any other UT file (informational/debug only based on evidence reviewed).
-  - No pain mechanic. No umbrella mitigation. No accumulator state. No multiplayer body-part command.
-  - `DisabledInMultiplayer = true` in script block — trait is entirely absent from multiplayer character creation, so the singleplayer-only `getPlayer()` pattern is consistent.
+The upstream More Traits trait is lineage evidence. It used a more complex pain accumulator, an 08:00 to 17:00 exposure window, umbrella mitigation, head pain, and multiplayer commands. UTMods had already selected a simpler single-player outcome before this campaign: every in-game minute outdoors during its intended daylight window adds fixed stress and fatigue.
 
-## Description Integrity
-- Display name check: UT uses "Albino"; source uses "Sun Sensitivity". The UT name is accurate to the biological condition and arguably better identifies the trait, but it differs from the source naming convention. Acceptable.
-- Description check: "You lack melanin and sunlight has always been your enemy. Prolonged outdoor exposure causes real physical harm." — describes head pain accumulation ("real physical harm"), which matches the source mechanic. However the UT implementation applies **stress and fatigue**, not pain. The description is misleading for UT's actual effect. "Real physical harm" strongly implies body damage or pain; the actual UT effect is stress (+0.03/min) and fatigue (+0.02/min).
-- Missing or misleading details:
-  1. **Misleading**: "Prolonged outdoor exposure causes real physical harm" — UT applies stress and fatigue, not pain or body damage. No accumulation mechanic exists in UT; harm begins immediately on the first daytime-outdoor minute.
-  2. **Missing**: No mention of the time-of-day window (daytime only, roughly 06:00–18:00).
-  3. **Missing**: No mention of the stat magnitudes (+0.03 stress/min, +0.02 fatigue/min).
-  4. **Missing**: Source umbrella mitigation is absent from UT; description does not reference it, which is correct, but the absence of any mitigation option is a design gap not surfaced to the player.
+Pre-campaign `master` is the accepted behavior authority. Its runtime comment and effect establish:
 
-## Balance Review
-- Upside: none — pure negative trait, returns 4 points.
-- Downside: +0.03 stress/min and +0.02 fatigue/min when outside between 06:00–18:00. At those rates: stress reaches 1.0 from 0 in ~33 minutes continuous outdoor exposure; fatigue reaches 1.0 from 0 in ~50 minutes. In practice both stats start elevated and natural recovery partially offsets, but daytime outdoor play is meaningfully degraded.
-- Uptime: active only when outside during daytime. Indoor players (base builders, crafters) feel almost nothing. Outdoor scavengers or farmers feel it heavily during the entire daylight half of the game clock. Uptime scales with playstyle, not a fixed fraction of game time.
-- Peer comparison: UT_fearofthedark (+stress/fatigue at night, also EveryOneMinute), UT_coldsensitive and UT_heatsensitive (temperature-gated stat penalties). Albino is the daytime-outdoor counterpart. At -4 cost it is cheaper than UT_fibromyalgia (-8) and UT_weathersensitive; comparable to UT_fearofthedark and UT_heatsensitive. The 12-hour daytime window is wide — day runs roughly 06:00–18:00 in default PZ settings — making this trait active for the majority of daytime play if the player goes outside at all.
-- Stack or exclusion notes: no MutuallyExclusiveTraits in UT script block. Stacks freely with UT_heatsensitive, UT_fearofthedark, and similar stat-draining traits. Combined with UT_fearofthedark the player is penalized both day and night, leaving no stress-neutral time window outdoors, which may be a harsh but intentional design space.
-- Cost verdict: -4 is defensible. The trait is ignorable for indoor players and punishing for outdoor-focused characters. The lack of any mitigation mechanic (no umbrella equivalent) compared to the source's umbrella system slightly overweights the penalty vs. the point return. -4 is at the low end; -5 (source cost) would be reasonable if no mitigation exists. **Acceptable at -4; revisit if a mitigation item is ever added.**
+1. Daylight exposure is the trigger.
+2. The player must be outdoors and own Albino.
+3. Each `EveryOneMinute` event adds 0.03 stress and 0.02 fatigue.
+4. Both meters cap at 1.0.
+5. `UT_albinoDamage` records whether the effect is currently active.
+6. The intended 0.25 to 0.75 daylight bounds represented 06:00 to 18:00, but used the wrong domain for the current engine API.
 
-## Regression Proof
-- Existing test: `UT_albino` appears in the Phase 3b smoke-test ID list at `test/run_tests.lua` line 287. This list is checked by the "all 198 trait IDs registered with CharacterTrait" test and the "script trait definitions resolve cleanly" test.
-- What it proves: (1) `CharacterTrait.register("UniversalTraits:UT_albino")` has been called and the trait ID is present in the registry; (2) the script definition block exists, the `CharacterTrait` field matches the block ID, and the registered ID resolves. Neither test exercises the Lua runtime handler.
-- Missing proof: No moddata spot-check test for `UT_albino`. The runtime `handler()` function — its daytime condition, stress/fatigue increments, `UT_albinoDamage` flag transitions, and guard behavior — is entirely untested.
-- Minimum next test if needed:
-  ```lua
-  dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_albino.lua")
+Development commit `2f98749c3ecaa323b5eb037c30a2ad98b43dc834` corrected only the time-domain expression to `timeOfDay >= 6 and timeOfDay < 18`. It retained the intended 12-hour window and every other effect.
 
-  test("UT_albino: outside in daytime raises stress, fatigue, and sets UT_albinoDamage=true", function()
-      local p = MockPlayer({ "UniversalTraits:UT_albino" })
-      p:setOutside(true)
-      -- timeOfDay = 0.5 (noon, inside 0.25–0.75 window)
-      getGameTime():setTimeOfDay(0.5)
-      withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-      assert_true(p:getStats():getStress() > 0, "stress should increase")
-      assert_true(p:getStats():getFatigue() > 0, "fatigue should increase")
-      assert_eq(p:getModData()["UT_albinoDamage"], true, "UT_albinoDamage should be true")
-  end)
+## Definition, registration, and text
 
-  test("UT_albino: outside at night clears UT_albinoDamage, no stat change", function()
-      local p = MockPlayer({ "UniversalTraits:UT_albino" })
-      p:setOutside(true)
-      -- timeOfDay = 0.1 (early morning, before 0.25)
-      getGameTime():setTimeOfDay(0.1)
-      withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-      assert_eq(p:getStats():getStress(), 0, "stress should not change at night")
-      assert_eq(p:getModData()["UT_albinoDamage"], false, "UT_albinoDamage should be false at night")
-  end)
+- Registration: `UniversalTraits/media/registries.lua:257`
+- Definition: `UniversalTraits/media/scripts/UT_character_traits.txt:1779-1788`
+- The definition costs -4, has no XP boosts or grants, is disabled in multiplayer, and excludes Bad Teeth.
+- Bad Teeth excludes Albino in the reverse direction. The same reciprocal relationship exists in the upstream More Traits definitions, so it is accepted lineage and pre-campaign intent rather than an unexplained campaign addition.
+- Display key: `UI_UT_albino`
+- Description key: `UI_UT_albinoDesc`
 
-  test("UT_albino: indoors clears UT_albinoDamage regardless of time", function()
-      local p = MockPlayer({ "UniversalTraits:UT_albino" })
-      p:setOutside(false)
-      getGameTime():setTimeOfDay(0.5)
-      withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-      assert_eq(p:getModData()["UT_albinoDamage"], false, "UT_albinoDamage should be false indoors")
-  end)
-  ```
+The former English copy promised unspecified physical harm. The runtime does not call health, body-damage, pain, or wound APIs. The corrected copy states the exact daylight window, cadence, stress increment, fatigue increment, and caps.
 
-## Final Verdict
-- Source origin: confirmed — MoreTraits `ToadTraits:albino`. Source used a two-function model: `AlbinoTimer` (EveryOneMinute) accumulates a UV exposure budget (0–40) and `albino` (OnPlayerUpdate) translates that budget into head `additionalPain` with umbrella mitigation. Source cost was -5. Source was multiplayer-capable with client command networking.
-- UT implementation: simplified single-function approach via `Events.EveryOneMinute`. Trades the pain/accumulator model for direct stress (+0.03/min) and fatigue (+0.02/min) when outside in daytime (0.25–0.75 fractional day). Removes umbrella mitigation and the pain accumulator entirely. `DisabledInMultiplayer = true` sidesteps the networking complexity. Uses raw `Events.EveryOneMinute.Add` instead of `UTCore.registerPeriodicHandler` — inconsistent with the majority of UT periodic traits but not functionally wrong for singleplayer.
-- Description: **misleading**. "Real physical harm" implies pain or body damage; the actual effect is stress and fatigue. No time-of-day window is communicated. Needs a rewrite.
-- Balance: **acceptable** at -4. The 12-hour daytime window is wide and no mitigation exists, so -5 (source cost) would also be defensible. Current cost is not wrong.
-- Regression proof: **weak**. ID registration and script-block structure are covered. The runtime handler has zero coverage — stress/fatigue increments, the 0.25–0.75 time window, and the `UT_albinoDamage` flag are all untested.
-- Action needed:
-  1. **Fix description** — rewrite to accurately state stress and fatigue effects, not "physical harm". Example: "You lack melanin and sunlight is your enemy. Spending time outdoors during daylight hours raises your stress and fatigue."
-  2. **Migrate event registration** to `UTCore.registerPeriodicHandler(TRAIT_ID, "EveryOneMinute", handler)` for consistency with the UT pattern (handler signature must then accept `player` as argument and drop the internal `getPlayer()` call).
-  3. **Add moddata spot-check tests** per the minimum test block above.
-- Open gaps:
-  - `UT_albinoDamage` moddata flag is written but never read by any other UT file in the indexed repo. Its purpose is unclear — likely a leftover debug/status flag. Confirm intended use or remove it.
-  - No umbrella or hat mitigation exists in UT. Whether this is intentional simplification or a missing feature should be decided explicitly.
-  - The daytime window (0.25–0.75 = 06:00–18:00) is wider than the source (08:00–17:00). This may be intentional but is undocumented.
+## Runtime map
+
+1. The trait module registers one local handler with `Events.EveryOneMinute`.
+2. `GameTime` emits `EveryOneMinute` from `PZCodebase/Java/source/zombie/GameTime.java:738`.
+3. The handler resolves the current single-player character with `getPlayer()`.
+4. Nil player and missing-trait paths return without work.
+5. Indoor players set `UT_albinoDamage` false and receive no stat change.
+6. Outdoor players read `getGameTime():getTimeOfDay()`.
+7. Hours from 06:00 inclusive through 18:00 exclusive add exactly 0.03 stress and 0.02 fatigue, each capped at 1.0, then set the flag true.
+8. All other hours set the flag false and leave both stats unchanged.
+
+`GameTime.getTimeOfDay()` is a public float getter at `GameTime.java:1050`. Current engine consumers compare it with hour values such as 7.0, wrap it at 24.0, and derive minutes from its fractional hour. This proves the 0-to-24 domain.
+
+## Findings and resolutions
+
+### B01-ALB-TIME: wrong daylight time domain
+
+- Severity: high
+- Original reproduction: on `master`, noon was 12.0, but the handler accepted only values from 0.25 through 0.75. The effect therefore ran only shortly after midnight rather than during daylight.
+- Correction: development commit `2f98749` changed the bounds to 6 inclusive and 18 exclusive in both source and release.
+- Regression: the shared boundary table covers 00:00, 05:59, 06:00, 17:59, 18:00, and 23:59 on the 0-to-24 engine clock.
+- Resolution: implemented and statically validated.
+
+### IR0104-ALBINO-PHYSICAL-HARM: misleading English copy
+
+- Severity: medium
+- Reproduction: the former copy promised physical harm, while the complete runtime path only writes stress, fatigue, and the activity flag.
+- Correction: source and release English now state the exact accepted effect and no longer promise damage or pain.
+- Regression: the suite asserts the exact sentence and byte-identical source-release UI files.
+- Resolution: implemented and statically validated.
+
+### IR0104-ALBINO-CROSS-EXCLUSION: previously questioned exclusion
+
+- Severity: medium
+- Evidence: Albino and Bad Teeth exclude each other in both directions on pre-campaign `master`. The upstream `ToadTraits:albino` and `ToadTraits:badteeth` definitions also exclude each other.
+- Resolution: proven intended. No definition change is indicated.
+
+## Numerical, state, and interaction contract
+
+- Day starts at 06:00 inclusive.
+- Day ends at 18:00 exclusive.
+- Active cadence is once per in-game minute.
+- Stress delta is +0.03 per qualifying event, capped at 1.0.
+- Fatigue delta is +0.02 per qualifying event, capped at 1.0.
+- `UT_albinoDamage` is true only after a qualifying outdoor daylight event and is cleared by an indoor or non-daylight event.
+- The flag has no consumer in the current closed-world UTMods source. It is retained because removing it is unnecessary and could break an external observer.
+- Albino and Bad Teeth cannot be selected together.
+- Other stress or fatigue traits compose additively through the engine Stats surface. No shared item or global mutable object is involved.
+- No cooldown, accumulator, umbrella mitigation, health damage, pain, or passive recovery is part of the accepted UTMods implementation.
+
+## Test and mock evidence
+
+Focused tests prove:
+
+- exact +0.03 stress and +0.02 fatigue at noon;
+- exact caps at 1.0;
+- the true activity flag during a qualifying event;
+- indoor no-op and flag clearing;
+- non-daylight no-op and flag clearing;
+- 06:00 and 18:00 boundary opposition on the 0-to-24 clock;
+- exact English copy and source-release equality;
+- reciprocal Bad Teeth exclusion in both definition copies.
+
+The GameTime mock exposes a controllable 0-to-24 `getTimeOfDay()` value. Stats are explicitly bounded by production code, so the tests do not rely on mock clamping for the cap result. Standard Lua and mocks prove the modeled contract, not current-build Kahlua execution.
+
+## Lifecycle and performance
+
+The handler is registered once when the shared trait module is loaded. It runs at `EveryOneMinute`, resolves one player, performs two early guards, and reads or writes a constant amount of state. There are no collection scans, loops, wrappers, or per-frame work.
+
+The only persistent field is the boolean activity flag. The next indoor or non-daylight event reconciles it to false. Full desktop relaunch, repeated world entry, and current-version save/load remain unobserved in the game.
+
+The static performance risk is low, but no current-build profiler capture exists, so performance remains runtime-unproven.
+
+## Remaining proof and non-goals
+
+Remaining open proof:
+
+- current-build Kahlua execution after a full desktop relaunch;
+- repeated world entry and current-version save/load observation;
+- rendered English in character creation and the character screen;
+- profiler and gameplay balance observation;
+- non-English localization, because no non-English UniversalTraits locale exists;
+- read-only package verification's separately tracked missing UniversalTraits source poster.
+
+Explicit non-goals:
+
+- multiplayer support;
+- backward save migration;
+- deployment or live-copy mutation;
+- restoring upstream pain accumulation, umbrella mitigation, multiplayer commands, or its different daylight window;
+- changing the accepted cost, exclusion, cadence, or stat magnitudes.
+
+## Final verdict
+
+Albino's accepted UTMods outcome is a fixed stress and fatigue penalty during outdoor daylight, not physical damage. The earlier development correction preserved that intent while converting the daylight bounds to the engine's actual 0-to-24 domain. The translation and focused regressions now match the implemented outcome. Current-build runtime, rendered UI, performance, balance, and non-English localization remain explicitly open.

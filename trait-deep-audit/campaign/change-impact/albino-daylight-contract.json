@@ -1,0 +1,97 @@
+{
+  "schema": "ut-albino-daylight-contract-v1",
+  "trait_id": "UniversalTraits:UT_albino",
+  "authority": {
+    "accepted_baseline": "pre-campaign UTMods master",
+    "initial_runtime_implementation": "e87e49d",
+    "time_domain_correction": "2f98749c3ecaa323b5eb037c30a2ad98b43dc834",
+    "upstream_reference": "More Traits reciprocal Albino/Bad Teeth exclusions",
+    "pz_snapshot": "SVN revision 964; Steam BuildID 23504596 is recorded outside VERSION.json"
+  },
+  "accepted_intent": {
+    "cost": -4,
+    "trigger": "outdoors from 06:00 inclusive through 18:00 exclusive",
+    "cadence": "EveryOneMinute",
+    "stress_delta": 0.03,
+    "fatigue_delta": 0.02,
+    "meter_cap": 1.0,
+    "activity_flag": "UT_albinoDamage",
+    "exclusions": [
+      "UniversalTraits:UT_badteeth"
+    ],
+    "runtime_scope": "single-player"
+  },
+  "resolved_findings": [
+    "B01-ALB-TIME",
+    "IR0104-ALBINO-CROSS-EXCLUSION",
+    "IR0104-ALBINO-PHYSICAL-HARM"
+  ],
+  "engine_evidence": [
+    "PZCodebase/Java/source/zombie/GameTime.java:738,1050",
+    "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_albino.lua",
+      "sha256": "DEB11A207602DDC5F12A1BA2C19B9774FA746B097442AD6A3651CE414E70530F",
+      "bytes": 950
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_albino.lua",
+      "sha256": "DEB11A207602DDC5F12A1BA2C19B9774FA746B097442AD6A3651CE414E70530F",
+      "bytes": 950
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "4E99B1F5D5746BAD5E5FBF5B3141FF94B33B6E0329A0E7E96172143D40FF4403",
+      "bytes": 37108
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "4E99B1F5D5746BAD5E5FBF5B3141FF94B33B6E0329A0E7E96172143D40FF4403",
+      "bytes": 37108
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "sha256": "FF176266CC9075A2222D84AAD1CF05AE6B8DDCF4BF733CBBF8A8C34F5502046C",
+      "bytes": 76718
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "6AF0617A7B70C98A27F8ED6BF91CDD6ADD67C1658DE3BF26797FFF4CE09DB342",
+      "bytes": 287862
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_albino.md",
+      "sha256": "85A6F4E84CC2287EF2D4DC6259FC58ED510A57170C94F32FA659F038FEAE6AE5",
+      "bytes": 8152
+    }
+  ],
+  "regression_cases": [
+    "exact noon stress and fatigue deltas",
+    "stress and fatigue caps at 1.0",
+    "qualifying event sets the activity flag",
+    "indoor and nighttime paths clear the activity flag without changing stats",
+    "05:59, 06:00, 17:59, and 18:00 boundary opposition",
+    "reciprocal Bad Teeth exclusion",
+    "exact English copy and source-release parity"
+  ],
+  "performance_model": "One low-frequency handler runs per in-game minute, performs constant-time guards, and executes at most two bounded Stats writes plus one boolean modData write.",
+  "runtime_proof": "Unobserved; requires full Exit to Desktop, current-build daylight and boundary observation, repeated world entry, current-version save/load, rendered English, balance, and profiler capture.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment",
+    "restoring upstream pain accumulation, umbrella mitigation, multiplayer commands, or its different daylight window"
+  ]
+}

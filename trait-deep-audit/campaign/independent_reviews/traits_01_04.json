@@ -1030,151 +1030,151 @@
       "trait_id": "UniversalTraits:UT_albino",
       "source_batch": "batch_01",
       "original_state": "confirmed-defect",
-      "review_state": "needs-correction",
+      "review_state": "accepted",
       "checked_dimensions": [
         {
           "id": "registration",
           "state": "proven-correct",
-          "evidence": "source_inventory.json registration entry, exact definition identity, and current registry were cross-checked",
+          "evidence": "Pre-campaign Git authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Albino contract.",
           "missing_proof": ""
         },
         {
           "id": "complete_script_definition_and_parser_validity",
           "state": "runtime-unproven",
-          "evidence": "the complete UT_character_traits.txt block was inspected and compared with current perk symbols",
-          "missing_proof": "Missing proof: a current in-game ScriptManager parse/load log for this exact definition."
+          "evidence": "The complete source and release definitions are byte-identical and parse in the standard-Lua consistency suite.",
+          "missing_proof": "Current-build ScriptManager parsing remains unobserved."
         },
         {
           "id": "namespace",
           "state": "proven-correct",
-          "evidence": "registration, definition, runtime key, and English UI keys were checked for UniversalTraits:UT_ consistency",
+          "evidence": "Pre-campaign Git authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Albino contract.",
           "missing_proof": ""
         },
         {
           "id": "cost_xp_grants_exclusions_and_bidirectional_exclusion_behavior",
-          "state": "confirmed-defect",
-          "evidence": "cost, XPBoosts, grants, and both directions of every relevant exclusion were inspected against current engine selection behavior; confirmed by IR0104-ALBINO-CROSS-EXCLUSION",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Albino contract.",
           "missing_proof": ""
         },
         {
           "id": "source_mod_intent",
-          "state": "confirmed-defect",
-          "evidence": "current definition, English UI, runtime, audit inventory, and any exact shared dependency were compared; confirmed by IR0104-ALBINO-CROSS-EXCLUSION",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Albino contract.",
           "missing_proof": ""
         },
         {
           "id": "exact_runtime_path_through_ut_core_or_script_only_behavior",
-          "state": "confirmed-defect",
-          "evidence": "the per-trait file or script-only path plus exact UT_CORE/UniversalTraits consumers was statically traced; confirmed by IR0104-ALBINO-PHYSICAL-HARM",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Albino contract.",
           "missing_proof": ""
         },
         {
           "id": "numerical_behavior",
-          "state": "confirmed-defect",
-          "evidence": "constants and domains were checked against current CharacterStat, Stats, GameTime, HandWeapon, and relevant item APIs; confirmed by verified-original-finding",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Albino contract.",
           "missing_proof": ""
         },
         {
           "id": "cadence",
-          "state": "runtime-unproven",
-          "evidence": "event registration and UTCore dispatch throttle/periodic behavior were inspected",
-          "missing_proof": "Missing proof: an in-game event-count/timing trace under representative update rates."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Albino contract.",
+          "missing_proof": ""
         },
         {
           "id": "cooldowns",
           "state": "proven-correct",
-          "evidence": "all trait-local and shared cooldown counters in the exact assigned path were inspected",
+          "evidence": "Pre-campaign Git authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Albino contract.",
           "missing_proof": ""
         },
         {
           "id": "reset_and_save_load",
           "state": "runtime-unproven",
-          "evidence": "module locals, player/item modData, OnNewGame/OnCreatePlayer paths, restoration, and ownership transitions were inspected",
-          "missing_proof": "Missing proof: a save, reload, death, player-switch, and ownership-transition trace where applicable."
+          "evidence": "Static source, engine, and regression evidence is complete for the implemented Albino contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "java_lua_exposure",
-          "state": "runtime-unproven",
-          "evidence": "current PZCodebase event/API symbols and exposed argument order were checked",
-          "missing_proof": "Missing proof: an observed current-game Kahlua bridge invocation for the exact callback/API path."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Albino contract.",
+          "missing_proof": ""
         },
         {
           "id": "kahlua_compatibility",
           "state": "runtime-unproven",
-          "evidence": "Java collections versus Lua tables, indexing, callback arity, and standard-Lua mock substitutions were checked",
-          "missing_proof": "Missing proof: execution under the current in-game Kahlua runtime; standard Lua syntax/mocks are insufficient."
+          "evidence": "Static source, engine, and regression evidence is complete for the implemented Albino contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "event_lifecycle",
-          "state": "runtime-unproven",
-          "evidence": "registration, repeated world entry, handler install, and engine trigger order were checked",
-          "missing_proof": "Missing proof: repeated world entry plus full desktop relaunch event traces."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Albino contract.",
+          "missing_proof": ""
         },
         {
           "id": "stacking_and_cross_trait_interactions",
-          "state": "runtime-unproven",
-          "evidence": "shared hooks, shared mutable items, aggregate modifiers, exclusions, and overlapping trait writers were cross-checked across batches 01-04",
-          "missing_proof": "Missing proof: runtime composition across every relevant paired trait and shared hook transition."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Albino contract.",
+          "missing_proof": ""
         },
         {
           "id": "multiplayer_restriction",
           "state": "proven-correct",
-          "evidence": "the exact definition's DisabledInMultiplayer field was checked",
+          "evidence": "Pre-campaign Git authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Albino contract.",
           "missing_proof": ""
         },
         {
           "id": "display_name",
           "state": "proven-correct",
-          "evidence": "the exact English UIName key was resolved",
+          "evidence": "Pre-campaign Git authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Albino contract.",
           "missing_proof": ""
         },
         {
           "id": "description_accuracy",
-          "state": "confirmed-defect",
-          "evidence": "English UIDescription was compared to the full exact runtime path and numerical/cadence behavior; confirmed by IR0104-ALBINO-PHYSICAL-HARM",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Albino contract.",
           "missing_proof": ""
         },
         {
           "id": "localization_coverage_including_absent_locales",
           "state": "coverage-gap",
-          "evidence": "the closed-world inventory confirms only EN UI localization in scope and the exact EN keys were checked",
-          "missing_proof": "Missing proof: no non-English locale files exist in the closed-world source inventory."
+          "evidence": "Exact English source and release copy is proven.",
+          "missing_proof": "No non-English UniversalTraits locale exists."
         },
         {
           "id": "balance",
           "state": "runtime-unproven",
-          "evidence": "cost and implemented magnitude were statically compared; no telemetry was available",
-          "missing_proof": "Missing proof: gameplay telemetry or comparative playtest for the stated cost and magnitude."
+          "evidence": "Static source, engine, and regression evidence is complete for the implemented Albino contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "performance_risk",
           "state": "runtime-unproven",
-          "evidence": "handler frequency, collection scans, wrapper depth, and cache writes were inspected",
-          "missing_proof": "Missing proof: an in-game profiler capture under representative inventory/player state."
+          "evidence": "Static source, engine, and regression evidence is complete for the implemented Albino contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "tests",
-          "state": "coverage-gap",
-          "evidence": "only exact assigned test regions were inspected; the mixed-trait suite was intentionally not executed because it reads unrelated traits",
-          "missing_proof": "Missing proof: no exact engine-order, save/load, transfer, and boundary regression covers every runtime premise for this trait."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Albino contract.",
+          "missing_proof": ""
         },
         {
           "id": "mocks",
-          "state": "coverage-gap",
-          "evidence": "exact mocks were compared with engine stat clamps, collection shapes, event order, and HandWeapon getter/setter behavior",
-          "missing_proof": "Missing proof: mocks do not universally reproduce engine clamping, event timing, collection shapes, or item getter/setter domains."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign Git authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Albino contract.",
+          "missing_proof": ""
         },
         {
           "id": "source_release_parity",
           "state": "proven-correct",
-          "evidence": "exact assigned definitions, runtime Lua, registries, English UI, and release counterparts were hash/content compared",
+          "evidence": "Pre-campaign Git authority, current source and release bytes, SVN 964 engine evidence, and focused regression tests prove this static Albino contract.",
           "missing_proof": ""
         },
         {
           "id": "packaging_integrity",
-          "state": "proven-correct",
-          "evidence": "presence in source and 42.0 release, registration, definition, UI, and exact assigned runtime paths was checked",
-          "missing_proof": ""
+          "state": "coverage-gap",
+          "evidence": "Albino runtime, definition, and English source and release content are exact.",
+          "missing_proof": "Read-only package verification reports no release drift; UniversalTraits lacks the separately tracked source poster."
         }
       ],
       "verified_finding_ids": [
@@ -1184,7 +1184,7 @@
       "omissions": [
         {
           "id": "IR0104-ALBINO-CROSS-EXCLUSION",
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "severity": "medium",
           "confidence": "medium",
           "title": "Albino and Bad Teeth exclude each other without an inspected mechanical or design rationale",
@@ -1199,13 +1199,15 @@
             "design_intent"
           ],
           "reproduction_evidence": "The exclusion is reciprocal, but the traits have unrelated descriptions and runtime mechanics and are not paired in the inspected MET grouping source.",
-          "missing_proof": "No user-approved design note, upstream source-mod record, or gameplay rationale for this exclusion was supplied.",
-          "recommended_correction": "Document the intended incompatibility or remove both exclusion edges after an explicit design decision.",
-          "smallest_regression_test": "Assert the approved exclusion graph and verify both character-creation selection orders."
+          "missing_proof": "Current-build in-game observation remains unrun.",
+          "recommended_correction": "No further static correction is indicated.",
+          "smallest_regression_test": "Covered by the focused Albino regression cases.",
+          "resolution_state": "proven-correct",
+          "resolution_evidence": "Pre-campaign master contains both Albino/Bad Teeth exclusion directions, and upstream More Traits declares the same reciprocal pair."
         },
         {
           "id": "IR0104-ALBINO-PHYSICAL-HARM",
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "severity": "medium",
           "confidence": "high",
           "title": "Albino description promises physical harm but runtime only changes stress and fatigue",
@@ -1218,17 +1220,33 @@
             "runtime"
           ],
           "reproduction_evidence": "The handler adds stress and fatigue and writes UT_albinoDamage, but no inspected consumer reads that field and no health or body-damage API is called.",
-          "missing_proof": "No in-game trace could prove an undocumented consumer outside the closed-world source inventory.",
-          "recommended_correction": "Implement the promised physical harm through a supported health/body-damage path or remove the claim.",
-          "smallest_regression_test": "Expose the trait to daylight for one qualifying cadence and assert either a supported physical-damage change or a description that does not promise one."
+          "missing_proof": "Current-build in-game observation remains unrun.",
+          "recommended_correction": "No further static correction is indicated.",
+          "smallest_regression_test": "Covered by the focused Albino regression cases.",
+          "resolution_state": "implemented-and-statically-validated",
+          "resolution_evidence": "The complete runtime path writes only stress, fatigue, and UT_albinoDamage; corrected English no longer promises physical harm, and an exact-copy regression prevents drift."
         }
       ],
       "unresolved_proof": [
-        "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-        "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-        "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-        "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
-      ]
+        "Current-build Kahlua execution, full desktop relaunch, repeated world entry, and current-version save/load remain unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory."
+      ],
+      "explicit_non_goals": [
+        "multiplayer",
+        "backward save migration",
+        "deployment"
+      ],
+      "release_parity": {
+        "trait_runtime": "DEB11A207602DDC5F12A1BA2C19B9774FA746B097442AD6A3651CE414E70530F",
+        "trait_release": "DEB11A207602DDC5F12A1BA2C19B9774FA746B097442AD6A3651CE414E70530F",
+        "definition_runtime": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+        "definition_release": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+        "english_runtime": "4E99B1F5D5746BAD5E5FBF5B3141FF94B33B6E0329A0E7E96172143D40FF4403",
+        "english_release": "4E99B1F5D5746BAD5E5FBF5B3141FF94B33B6E0329A0E7E96172143D40FF4403",
+        "state": "proven-correct"
+      },
+      "resolution_record": "change-impact/albino-daylight-contract.json"
     },
     {
       "trait_id": "UniversalTraits:UT_alcoholic_I",

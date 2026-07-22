@@ -4045,19 +4045,67 @@ end)
 
 test("albino raises stress and fatigue when outdoors during daytime", function()
     setMockTimeOfDay(12)  -- midday on the engine's 0..24 clock
-    -- default _indoors = false → isOutside() = true
+    -- default _indoors = false, so isOutside() is true
     local p = MockPlayer({ "UniversalTraits:UT_albino" }, { stress = 0.0, fatigue = 0.0 })
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_true(p:getStats():get(CharacterStat.STRESS) > 0,  "stress should increase outdoors at midday")
-    assert_true(p:getStats():get(CharacterStat.FATIGUE) > 0, "fatigue should increase outdoors at midday")
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.03,
+        "stress should increase by exactly 0.03 outdoors at midday")
+    assert_eq(p:getStats():get(CharacterStat.FATIGUE), 0.02,
+        "fatigue should increase by exactly 0.02 outdoors at midday")
+    assert_eq(p:getModData().UT_albinoDamage, true,
+        "daylight flag should be true while the effect is active")
 end)
+
+test("albino caps stress and fatigue at each meter maximum", function()
+    setMockTimeOfDay(12)
+    local p = MockPlayer({ "UniversalTraits:UT_albino" }, { stress = 0.99, fatigue = 0.99 })
+    withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 1.0, "stress should cap at 1.0")
+    assert_eq(p:getStats():get(CharacterStat.FATIGUE), 1.0, "fatigue should cap at 1.0")
+end)
+
 test("albino does NOT fire when indoors", function()
     setMockTimeOfDay(12)
     local p = MockPlayer({ "UniversalTraits:UT_albino" }, { stress = 0.0, fatigue = 0.0 })
     p._indoors = true
+    p:getModData().UT_albinoDamage = true
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
     assert_eq(p:getStats():get(CharacterStat.STRESS),  0.0, "no effect when indoors")
     assert_eq(p:getStats():get(CharacterStat.FATIGUE), 0.0, "no effect when indoors")
+    assert_eq(p:getModData().UT_albinoDamage, false,
+        "indoors should clear the daylight flag")
+end)
+
+test("albino does NOT fire outside daylight hours", function()
+    for _, hour in ipairs({ 5.99, 18, 23.99 }) do
+        setMockTimeOfDay(hour)
+        local p = MockPlayer(
+            { "UniversalTraits:UT_albino" },
+            { stress = 0.25, fatigue = 0.40 }
+        )
+        p:getModData().UT_albinoDamage = true
+        withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
+        assert_eq(p:getStats():get(CharacterStat.STRESS), 0.25,
+            "stress should not change outside daylight at hour " .. tostring(hour))
+        assert_eq(p:getStats():get(CharacterStat.FATIGUE), 0.40,
+            "fatigue should not change outside daylight at hour " .. tostring(hour))
+        assert_eq(p:getModData().UT_albinoDamage, false,
+            "night should clear the daylight flag at hour " .. tostring(hour))
+    end
+end)
+
+test("albino English copy states the exact accepted effect", function()
+    local expected = "Sunlight wears you down. Every minute spent outdoors from 06:00 through 17:59 adds 0.03 stress and 0.02 fatigue, up to each meter's maximum."
+    local source = io.open(base .. "../media/lua/shared/Translate/EN/UI.json", "r")
+    local release = io.open(base .. "../release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json", "r")
+    assert_true(source ~= nil and release ~= nil, "expected both English translation files")
+    local sourceText = source:read("*a")
+    local releaseText = release:read("*a")
+    source:close()
+    release:close()
+    assert_true(sourceText:find(expected, 1, true) ~= nil,
+        "source English must state the exact Albino contract")
+    assert_eq(releaseText, sourceText, "Albino English source and release must match")
 end)
 
 test("alcoholic_III raises stress when intoxication < 10 each minute", function()

@@ -45,11 +45,11 @@
     }
   },
   "source_artifact_sha256": {
-    "independent_reviews/traits_01_04.json": "DCBA20D384DA58AB554A1E5D738862064F042CCB71CA7674DA8B0FC25023C573",
+    "independent_reviews/traits_01_04.json": "FFCCF3FFB05C9B0A4E0684CD2503D77351D32EC6481F68F4AD6682CC782157A0",
     "independent_reviews/traits_05_08.json": "1EC23EF9DE7D30A8244E32AE98C8D469A060243D7A1A93AAF8D6E410C13B5530",
     "independent_reviews/traits_09_12.json": "27A52A4BB934EDCCD324FC013C7CC1885085D91F474C3E0BEED192C5018C7805",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
-    "trait_batches/batch_01.jsonl": "7662955EC097DEFA35D50374254DDA128E3338D6113275FB59F09A21ACA2D3B1",
+    "trait_batches/batch_01.jsonl": "7B741591E807E09BDE359BECBB8CF8BCBA18A872A9DD6B022EF105975DA78499",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
     "trait_batches/batch_03.jsonl": "F8C9E0FD9E273306FEC68C182BD9B6A34D268D7EF47BBD040845FC308AFE169A",
     "trait_batches/batch_04.jsonl": "7BE87A0648404822CC35EE0904E3E4CC43391B4F955363D61BE1E3B8FEC6DA6E",
@@ -61,7 +61,7 @@
     "trait_batches/batch_10.jsonl": "FD77CC372A742BCDEB66FCB6D26BF9622BA4EC439CDB8E9135CAC22B946F3A44",
     "trait_batches/batch_11.jsonl": "11FBFE83557FBD93363F41AC740897040804E74E1063367C55A521DA0D2C98F4",
     "trait_batches/batch_12.jsonl": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47",
-    "translation_audit.json": "F18E3A2F2B953B2FE08275116F87759B6C1267BFF6BF689BC864CAA7937E3BB9"
+    "translation_audit.json": "C95CA5BC8D483422D88BDE7815987CD321E66C60CE1D81FC02F9F75E90E23298"
   },
   "counts": {
     "traits": 198,
@@ -70,23 +70,23 @@
     "independent_reviewed_traits": 198,
     "independent_review_findings": 118,
     "independent_review_states": {
-      "accepted": 79,
+      "accepted": 80,
       "confirmed-defect": 38,
       "coverage-gap": 20,
-      "needs-correction": 55,
+      "needs-correction": 54,
       "runtime-unproven": 6
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 69,
+      "confirmed-defect": 68,
       "coverage-gap": 12,
-      "runtime-unproven": 92
+      "runtime-unproven": 93
     },
     "dimension_states": {
-      "proven-correct": 2717,
+      "proven-correct": 2722,
       "confirmed-defect": 271,
-      "coverage-gap": 782,
-      "runtime-unproven": 982
+      "coverage-gap": 783,
+      "runtime-unproven": 976
     }
   },
   "independent_review_findings": [
@@ -137,7 +137,7 @@
     },
     {
       "id": "IR0104-ALBINO-CROSS-EXCLUSION",
-      "state": "coverage-gap",
+      "state": "proven-correct",
       "severity": "medium",
       "confidence": "medium",
       "title": "Albino and Bad Teeth exclude each other without an inspected mechanical or design rationale",
@@ -152,13 +152,13 @@
         "design_intent"
       ],
       "reproduction_evidence": "The exclusion is reciprocal, but the traits have unrelated descriptions and runtime mechanics and are not paired in the inspected MET grouping source.",
-      "missing_proof": "No user-approved design note, upstream source-mod record, or gameplay rationale for this exclusion was supplied.",
-      "recommended_correction": "Document the intended incompatibility or remove both exclusion edges after an explicit design decision.",
-      "smallest_regression_test": "Assert the approved exclusion graph and verify both character-creation selection orders."
+      "missing_proof": "Current-build in-game observation remains unrun.",
+      "recommended_correction": "No further static correction is indicated.",
+      "smallest_regression_test": "Covered by the focused Albino regression cases."
     },
     {
       "id": "IR0104-ALBINO-PHYSICAL-HARM",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "medium",
       "confidence": "high",
       "title": "Albino description promises physical harm but runtime only changes stress and fatigue",
@@ -171,9 +171,9 @@
         "runtime"
       ],
       "reproduction_evidence": "The handler adds stress and fatigue and writes UT_albinoDamage, but no inspected consumer reads that field and no health or body-damage API is called.",
-      "missing_proof": "No in-game trace could prove an undocumented consumer outside the closed-world source inventory.",
-      "recommended_correction": "Implement the promised physical harm through a supported health/body-damage path or remove the claim.",
-      "smallest_regression_test": "Expose the trait to daylight for one qualifying cadence and assert either a supported physical-damage change or a description that does not promise one."
+      "missing_proof": "Current-build in-game observation remains unrun.",
+      "recommended_correction": "No further static correction is indicated.",
+      "smallest_regression_test": "Covered by the focused Albino regression cases."
     },
     {
       "id": "IR0104-ALLERGIC-HOOK-STACK",
@@ -4208,7 +4208,7 @@
     {
       "trait_id": "UniversalTraits:UT_albino",
       "batch": "batch_01",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
@@ -4223,13 +4223,13 @@
         "definition_parser": {
           "state": "runtime-unproven",
           "evidence": [
-            "UT_character_traits.txt definition at line 1777 parsed as a complete block; deterministic closed-world parser matched all 198 unique definitions; assigned definition has required identity/UI fields"
+            "The complete source and release definitions are byte-identical and parse in the standard-Lua consistency suite."
           ],
           "missing_proof": [
-            "No in-game ScriptManager load/log was run."
+            "Current-build ScriptManager parsing has not been observed in game."
           ],
           "source_dimensions": [
-            "complete script definition and parser validity"
+            "definition_parser"
           ]
         },
         "namespace": {
@@ -4245,53 +4245,59 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "Cost=-4; XPBoosts=none; GrantedTraits=none; exclusions=UniversalTraits:UT_badteeth. Deterministic complete-definition reverse scan found every listed exclusion exists and is reciprocal."
+            "Cost is -4; there are no XP boosts or grants; Bad Teeth is reciprocally excluded; DisabledInMultiplayer is true."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "cost/XP/grants/exclusions and bidirectional exclusion behavior"
+            "cost_xp_grants_exclusions"
           ]
         },
         "source_intent": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Current source comments, script fields, English UI, and indexed planning/audit documents were compared; implementation intent is represented by the recorded runtime path."
+            "Pre-campaign master and initial implementation e87e49d establish the accepted fixed outdoor daylight stress and fatigue effect. Commit 2f98749 corrected only the current engine time domain."
           ],
           "missing_proof": [
-            "No upstream source-mod commit/tag was supplied for historical equivalence."
+            "none"
           ],
           "source_dimensions": [
-            "source-mod intent"
+            "source_intent"
           ]
         },
         "runtime_path": {
           "state": "proven-correct",
           "evidence": [
-            "EveryOneMinute applies STRESS +0.03 and FATIGUE +0.02 outdoors when getTimeOfDay() is between 0.25 and 0.75; toggles UT_albinoDamage."
+            "EveryOneMinute resolves the player, gates on trait ownership and outdoor state, then applies the accepted effect from 06:00 inclusive through 18:00 exclusive."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "exact runtime path through UT_CORE or script-only behavior"
+            "runtime_path"
           ]
         },
         "numbers": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "EveryOneMinute applies STRESS +0.03 and FATIGUE +0.02 outdoors when getTimeOfDay() is between 0.25 and 0.75; toggles UT_albinoDamage."
+            "Each qualifying event adds exactly 0.03 stress and 0.02 fatigue, with both values capped at 1.0."
           ],
           "missing_proof": [
-            "No in-game numeric observation was available."
+            "none"
           ],
           "source_dimensions": [
-            "numerical behavior"
+            "numbers"
           ]
         },
         "cadence": {
           "state": "proven-correct",
           "evidence": [
-            "Events.EveryOneMinute"
+            "The handler runs once per EveryOneMinute event and performs no per-frame polling."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cadence"
           ]
@@ -4299,122 +4305,130 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
-            "No separate cooldown in assigned implementation; cadence/event gate is the only limiter."
+            "The accepted implementation has no cooldown beyond its minute event cadence."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "cooldowns"
+            "cooldown"
           ]
         },
         "reset_save_load": {
           "state": "runtime-unproven",
           "evidence": [
-            "UT_albinoDamage is cleared indoors/night but persists in modData across save."
+            "Indoor and non-daylight events clear UT_albinoDamage; the next qualifying event sets it true."
           ],
           "missing_proof": [
-            "No save/reload game session was run."
+            "Repeated world entry and current-version save/load remain unobserved."
           ],
           "source_dimensions": [
-            "reset and save/load"
+            "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Uses current exposed CharacterStat/player/event APIs represented in mocks and indexed baseline."
+            "SVN 964 exposes EveryOneMinute, GameTime.getTimeOfDay on a 0-to-24 hour domain, player outdoor and trait queries, Stats accessors, and modData used by this path."
           ],
           "missing_proof": [
-            "No Kahlua bridge invocation was observed in game."
+            "none"
           ],
           "source_dimensions": [
-            "Java-Lua exposure"
+            "java_lua"
           ]
         },
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "All 16 present per-trait Lua sources plus three shared files passed Lua loadfile syntax; constructs are Kahlua-compatible patterns (no goto, Java lists treated 0-based where used)."
+            "The implementation uses Kahlua-compatible Lua shapes and current Java receiver methods."
           ],
           "missing_proof": [
-            "Standard Lua syntax is not an in-game Kahlua execution proof."
+            "Current-build Kahlua execution is unobserved."
           ],
           "source_dimensions": [
-            "Kahlua compatibility"
+            "kahlua"
           ]
         },
         "events": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Handler registration path: Events.EveryOneMinute; module-load registration is single-shot under require caching."
+            "The shared module installs one EveryOneMinute handler under normal require caching, and the handler independently gates every effect on current trait ownership."
           ],
           "missing_proof": [
-            "No full game exit/relaunch event trace was captured."
+            "none"
           ],
           "source_dimensions": [
-            "event lifecycle"
+            "events"
           ]
         },
         "stacking_interactions": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Script exclusions UniversalTraits:UT_badteeth; No other explicit assigned-trait stacking rule found."
+            "Albino is reciprocally exclusive with Bad Teeth and otherwise composes through bounded Stats writes without shared item or global-object mutation."
           ],
           "missing_proof": [
-            "Emergent stacking with all 198 traits was not executed in game."
+            "none"
           ],
           "source_dimensions": [
-            "stacking and cross-trait interactions"
+            "stacking_interactions"
           ]
         },
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "DisabledInMultiplayer=true in the complete definition."
+            "The definition disables the trait in multiplayer and multiplayer support is an explicit product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "multiplayer restriction"
+            "multiplayer"
           ]
         },
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "English UI key resolves to \"Albino\"."
+            "The exact English display name is Albino."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "display name"
+            "display"
           ]
         },
         "description": {
           "state": "proven-correct",
           "evidence": [
-            "English description compared directly with implementation."
+            "The English copy states the exact daylight window, cadence, stress and fatigue increments, and caps without promising physical damage."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "description accuracy"
+            "description"
           ]
         },
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "Only Translate/EN/UI.json exists in closed-world source inventory; both assigned English keys are present. All non-English locales are absent."
+            "The exact English keys exist in source and release."
           ],
           "missing_proof": [
-            "No non-English localization files exist."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
-            "localization coverage including absent locales"
+            "localization"
           ]
         },
         "balance": {
           "state": "runtime-unproven",
           "evidence": [
-            "Cost -4 compared with implemented magnitude/cadence; static review recorded no additional balance defect beyond findings."
+            "Static behavior is cost -4 with fixed +0.03 stress and +0.02 fatigue per outdoor daylight minute."
           ],
           "missing_proof": [
-            "No gameplay telemetry or comparative playtest was available."
+            "No gameplay telemetry or comparative balance session exists."
           ],
           "source_dimensions": [
             "balance"
@@ -4423,22 +4437,22 @@
         "performance": {
           "state": "runtime-unproven",
           "evidence": [
-            "Low-frequency periodic handler with early trait check."
+            "The low-frequency handler performs constant-time guards and at most two bounded Stats writes."
           ],
           "missing_proof": [
-            "No in-game profiler capture."
+            "No current-build profiler capture exists."
           ],
           "source_dimensions": [
-            "performance risk"
+            "performance"
           ]
         },
         "tests": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "run_tests.lua:3330-3346"
+            "Focused tests cover exact deltas, caps, indoor and nighttime no-op behavior, flag transitions, 06:00 and 18:00 boundaries, exact copy, exclusions, and parity."
           ],
           "missing_proof": [
-            "Indexed tests were inspected independently but the full mixed-trait suite was not run because allowed reads prohibit unrelated trait tests."
+            "none"
           ],
           "source_dimensions": [
             "tests"
@@ -4447,9 +4461,11 @@
         "mocks": {
           "state": "proven-correct",
           "evidence": [
-            "UTTestMocks/UT_CORE mocks cover CharacterStat, event dispatch, player modData, RNG or relevant UTCore helper boundaries used by indexed tests."
+            "The GameTime mock exposes a controllable 0-to-24 hour value, while player, Stats, trait, outdoor, event, and modData surfaces match the path under test."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "mocks"
           ]
@@ -4457,21 +4473,25 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "Exact source/release per-trait content comparison matched; script-only trait has no per-trait Lua in either tree."
+            "Trait runtime, definition, and English source and 42.0 release pairs are byte-identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "source/release parity"
+            "source_release_parity"
           ]
         },
         "packaging": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "Per-trait source and 42.0 release files exist and match; shared registration/script/UI anchors are present."
+            "All Albino-owned 42.0 runtime, definition, and English counterparts are present and identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Read-only package verification reports no release drift; UniversalTraits lacks the separately tracked source poster."
+          ],
           "source_dimensions": [
-            "packaging integrity"
+            "packaging"
           ]
         }
       },
@@ -4479,13 +4499,15 @@
         "B01-ALB-TIME"
       ],
       "unknowns": [
-        "No Project Zomboid in-game runtime session, multiplayer session, save/reload cycle, or profiler capture was run.",
-        "Non-English localization is absent."
+        "Current-build Kahlua execution, full relaunch, repeated world entry, and current-version save/load remain unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory.",
+        "Multiplayer and backward save migration are explicit non-goals."
       ],
-      "translation_terminal_state": "coverage-gap",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_01_04.json",
-        "review_state": "needs-correction",
+        "review_state": "accepted",
         "omission_finding_ids": [
           "IR0104-ALBINO-CROSS-EXCLUSION",
           "IR0104-ALBINO-PHYSICAL-HARM"
@@ -4496,10 +4518,9 @@
         ],
         "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [
-          "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-          "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-          "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-          "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
+          "Current-build Kahlua execution, full desktop relaunch, repeated world entry, and current-version save/load remain unobserved.",
+          "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+          "Only English UI localization exists in the closed-world source inventory."
         ]
       }
     },
