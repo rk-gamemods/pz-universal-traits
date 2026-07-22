@@ -210,7 +210,8 @@ def _update_release_blockers(plan: dict[str, bytes]) -> None:
 
 
 def _materialize_inputs(plan: dict[str, bytes], overlay: Path) -> None:
-    shutil.copytree(CAMPAIGN, overlay, dirs_exist_ok=True)
+    if not overlay.exists():
+        shutil.copytree(CAMPAIGN, overlay)
     for relative, data in plan.items():
         destination = overlay / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -222,7 +223,7 @@ def _regenerate_derived(plan: dict[str, bytes]) -> None:
         overlay = Path(directory) / "campaign"
         _materialize_inputs(plan, overlay)
         ledger = build_ledger(overlay)
-        dimensions, queue, summary = build_outputs(overlay)
+        dimensions, queue, summary = build_outputs(overlay, ledger)
         plan.update(
             {
                 "final_trait_ledger.json": render_ledger(ledger).encode("utf-8"),

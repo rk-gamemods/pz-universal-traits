@@ -99,6 +99,24 @@ Run from repo root (`C:\Users\Admin\Documents\GIT\GameMods\PZMods\UTMods`):
 
 Passing totals are determined by the current suite output; do not preserve transient counts here.
 
+### Campaign checkpoints and test tiers
+
+- Keep recoverable work slices. After each substantial single-trait correction or shared-tool
+  milestone, review the exact diff, run the required gate for that scope, commit only the
+  milestone-owned files on the development branch, and confirm the worktree is clean before starting
+  the next unrelated slice.
+- During iteration, run the affected Lua suite, the focused trait-generator tests, generator
+  fixed-point check, campaign validator, and source/release parity checks. Repeat only the
+  checks whose inputs changed.
+- Run the full campaign Python suite when shared campaign builders, validators, schemas,
+  manifests, test infrastructure, or cross-trait behavior changes; before a campaign-wide
+  release gate; or when focused evidence cannot bound the impact. Do not rerun it for
+  documentation-only, index-only, or isolated trait iterations whose focused inputs and
+  shared dependencies have not changed.
+- The full campaign command is:
+
+    py -3 -m unittest discover -s trait-deep-audit/campaign/tests -p 'test_*.py'
+
 Additional local update-safety commands:
 
 ```bash

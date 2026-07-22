@@ -532,7 +532,13 @@ class NormalizationTests(unittest.TestCase):
 
     def test_remediation_outputs_are_deterministic_and_match_ledger_counts(self) -> None:
         first = QUEUE_MODULE.build_outputs(CAMPAIGN_ROOT)
-        second = QUEUE_MODULE.build_outputs(CAMPAIGN_ROOT)
+        ledger = QUEUE_MODULE.build_ledger(CAMPAIGN_ROOT)
+        with mock.patch.object(
+            QUEUE_MODULE,
+            "build_ledger",
+            side_effect=AssertionError("supplied ledger must be reused"),
+        ):
+            second = QUEUE_MODULE.build_outputs(CAMPAIGN_ROOT, ledger)
         self.assertEqual(first, second)
         dimension_rows = [json.loads(line) for line in first[0].splitlines()]
         queue_rows = [json.loads(line) for line in first[1].splitlines()]
@@ -1405,26 +1411,33 @@ end
             self.assertEqual(len(PATTERN_MODULE.fractional_time_of_day_thresholds(path)), 2)
 
     def test_current_report_is_deterministic_and_schema_complete(self) -> None:
-        first = PATTERN_MODULE.render_report(PATTERN_MODULE.build_report())
-        second = PATTERN_MODULE.render_report(PATTERN_MODULE.build_report())
-        self.assertEqual(first, second)
-        report = json.loads(first)
-        ids = [finding["id"] for finding in report["findings"]]
-        self.assertEqual(len(ids), len(set(ids)))
-        required = {
-            "id",
-            "state",
-            "severity",
-            "confidence",
-            "title",
-            "anchors",
-            "affected_surfaces",
-            "reproduction_evidence",
-            "missing_proof",
-            "recommended_correction",
-            "smallest_regression_test",
-        }
-        self.assertTrue(all(required.issubset(finding) for finding in report["findings"]))
+        PATTERN_MODULE.build_report.cache_clear()
+        try:
+            first = PATTERN_MODULE.render_report(PATTERN_MODULE.build_report())
+            second = PATTERN_MODULE.render_report(PATTERN_MODULE.build_report())
+            self.assertEqual(first, second)
+            self.assertEqual(PATTERN_MODULE.build_report.cache_info().hits, 1)
+            report = json.loads(first)
+            ids = [finding["id"] for finding in report["findings"]]
+            self.assertEqual(len(ids), len(set(ids)))
+            required = {
+                "id",
+                "state",
+                "severity",
+                "confidence",
+                "title",
+                "anchors",
+                "affected_surfaces",
+                "reproduction_evidence",
+                "missing_proof",
+                "recommended_correction",
+                "smallest_regression_test",
+            }
+            self.assertTrue(
+                all(required.issubset(finding) for finding in report["findings"])
+            )
+        finally:
+            PATTERN_MODULE.build_report.cache_clear()
 
     def test_event_registry_fixture_rejects_unknown_event(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1438,6 +1451,30 @@ end
             used = {event for event, _handler, _line in PATTERN_MODULE.lua_event_registrations(lua_path)}
             self.assertEqual(known, {"KnownEvent"})
             self.assertEqual(used - known, {"UnknownEvent"})
+
+    def test_event_registry_cache_is_stable_and_explicitly_resettable(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manager = root / "Java" / "source" / "zombie" / "Lua" / "LuaEventManager.java"
+            manager.parent.mkdir(parents=True)
+            manager.write_text('AddEvent("FirstEvent");\n', encoding="utf-8")
+
+            PATTERN_MODULE.engine_event_names.cache_clear()
+            try:
+                first = PATTERN_MODULE.engine_event_names(root)
+                manager.write_text(
+                    'AddEvent("FirstEvent");\nAddEvent("SecondEvent");\n',
+                    encoding="utf-8",
+                )
+                self.assertIs(PATTERN_MODULE.engine_event_names(root), first)
+
+                PATTERN_MODULE.engine_event_names.cache_clear()
+                self.assertEqual(
+                    PATTERN_MODULE.engine_event_names(root),
+                    {"FirstEvent", "SecondEvent"},
+                )
+            finally:
+                PATTERN_MODULE.engine_event_names.cache_clear()
 
     def test_translator_and_tree_parity_negative_fixtures(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

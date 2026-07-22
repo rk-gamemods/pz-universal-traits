@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 126,
-  "total_bytes": 13233625,
+  "total_bytes": 13235642,
   "files": [
     {
       "path": "HAPPY_PATH_PRIORITY.md",
@@ -488,8 +488,8 @@
       "path": "tests/test_campaign_tools.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 82639,
-      "sha256": "FE56FB73D33B7F3724B54C8FFC35E50BF0A50CC8F5B50DBAA595EC1C76761784"
+      "bytes": 84298,
+      "sha256": "DCC5D22FD293CC3E5A5EBAAD1978BB18903942D6A81D1EBEE3176204D8A82108"
     },
     {
       "path": "tests/test_regenerate_albino.py",
@@ -642,8 +642,8 @@
       "path": "tools/build_remediation_queue.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 17858,
-      "sha256": "FBA68A1A335EBD25A1E7D86F38DC7569E9C0EFE8D8653C467A50F2A7FFF200F0"
+      "bytes": 17934,
+      "sha256": "3D9E2A6ED817D79A92B0946CDF044007C9F56E7C11BC9E5365DE98D6EFDDA594"
     },
     {
       "path": "tools/campaign_cli.py",
@@ -656,8 +656,8 @@
       "path": "tools/check_recurring_patterns.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 20830,
-      "sha256": "70A0D85D837D9839EC3F691562850CF119B4144F9ED5AE19B8AA34390531B180"
+      "bytes": 20923,
+      "sha256": "14E655B78DEE2105E5FD555987C1E2A659C2EB7534D438F98D64867DEC1D5DCE"
     },
     {
       "path": "tools/regenerate_actionhero.py",
@@ -677,8 +677,8 @@
       "path": "tools/regenerate_anorexy.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 28145,
-      "sha256": "FCB283D75824DCCF3ADE0C13E3870763E90AA6CB90DCB066BC17EDB89D162478"
+      "bytes": 28153,
+      "sha256": "7BE467CC3D8917563F79CD0FE599205FA3BDA7D0713A4371BA85F033E14AD76E"
     },
     {
       "path": "tools/regenerate_badteeth.py",
@@ -712,8 +712,8 @@
       "path": "tools/regenerate_brittle.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 24267,
-      "sha256": "9E630A22D8F0561E19C4930CEF705154D5F20D48E9A285C9A0BB2D269DD811D2"
+      "bytes": 24288,
+      "sha256": "EB7E67C612383C7232093D7CCB535AB25C535D0127A81F7809676C4DCE6DC959"
     },
     {
       "path": "tools/regenerate_cleaver.py",
@@ -733,22 +733,22 @@
       "path": "tools/regenerate_glassbody.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 28378,
-      "sha256": "8105295FC9FA3EF3245ED062000F09812ADB443801D89D6EF341A78315FCF09E"
+      "bytes": 28386,
+      "sha256": "038CA3E167BE066F79EC4DDE3A38F77FBA06C9D307ADB6EBFED54BA01968E2DE"
     },
     {
       "path": "tools/regenerate_immuneresponse.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 16274,
-      "sha256": "87F81416C052A028361CF27468006889790979E6FA86FC174CA41855D622A30E"
+      "bytes": 16295,
+      "sha256": "9286B7259BB568043DA6B6D55512B77ADEF8DAEA1BEA9CF674587F2DEC2EEF60"
     },
     {
       "path": "tools/regenerate_immunocompromised.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 15321,
-      "sha256": "4186CC7CE746B8EB05941895E47CFACF08B39BF021B0875E170CD59119D7C009"
+      "bytes": 15342,
+      "sha256": "BA482C8629D9C9F35375AA05023523DC26BBCDD0E616752519D1E1D891D24236"
     },
     {
       "path": "tools/regenerate_maniac.py",
@@ -768,8 +768,8 @@
       "path": "tools/regenerate_motionsickness.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 21660,
-      "sha256": "FB5CBE1E187A20FB6079CA2C279C0D2F00471F17F20A00A3DC7AF36466EE9EDA"
+      "bytes": 21728,
+      "sha256": "D3DF12DB3D1CD86705F3582AFACAC687CDBDD80CF3CC87A15983D4A793D2CE19"
     },
     {
       "path": "tools/regenerate_owlperson.py",
@@ -789,8 +789,8 @@
       "path": "tools/regenerate_scrounger.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 15452,
-      "sha256": "DFCB9BE5E0C72680C5C557153E38298A5D94E6E19E1F342E9450227FDE613B2D"
+      "bytes": 15473,
+      "sha256": "EFB776F8BCA6892044B23D7F84556A21D96A198D4B6359ED478C98DBA595A2AC"
     },
     {
       "path": "tools/regenerate_sharpshooter.py",
@@ -810,8 +810,8 @@
       "path": "tools/regenerate_superimmune.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 11628,
-      "sha256": "2464FDE49DC14C75D923563271791829B0AC8FFC277C9F1DF74935BC183BD133"
+      "bytes": 11649,
+      "sha256": "898995FB7959C8B66D51CE2EDBD43A0775AF43C6FB3AC8E21D4ADCEEDD0CE89D"
     },
     {
       "path": "tools/regenerate_unwavering.py",

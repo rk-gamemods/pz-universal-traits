@@ -162,7 +162,8 @@ def _plan_evidence(root: Path, campaign: Path, plan: dict[str, bytes]) -> None:
 
 
 def _materialize(campaign: Path, plan: dict[str, bytes], overlay: Path) -> None:
-    shutil.copytree(campaign, overlay, dirs_exist_ok=True)
+    if not overlay.exists():
+        shutil.copytree(campaign, overlay)
     for relative, data in plan.items():
         destination = overlay / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -174,7 +175,7 @@ def _plan_derived(campaign: Path, plan: dict[str, bytes]) -> None:
         overlay = Path(directory) / "campaign"
         _materialize(campaign, plan, overlay)
         ledger = build_ledger(overlay)
-        dimensions, queue, summary = build_outputs(overlay)
+        dimensions, queue, summary = build_outputs(overlay, ledger)
         plan.update({
             "final_trait_ledger.json": render_ledger(ledger).encode("utf-8"),
             "final_trait_ledger_rows.jsonl": render_trait_rows(ledger).encode("utf-8"),

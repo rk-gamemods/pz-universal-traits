@@ -448,8 +448,12 @@ def render_summary(summary: dict[str, Any]) -> str:
     return json.dumps(summary, indent=2, ensure_ascii=False, sort_keys=True) + "\n"
 
 
-def build_outputs(campaign_root: Path = CAMPAIGN_ROOT) -> tuple[str, str, str]:
-    ledger = build_ledger(campaign_root)
+def build_outputs(
+    campaign_root: Path = CAMPAIGN_ROOT,
+    ledger: dict[str, Any] | None = None,
+) -> tuple[str, str, str]:
+    if ledger is None:
+        ledger = build_ledger(campaign_root)
     dimension_rows = build_dimension_rows(ledger)
     finding_rows = build_finding_rows(ledger, campaign_root)
     queue = build_queue(dimension_rows, finding_rows)

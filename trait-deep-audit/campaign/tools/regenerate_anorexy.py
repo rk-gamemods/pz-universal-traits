@@ -481,7 +481,7 @@ def _plan_derived(campaign: Path, plan: dict[str, bytes]) -> None:
         overlay = Path(directory) / "campaign"
         _materialize(campaign, plan, overlay)
         ledger = build_ledger(overlay)
-        dimensions, queue, summary = build_outputs(overlay)
+        dimensions, queue, summary = build_outputs(overlay, ledger)
         plan.update(
             {
                 "final_trait_ledger.json": render_ledger(ledger).encode("utf-8"),

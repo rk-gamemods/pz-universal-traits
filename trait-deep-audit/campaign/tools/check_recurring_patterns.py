@@ -8,6 +8,7 @@ import re
 import sys
 import unicodedata
 from collections import defaultdict
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -63,7 +64,8 @@ def _finding(
     }
 
 
-def engine_event_names(pzcodebase_root: Path) -> set[str]:
+@lru_cache(maxsize=8)
+def engine_event_names(pzcodebase_root: Path) -> frozenset[str]:
     names: set[str] = set()
     paths = [pzcodebase_root / "Java" / "source" / "zombie" / "Lua" / "LuaEventManager.java"]
     paths.extend((pzcodebase_root / "Lua").rglob("*.lua"))
@@ -71,7 +73,7 @@ def engine_event_names(pzcodebase_root: Path) -> set[str]:
     for path in paths:
         if path.is_file():
             names.update(pattern.findall(path.read_text(encoding="utf-8", errors="replace")))
-    return names
+    return frozenset(names)
 
 
 def lua_event_registrations(path: Path) -> list[tuple[str, str, int]]:
@@ -359,6 +361,7 @@ def tree_parity(source: Path, release: Path) -> dict[str, list[str]]:
     }
 
 
+@lru_cache(maxsize=8)
 def build_report(
     utmods_root: Path = UTMODS_ROOT,
     pzcodebase_root: Path = PZCODEBASE_ROOT,
