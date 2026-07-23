@@ -40,8 +40,8 @@
     "trait_batches/batch_12.jsonl",
     "translation_audit.json"
   ],
-  "file_count": 149,
-  "total_bytes": 13468449,
+  "file_count": 152,
+  "total_bytes": 13488689,
   "files": [
     {
       "path": "HAPPY_PATH_PRIORITY.md",
@@ -233,6 +233,13 @@
       "sha256": "76364182E57915B85073E975FBB396ECF17A82AF7885991E351C96AF228DC496"
     },
     {
+      "path": "change-impact/tavernbrawler-stomp-contract.json",
+      "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 4005,
+      "sha256": "D7DCCD579DFF70EA18BA9794C6FAA033C56CD33E6437506635C9095E8220E73F"
+    },
+    {
       "path": "change-impact/thickblood-weighted-bleed-damage.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
@@ -285,22 +292,22 @@
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2268301,
-      "sha256": "1C082837B080B63077CA7531FB545BE58BA587C351EB4FF4AC89F797C2827CDE"
+      "bytes": 2269093,
+      "sha256": "E859B34A379FFCF0059BA4E2183EC3481331F3F1498169C6CA6B39713E10C27B"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2094856,
-      "sha256": "D500ECB9344A2D3E02D9EED302BDC3B2D6CD35F41ADA600AD2282536A23886B8"
+      "bytes": 2095988,
+      "sha256": "83502B5F2DFF7E8A2E2A8D840A0D4E1DEF5468F1B799B4A5F8DDBD2BC2C3C5FA"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1289414,
-      "sha256": "F9140C88176C5BCBFB868E63FE3B441808B59385825B67CE42D291B80895BC50"
+      "bytes": 1290369,
+      "sha256": "A923119618ED69713E134969CF1DEC9466DC35E680C1936E3EAB866FEEA97D53"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
@@ -334,8 +341,8 @@
       "path": "independent_reviews/traits_09_12.json",
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
-      "bytes": 123569,
-      "sha256": "7C6ABCD6EEE794C48BA3351970FAC2F4B3400A2B4B5E589E8D090975EE6F616A"
+      "bytes": 124726,
+      "sha256": "AA491419095B7F6037BCC5C0CD6434FADAE3A22DC4539144D5DE508F6F3C3773"
     },
     {
       "path": "independent_reviews/ut_core_integration.json",
@@ -356,21 +363,21 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 2939,
-      "sha256": "A4D500597DDFAC7E9B6FFED33503E4AE4CD0D70866EF615FF22B0BD04D70CD1C"
+      "sha256": "FEBB3BB5192871BBDD38EEB885201CDF26F892EF20686A2D2DAFBEBAE0FCB66D"
     },
     {
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2091226,
-      "sha256": "FECD804823D15C690417C45327074CBCD399823139D9B995DADB5BD06AEEB592"
+      "bytes": 2081742,
+      "sha256": "C3EE48798B08EFA8C81CA40A5650C67B76E5C923DDF9818254EAEB56D1B2037A"
     },
     {
       "path": "remediation_summary.json",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
       "bytes": 1210,
-      "sha256": "8FE48278AFFA90E0A07DD25C603E537E2DCBCCBFD43DD5175D70E49C190DE46C"
+      "sha256": "C91F390D18401CE5248081AD80AA4E5B4555977240431DA33ED37849890BFE7C"
     },
     {
       "path": "runtime-traces/utcore-wave-01.jsonl",
@@ -702,6 +709,13 @@
       "sha256": "53C3D65372A983D310264092A7E4207A4E1E1A1CC7183E3EA57B1D60DBCC63B2"
     },
     {
+      "path": "tests/test_regenerate_tavernbrawler.py",
+      "kind": "regression-test",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 5273,
+      "sha256": "F0513070693C1C3F87EDFCEF3D22A4939D14B366E869589AB4F61761B7D6E1A2"
+    },
+    {
       "path": "tests/test_regenerate_thickblood.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
@@ -947,6 +961,13 @@
       "sha256": "898995FB7959C8B66D51CE2EDBD43A0775AF43C6FB3AC8E21D4ADCEEDD0CE89D"
     },
     {
+      "path": "tools/regenerate_tavernbrawler.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 14839,
+      "sha256": "E7B26179CBEDB173AB4FFDBC880709AC93B18987B0220F391D335D35FFB445A4"
+    },
+    {
       "path": "tools/regenerate_thickblood.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
@@ -1069,8 +1090,8 @@
       "path": "trait_batches/batch_11.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 82314,
-      "sha256": "1D10ED624347B085CAE1B173764BB5DA7540AC6151917D01B25ECC679E2CD513"
+      "bytes": 83878,
+      "sha256": "4D522A3E63C7F9DD61487EA08B1505EE505A07ABFA0D8236C4FB19EB353D9B58"
     },
     {
       "path": "trait_batches/batch_12.jsonl",
@@ -1083,8 +1104,8 @@
       "path": "translation_audit.json",
       "kind": "translation-audit",
       "byte_semantics": "utf-8-lf",
-      "bytes": 495884,
-      "sha256": "ADE71F5FD70A78760414DC264D30F453CC934004A3493257B369C48BD9866142"
+      "bytes": 495891,
+      "sha256": "F79934AE0D8A23065A4020C36EE3406DB2A177D4EFFE7CB428398A625EF1D279"
     }
   ]
 }

@@ -47,7 +47,7 @@
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "29C24133912335231DA8ED2E8462B64D9DBE837A0F553E3988547AEA52347D8D",
     "independent_reviews/traits_05_08.json": "B1CDBE8BBEE77E5C4D9417E0E77E1EF69178E8F34BD4C18B825038266D7E9D53",
-    "independent_reviews/traits_09_12.json": "7C6ABCD6EEE794C48BA3351970FAC2F4B3400A2B4B5E589E8D090975EE6F616A",
+    "independent_reviews/traits_09_12.json": "AA491419095B7F6037BCC5C0CD6434FADAE3A22DC4539144D5DE508F6F3C3773",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "4FD54923B0938C3294AB5E9D0C0168A08FDBF353A73FBE83BCE7F5DDF8B911F2",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
@@ -59,9 +59,9 @@
     "trait_batches/batch_08.jsonl": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A",
     "trait_batches/batch_09.jsonl": "7493EABBF27471F551A42E6B750D8927EC80B36404B51ED6E7CBC74349EAFE44",
     "trait_batches/batch_10.jsonl": "33304EC69C6072CE027BFD779AB0E2332EEDE70DC56B6920468F46BC4A2ABE31",
-    "trait_batches/batch_11.jsonl": "1D10ED624347B085CAE1B173764BB5DA7540AC6151917D01B25ECC679E2CD513",
+    "trait_batches/batch_11.jsonl": "4D522A3E63C7F9DD61487EA08B1505EE505A07ABFA0D8236C4FB19EB353D9B58",
     "trait_batches/batch_12.jsonl": "AE044BC0927A818D38DFB20DF59DADDCDA7C951F4E8082D633DC69CB0FF29BD8",
-    "translation_audit.json": "ADE71F5FD70A78760414DC264D30F453CC934004A3493257B369C48BD9866142"
+    "translation_audit.json": "F79934AE0D8A23065A4020C36EE3406DB2A177D4EFFE7CB428398A625EF1D279"
   },
   "counts": {
     "traits": 198,
@@ -71,22 +71,22 @@
     "independent_review_findings": 118,
     "independent_review_states": {
       "accepted": 84,
-      "confirmed-defect": 32,
+      "confirmed-defect": 31,
       "coverage-gap": 20,
       "needs-correction": 51,
-      "runtime-unproven": 11
+      "runtime-unproven": 12
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 57,
+      "confirmed-defect": 56,
       "coverage-gap": 12,
-      "runtime-unproven": 104
+      "runtime-unproven": 105
     },
     "dimension_states": {
-      "proven-correct": 2785,
-      "confirmed-defect": 216,
+      "proven-correct": 2793,
+      "confirmed-defect": 207,
       "coverage-gap": 761,
-      "runtime-unproven": 990
+      "runtime-unproven": 991
     }
   },
   "independent_review_findings": [
@@ -56870,7 +56870,7 @@
     {
       "trait_id": "UniversalTraits:UT_tavernbrawler",
       "batch": "batch_11",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
@@ -56885,9 +56885,11 @@
         "definition_parser": {
           "state": "proven-correct",
           "evidence": [
-            "complete"
+            "Cost 2, SmallBlunt +1, no grants or exclusions, and multiplayer disabled are exact in source and release definitions."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "definition_parser"
           ]
@@ -56905,44 +56907,46 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "cost 2; SmallBlunt +1; no grants/exclusions"
+            "Cost 2; SmallBlunt +1; no grants or exclusions; multiplayer disabled."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cost_xp_grants_exclusions"
           ]
         },
         "source_intent": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "bonus stomp damage"
+            "The accepted pre-campaign outcome is true-stomp instant kill, preserving the original 30 direct-health magnitude on the SVN 964 health scale."
           ],
           "missing_proof": [
-            "A verified engine stomp discriminator was not identified in the allowed exact symbols."
+            "none"
           ],
           "source_dimensions": [
             "source_intent"
           ]
         },
         "runtime_path": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "global OnHitZombie handler; local-player trait gate; any knocked-down target gets 30 direct HP loss"
+            "OnHitZombie gates local attacker, trait, and isShoveStompAnim, then subtracts 30 before vanilla damage and calls Kill(attacker) once when lethal."
           ],
           "missing_proof": [
-            "A verified engine stomp discriminator was not identified in the allowed exact symbols."
+            "none"
           ],
           "source_dimensions": [
             "runtime_path"
           ]
         },
         "numbers": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "30 HP bonus; kill at <=0"
+            "Thirty direct health is instant-kill magnitude against ordinary SVN 964 zombie health 1.8 through 2.1; it is not moderate damage."
           ],
           "missing_proof": [
-            "A verified engine stomp discriminator was not identified in the allowed exact symbols."
+            "none"
           ],
           "source_dimensions": [
             "numbers"
@@ -56951,10 +56955,10 @@
         "cadence": {
           "state": "runtime-unproven",
           "evidence": [
-            "per OnHitZombie hit"
+            "At most one trait application per owned OnHitZombie callback."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "Live event production and callback count remain unobserved."
           ],
           "source_dimensions": [
             "cadence"
@@ -56963,9 +56967,11 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
+            "No cooldown."
+          ],
+          "missing_proof": [
             "none"
           ],
-          "missing_proof": [],
           "source_dimensions": [
             "cooldown"
           ]
@@ -56973,22 +56979,22 @@
         "reset_save_load": {
           "state": "runtime-unproven",
           "evidence": [
-            "stateless"
+            "The module statically removes its previous owned callback before adding one replacement."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "New game, save-load, death, and repeated world entry remain unobserved."
           ],
           "source_dimensions": [
             "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "zombie health/kill methods used behind pcall; event Java signature is zombie,wielder,bodyPart,weapon"
+            "SVN 964 exposes isShoveStompAnim, exact four-argument OnHitZombie production before super.Hit, health accessors, and Kill(attacker)."
           ],
           "missing_proof": [
-            "A verified engine stomp discriminator was not identified in the allowed exact symbols."
+            "none"
           ],
           "source_dimensions": [
             "java_lua"
@@ -56997,34 +57003,34 @@
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "pcall hides interop failures"
+            "The source uses verified Java-Lua receiver methods and compatible Lua shapes."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "Current-build Kahlua execution and values remain unobserved."
           ],
           "source_dimensions": [
             "kahlua"
           ]
         },
         "events": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "handler parameter names and tests model zombie,attacker,weapon,damage; engine third/fourth args differ"
+            "Exact callback signature is OnHitZombie(zombie, attacker, bodyPart, weapon); SwipeStatePlayer sets the stomp flag before collision and clears it on exit."
           ],
           "missing_proof": [
-            "A verified engine stomp discriminator was not identified in the allowed exact symbols."
+            "none"
           ],
           "source_dimensions": [
             "events"
           ]
         },
         "stacking_interactions": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "bonus stacks with every weapon hit on a prone zombie, not just stomps"
+            "Armed prone, ordinary unarmed prone, standing, absent-trait, and wrong-player hits receive no trait damage; reload leaves one owned handler."
           ],
           "missing_proof": [
-            "A verified engine stomp discriminator was not identified in the allowed exact symbols."
+            "none"
           ],
           "source_dimensions": [
             "stacking_interactions"
@@ -57033,9 +57039,11 @@
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "disabled; hard-coded local player 0"
+            "DisabledInMultiplayer is true and multiplayer support is a product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "multiplayer"
           ]
@@ -57043,20 +57051,22 @@
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "EN present"
+            "Exact English display name is Tavern Brawler."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "display"
           ]
         },
         "description": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "promises stomps only"
+            "English truthfully says a stomp kills a downed zombie instantly and retains Small Blunt +1."
           ],
           "missing_proof": [
-            "A verified engine stomp discriminator was not identified in the allowed exact symbols."
+            "none"
           ],
           "source_dimensions": [
             "description"
@@ -57065,22 +57075,22 @@
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "EN only"
+            "Exact English keys exist with source/release parity."
           ],
           "missing_proof": [
-            "A non-EN localization requirement was not supplied."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
             "localization"
           ]
         },
         "balance": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "30 direct HP applies more broadly than priced promise"
+            "Accepted cost-2 contract intentionally grants true-stomp instant kill."
           ],
           "missing_proof": [
-            "A formal balance target was not supplied."
+            "No gameplay balance telemetry exists."
           ],
           "source_dimensions": [
             "balance"
@@ -57089,34 +57099,34 @@
         "performance": {
           "state": "runtime-unproven",
           "evidence": [
-            "one cheap handler per zombie hit"
+            "One constant-time callback with early guards is registered."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "No current-build profiler capture exists."
           ],
           "source_dimensions": [
             "performance"
           ]
         },
         "tests": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "downed/standing tests pass but never discriminate stomp from armed prone hit"
+            "Focused standard-Lua tests cover exact arguments, discriminator negatives, 30-point ordering, lethal attribution, trait/player gates, and reload-safe handler count."
           ],
           "missing_proof": [
-            "A verified engine stomp discriminator was not identified in the allowed exact symbols."
+            "none"
           ],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "generic event forwards test-authored incorrect argument semantics"
+            "Mocks enforce exactly four event arguments, expose the true-stomp flag, track health writes and Kill calls, and reject prior false confidence."
           ],
           "missing_proof": [
-            "A verified engine stomp discriminator was not identified in the allowed exact symbols."
+            "none"
           ],
           "source_dimensions": [
             "mocks"
@@ -57125,19 +57135,23 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "equal"
+            "Runtime, UI, definition, registry, tests, and mocks are fingerprinted; all packaged source/release pairs are byte-identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_release_parity"
           ]
         },
         "packaging": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "complete"
+            "Tavern-owned 42.0 runtime, UI, definition, and registry counterparts are present and identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "The separate pre-existing source poster issue remains open."
+          ],
           "source_dimensions": [
             "packaging"
           ]
@@ -57147,13 +57161,14 @@
         "B11-TAVERN-001"
       ],
       "unknowns": [
-        "Exact current stomp discriminator remains unidentified.",
-        "No in-game combat trace/non-EN requirement."
+        "Current-build Kahlua and live event arguments, stomp flag timing, health ordering, handler count, and kill attribution remain unobserved.",
+        "New game, save-load, death, repeated world entry, gameplay, balance, and profiler observation remain unrun.",
+        "Rendered English and non-English localization remain unobserved; the source poster issue remains separate."
       ],
-      "translation_terminal_state": "coverage-gap",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_09_12.json",
-        "review_state": "confirmed-defect",
+        "review_state": "runtime-unproven",
         "omission_finding_ids": [],
         "cross_finding_ids": [
           "IR0912-FINDING-STATE-001",

@@ -145,7 +145,7 @@ These traits are fully data-driven for the supported new-character path. Wood Sp
 | UT_martial | Martial Artist | 5 | XPBoost (Fitness×1, SmallBlunt×1) | MoreTraits | |
 | UT_bladetwirl | Practiced Swordsman | 5 | XPBoost (LongBlade×1, SmallBlade×1) | MoreTraits | |
 | UT_blunttwirl | Thuggish | 5 | XPBoost (Blunt×1) | MoreTraits | |
-| UT_tavernbrawler | Tavern Brawler | 3 | XPBoost (SmallBlunt×1) | MoreTraits | |
+| UT_tavernbrawler | Tavern Brawler | 2 | XPBoost (SmallBlunt×1) + runtime true-stomp instant kill | MoreTraits | A true stomp, identified by `attacker:isShoveStompAnim()`, deals 30 direct health before vanilla damage. On the SVN 964 ordinary-zombie health scale, 30 is an instant-kill magnitude. |
 | UT_grunt | Grunt Worker | 4 | XPBoost (Woodwork×1, SmallBlunt×1, Masonry×1, Blacksmith×1) | MoreTraits | |
 | UT_actionhero | Action Hero | 8 | XPBoost (multi-combat) | MoreTraits | |
 | UT_cruelty | Cruelty | 4 | XPBoost (all weapon perks×1) | MoreSimpleTraits | |

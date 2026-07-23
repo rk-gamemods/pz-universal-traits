@@ -1,0 +1,117 @@
+{
+  "schema": "ut-tavernbrawler-stomp-contract-v1",
+  "trait_id": "UniversalTraits:UT_tavernbrawler",
+  "authority": {
+    "accepted_behavior_commit": "0af8b161772237f245e5ef22be614b653279c20c",
+    "pz_snapshot": "SVN revision 964"
+  },
+  "accepted_intent": {
+    "cost": 2,
+    "xp_boosts": {
+      "SmallBlunt": 1
+    },
+    "grants": [],
+    "exclusions": [],
+    "multiplayer": false,
+    "trigger": "attacker:isShoveStompAnim()",
+    "direct_health_before_vanilla": 30,
+    "outcome": "instant kill for ordinary SVN 964 zombies"
+  },
+  "engine_sequence": [
+    "SwipeStatePlayer.java:228 sets shoveStompAnim",
+    "IsoZombie.java:1357 fires OnHitZombie(zombie,attacker,bodyPart,weapon) before super.Hit",
+    "UT_tavernbrawler subtracts 30 and calls Kill(attacker) once when lethal",
+    "SwipeStatePlayer.java:410 clears shoveStompAnim on exit"
+  ],
+  "health_scale": {
+    "ordinary_zombie": "1.8 through 2.1",
+    "anchor": "IsoZombie.java:554",
+    "conclusion": "30 is instant-kill magnitude, not moderate damage"
+  },
+  "resolved_findings": [
+    "B11-TAVERN-001"
+  ],
+  "resolved_independent_defects": [
+    "armed-prone false positive",
+    "wrong event signature",
+    "test/mock false confidence",
+    "duplicate handler"
+  ],
+  "retained_runtime_proof": [
+    "current-build Kahlua",
+    "live event arguments and stomp flag",
+    "health ordering",
+    "handler count",
+    "kill attribution",
+    "new game and save-load",
+    "death and repeated world entry",
+    "gameplay and balance",
+    "profiler",
+    "rendered English",
+    "non-English localization",
+    "source poster issue"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_tavernbrawler.lua",
+      "sha256": "439D83BA663507672950A3EF64F95492F0A1330731149E87F89DD313C2BAED5B",
+      "bytes": 1154
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_tavernbrawler.lua",
+      "sha256": "439D83BA663507672950A3EF64F95492F0A1330731149E87F89DD313C2BAED5B",
+      "bytes": 1154
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "C2CD8EBDA750EC4A51825A01E2E3C9BC7D959BA11AA48478058511DA8383BD68",
+      "bytes": 37408
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "C2CD8EBDA750EC4A51825A01E2E3C9BC7D959BA11AA48478058511DA8383BD68",
+      "bytes": 37408
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/media/registries.lua",
+      "sha256": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+      "bytes": 23864
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/registries.lua",
+      "sha256": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+      "bytes": 23864
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "6CE268411FC3D88B3EB542381A580838D21F763E4EB13A0DAB1AC228A7086B7F",
+      "bytes": 327842
+    },
+    {
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "sha256": "5C22685399E9E4350E673DAEBBB2EFDC72FBCBBA5A30BDCA1455E69E7E6E1DA3",
+      "bytes": 80486
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_tavernbrawler.md",
+      "sha256": "7102FACF60D3D11ACC9B08A8E7A01586B076A129974BAA57828D80B017A7FDBF",
+      "bytes": 3246
+    }
+  ],
+  "runtime_proof": "Unobserved; static and standard-Lua evidence do not establish current-version live gameplay.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment"
+  ]
+}
