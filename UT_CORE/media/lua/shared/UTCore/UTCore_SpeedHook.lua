@@ -69,20 +69,60 @@ local TELEPORT_GUARD = 5.0
 -- (~18x sprint). Will never trigger during normal gameplay.
 local MAX_DELTA_PER_FRAME = 1.5
 
+local function isFinite(value)
+    return type(value) == "number"
+        and value == value
+        and value > -math.huge
+        and value < math.huge
+end
+
+local function restorePendingTarget(player, originalX, originalY)
+    -- B42 exposes only independent axis setters. Restore both axes independently
+    -- so one hostile bridge call cannot prevent the other rollback attempt.
+    pcall(player.setNextX, player, originalX)
+    pcall(player.setNextY, player, originalY)
+
+    -- One bounded verification retry covers transient bridge failures. A hostile
+    -- receiver that persistently rejects restoration cannot be made atomic from Lua.
+    local xOk, currentX = pcall(player.getNextX, player)
+    if not xOk or currentX ~= originalX then
+        pcall(player.setNextX, player, originalX)
+    end
+    local yOk, currentY = pcall(player.getNextY, player)
+    if not yOk or currentY ~= originalY then
+        pcall(player.setNextY, player, originalY)
+    end
+end
+
+local function applyPendingTarget(player, targetX, targetY)
+    player:setNextX(targetX)
+    player:setNextY(targetY)
+end
+
 local function onPlayerMove()
     local player = getPlayer()
     if not player then return end
-    if not player:isLocalPlayer() then return end
+    if type(player.isLocalPlayer) ~= "function"
+        or type(player.getModData) ~= "function"
+        or type(player.getX) ~= "function"
+        or type(player.getY) ~= "function"
+        or type(player.getNextX) ~= "function"
+        or type(player.getNextY) ~= "function"
+        or type(player.setNextX) ~= "function"
+        or type(player.setNextY) ~= "function"
+        or not player:isLocalPlayer() then
+        return
+    end
 
     local md = player:getModData()
+    if type(md) ~= "table" then return end
     local mod = md["UT_speedMod"]
 
     -- No valid speed modifier active means there is nothing to do.
     -- characters without speed traits (UT_fast, UT_pacer, UT_gimp, etc.).
-    if type(mod) ~= "number"
-        or mod ~= mod
-        or mod == math.huge
-        or mod == -math.huge
+    if not isFinite(mod)
+        or mod < -0.75
+        or mod > 1.0
         or mod == 0 then
         return
     end
@@ -93,9 +133,14 @@ local function onPlayerMove()
     local y = player:getY()
     local nextX = player:getNextX()
     local nextY = player:getNextY()
+    if not isFinite(x) or not isFinite(y)
+        or not isFinite(nextX) or not isFinite(nextY) then
+        return
+    end
 
     local dx = nextX - x
     local dy = nextY - y
+    if not isFinite(dx) or not isFinite(dy) then return end
 
     -- No pending movement this frame — nothing to scale.
     if dx == 0 and dy == 0 then return end
@@ -112,25 +157,33 @@ local function onPlayerMove()
     local factor = 1.0 + mod
     local scaledDx = dx * factor
     local scaledDy = dy * factor
-
-    if UTSmoke and UTSmoke.record then
-        UTSmoke.record("movement.frame-pipeline", string.format("mod=%.3f", mod))
-    end
+    if not isFinite(factor) or not isFinite(scaledDx) or not isFinite(scaledDy) then return end
 
     -- Per-frame delta cap: clamp the scaled delta so no single frame moves
     -- the player more than MAX_DELTA_PER_FRAME tiles in any direction.
-    local len = math.sqrt(scaledDx * scaledDx + scaledDy * scaledDy)
+    local squaredLength = scaledDx * scaledDx + scaledDy * scaledDy
+    if not isFinite(squaredLength) then return end
+    local len = math.sqrt(squaredLength)
+    if not isFinite(len) then return end
     if len > MAX_DELTA_PER_FRAME then
         local scale = MAX_DELTA_PER_FRAME / len
+        if not isFinite(scale) then return end
         scaledDx = scaledDx * scale
         scaledDy = scaledDy * scale
+        if not isFinite(scaledDx) or not isFinite(scaledDy) then return end
     end
 
     -- Write back to nextX/nextY ONLY.
     -- setNextX() only sets the nx field — it does NOT clobber x or scriptNextX.
     -- postupdate() will then see the scaled delta and commit it into x normally.
-    player:setNextX(x + scaledDx)
-    player:setNextY(y + scaledDy)
+    local targetX = x + scaledDx
+    local targetY = y + scaledDy
+    if not isFinite(targetX) or not isFinite(targetY) then return end
+
+    local applied = pcall(applyPendingTarget, player, targetX, targetY)
+    if not applied then
+        restorePendingTarget(player, nextX, nextY)
+    end
 end
 
 state.implementation = onPlayerMove

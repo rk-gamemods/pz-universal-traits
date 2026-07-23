@@ -1667,7 +1667,7 @@ test("SpeedHook duplicate evaluation after activation replaces behavior without 
     end)
 end)
 
-test("SpeedHook steady-state path does not refresh caches or inspect and print actions", function()
+test("SpeedHook sustained movement emits no telemetry or diagnostics", function()
     local player = MockPlayer({})
     player:getModData()["UT_speedMod"] = 0.5
     player.getCharacterActions = function()
@@ -1676,7 +1676,9 @@ test("SpeedHook steady-state path does not refresh caches or inspect and print a
 
     local originalRefresh = UTCore.refreshAggregatedModifierCache
     local originalPrint = _G.print
-    local refreshCount, printCount = 0, 0
+    local originalUTSmoke = _G.UTSmoke
+    local originalDiagnostic = UTCore.recordDiagnostic
+    local refreshCount, printCount, smokeCount, diagnosticCount = 0, 0, 0, 0
     UTCore.refreshAggregatedModifierCache = function(...)
         refreshCount = refreshCount + 1
         return originalRefresh(...)
@@ -1684,24 +1686,38 @@ test("SpeedHook steady-state path does not refresh caches or inspect and print a
     _G.print = function(...)
         printCount = printCount + 1
     end
+    _G.UTSmoke = {
+        record = function(...)
+            smokeCount = smokeCount + 1
+        end,
+    }
+    UTCore.recordDiagnostic = function(...)
+        diagnosticCount = diagnosticCount + 1
+    end
 
     local ok, err = pcall(function()
         withActivePlayer(player, function()
-            player:moveTo(0, 0)
-            player:setNextX(0.5)
-            Events.OnPlayerMove.fire()
+            for _ = 1, 1000 do
+                player:moveTo(0, 0)
+                player:setNextX(0.5)
+                Events.OnPlayerMove.fire()
+            end
         end)
     end)
     UTCore.refreshAggregatedModifierCache = originalRefresh
     _G.print = originalPrint
+    _G.UTSmoke = originalUTSmoke
+    UTCore.recordDiagnostic = originalDiagnostic
     if not ok then error(err, 0) end
 
     assert_eq(refreshCount, 0, "movement must use the owner-maintained aggregate cache")
     assert_eq(printCount, 0, "movement must produce no diagnostic output")
+    assert_eq(smokeCount, 0, "movement must produce no smoke telemetry")
+    assert_eq(diagnosticCount, 0, "movement must not call diagnostic surfaces")
 end)
 
 test("SpeedHook rejects invalid modifiers and non-local players", function()
-    local invalid = { "0.5", 0 / 0, math.huge, -math.huge }
+    local invalid = { "0.5", {}, -2, 1.0000001, 1e308, 0 / 0, math.huge, -math.huge }
     for _, modifier in ipairs(invalid) do
         local player = MockPlayer({})
         player:getModData()["UT_speedMod"] = modifier
@@ -1722,6 +1738,142 @@ test("SpeedHook rejects invalid modifiers and non-local players", function()
         Events.OnPlayerMove.fire()
         assert_eq(remotePlayer:getNextX(), 0.5, "remote player must be a no-op")
     end)
+end)
+
+test("SpeedHook accepts both authoritative aggregate range boundaries", function()
+    for _, case in ipairs({
+        { modifier = -0.75, expected = 0.125 },
+        { modifier = 1.0, expected = 1.0 },
+    }) do
+        local player = MockPlayer({})
+        player:getModData()["UT_speedMod"] = case.modifier
+        withActivePlayer(player, function()
+            player:moveTo(0, 0)
+            player:setNextX(0.5)
+            Events.OnPlayerMove.fire()
+            assert_close(player:getNextX(), case.expected, 0.000001,
+                "authoritative aggregate boundary must be applied")
+        end)
+    end
+end)
+
+test("SpeedHook rejects non-finite coordinates and overflow intermediates", function()
+    local cases = {
+        { x = 0 / 0, y = 0, nextX = 0.5, nextY = 0 },
+        { x = 0, y = math.huge, nextX = 0.5, nextY = 0 },
+        { x = -1e308, y = 0, nextX = 1e308, nextY = 0 },
+    }
+    for _, case in ipairs(cases) do
+        local player = MockPlayer({})
+        player:getModData()["UT_speedMod"] = 0.5
+        local writes = 0
+        player.getX = function() return case.x end
+        player.getY = function() return case.y end
+        player.getNextX = function() return case.nextX end
+        player.getNextY = function() return case.nextY end
+        player.setNextX = function() writes = writes + 1 end
+        player.setNextY = function() writes = writes + 1 end
+        withActivePlayer(player, function()
+            Events.OnPlayerMove.fire()
+            assert_eq(writes, 0, "invalid arithmetic must fail before mutation")
+        end)
+    end
+end)
+
+test("SpeedHook rejects malformed bridge methods before mutation", function()
+    for _, methodName in ipairs({
+        "isLocalPlayer", "getModData", "getX", "getY",
+        "getNextX", "getNextY", "setNextX", "setNextY",
+    }) do
+        local player = MockPlayer({})
+        player:getModData()["UT_speedMod"] = 0.5
+        local original = player[methodName]
+        player[methodName] = "malformed"
+        local ok = pcall(function()
+            withActivePlayer(player, function()
+                Events.OnPlayerMove.fire()
+            end)
+        end)
+        player[methodName] = original
+        assert_eq(ok, true, methodName .. " must fail closed")
+        assert_eq(player:getNextX(), 0, methodName .. " must not partially mutate X")
+        assert_eq(player:getNextY(), 0, methodName .. " must not partially mutate Y")
+    end
+end)
+
+local function exerciseSpeedHookSetterFailure(failingAxis, failurePhase)
+    local player = MockPlayer({})
+    player:getModData()["UT_speedMod"] = 0.5
+    player:moveTo(3, 4)
+    player:setNextX(3.4)
+    player:setNextY(4.2)
+
+    local originalSetX = player.setNextX
+    local originalSetY = player.setNextY
+    local xCalls, yCalls = 0, 0
+    player.setNextX = function(self, value)
+        xCalls = xCalls + 1
+        if failingAxis == "x" and xCalls == 1 then
+            if failurePhase == "after" then originalSetX(self, value) end
+            error("injected X setter failure")
+        end
+        return originalSetX(self, value)
+    end
+    player.setNextY = function(self, value)
+        yCalls = yCalls + 1
+        if failingAxis == "y" and yCalls == 1 then
+            if failurePhase == "after" then originalSetY(self, value) end
+            error("injected Y setter failure")
+        end
+        return originalSetY(self, value)
+    end
+
+    withActivePlayer(player, function()
+        assert_eq(pcall(Events.OnPlayerMove.fire), true, "bridge failure must remain contained")
+    end)
+    assert_close(player:getNextX(), 3.4, 0.000001, "X must roll back to the exact pending target")
+    assert_close(player:getNextY(), 4.2, 0.000001, "Y must roll back to the exact pending target")
+end
+
+test("SpeedHook rolls back failures before and after first-axis mutation", function()
+    exerciseSpeedHookSetterFailure("x", "before")
+    exerciseSpeedHookSetterFailure("x", "after")
+end)
+
+test("SpeedHook rolls back failures before and after second-axis mutation", function()
+    exerciseSpeedHookSetterFailure("y", "before")
+    exerciseSpeedHookSetterFailure("y", "after")
+end)
+
+test("SpeedHook retries a transient rollback failure without leaving a partial vector", function()
+    local player = MockPlayer({})
+    player:getModData()["UT_speedMod"] = 0.5
+    player:moveTo(3, 4)
+    player:setNextX(3.4)
+    player:setNextY(4.2)
+
+    local originalSetX = player.setNextX
+    local originalSetY = player.setNextY
+    local xCalls, yCalls = 0, 0
+    player.setNextX = function(self, value)
+        xCalls = xCalls + 1
+        if xCalls == 2 then error("injected rollback failure before X mutation") end
+        return originalSetX(self, value)
+    end
+    player.setNextY = function(self, value)
+        yCalls = yCalls + 1
+        if yCalls == 1 then
+            originalSetY(self, value)
+            error("injected second-axis post-mutation failure")
+        end
+        return originalSetY(self, value)
+    end
+
+    withActivePlayer(player, function()
+        assert_eq(pcall(Events.OnPlayerMove.fire), true, "rollback failure must remain contained")
+    end)
+    assert_close(player:getNextX(), 3.4, 0.000001, "verification retry must restore X")
+    assert_close(player:getNextY(), 4.2, 0.000001, "rollback must restore Y")
 end)
 
 test("SpeedHook teleport guard applies independently to either axis", function()
@@ -1764,6 +1916,67 @@ test("SpeedHook legacy marker requires relaunch without registering or disabling
         "legacy detection must not stack a dispatcher")
     legacyState.implementation()
     assert_eq(legacyCalls, 1, "legacy behavior pointer must remain working")
+end)
+
+test("SpeedHook registration false nil and post-mutation throw never retry", function()
+    local cases = {
+        {
+            name = "nil",
+            add = function(handlers, fn)
+                handlers[#handlers + 1] = fn
+                return nil
+            end,
+            expectedOutcome = "call_completed",
+        },
+        {
+            name = "false",
+            add = function(handlers, fn)
+                handlers[#handlers + 1] = fn
+                return false
+            end,
+            expectedOutcome = "outcome_unknown",
+        },
+        {
+            name = "post-mutation throw",
+            add = function(handlers, fn)
+                handlers[#handlers + 1] = fn
+                error("injected post-mutation registration failure")
+            end,
+            expectedOutcome = "outcome_unknown",
+        },
+    }
+
+    for _, case in ipairs(cases) do
+        local currentState = UTCore._speedHookLifecycle
+        local currentPublicState = UTSpeedHookLifecycle
+        local currentEvent = Events.OnPlayerMove
+        local state = {}
+        local handlers = {}
+        local addCalls = 0
+
+        UTCore._speedHookLifecycle = state
+        UTSpeedHookLifecycle = state
+        Events.OnPlayerMove = {
+            Add = function(fn)
+                addCalls = addCalls + 1
+                return case.add(handlers, fn)
+            end,
+        }
+
+        local ok, err = pcall(function()
+            dofile(base .. "../media/lua/shared/UTCore/UTCore_SpeedHook.lua")
+            dofile(base .. "../media/lua/shared/UTCore/UTCore_SpeedHook.lua")
+        end)
+        UTCore._speedHookLifecycle = currentState
+        UTSpeedHookLifecycle = currentPublicState
+        Events.OnPlayerMove = currentEvent
+        if not ok then error(err, 0) end
+
+        assert_eq(addCalls, 1, case.name .. " registration must not retry")
+        assert_eq(#handlers, 1, case.name .. " registration must not duplicate the dispatcher")
+        assert_eq(state.registration.attempted, true, case.name .. " must record an attempted registration")
+        assert_eq(state.registration.outcome, case.expectedOutcome, case.name .. " outcome")
+    end
 end)
 
 test("SpeedHook source and release copies are byte-identical", function()
