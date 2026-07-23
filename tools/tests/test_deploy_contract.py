@@ -150,7 +150,7 @@ class DeployContractTests(unittest.TestCase):
                         raise parent_error
 
                 with (
-                    mock.patch.object(deploy.os, "name", platform),
+                    mock.patch.object(deploy, "PLATFORM", platform),
                     mock.patch.object(deploy, "_require_directory"),
                     mock.patch.object(deploy, "_lstat", return_value=None),
                     mock.patch.object(deploy, open_name, return_value=10),

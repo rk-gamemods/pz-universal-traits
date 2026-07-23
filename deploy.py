@@ -17,6 +17,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
+PLATFORM = os.name
+
 SCRIPT_DIR = Path(__file__).resolve().parent
 MODS = ("UniversalTraits", "UT_CORE")
 VERSION_DIR = "42.0"
@@ -341,7 +343,7 @@ def _verify_windows_path_handle(path: Path, handle: int, *, directory: bool) -> 
 
 
 def _close_directory_handle(handle: int) -> None:
-    if os.name == "nt":
+    if PLATFORM == "nt":
         from ctypes import wintypes
 
         close_handle = ctypes.WinDLL("kernel32", use_last_error=True).CloseHandle
@@ -437,7 +439,7 @@ class _StageWriter:
         self.stage = Path(os.path.abspath(stage))
         self.handles: dict[Path, int] = {}
         _require_directory(self.stage.parent, label="stage parent")
-        parent_handle = _open_windows_directory(self.stage.parent) if os.name == "nt" else _open_directory_fd(self.stage.parent)
+        parent_handle = _open_windows_directory(self.stage.parent) if PLATFORM == "nt" else _open_directory_fd(self.stage.parent)
         stage_handle: int | None = None
         try:
             try:
@@ -445,7 +447,7 @@ class _StageWriter:
                     raise DeployError("artifact-collision", "stage path already exists", path=str(self.stage))
                 stage_handle = (
                     _mkdir_relative_windows(parent_handle, self.stage.name, self.stage.parent, self.stage)
-                    if os.name == "nt"
+                    if PLATFORM == "nt"
                     else _mkdir_relative_posix(parent_handle, self.stage.name, self.stage.parent, self.stage)
                 )
             finally:
@@ -488,7 +490,7 @@ class _StageWriter:
                 raise DeployError("artifact-collision", "unexpected stage component already exists", path=str(child_path))
             handle = (
                 _mkdir_relative_windows(self.handles[parent], part, parent_path, child_path)
-                if os.name == "nt"
+                if PLATFORM == "nt"
                 else _mkdir_relative_posix(self.handles[parent], part, parent_path, child_path)
             )
             self.handles[current] = handle
@@ -510,7 +512,7 @@ class _StageWriter:
         file_handle: int | None = None
         try:
             _write_boundary(destination.parent, destination)
-            if os.name == "nt":
+            if PLATFORM == "nt":
                 file_handle = _create_file_relative_windows(self.handles[parent], relative.name, destination)
                 _write_all_windows(file_handle, data, destination)
                 _verify_windows_path_handle(destination, file_handle, directory=False)
@@ -790,7 +792,7 @@ def parser() -> argparse.ArgumentParser:
     action.add_argument("--verify-only", action="store_true", help="read-only (the default)")
     action.add_argument("--deploy", action="store_true", help="explicitly enable transactional mutation")
     result.add_argument("--target-root", type=Path, help="exact absolute root containing mod folders")
-    result.add_argument("mods", nargs="*", choices=MODS, default=list(MODS))
+    result.add_argument("mods", nargs="*", choices=MODS)
     return result
 
 
