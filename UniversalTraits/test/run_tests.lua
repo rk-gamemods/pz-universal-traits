@@ -2780,7 +2780,8 @@ test("vehicle bridge partial failure is contained and setter calls stay bounded"
     assert_true(ok, "grouped bridge failure must not escape")
     local firstCalls = vehicle._setterCalls.engineFeature or 0
     for _ = 1, 20 do UTCore.updateVehicleTraitState(player) end
-    assert_eq(vehicle._setterCalls.engineFeature or 0, firstCalls, "permanent grouped failure is suppressed")
+    assert_eq(vehicle._setterCalls.engineFeature or 0, firstCalls + 1,
+        "permanent grouped failure stops at the two-attempt retry limit")
     player:setVehicle(nil)
     ok = pcall(UTCore.updateVehicleTraitState, player)
     assert_true(ok, "partial grouped restore must remain contained")

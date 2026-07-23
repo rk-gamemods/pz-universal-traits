@@ -2819,6 +2819,90 @@ test("Vehicle field validation preserves valid float and integer bridge values",
     assert_eq(vehicle:getEnginePower(), 200, "valid power integer must remain accepted")
 end)
 
+local function partialEngineApplyFixture(powerAfterFailure)
+    UTCore._vehicleTraitDefs = {}
+    local vehicle = MockVehicle()
+    local calls = 0
+    vehicle.setEngineFeature = function(self, quality, loudness, power)
+        calls = calls + 1
+        self._setterCalls.engineFeature = (self._setterCalls.engineFeature or 0) + 1
+        self._engineQuality = quality
+        self._engineLoudness = math.floor(loudness / 2.7)
+        if calls == 1 then
+            if powerAfterFailure ~= nil then self._enginePower = powerAfterFailure end
+            error("partial grouped apply")
+        end
+        self._enginePower = power
+    end
+    local player = MockPlayer({"UniversalTraits:UT_testdriver"}, { vehicle = vehicle, driving = true })
+    UTCore.registerVehicleTrait("UniversalTraits:UT_testdriver", "UT_testdriverState", {
+        engineQuality = 0.5,
+        engineLoudness = 0.5,
+        enginePower = 2,
+    }, 1)
+    return vehicle, player
+end
+
+test("Vehicle grouped apply retries unchanged baseline power and later succeeds", function()
+    local vehicle, player = partialEngineApplyFixture(nil)
+
+    UTCore.syncVehicleTrait(player, vehicle)
+    local ownership = vehicle:getModData().UT_vehicleTraitOwnership
+    assert_eq(vehicle:getEngineQuality(), 50, "partial quality must remain owned at target")
+    assert_eq(vehicle:getEngineLoudness(), 50, "partial loudness must remain owned at target")
+    assert_eq(vehicle:getEnginePower(), 100, "unwritten power must remain at baseline")
+    assert_true(type(ownership.fields.enginePower) == "table",
+        "unchanged baseline power must remain pending")
+    assert_eq(ownership.suppressed.enginePower, nil,
+        "unchanged baseline power must not be classified as foreign")
+
+    UTCore.syncVehicleTrait(player, vehicle)
+    assert_eq(vehicle:getEnginePower(), 200, "later grouped apply must finish power")
+    assert_eq(vehicle._setterCalls.engineFeature, 2, "exactly one bounded retry expected")
+    assert_eq(ownership.fields.enginePower.lastApplied, 200,
+        "later successful power must remain owned")
+end)
+
+test("Vehicle grouped apply suppresses observably foreign divergent power", function()
+    local vehicle, player = partialEngineApplyFixture(150)
+
+    UTCore.syncVehicleTrait(player, vehicle)
+    local ownership = vehicle:getModData().UT_vehicleTraitOwnership
+    assert_eq(vehicle:getEnginePower(), 150, "foreign divergent power must be preserved")
+    assert_eq(ownership.fields.enginePower, nil, "foreign divergent power must relinquish ownership")
+    assert_eq(ownership.suppressed.enginePower, true, "foreign divergent power must be suppressed")
+
+    UTCore.syncVehicleTrait(player, vehicle)
+    assert_eq(vehicle:getEnginePower(), 150, "suppressed foreign power must not be overwritten")
+end)
+
+test("Vehicle grouped apply permanent failure is bounded", function()
+    UTCore._vehicleTraitDefs = {}
+    local vehicle = MockVehicle()
+    vehicle.setEngineFeature = function(self, quality, loudness)
+        self._setterCalls.engineFeature = (self._setterCalls.engineFeature or 0) + 1
+        self._engineQuality = quality
+        self._engineLoudness = math.floor(loudness / 2.7)
+        error("permanent grouped apply failure")
+    end
+    local player = MockPlayer({"UniversalTraits:UT_testdriver"}, { vehicle = vehicle, driving = true })
+    UTCore.registerVehicleTrait("UniversalTraits:UT_testdriver", "UT_testdriverState", {
+        engineQuality = 0.5,
+        engineLoudness = 0.5,
+        enginePower = 2,
+    }, 1)
+
+    for _ = 1, 5 do UTCore.syncVehicleTrait(player, vehicle) end
+
+    local ownership = vehicle:getModData().UT_vehicleTraitOwnership
+    assert_eq(vehicle._setterCalls.engineFeature, 2, "permanent failure must stop at retry limit")
+    assert_eq(vehicle:getEnginePower(), 100, "permanently unwritten power must stay at baseline")
+    assert_true(type(ownership.fields.enginePower) == "table",
+        "bounded failure must retain restore-safe ownership evidence")
+    assert_eq(ownership.suppressed.enginePower, nil,
+        "bounded unchanged power must not be suppressed")
+end)
+
 test("Vehicle engine fields reject fractional acquisition reads without consuming retries", function()
     for _, hostile in ipairs({
         { field = "engineQuality", getter = "getEngineQuality", value = 50.5 },

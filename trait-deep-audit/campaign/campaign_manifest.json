@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 174,
-  "total_bytes": 13766717,
+  "total_bytes": 13765698,
   "files": [
     {
       "path": ".gitattributes",
@@ -419,21 +419,21 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 2861,
-      "sha256": "289AA3B808D075A50EA14DDD36D2C8DCBDBB3F11C685E98E18044FA6E577EF99"
+      "sha256": "E0B61AF3D1A9D3B07A99A9BB9B6171F5638895CEC1083C3930592635E1799F13"
     },
     {
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2045948,
-      "sha256": "54E405C47BA173D8F03545CF489E0696D161332A2503130715109CD10D52240B"
+      "bytes": 2044929,
+      "sha256": "6DF08B9FD1351ED8988BE554FDB123CF01465E91FF0D6AE8C64ABDC7D12EF109"
     },
     {
       "path": "remediation_summary.json",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
       "bytes": 1213,
-      "sha256": "06BB41764C8B796615FA6A83F1FC04D1C395C11D4EFF57F4DC27AB223E8B3E05"
+      "sha256": "83315A832FCAC072B062960A92A1F966E728D614A878DC09EEA23BD7BB70C789"
     },
     {
       "path": "runtime-traces/utcore-wave-01.jsonl",
