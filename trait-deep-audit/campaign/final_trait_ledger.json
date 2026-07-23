@@ -46,7 +46,7 @@
   },
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "29C24133912335231DA8ED2E8462B64D9DBE837A0F553E3988547AEA52347D8D",
-    "independent_reviews/traits_05_08.json": "83B0AFE9B530358D8813012A83A0F5281D3E6D0CEC51EE0A98A0DB940EF84B68",
+    "independent_reviews/traits_05_08.json": "0497B9C7C97D9F4BB0F0899EF84692F5D4522DCE75F222EDAF80D4BC8FD84EB9",
     "independent_reviews/traits_09_12.json": "A5322FD2CE42AA99B66AEF17BC4A915B1E924852503C59FFC2E6944197B2102E",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "4FD54923B0938C3294AB5E9D0C0168A08FDBF353A73FBE83BCE7F5DDF8B911F2",
@@ -70,10 +70,10 @@
     "independent_reviewed_traits": 198,
     "independent_review_findings": 117,
     "independent_review_states": {
-      "accepted": 84,
+      "accepted": 85,
       "confirmed-defect": 29,
       "coverage-gap": 20,
-      "needs-correction": 51,
+      "needs-correction": 50,
       "runtime-unproven": 14
     },
     "overall_states": {
@@ -1753,10 +1753,10 @@
         "persistent modifiers",
         "stacking"
       ],
-      "reproduction_evidence": "Buckets support deletion, but seven affected traits never delete their source on membership loss.",
+      "reproduction_evidence": "Buckets support deletion, but six affected traits never delete their source on membership loss.",
       "missing_proof": "Dynamic removal/save-load.",
       "recommended_correction": "Add membership reconciliation that deletes stale trait-owned entries.",
-      "smallest_regression_test": "Parameterized apply/remove/reload test for all seven source IDs."
+      "smallest_regression_test": "Parameterized apply/remove/reload test for all six remaining source IDs."
     },
     {
       "id": "IR0508-X-006",
@@ -25307,11 +25307,9 @@
       "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_05_08.json",
-        "review_state": "needs-correction",
+        "review_state": "accepted",
         "omission_finding_ids": [],
-        "cross_finding_ids": [
-          "IR0508-X-005"
-        ],
+        "cross_finding_ids": [],
         "verified_first_pass_finding_ids": [
           "B05-HAMSTER-001",
           "B05-HAMSTER-002"

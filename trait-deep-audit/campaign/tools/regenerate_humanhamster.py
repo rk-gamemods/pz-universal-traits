@@ -18,6 +18,15 @@ CAMPAIGN = ROOT / "trait-deep-audit" / "campaign"
 HELPER = base.base.base.shared.base
 TRAIT = "UniversalTraits:UT_humanhamster"
 FINDINGS = ("B05-HAMSTER-001", "B05-HAMSTER-002")
+SHARED_FINDING = "IR0508-X-005"
+REMAINING_SHARED_TRAITS = (
+    "UniversalTraits:UT_lurcher",
+    "UniversalTraits:UT_natural",
+    "UniversalTraits:UT_noodlelegs",
+    "UniversalTraits:UT_pacer",
+    "UniversalTraits:UT_packmouse",
+    "UniversalTraits:UT_packmule",
+)
 DESCRIPTION = (
     "Carry 2 more weight. If your inventory is below 80% full or you are not wearing an "
     "inventory container, craving builds each minute and adds 0.02/0.04/0.08 stress per minute "
@@ -235,6 +244,8 @@ def _plan_review(root: Path, campaign: Path, plan: dict[str, bytes]) -> None:
     artifact = json.loads((campaign / relative).read_text(encoding="utf-8"))
     row = HELPER._exactly_one(artifact["per_trait_review"], "trait_id", TRAIT, relative)
     row.update(
+        review_state="accepted",
+        cross_trait_finding_ids=[],
         accepted_overall_state="runtime-unproven",
         independent_state="runtime-unproven",
         supported_accepted_finding_ids=list(FINDINGS),
@@ -251,6 +262,28 @@ def _plan_review(root: Path, campaign: Path, plan: dict[str, bytes]) -> None:
             "RP0508-LOCALE-001",
         ],
         resolution_record=RESOLUTION,
+    )
+    shared_finding = HELPER._exactly_one(
+        artifact["cross_trait_findings"], "id", SHARED_FINDING, relative
+    )
+    pre_correction_members = [TRAIT, *REMAINING_SHARED_TRAITS]
+    corrected_members = list(REMAINING_SHARED_TRAITS)
+    if shared_finding["affected_traits"] not in (
+        pre_correction_members,
+        corrected_members,
+    ):
+        raise ValueError(
+            f"{SHARED_FINDING} membership drifted before Human Hamster correction"
+        )
+    shared_finding.update(
+        affected_traits=corrected_members,
+        reproduction_evidence=(
+            "Buckets support deletion, but six affected traits never delete their source "
+            "on membership loss."
+        ),
+        smallest_regression_test=(
+            "Parameterized apply/remove/reload test for all six remaining source IDs."
+        ),
     )
     row["release_parity"] = {
         "runtime_source": _input_metadata_lf(root, RUNTIME)["sha256"],

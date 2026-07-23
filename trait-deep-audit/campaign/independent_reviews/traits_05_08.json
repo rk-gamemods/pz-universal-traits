@@ -1024,7 +1024,7 @@
       "trait_id": "UniversalTraits:UT_humanhamster",
       "source_batch": "batch_05",
       "original_state": "confirmed-defect",
-      "review_state": "needs-correction",
+      "review_state": "accepted",
       "checked_dimensions": [
         "membership_registration_definition_ui",
         "runtime_and_exact_shared_dependencies",
@@ -1048,9 +1048,7 @@
         "B05-HAMSTER-002"
       ],
       "rejected_finding_ids": [],
-      "cross_trait_finding_ids": [
-        "IR0508-X-005"
-      ],
+      "cross_trait_finding_ids": [],
       "unresolved_proof": [
         "No matching Build 42.19 in-game/Kahlua execution, save-load cycle, multiplayer execution, or profiler trace.",
         "No non-English locale coverage.",
@@ -4839,12 +4837,11 @@
         "persistent modifiers",
         "stacking"
       ],
-      "reproduction_evidence": "Buckets support deletion, but seven affected traits never delete their source on membership loss.",
+      "reproduction_evidence": "Buckets support deletion, but six affected traits never delete their source on membership loss.",
       "missing_proof": "Dynamic removal/save-load.",
       "recommended_correction": "Add membership reconciliation that deletes stale trait-owned entries.",
-      "smallest_regression_test": "Parameterized apply/remove/reload test for all seven source IDs.",
+      "smallest_regression_test": "Parameterized apply/remove/reload test for all six remaining source IDs.",
       "affected_traits": [
-        "UniversalTraits:UT_humanhamster",
         "UniversalTraits:UT_lurcher",
         "UniversalTraits:UT_natural",
         "UniversalTraits:UT_noodlelegs",

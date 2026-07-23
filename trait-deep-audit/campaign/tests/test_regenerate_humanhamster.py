@@ -195,6 +195,69 @@ class HumanHamsterGeneratorSafetyTests(unittest.TestCase):
             )
         )
 
+    def test_shared_finding_excludes_human_hamster_everywhere(self) -> None:
+        self.run_generator()
+        self.assertEqual(self.run_generator(), [])
+        review = json.loads(
+            (self.campaign / "independent_reviews" / "traits_05_08.json").read_bytes()
+        )
+        human_hamster = next(
+            row for row in review["per_trait_review"] if row["trait_id"] == GENERATOR.TRAIT
+        )
+        self.assertEqual(human_hamster["review_state"], "accepted")
+        self.assertNotIn(
+            GENERATOR.SHARED_FINDING,
+            human_hamster["cross_trait_finding_ids"],
+        )
+        shared = next(
+            row
+            for row in review["cross_trait_findings"]
+            if row["id"] == GENERATOR.SHARED_FINDING
+        )
+        self.assertEqual(
+            shared["affected_traits"],
+            list(GENERATOR.REMAINING_SHARED_TRAITS),
+        )
+        self.assertNotIn(GENERATOR.TRAIT, json.dumps(shared, sort_keys=True))
+        self.assertIn("six affected traits", shared["reproduction_evidence"])
+        self.assertIn("six remaining source IDs", shared["smallest_regression_test"])
+        remaining_rows = {
+            row["trait_id"]: row
+            for row in review["per_trait_review"]
+            if row["trait_id"] in GENERATOR.REMAINING_SHARED_TRAITS
+        }
+        self.assertEqual(
+            tuple(remaining_rows),
+            GENERATOR.REMAINING_SHARED_TRAITS,
+        )
+        for row in remaining_rows.values():
+            self.assertIn(GENERATOR.SHARED_FINDING, row["cross_trait_finding_ids"])
+            self.assertEqual(row["review_state"], "needs-correction")
+
+        ledger = json.loads((self.campaign / "final_trait_ledger.json").read_bytes())
+        ledger_row = next(
+            row for row in ledger["traits"] if row["trait_id"] == GENERATOR.TRAIT
+        )
+        self.assertEqual(ledger_row["independent_review"]["review_state"], "accepted")
+        self.assertNotIn(
+            GENERATOR.SHARED_FINDING,
+            ledger_row["independent_review"]["cross_finding_ids"],
+        )
+
+        queue = jsonl(self.campaign / "remediation_queue.jsonl")
+        shared_queue = next(
+            row
+            for row in queue
+            if row.get("finding_id") == GENERATOR.SHARED_FINDING
+        )
+        self.assertEqual(shared_queue["status"], "open")
+        self.assertNotIn(GENERATOR.TRAIT, json.dumps(shared_queue, sort_keys=True))
+        self.assertIn("six affected traits", shared_queue["reproduction_evidence"])
+        self.assertIn(
+            "six remaining source IDs",
+            shared_queue["smallest_regression_test"],
+        )
+
     def test_exact_membership_and_unique_queue_ids(self) -> None:
         self.run_generator()
         batch_rows = jsonl(self.campaign / "trait_batches" / "batch_05.jsonl")
