@@ -594,7 +594,7 @@
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
       "bytes": 84298,
-      "sha256": "DCC5D22FD293CC3E5A5EBAAD1978BB18903942D6A81D1EBEE3176204D8A82108"
+      "sha256": "64012B09568D55392DC63E401830B21714A83099C439A716F152A6D204EFB7F1"
     },
     {
       "path": "tests/test_regenerate_albino.py",

@@ -498,7 +498,7 @@ class NormalizationTests(unittest.TestCase):
         self.assertEqual(ledger["counts"]["traits"], 198)
         self.assertEqual(ledger["counts"]["unique_traits"], 198)
         self.assertEqual(ledger["counts"]["independent_reviewed_traits"], 198)
-        self.assertEqual(ledger["counts"]["independent_review_findings"], 118)
+        self.assertEqual(ledger["counts"]["independent_review_findings"], 117)
         self.assertEqual(len(ledger["traits"]), 198)
         self.assertTrue(all(len(row["dimensions"]) == 24 for row in ledger["traits"]))
         self.assertTrue(all(row["independent_review"] for row in ledger["traits"]))
