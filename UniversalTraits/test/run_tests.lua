@@ -4826,6 +4826,50 @@ test("sundayrunner adds exactly 2 unhappiness per sprinting minute", function()
         "accumulated unhappiness delta must equal both additions")
 end)
 
+test("sundayrunner ignores event arguments and processes only the local player", function()
+    local localPlayer = MockPlayer({ SUNDAY_RUNNER_ID })
+    local nonLocalPlayer = MockPlayer({ SUNDAY_RUNNER_ID })
+    localPlayer._sprinting = true
+    nonLocalPlayer._sprinting = true
+
+    withActivePlayer(localPlayer, function()
+        Events.EveryOneMinute:fire(nonLocalPlayer)
+    end)
+
+    assert_eq(localPlayer:getStats():get(CharacterStat.UNHAPPINESS), 2,
+        "EveryOneMinute must resolve the local player through getPlayer()")
+    assert_eq(nonLocalPlayer:getStats():get(CharacterStat.UNHAPPINESS), 0,
+        "an event argument must not substitute for or process a non-local player")
+end)
+
+test("sundayrunner registration and definition preserve the accepted contract", function()
+    assert_trait_registered(UTTraitsRegistries.UT_sundayrunner, SUNDAY_RUNNER_ID)
+
+    local file = assert(io.open(base .. "../media/scripts/UT_character_traits.txt", "r"))
+    local source = file:read("*a")
+    file:close()
+
+    local sundayBlock = assert(source:match(
+        "character_trait_definition%s+UniversalTraits:UT_sundayrunner%s*(%b{})"))
+    local sprintDemonBlock = assert(source:match(
+        "character_trait_definition%s+UniversalTraits:UT_sprintdemon%s*(%b{})"))
+
+    assert_true(sundayBlock:find("Cost%s*=%s*-1[%s,]") ~= nil,
+        "Sunday Runner cost must remain exactly -1")
+    assert_true(sundayBlock:find("DisabledInMultiplayer%s*=%s*true[%s,]") ~= nil,
+        "Sunday Runner must remain disabled in multiplayer")
+    assert_true(sundayBlock:find("XPBoosts%s*=") == nil,
+        "Sunday Runner must not declare XP boosts")
+    assert_true(sundayBlock:find("GrantedTraits%s*=") == nil,
+        "Sunday Runner must not grant traits")
+    assert_true(sundayBlock:find(
+        "MutuallyExclusiveTraits%s*=%s*UniversalTraits:UT_sprintdemon[%s,]") ~= nil,
+        "Sunday Runner must exclude Sprint Demon")
+    assert_true(sprintDemonBlock:find(
+        "MutuallyExclusiveTraits%s*=%s*UniversalTraits:UT_sundayrunner[%s,]") ~= nil,
+        "Sprint Demon must reciprocally exclude Sunday Runner")
+end)
+
 test("sundayrunner rejects running walking idle missing nil and removed players", function()
     local running = MockPlayer({ SUNDAY_RUNNER_ID })
     running._running = true
