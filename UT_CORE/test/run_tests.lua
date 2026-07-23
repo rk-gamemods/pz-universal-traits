@@ -1156,6 +1156,103 @@ test("WorkSpeedHook preserves negative (animation-driven) duration", function()
     assert_eq(result, -1, "expected animation-driven duration (-1) to pass through unchanged")
 end)
 
+test("WorkSpeedHook applies Paramedic independently to all eleven medical actions", function()
+    local p = MockPlayer({"UniversalTraits:UT_paramedic"})
+    local actionTypes = {
+        "ISMedicalCheckAction", "ISApplyBandage", "ISCleanBurn",
+        "ISApplyComfrey", "ISApplyGarlic", "ISApplyPlantain", "ISDisinfect",
+        "ISRemoveBullet", "ISRemoveGlass", "ISSplint", "ISStitch",
+    }
+    for _, actionType in ipairs(actionTypes) do
+        assert_eq(UTCore.applyWorkDuration(MockTimedAction(p, actionType, 120), 120), 60, actionType)
+    end
+
+    p:getModData()["UT_modifierBuckets"] = { workAdd = { test = 0.25 } }
+    assert_eq(UTCore.applyWorkDuration(MockTimedAction(p, "ISStitch", 120), 120), 75,
+        "Paramedic must halve the duration after the independent +0.25 work factor")
+    p:getModData()["UT_modifierBuckets"] = { workAdd = { test = -0.25 } }
+    assert_eq(UTCore.applyWorkDuration(MockTimedAction(p, "ISStitch", 120), 120), 45,
+        "Paramedic must halve the duration after the independent -0.25 work factor")
+end)
+
+test("WorkSpeedHook preserves non-target actions and non-Paramedic players", function()
+    local paramedic = MockPlayer({"UniversalTraits:UT_paramedic"})
+    local ordinary = MockPlayer({})
+    assert_eq(UTCore.applyWorkDuration(MockTimedAction(paramedic, "ISCleanWound", 120), 120), 120)
+    assert_eq(UTCore.applyWorkDuration(MockTimedAction(paramedic, "ISReadABook", 120), 120), 120)
+    assert_eq(UTCore.applyWorkDuration(MockTimedAction(ordinary, "ISApplyComfrey", 120), 120), 120)
+end)
+
+test("WorkSpeedHook patches constructor-only medical actions once", function()
+    local paramedic = MockPlayer({"UniversalTraits:UT_paramedic"})
+    local ordinary = MockPlayer({})
+    local function newAction(self, character, duration)
+        return { character = character, Type = self.Type, maxTime = duration }
+    end
+
+    ISMedicalCheckAction = { Type = "ISMedicalCheckAction", new = newAction }
+    ISSplint = { Type = "ISSplint", new = newAction }
+    Events.OnGameBoot.fire()
+
+    local medicalNew = ISMedicalCheckAction.new
+    local splintNew = ISSplint.new
+    assert_eq(ISMedicalCheckAction:new(paramedic, 150).maxTime, 75)
+    assert_eq(ISSplint:new(paramedic, 100).maxTime, 50)
+    assert_eq(ISMedicalCheckAction:new(ordinary, 150).maxTime, 150)
+
+    Events.OnGameBoot.fire()
+    assert_eq(ISMedicalCheckAction.new, medicalNew, "medical constructor must not be wrapped twice")
+    assert_eq(ISSplint.new, splintNew, "splint constructor must not be wrapped twice")
+    assert_eq(ISMedicalCheckAction:new(paramedic, 150).maxTime, 75,
+        "duplicate boot must not compound the factor")
+end)
+
+test("WorkSpeedHook constructor marker prevents getDuration double application", function()
+    local paramedic = MockPlayer({"UniversalTraits:UT_paramedic"})
+    ISMedicalCheckAction = {
+        Type = "ISMedicalCheckAction",
+        new = function(self, character)
+            return { character = character, Type = self.Type, maxTime = 150 }
+        end,
+        getDuration = function(self) return self.maxTime end,
+    }
+    Events.OnGameBoot.fire()
+    local action = ISMedicalCheckAction:new(paramedic)
+    assert_eq(action.maxTime, 75)
+    setmetatable(action, { __index = ISMedicalCheckAction })
+    assert_eq(action:getDuration(), 75, "getDuration must not halve constructor-adjusted maxTime again")
+end)
+
+test("WorkSpeedHook duplicate module load keeps one event install", function()
+    local handlerCount = Events.OnGameBoot._handlerCount()
+    local medicalNew = ISMedicalCheckAction.new
+    local medicalGetDuration = ISMedicalCheckAction.getDuration
+    dofile(base .. "../media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua")
+    assert_eq(Events.OnGameBoot._handlerCount(), handlerCount,
+        "duplicate module load must not add another OnGameBoot handler")
+    Events.OnGameBoot.fire()
+    assert_eq(ISMedicalCheckAction.new, medicalNew,
+        "duplicate module load must not wrap constructors again")
+    assert_eq(ISMedicalCheckAction.getDuration, medicalGetDuration,
+        "duplicate module load must not wrap getDuration again")
+end)
+
+test("WorkSpeedHook tolerates absent and malformed constructor classes", function()
+    ISMedicalCheckAction = nil
+    ISSplint = { new = "not-a-function" }
+    assert_eq(pcall(Events.OnGameBoot.fire), true, "malformed classes must not break boot")
+
+    ISMedicalCheckAction = {
+        new = function() return "malformed-action" end,
+    }
+    ISSplint = {
+        new = function() return { Type = "ISSplint", maxTime = "not-a-number" } end,
+    }
+    assert_eq(pcall(Events.OnGameBoot.fire), true, "malformed constructor results must not break boot")
+    assert_eq(ISMedicalCheckAction:new(), "malformed-action")
+    assert_eq(ISSplint:new().maxTime, "not-a-number")
+end)
+
 test("ReadingHook getSkillBookCompletionXP returns tier bonus", function()
     SkillBook = { Cooking = { perk = "Cooking" } }
     local item = {

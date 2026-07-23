@@ -4221,7 +4221,8 @@ end)
 test("paramedic accelerates only the exact medical Type set", function()
     local p = MockPlayer({ "UniversalTraits:UT_paramedic" })
     local types = {
-        "ISMedicalCheckAction", "ISApplyBandage", "ISCleanBurn", "ISDisinfect",
+        "ISMedicalCheckAction", "ISApplyBandage", "ISCleanBurn",
+        "ISApplyComfrey", "ISApplyGarlic", "ISApplyPlantain", "ISDisinfect",
         "ISRemoveBullet", "ISRemoveGlass", "ISSplint", "ISStitch",
     }
     for _, actionType in ipairs(types) do
@@ -4243,15 +4244,15 @@ test("pitcrew accelerates only the exact mechanics Type set", function()
     end
 end)
 
-test("trait work duration preserves guards, minimum, and additive composition", function()
+test("trait work duration preserves guards, minimum, and independent composition", function()
     local medical = MockPlayer({ "UniversalTraits:UT_paramedic" })
     assert_eq(UTCore.applyWorkDuration({ character = medical, Type = "ISStitch" }, -1), -1)
     assert_eq(UTCore.applyWorkDuration({ character = medical, Type = "ISStitch" }, 1), 1)
     assert_eq(UTCore.applyWorkDuration({ character = MockPlayer({}), Type = "ISStitch" }, 120), 120)
 
     medical:getModData()["UT_modifierBuckets"] = { workAdd = { test = 0.25 } }
-    assert_eq(UTCore.applyWorkDuration({ character = medical, Type = "ISStitch" }, 120), 90,
-        "general +0.25 and paramedic -0.5 compose to -0.25")
+    assert_eq(UTCore.applyWorkDuration({ character = medical, Type = "ISStitch" }, 120), 75,
+        "paramedic independently halves the general +0.25 duration")
 end)
 
 -- ─── Group 4: OnCreatePlayer ─────────────────────────────────────────────────
