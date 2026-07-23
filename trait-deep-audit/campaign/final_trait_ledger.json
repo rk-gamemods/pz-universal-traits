@@ -46,7 +46,7 @@
   },
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "CCE30545DE396EC52BBDB6AC90D3DB4019038409725C1E77B4B9446BFA22F2C8",
-    "independent_reviews/traits_05_08.json": "0497B9C7C97D9F4BB0F0899EF84692F5D4522DCE75F222EDAF80D4BC8FD84EB9",
+    "independent_reviews/traits_05_08.json": "D255A15AFCA8FC010573892EEA19FDC404F30F3066879C1939B702BEF5B2A474",
     "independent_reviews/traits_09_12.json": "A5322FD2CE42AA99B66AEF17BC4A915B1E924852503C59FFC2E6944197B2102E",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "4FD54923B0938C3294AB5E9D0C0168A08FDBF353A73FBE83BCE7F5DDF8B911F2",
@@ -56,12 +56,12 @@
     "trait_batches/batch_05.jsonl": "3B947F6228AB251E6E17074CF88F62A636D3EDFA01474F1E2DE2CC30ED42433D",
     "trait_batches/batch_06.jsonl": "32B529C5117E409EBFC41BF178BB94BFDD8301716D6187AC4950CF983A32CAAB",
     "trait_batches/batch_07.jsonl": "0483F4C2595D692E19FD6F60DE04E5D633C7942497A2669CF1B48459C0AFA771",
-    "trait_batches/batch_08.jsonl": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A",
+    "trait_batches/batch_08.jsonl": "B8D4BEB66BDC2B74EBDC6DE1873D07B31099ADE4B2482D284B1FD000CCCC94B4",
     "trait_batches/batch_09.jsonl": "7493EABBF27471F551A42E6B750D8927EC80B36404B51ED6E7CBC74349EAFE44",
     "trait_batches/batch_10.jsonl": "33304EC69C6072CE027BFD779AB0E2332EEDE70DC56B6920468F46BC4A2ABE31",
     "trait_batches/batch_11.jsonl": "D1617D3F6DE1E81879EB3FA2B81F7DA1058630E103CF1DFD2D907B026311D959",
     "trait_batches/batch_12.jsonl": "3578367CB91C26719B23781AED4347327F5121A33FBBA47CE36891DC42DCEC9C",
-    "translation_audit.json": "A1C6880A817873CF8DD33853DCB242C10DF0F45F45AF31F92CBFBD9FCE791E2D"
+    "translation_audit.json": "C706C0B763A33E5352F9A47EEF85ED154B371D5EC96D2563D4C41A3858AE045C"
   },
   "counts": {
     "traits": 198,
@@ -78,14 +78,14 @@
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 53,
+      "confirmed-defect": 52,
       "coverage-gap": 12,
-      "runtime-unproven": 108
+      "runtime-unproven": 109
     },
     "dimension_states": {
-      "proven-correct": 2802,
-      "confirmed-defect": 199,
-      "coverage-gap": 751,
+      "proven-correct": 2811,
+      "confirmed-defect": 192,
+      "coverage-gap": 749,
       "runtime-unproven": 1000
     }
   },
@@ -40115,12 +40115,12 @@
     {
       "trait_id": "UniversalTraits:UT_paramedic",
       "batch": "batch_08",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
           "evidence": [
-            "Exact UniversalTraits:UT_paramedic registration at registries.lua:103; catalog consistency passed."
+            "Registry, definition, runtime ID, and English keys agree."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -40128,19 +40128,21 @@
           ]
         },
         "definition_parser": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "Complete definition at lines 795-805: IsProfessionTrait=false, DisabledInMultiplayer=true, CharacterTrait exact, Cost=4, XPBoosts=Doctor=2; bounded parse and full suite passed."
+            "Cost 4, Doctor +2, no grants or exclusions, and multiplayer-disabled metadata pass deterministic parsing."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current-build ScriptManager loading remains unobserved."
+          ],
           "source_dimensions": [
-            "script_definition_parser_validity"
+            "definition_parser"
           ]
         },
         "namespace": {
           "state": "proven-correct",
           "evidence": [
-            "Registration, definition CharacterTrait, runtime/script path, and UI key stem consistently use UniversalTraits:UT_paramedic."
+            "Every owned surface uses UniversalTraits:UT_paramedic."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -40150,65 +40152,49 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "Cost=4 parsed from the complete definition.",
-            "No GrantedTraits or GrantedRecipes field is present in the assigned definition.",
-            "No MutuallyExclusiveTraits field exists, so no reverse edge is required.",
-            "XPBoosts=Doctor=2; current PZ CharacterTraitDefinitionScript parses semicolon-separated perk=value pairs.",
-            "none"
+            "Cost is 4, Doctor is +2, and no grants or exclusions exist."
           ],
           "missing_proof": [],
           "source_dimensions": [
-            "bidirectional_exclusion_behavior",
-            "cost",
-            "exclusions",
-            "grants",
-            "xp"
+            "cost_xp_grants_exclusions"
           ]
         },
         "source_intent": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Current local source/comment/definition/EN intent is internally consistent: UT_paramedic.lua grants the scripted Doctor=2 boost, sets UT_paramedicActive on OnNewGame, optionally calls absent UTCore.applyMedicalSpeed, and otherwise relies on Events.OnActionAdded to halve matching action.maxTime. Current UT_CORE has no applyMedicalSpeed and current PZCodebase has no OnActionAdded event."
+            "Pre-campaign intent is Doctor +2 plus an independent 0.5 medical action duration multiplier."
           ],
-          "missing_proof": [
-            "Underlying upstream/source-mod provenance was outside allowed reads unless named only by a local comment."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
-            "source_mod_intent"
+            "source_intent"
           ]
         },
         "runtime_path": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "UT_paramedic.lua grants the scripted Doctor=2 boost, sets UT_paramedicActive on OnNewGame, optionally calls absent UTCore.applyMedicalSpeed, and otherwise relies on Events.OnActionAdded to halve matching action.maxTime. Current UT_CORE has no applyMedicalSpeed and current PZCodebase has no OnActionAdded event."
+            "UTCore.applyWorkDuration owns the exact medical allowlist and applies Paramedic independently of additive work-speed modifiers."
           ],
-          "missing_proof": [
-            "Owned runtime defect is separately recorded; remaining live behavior still lacks a game run."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "runtime_path"
           ]
         },
         "numbers": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "The advertised 50% action duration is implemented only behind an unavailable event/helper path; Doctor=2 remains script-defined."
+            "All eleven accepted medical types map 120 to 60; ordinary and invented types remain 120."
           ],
-          "missing_proof": [
-            "Live boundary/scale assertion where not already statically defective."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
-            "numerical_behavior"
+            "numbers"
           ]
         },
         "cadence": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Intended once per action addition, but the engine event is absent; OnNewGame flagging occurs only for new games."
+            "Duration is derived per medical action query or constructor patch and never compounds."
           ],
-          "missing_proof": [
-            "Observed engine event/timing trace."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "cadence"
           ]
@@ -40216,124 +40202,116 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
-            "No cooldown contract or timestamp is present in source/description for this trait."
+            "Paramedic has no cooldown."
           ],
           "missing_proof": [],
           "source_dimensions": [
-            "cooldowns"
+            "cooldown"
           ]
         },
         "reset_save_load": {
           "state": "runtime-unproven",
           "evidence": [
-            "UT_paramedicActive is set only on OnNewGame, not OnCreatePlayer/save load; no functioning shared helper consumes it in current UT_CORE."
+            "The live trait check needs no persisted marker."
           ],
           "missing_proof": [
-            "Fresh new/load/reload observation."
+            "Current-build new game, save/load, death, and repeated world entry remain unobserved."
           ],
           "source_dimensions": [
             "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Direct mutable action.maxTime is a plausible Lua timed-action field, but no engine callback supplies action to this code; fallback getMaxTime/setMaxTime is also unproven for matched actions."
+            "SVN 964 and accepted review prove the eleven exact action Type identifiers and the shared duration boundary."
           ],
-          "missing_proof": [
-            "Live B42 Java-Lua bridge execution."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
-            "java_lua_exposure"
+            "java_lua"
           ]
         },
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "Standard Lua suite parsed/executed the assigned path, but standard Lua and mocks are not Kahlua proof."
+            "The hook uses Kahlua-compatible tables and guarded method replacement."
           ],
           "missing_proof": [
-            "Full game load without Kahlua errors."
+            "Current-build Kahlua execution remains unobserved."
           ],
           "source_dimensions": [
-            "kahlua_compatibility"
+            "kahlua"
           ]
         },
         "events": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Confirmed broken: no current engine OnActionAdded event and no UTCore.applyMedicalSpeed implementation. The conditional registration silently does nothing."
+            "The invented OnActionAdded event is gone; the existing shared OnGameBoot work-duration hook owns installation."
           ],
-          "missing_proof": [
-            "Observed game lifecycle including save/load or repeated game start."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
-            "event_lifecycle"
+            "events"
           ]
         },
         "stacking_interactions": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "No real action hook executes. If a foreign mod supplied a same-named event, substring matching could halve once per registered function, but that is outside the owned runtime contract."
+            "The 0.5 Paramedic factor composes independently with additive work speed and is applied once."
           ],
-          "missing_proof": [
-            "Live combined-trait/repeated-load scenario."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
-            "stacking_cross_trait_interactions"
+            "stacking_interactions"
           ]
         },
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "DisabledInMultiplayer=true in the complete definition; no runtime code overrides it."
+            "The definition disables Paramedic in multiplayer and multiplayer support is a product non-goal."
           ],
           "missing_proof": [],
           "source_dimensions": [
-            "multiplayer_restriction"
+            "multiplayer"
           ]
         },
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "UI key resolves in EN to 'Paramedic'."
+            "The English display name is Paramedic."
           ],
           "missing_proof": [],
           "source_dimensions": [
-            "display_name"
+            "display"
           ]
         },
         "description": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "EN promises medical treatments are 50% faster, but the current owned runtime path cannot execute that speed effect."
+            "English accurately states Doctor +2 and medical treatments at 50 percent faster."
           ],
-          "missing_proof": [
-            "Matching in-game effect check and/or fuller user-facing disclosure."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
-            "description_accuracy"
+            "description"
           ]
         },
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "Exact EN display/description pair exists; indexed translation tree contains EN only."
+            "Exact English keys exist with source-release parity."
           ],
           "missing_proof": [
-            "Any non-EN locale assets and rendered fallback behavior."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
-            "localization_coverage_absent_locales"
+            "localization"
           ]
         },
         "balance": {
           "state": "runtime-unproven",
           "evidence": [
-            "Cost 4 includes Doctor=2 plus a promised unavailable speed effect; effective balance differs from the UI contract."
+            "Cost 4, Doctor +2, and the 0.5 independent multiplier are unchanged."
           ],
           "missing_proof": [
-            "Gameplay telemetry or controlled comparative run."
+            "No gameplay telemetry exists."
           ],
           "source_dimensions": [
             "balance"
@@ -40342,35 +40320,31 @@
         "performance": {
           "state": "runtime-unproven",
           "evidence": [
-            "Unavailable event means no owned runtime action cost; hypothetical substring scanning is unprofiled."
+            "Allowlist lookup and duration composition are constant-time with no scans or polling."
           ],
           "missing_proof": [
-            "Profiler capture under representative load."
+            "No current-build profiler capture exists."
           ],
           "source_dimensions": [
-            "performance_risk"
+            "performance"
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Tests pass only because UTTestMocks.lua manufactures Events.OnActionAdded and fires it directly; 374/0 does not validate the engine path."
+            "Deterministic tests cover eleven positive identifiers, three invented negatives, ordinary actions, independent composition, no compounding, and constructor patching."
           ],
-          "missing_proof": [
-            "Missing engine-facing regression where noted."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Confirmed mock divergence: UTTestMocks.lua:979 creates an event absent from current PZCodebase, masking the missing callback."
+            "The invented event mock is absent and tests exercise the owned shared duration hook."
           ],
-          "missing_proof": [
-            "Mock/engine contract comparison or live execution where noted."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "mocks"
           ]
@@ -40378,7 +40352,7 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "All assigned runtime/shared counterpart hashes match where present; four prepared traits are absent from both runtime trees by script-only design; every assigned script block is raw-equal source/release."
+            "Paramedic trait and shared work-duration runtime source-release pairs are byte-identical."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -40388,13 +40362,13 @@
         "packaging": {
           "state": "coverage-gap",
           "evidence": [
-            "Assigned 42.0 counterparts are present and scoped-equal. Container drift preserved exactly: source script SHA-256 E93D5184281DCC7D969A8A576CE22418D4E1A98E959525E4F691A7DF2F34A3FE (82316 bytes), release BF51AC732262F506DAB57229A622D5507E0C77C227FD9EDF384CCDAF04B651AC (82320 bytes); drift is outside all 16 assigned raw-equal blocks."
+            "Paramedic-owned runtime, definition, and English 42.0 counterparts are present and identical."
           ],
           "missing_proof": [
-            "Fresh packaged-mod load/startup proof; unrelated container drift was not audited."
+            "Read-only package verification still tracks the separate missing source poster."
           ],
           "source_dimensions": [
-            "packaging_integrity"
+            "packaging"
           ]
         }
       },
@@ -40403,12 +40377,12 @@
         "B08-UT_paramedic-ONACTIONADDED"
       ],
       "unknowns": [
-        "No authorized in-game B42/Kahlua execution, save/load cycle, multiplayer experiment, or profiler capture was available.",
-        "Only EN localization exists in the allowed/current translation tree; no non-EN locale corpus was available.",
-        "Existing audit records and memory were comparison context only; conclusions were derived from current source, tests/mocks, release counterparts, and current PZCodebase evidence.",
-        "Actual medical action Type strings were not exhaustively audited because the owned callback path is already absent."
+        "Current-build Kahlua after full desktop relaunch remains unobserved.",
+        "Representative real medical actions and current-version save/load remain unobserved.",
+        "Rendered English, balance, and profiler observation remain unobserved.",
+        "Only English localization exists; multiplayer and backward migration are non-goals."
       ],
-      "translation_terminal_state": "confirmed-defect",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_05_08.json",
         "review_state": "accepted",

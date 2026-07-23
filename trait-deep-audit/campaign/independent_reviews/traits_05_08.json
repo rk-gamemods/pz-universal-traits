@@ -4083,11 +4083,46 @@
         "JCodeMunch local/PZCodebase search_text OnActionAdded result_count=0"
       ],
       "release_parity": {
-        "source_runtime_sha256": "280389349DB51AFBADE3A538024868413DC13DC150EEC5BADE2F6FDF50E67C87",
-        "release_runtime_sha256": "280389349DB51AFBADE3A538024868413DC13DC150EEC5BADE2F6FDF50E67C87",
+        "source_runtime_sha256": "7A54065EB6D583466EBC07469F8ED5027F5EFBBBB964383207FE0F2BA503DDE0",
+        "release_runtime_sha256": "7A54065EB6D583466EBC07469F8ED5027F5EFBBBB964383207FE0F2BA503DDE0",
         "state": "proven-correct"
       },
-      "omissions": []
+      "omissions": [],
+      "superseding_review": {
+        "state": "accepted-static-resolution-runtime-unproven",
+        "supersedes_implementation_state_only": true,
+        "historical_review_preserved": true,
+        "resolved_finding_ids": [
+          "B08-UT_paramedic-ONACTIONADDED"
+        ],
+        "retained_finding_ids": [
+          "B08-UT_paramedic-RUNTIME-PROOF"
+        ],
+        "accepted_runtime_commits": [
+          "6929d4221ecf6b9a204a7438e13608fa6d9549a8",
+          "6d6fb2758f0b1db8fc2d717a507f27bc3631c304"
+        ],
+        "exact_medical_action_types": [
+          "ISMedicalCheckAction",
+          "ISApplyBandage",
+          "ISCleanBurn",
+          "ISComfreyCataplasm",
+          "ISGarlicCataplasm",
+          "ISPlantainCataplasm",
+          "ISDisinfect",
+          "ISRemoveBullet",
+          "ISRemoveGlass",
+          "ISSplint",
+          "ISStitch"
+        ],
+        "rejected_invented_action_types": [
+          "ISApplyComfrey",
+          "ISApplyGarlic",
+          "ISApplyPlantain"
+        ],
+        "remaining_runtime_proof": "Full desktop relaunch, current-build Kahlua, real medical action exercise, and save/load remain unobserved."
+      },
+      "resolution_record": "change-impact/paramedic-medical-action-resolution.json"
     },
     {
       "trait_id": "UniversalTraits:UT_paranoia",

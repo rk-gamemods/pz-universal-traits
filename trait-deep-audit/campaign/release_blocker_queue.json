@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "remediation_queue_sha256": "790ab51efee20590bce52e06960eb1fe3c68657ed04573c3b88650ba6e7de227",
+  "remediation_queue_sha256": "2cf0fb1745135627438171a04199bb60ba10b76d28be422cf69308349d064d5e",
   "category_label": "release-blocker",
   "classification_scope_statement": "Only the queue rows listed by these reviewed semantic identities are classified as release-blocker; all other rows remain unclassified in the exhaustive ledger.",
   "identities": [
@@ -21,11 +21,10 @@
       "status": "open",
       "priority_reason_code": "unknown-engine-event",
       "queue_ids": [
-        "dimension:UniversalTraits:UT_paramedic:events",
         "dimension:UniversalTraits:UT_pitcrew:events"
       ],
       "dependencies": [],
-      "evidence_scope": "Paramedic and Pit Crew register OnActionAdded, which is absent from the current event registry."
+      "evidence_scope": "Pit Crew registers OnActionAdded, which is absent from the current event registry."
     },
     {
       "semantic_identity": "shared-hook:item-consumption-wrapper-lifecycle",

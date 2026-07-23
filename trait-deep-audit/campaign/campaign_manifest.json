@@ -40,8 +40,8 @@
     "trait_batches/batch_12.jsonl",
     "translation_audit.json"
   ],
-  "file_count": 165,
-  "total_bytes": 13642912,
+  "file_count": 168,
+  "total_bytes": 13645564,
   "files": [
     {
       "path": ".gitattributes",
@@ -212,6 +212,13 @@
       "sha256": "59C28F05AC89AF9E52D8B1AF8AC1E6F30A9100BD5730E654ED94342310A73CB8"
     },
     {
+      "path": "change-impact/paramedic-medical-action-resolution.json",
+      "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 3393,
+      "sha256": "A1E79FC7FA2928DCD642C5DBBADD9DEB289CB43FA1423328C6FA1ABA248877E4"
+    },
+    {
       "path": "change-impact/scardycat-panic-lifecycle.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
@@ -327,22 +334,22 @@
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2272458,
-      "sha256": "BF29999111F24B814250CACCE9FB3C72B171BAD5D9D36CE771D7CF046B9623DA"
+      "bytes": 2269853,
+      "sha256": "4D7E8EEFBD3B5D1224772ADBBA878E01423879BB04A7FCB08307D44C4C8D396D"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2099054,
-      "sha256": "833675BB827411B257852FE1DCEAC5CC2B93149FDFB1134E1206A80A20BDA8DF"
+      "bytes": 2095916,
+      "sha256": "9BCF772F113D12DD5319CD56ADBA8664DEA24347E2D3B3F000233E79BE6D8F3C"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1293869,
-      "sha256": "58AEC5A29ABF7C156F7CF1CFEE900F89C9611DED42C906EDC9D1C677366B1577"
+      "bytes": 1291051,
+      "sha256": "A57A0BAC354032852ED86020AAC8EE974D357C8DA771E04F68D5FA438BA1FD71"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
@@ -369,8 +376,8 @@
       "path": "independent_reviews/traits_05_08.json",
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
-      "bytes": 255657,
-      "sha256": "0497B9C7C97D9F4BB0F0899EF84692F5D4522DCE75F222EDAF80D4BC8FD84EB9"
+      "bytes": 256916,
+      "sha256": "D255A15AFCA8FC010573892EEA19FDC404F30F3066879C1939B702BEF5B2A474"
     },
     {
       "path": "independent_reviews/traits_09_12.json",
@@ -397,22 +404,22 @@
       "path": "release_blocker_queue.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2939,
-      "sha256": "3BB3EA88A105E634B0321DFC5E92E93F803E2ADF35CF3533F6111F0E8900741F"
+      "bytes": 2869,
+      "sha256": "8C7FCA541D5C67F198105960A41AAA856362B357E1BBF25006CD6DA6EAD68595"
     },
     {
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2064484,
-      "sha256": "790AB51EFEE20590BCE52E06960EB1FE3C68657ED04573C3B88650BA6E7DE227"
+      "bytes": 2051645,
+      "sha256": "2CF0FB1745135627438171A04199BB60BA10B76D28BE422CF69308349D064D5E"
     },
     {
       "path": "remediation_summary.json",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
       "bytes": 1212,
-      "sha256": "E6EBD1C9A1A8C33BDD1684CB190DB40C5DC8263B0E08C6CC33424E512DFF11F4"
+      "sha256": "64E1CFA95C1CC209037F4C86A04F52A9923B3B7F83C9644487DD8A485FE9DA00"
     },
     {
       "path": "runtime-traces/utcore-wave-01.jsonl",
@@ -716,6 +723,13 @@
       "sha256": "A4BCD772718D5487A818F10EE65FB5849778ACBFA63A0BCB4142AA29405E911E"
     },
     {
+      "path": "tests/test_regenerate_paramedic.py",
+      "kind": "regression-test",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 8184,
+      "sha256": "E75B508133ECDE45C5AD38EE5DDB61DF312EB2722AF121473226C6368845D33B"
+    },
+    {
       "path": "tests/test_regenerate_scardycat.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
@@ -989,6 +1003,13 @@
       "sha256": "AFD745882A066A757BE568673B40C63D3CDCF1130EBA63DB448BF65A74088123"
     },
     {
+      "path": "tools/regenerate_paramedic.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 15351,
+      "sha256": "8D593381516F7C8CDA74D25AB6C160CCC1DE99D91A531785757A04BFACB2E59F"
+    },
+    {
       "path": "tools/regenerate_scardycat.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
@@ -1160,8 +1181,8 @@
       "path": "trait_batches/batch_08.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 163637,
-      "sha256": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A"
+      "bytes": 159545,
+      "sha256": "B8D4BEB66BDC2B74EBDC6DE1873D07B31099ADE4B2482D284B1FD000CCCC94B4"
     },
     {
       "path": "trait_batches/batch_09.jsonl",
@@ -1195,8 +1216,8 @@
       "path": "translation_audit.json",
       "kind": "translation-audit",
       "byte_semantics": "utf-8-lf",
-      "bytes": 496195,
-      "sha256": "A1C6880A817873CF8DD33853DCB242C10DF0F45F45AF31F92CBFBD9FCE791E2D"
+      "bytes": 496222,
+      "sha256": "C706C0B763A33E5352F9A47EEF85ED154B371D5EC96D2563D4C41A3858AE045C"
     }
   ]
 }
