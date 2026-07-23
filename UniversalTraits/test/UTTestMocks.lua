@@ -105,23 +105,30 @@ local function makeStats(opts)
     return {
         _charStatAccum = charStatAccum,
         get = function(self, stat)
-            return data[stat] or 0
+            local value = data[stat]
+            if value == nil then return stat:getDefaultValue() end
+            return value
         end,
         set = function(self, stat, v)
-            data[stat] = v
+            local oldValue = data[stat] or stat:getDefaultValue()
+            local newValue = stat:clamp(v)
+            data[stat] = newValue
+            return newValue ~= oldValue
         end,
         add = function(self, stat, delta)
-            data[stat] = (data[stat] or 0) + delta
-            charStatAccum[stat] = (charStatAccum[stat] or 0) + delta
-        end,
-        remove = function(self, stat, delta)
-            local oldValue = data[stat] or 0
-            local newValue = oldValue - delta
-            if stat == CharacterStat.FATIGUE then
-                newValue = stat:clamp(newValue)
-            end
+            local oldValue = data[stat] or stat:getDefaultValue()
+            local newValue = stat:clamp(oldValue + delta)
             data[stat] = newValue
             charStatAccum[stat] = (charStatAccum[stat] or 0) + newValue - oldValue
+            return newValue ~= oldValue
+        end,
+        remove = function(self, stat, delta)
+            local oldValue = data[stat]
+            if oldValue == nil then oldValue = stat:getDefaultValue() end
+            local newValue = stat:clamp(oldValue - delta)
+            data[stat] = newValue
+            charStatAccum[stat] = (charStatAccum[stat] or 0) + newValue - oldValue
+            return newValue ~= oldValue
         end,
     }
 end
@@ -1434,11 +1441,19 @@ if not _G.ZombRand then
     end
 end
 
--- Perks stub: provides SmallBlunt and Nimble sentinels
+-- Perks stub: provides sentinels used by the production traits and focused tests.
 if not _G.Perks then
-    _G.Perks = { SmallBlunt = "SmallBlunt", Nimble = "Nimble", Strength = "Strength" }
+    _G.Perks = {
+        Fitness = "Fitness",
+        Nimble = "Nimble",
+        SmallBlunt = "SmallBlunt",
+        Sprinting = "Sprinting",
+        Strength = "Strength",
+    }
 else
+    _G.Perks.Fitness = _G.Perks.Fitness or "Fitness"
     _G.Perks.Nimble = _G.Perks.Nimble or "Nimble"
+    _G.Perks.Sprinting = _G.Perks.Sprinting or "Sprinting"
     _G.Perks.Strength = _G.Perks.Strength or "Strength"
 end
 

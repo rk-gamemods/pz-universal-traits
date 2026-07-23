@@ -178,7 +178,7 @@
     "UI_UT_flimsy": "Flimsy",
     "UI_UT_flimsyDesc": "You are not built for physical exertion. Strength and endurance are reduced.",
     "UI_UT_sundayrunner": "Sunday Runner",
-    "UI_UT_sundayrunnerDesc": "Occasional jogging has done little for your long-term endurance. Fitness is slightly below average.",
+    "UI_UT_sundayrunnerDesc": "Sprinting increases unhappiness by 2 every in-game minute.",
     "UI_UT_lesssweaty": "Less Sweaty",
     "UI_UT_lesssweatyDesc": "You run cooler than most. Every in-game minute while awake, wetness is reduced by 3 indoors, 1.5 outdoors, and 0.5 in rain. If body temperature rises above 37.2 C, it cools by 0.08 C per minute, or 0.12 C above 37.7 C. This gives strong heat resistance under normal conditions, but does not make you heat-immune.",
     "UI_UT_highsweaty": "High Sweaty",

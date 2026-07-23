@@ -4805,29 +4805,162 @@ test("squirrel reload replaces its handler without duplicate effects", function(
         "reload must leave exactly one active handler")
 end)
 
-test("sundayrunner records unhappiness addition when sprinting", function()
-    local p = MockPlayer({ "UniversalTraits:UT_sundayrunner" })
+local SUNDAY_RUNNER_ID = "UniversalTraits:UT_sundayrunner"
+
+local function fireSundayRunnerMinute(player)
+    withActivePlayer(player, function() Events.EveryOneMinute:fire() end)
+end
+
+test("sundayrunner adds exactly 2 unhappiness per sprinting minute", function()
+    local p = MockPlayer({ SUNDAY_RUNNER_ID })
     p._sprinting = true
-    withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    local accum = p:getStats()._charStatAccum[CharacterStat.UNHAPPINESS]
-    assert_true(type(accum) == "number" and accum > 0,
-        "expected unhappiness increase when sprinting, got " .. tostring(accum))
+
+    fireSundayRunnerMinute(p)
+    assert_eq(p:getStats():get(CharacterStat.UNHAPPINESS), 2,
+        "first sprinting minute must add exactly 2 unhappiness")
+
+    fireSundayRunnerMinute(p)
+    assert_eq(p:getStats():get(CharacterStat.UNHAPPINESS), 4,
+        "second sprinting minute must add exactly 2 more unhappiness")
+    assert_eq(p:getStats()._charStatAccum[CharacterStat.UNHAPPINESS], 4,
+        "accumulated unhappiness delta must equal both additions")
 end)
-test("sundayrunner skips when not sprinting", function()
-    local p = MockPlayer({ "UniversalTraits:UT_sundayrunner" })
-    p._sprinting = false
-    withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_eq(p:getStats()._charStatAccum[CharacterStat.UNHAPPINESS], nil,
-        "no unhappiness change when not sprinting")
+
+test("sundayrunner rejects running walking idle missing nil and removed players", function()
+    local running = MockPlayer({ SUNDAY_RUNNER_ID })
+    running._running = true
+    fireSundayRunnerMinute(running)
+    assert_eq(running:getStats():get(CharacterStat.UNHAPPINESS), 0,
+        "running without sprinting must not add unhappiness")
+
+    local walking = MockPlayer({ SUNDAY_RUNNER_ID })
+    walking._moving = true
+    fireSundayRunnerMinute(walking)
+    assert_eq(walking:getStats():get(CharacterStat.UNHAPPINESS), 0,
+        "walking without sprinting must not add unhappiness")
+
+    local idle = MockPlayer({ SUNDAY_RUNNER_ID })
+    fireSundayRunnerMinute(idle)
+    assert_eq(idle:getStats():get(CharacterStat.UNHAPPINESS), 0,
+        "idle player must not gain unhappiness")
+
+    local missing = MockPlayer({})
+    missing._sprinting = true
+    fireSundayRunnerMinute(missing)
+    assert_eq(missing:getStats():get(CharacterStat.UNHAPPINESS), 0,
+        "player without Sunday Runner must not gain unhappiness")
+
+    fireSundayRunnerMinute(nil)
+
+    local removed = MockPlayer({ SUNDAY_RUNNER_ID })
+    removed._sprinting = true
+    local trait = CharacterTrait.get(ResourceLocation.of(SUNDAY_RUNNER_ID))
+    removed:getCharacterTraits():remove(trait)
+    fireSundayRunnerMinute(removed)
+    assert_eq(removed:getStats():get(CharacterStat.UNHAPPINESS), 0,
+        "removed Sunday Runner must stop applying immediately")
+end)
+
+test("sundayrunner changes only CharacterStat unhappiness", function()
+    local bodyDamageUnhappiness = 37
+    local bodyDamage = {
+        getUnhappynessLevel = function() return bodyDamageUnhappiness end,
+        setUnhappynessLevel = function(_, value) bodyDamageUnhappiness = value end,
+    }
+    local p = MockPlayer({ SUNDAY_RUNNER_ID }, {
+        bodyDamage = bodyDamage,
+        stress = 0.25,
+        panic = 12,
+        boredom = 18,
+    })
+    p:setPerkLevel(Perks.Fitness, 6)
+    p:setPerkLevel(Perks.Sprinting, 3)
+    p._sprinting = true
+
+    fireSundayRunnerMinute(p)
+
+    assert_eq(p:getStats():get(CharacterStat.UNHAPPINESS), 2,
+        "Sunday Runner must write CharacterStat.UNHAPPINESS")
+    assert_eq(p:getStats():get(CharacterStat.STRESS), 0.25,
+        "Sunday Runner must not restore the upstream stress effect")
+    assert_eq(p:getStats():get(CharacterStat.PANIC), 12,
+        "Sunday Runner must not change unrelated panic")
+    assert_eq(p:getStats():get(CharacterStat.BOREDOM), 18,
+        "Sunday Runner must not change unrelated boredom")
+    assert_eq(p:getPerkLevel(Perks.Fitness), 6,
+        "Sunday Runner must not change Fitness level")
+    assert_eq(p:getPerkLevel(Perks.Sprinting), 3,
+        "Sunday Runner must not change Sprinting level")
+    assert_eq(#p:getXpCalls(), 0,
+        "Sunday Runner must not grant Fitness or Sprinting XP")
+    assert_eq(bodyDamageUnhappiness, 37,
+        "Sunday Runner must not use the legacy BodyDamage unhappiness channel")
+end)
+
+test("sundayrunner clamps unhappiness at the native maximum", function()
+    local p = MockPlayer({ SUNDAY_RUNNER_ID }, { unhappiness = 99 })
+    p._sprinting = true
+    fireSundayRunnerMinute(p)
+    assert_eq(p:getStats():get(CharacterStat.UNHAPPINESS), 100,
+        "99 plus 2 must clamp to the native maximum of 100")
+    assert_eq(p:getStats()._charStatAccum[CharacterStat.UNHAPPINESS], 1,
+        "the mock must record the effective clamped delta")
+end)
+
+test("sundayrunner reload leaves one handler and one exact addition", function()
+    local key = SUNDAY_RUNNER_ID .. "::EveryOneMinute"
+    local before = UTCore._periodicHandlers[key]
+    assert_true(before ~= nil, "Sunday Runner periodic handler should be registered")
+
+    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_sundayrunner.lua")
+
+    local after = UTCore._periodicHandlers[key]
+    assert_true(after ~= nil and after ~= before,
+        "reload must replace the registered Sunday Runner handler")
+    local p = MockPlayer({ SUNDAY_RUNNER_ID })
+    p._sprinting = true
+    fireSundayRunnerMinute(p)
+    assert_eq(p:getStats():get(CharacterStat.UNHAPPINESS), 2,
+        "reload must leave exactly one active +2 handler")
+end)
+
+test("sundayrunner English description states the exact accepted contract", function()
+    local function readDescription(path)
+        local file = assert(io.open(path, "r"))
+        local content = file:read("*a")
+        file:close()
+        return content:match('"UI_UT_sundayrunnerDesc"%s*:%s*"([^"]+)"')
+    end
+
+    local source = readDescription(base .. "../media/lua/shared/Translate/EN/UI.json")
+    local release = readDescription(base .. "../release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json")
+    local expected = "Sprinting increases unhappiness by 2 every in-game minute."
+
+    assert_eq(source, expected, "source Sunday Runner description")
+    assert_eq(release, expected, "release Sunday Runner description")
+    assert_true(source:lower():find("sprinting", 1, true) ~= nil,
+        "description must name sprinting")
+    assert_true(source:find("2", 1, true) ~= nil,
+        "description must name the exact magnitude")
+    assert_true(source:lower():find("unhappiness", 1, true) ~= nil,
+        "description must name unhappiness")
+    assert_true(source:lower():find("every in-game minute", 1, true) ~= nil,
+        "description must name the in-game minute cadence")
+    assert_true(source:lower():find("fitness", 1, true) == nil,
+        "description must not claim a Fitness effect")
 end)
 
 test("couchdweller records boredom and unhappiness removal when indoors", function()
-    local p = MockPlayer({ "UniversalTraits:UT_couchdweller" })
+    local p = MockPlayer({ "UniversalTraits:UT_couchdweller" }, {
+        boredom = 2,
+        unhappiness = 2,
+    })
     p._indoors = true   -- isOutside() = false → handler proceeds
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    local boredom = p:getStats()._charStatAccum[CharacterStat.BOREDOM]
-    assert_true(type(boredom) == "number" and boredom < 0,
-        "expected boredom removal when indoors, got " .. tostring(boredom))
+    assert_eq(p:getStats():get(CharacterStat.BOREDOM), 1,
+        "indoors must remove exactly 1 boredom above the native floor")
+    assert_eq(p:getStats():get(CharacterStat.UNHAPPINESS), 1,
+        "indoors must remove exactly 1 unhappiness above the native floor")
 end)
 test("couchdweller skips when outdoors", function()
     local p = MockPlayer({ "UniversalTraits:UT_couchdweller" })
