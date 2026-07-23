@@ -6569,12 +6569,197 @@ test("onehanded_axes ignores two-handed axes", function()
 end)
 
 -- ─── twohanded_axes: +10% crit on two-handed Axe weapons ──────────────────────
-test("twohanded_axes adds 10% crit to two-handed axe", function()
+local TWO_HANDED_AXES_ID = "UniversalTraits:UT_twohanded_axes"
+local TWO_HANDED_AXES_RUNTIME = "../media/lua/shared/UniversalTraits/traits/UT_twohanded_axes.lua"
+
+local function fireTwoHandedAxes(player, count)
+    for _ = 1, count or 30 do Events.OnPlayerUpdate:fire(player) end
+end
+
+local function restoreTwoHandedAxesByUnequip(player)
+    player:setPrimaryHandItem(nil)
+    player:setSecondaryHandItem(nil)
+    fireTwoHandedAxes(player, 30)
+end
+
+test("twohanded_axes applies exactly 10 displayed points and is idempotent", function()
     local weapon = MockWeapon("FireAxe", 0, true, true,
         { criticalChance = 10, categories = { WeaponCategory.AXE } })
-    local p = MockPlayer({ "UniversalTraits:UT_twohanded_axes" }, { primaryHandItem = weapon })
-    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
-    assert_eq(weapon:getCriticalChance(), 20, "twohanded_axes should boost from 10 to 20")
+    local player = MockPlayer({ TWO_HANDED_AXES_ID }, { primaryHandItem = weapon })
+    fireTwoHandedAxes(player, 90)
+    assert_eq(weapon:getCriticalChance(), 20, "repeated updates must keep exactly +10 displayed")
+    restoreTwoHandedAxesByUnequip(player)
+    assert_eq(weapon:getCriticalChance(), 10, "unequip must restore the original chance")
+end)
+
+test("twohanded_axes enforces category and handedness boundaries", function()
+    local oneHanded = MockWeapon("HandAxe", 0, false, true,
+        { criticalChance = 10, categories = { WeaponCategory.AXE } })
+    local wrongCategory = MockWeapon("Sledgehammer", 0, true, true,
+        { criticalChance = 20, categories = { WeaponCategory.BLUNT } })
+    local player = MockPlayer({ TWO_HANDED_AXES_ID }, {
+        primaryHandItem = oneHanded, secondaryHandItem = wrongCategory,
+    })
+    fireTwoHandedAxes(player, 30)
+    assert_eq(oneHanded:getCriticalChance(), 10, "one-handed axes must be unchanged")
+    assert_eq(wrongCategory:getCriticalChance(), 20, "non-axes must be unchanged")
+end)
+
+test("twohanded_axes safely rejects zero sharpness and API failures", function()
+    local zeroSharpness = MockWeapon("FireAxe", 0, true, true, {
+        criticalChance = 20, sharpness = 0,
+        categories = { WeaponCategory.AXE },
+    })
+    local player = MockPlayer({ TWO_HANDED_AXES_ID }, { primaryHandItem = zeroSharpness })
+    fireTwoHandedAxes(player, 30)
+    assert_eq(zeroSharpness:getRawCriticalChance(), 20, "zero sharpness must be a safe no-op")
+
+    local weapon = MockWeapon("FireAxe", 0, true, true,
+        { criticalChance = 15, categories = { WeaponCategory.AXE } })
+    player:setPrimaryHandItem(weapon)
+    fireTwoHandedAxes(player, 30)
+    assert_eq(weapon:getCriticalChance(), 25, "precondition: eligible weapon must be boosted")
+    weapon.isTwoHandWeapon = function() error("simulated API failure") end
+    fireTwoHandedAxes(player, 30)
+    assert_eq(weapon:getCriticalChance(), 15, "eligibility API failure must restore owned state")
+end)
+
+test("twohanded_axes caps displayed chance and converts sharpness domains", function()
+    local cases = {
+        { 0.5, 20, 20, 40 },
+        { 1.0, 20, 30, 30 },
+        { 2.0, 20, 50, 25 },
+        { 0.5, 190, 100, 200 },
+    }
+    for _, case in ipairs(cases) do
+        local weapon = MockWeapon("FireAxe", 0, true, true, {
+            criticalChance = case[2], sharpness = case[1],
+            categories = { WeaponCategory.AXE },
+        })
+        local player = MockPlayer({ TWO_HANDED_AXES_ID }, { primaryHandItem = weapon })
+        fireTwoHandedAxes(player, 30)
+        assert_eq(weapon:getCriticalChance(), case[3], "displayed bonus/cap must be exact")
+        assert_eq(weapon:getRawCriticalChance(), case[4], "raw setter must account for sharpness")
+        restoreTwoHandedAxesByUnequip(player)
+        assert_eq(weapon:getRawCriticalChance(), case[2], "raw chance must restore exactly")
+    end
+end)
+
+test("twohanded_axes deduplicates hands and restores swaps and transfers", function()
+    local weaponA = MockWeapon("FireAxeA", 0, true, true,
+        { criticalChance = 15, categories = { WeaponCategory.AXE } })
+    local weaponB = MockWeapon("FireAxeB", 0, true, true,
+        { criticalChance = 30, categories = { WeaponCategory.AXE } })
+    local owner = MockPlayer({ TWO_HANDED_AXES_ID }, {
+        primaryHandItem = weaponA, secondaryHandItem = weaponA,
+    })
+    fireTwoHandedAxes(owner, 30)
+    assert_eq(weaponA:getCriticalChance(), 25, "the same object in both hands gets one bonus")
+    owner:setPrimaryHandItem(weaponB)
+    owner:setSecondaryHandItem(nil)
+    fireTwoHandedAxes(owner, 30)
+    assert_eq(weaponA:getCriticalChance(), 15, "swap/drop/transfer must restore the old object")
+    assert_eq(weaponB:getCriticalChance(), 40, "replacement must be managed independently")
+    restoreTwoHandedAxesByUnequip(owner)
+    assert_eq(weaponB:getCriticalChance(), 30, "replacement must restore on unequip")
+end)
+
+test("twohanded_axes restores on trait loss, death, and inactive teardown", function()
+    local weapon = MockWeapon("FireAxe", 0, true, true,
+        { criticalChance = 15, categories = { WeaponCategory.AXE } })
+    local owner = MockPlayer({ TWO_HANDED_AXES_ID }, { primaryHandItem = weapon })
+    UTCore.rebuildActiveHandlers(owner)
+    fireTwoHandedAxes(owner, 30)
+    UTCore.rebuildActiveHandlers(MockPlayer({}))
+    assert_eq(weapon:getCriticalChance(), 15, "trait-loss rebuild must restore tracked objects")
+    UTCore.rebuildActiveHandlers(owner)
+    fireTwoHandedAxes(owner, 30)
+    UTCore.teardownActiveTickHandlers("death")
+    assert_eq(weapon:getCriticalChance(), 15, "death/inactive teardown must restore tracked objects")
+end)
+
+test("twohanded_axes preserves external raw writes and sharpness changes", function()
+    local weapon = {
+        _mockType = "HandWeapon",
+        raw = 20,
+        sharpness = 0.5,
+        moddata = {},
+        getModData = function(self) return self.moddata end,
+        isTwoHandWeapon = function() return true end,
+        isOfWeaponCategory = function(_, category) return category == WeaponCategory.AXE end,
+        hasSharpness = function() return true end,
+        getSharpness = function(self) return self.sharpness end,
+        setSharpness = function(self, value) self.sharpness = value end,
+        getCriticalChance = function(self) return self.raw * self.sharpness end,
+        setCriticalChance = function(self, value) self.raw = value end,
+        getRawCriticalChance = function(self) return self.raw end,
+    }
+    local player = MockPlayer({ TWO_HANDED_AXES_ID }, { primaryHandItem = weapon })
+    fireTwoHandedAxes(player, 30)
+    weapon:setCriticalChance(50)
+    weapon:setSharpness(2)
+    fireTwoHandedAxes(player, 30)
+    assert_eq(weapon:getCriticalChance(), 70, "recompute must use current raw value and sharpness")
+    restoreTwoHandedAxesByUnequip(player)
+    assert_eq(weapon:getRawCriticalChance(), 30, "restore removes only this trait's current delta")
+end)
+
+test("twohanded_axes retires only its stale legacy modData key", function()
+    local weapon = MockWeapon("FireAxe", 0, true, true, {
+        criticalChance = 10, categories = { WeaponCategory.AXE },
+        moddata = { UT_th_axesBaseCrit = 7, unrelated = "keep" },
+    })
+    local player = MockPlayer({ TWO_HANDED_AXES_ID }, { primaryHandItem = weapon })
+    fireTwoHandedAxes(player, 30)
+    assert_eq(weapon:getModData().UT_th_axesBaseCrit, nil, "legacy key must be retired")
+    assert_eq(weapon:getModData().unrelated, "keep", "unrelated modData must remain")
+    restoreTwoHandedAxesByUnequip(player)
+    assert_eq(weapon:getModData().UT_th_axesBaseCrit, nil, "no persistent key may be written")
+end)
+
+test("twohanded_axes duplicate load restores and leaves one handler", function()
+    local weapon = MockWeapon("FireAxe", 0, true, true,
+        { criticalChance = 15, categories = { WeaponCategory.AXE } })
+    local player = MockPlayer({ TWO_HANDED_AXES_ID }, { primaryHandItem = weapon })
+    fireTwoHandedAxes(player, 30)
+    dofile(base .. TWO_HANDED_AXES_RUNTIME)
+    assert_eq(weapon:getCriticalChance(), 15, "reload teardown must restore the tracked object")
+    local registrations = 0
+    for i = 1, #UTCore._tickHandlers do
+        if UTCore._tickHandlers[i].id == TWO_HANDED_AXES_ID then
+            registrations = registrations + 1
+        end
+    end
+    assert_eq(registrations, 1, "duplicate load must leave exactly one handler")
+end)
+
+test("twohanded_axes contract and source-release copies match", function()
+    local function readAll(path)
+        local file = assert(io.open(path, "rb"))
+        local content = file:read("*a")
+        file:close()
+        return content
+    end
+    local expected = "+2 to Axe. Two-handed axe attacks have +10 percent critical hit chance."
+    local ui = readAll(base .. "../media/lua/shared/Translate/EN/UI.json")
+    assert_eq(ui:match('"UI_UT_twohanded_axesDesc"%s*:%s*"([^"]+)"'), expected,
+        "English copy must preserve accepted intent")
+    local definitions = readAll(base .. "../media/scripts/UT_character_traits.txt")
+    local block = definitions:match(
+        "character_trait_definition%s+UniversalTraits:UT_twohanded_axes%s*(%b{})")
+    assert_true(block ~= nil, "Two-Handed Axe definition must exist")
+    assert_true(block:find("DisabledInMultiplayer%s*=%s*true"), "single-player scope must remain")
+    assert_true(block:find("Cost%s*=%s*4[%s,]"), "cost 4 must remain")
+    assert_true(block:find("XPBoosts%s*=%s*Axe%s*=%s*2[%s,]"), "+2 Axe must remain")
+    for _, path in ipairs({
+        "lua/shared/UniversalTraits/traits/UT_twohanded_axes.lua",
+        "lua/shared/Translate/EN/UI.json",
+        "scripts/UT_character_traits.txt",
+    }) do
+        assert_eq(readAll(base .. "../media/" .. path),
+            readAll(base .. "../release/UniversalTraits/42.0/media/" .. path),
+            "Two-Handed Axe source and release must match for " .. path)
+    end
 end)
 
 -- ─── twohanded_blades: +10% crit on two-handed Long Blade ─────────────────────
