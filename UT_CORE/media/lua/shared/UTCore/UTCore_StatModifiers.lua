@@ -33,6 +33,9 @@ local TRANSFER_MAX_MULT = 2.0
 local INVENTORY_LIMIT_PATCH_MOD_ID = "RemoveInventoryLimitsZB"
 local SAFE_INVENTORY_CAPACITY_MAX = 100
 local DEFAULT_CARRY_BASE = 8
+-- A persisted value fence: UTCore owns a capacity only while the receiver
+-- still reports the exact value from UTCore's last successful write.
+local INVENTORY_CAPACITY_APPLIED_KEY = "UT_inventoryCapacityApplied"
 
 local function isInventoryLimitPatchActive()
     if getActivatedMods == nil then return false end
@@ -175,7 +178,7 @@ function UTCore.refreshAggregatedModifierCache(player)
 end
 
 function UTCore.reconcileAggregatedModifiers(player)
-    if not player then return nil end
+    if not player or not player.getModData then return nil end
 
     local summary = UTCore.refreshAggregatedModifierCache(player)
     local carryTarget = summary and summary.carryTargetBase or nil
@@ -189,8 +192,11 @@ function UTCore.reconcileAggregatedModifiers(player)
     -- Sync inventory container capacity with actual carry ability.
     -- Vanilla B42.17 is safe only up to 100. Higher values require the
     -- ZombieBuddy-based RemoveInventoryLimitsZB patch to lift Java caps.
-    local inv = player.getInventory and player:getInventory()
-    if inv and inv.setCapacity and inv.getCapacity then
+    local invOk, inv = false, nil
+    if player.getInventory then
+        invOk, inv = pcall(player.getInventory, player)
+    end
+    if invOk and inv and inv.setCapacity and inv.getCapacity then
         local maxW = player.getMaxWeight and player:getMaxWeight() or 0
         local base = player.getMaxWeightBase and player:getMaxWeightBase() or 8
         local wMod = player.getWeightMod and player:getWeightMod() or 1.0
@@ -201,9 +207,23 @@ function UTCore.reconcileAggregatedModifiers(player)
         if not isInventoryLimitPatchActive() then
             targetCap = math.min(SAFE_INVENTORY_CAPACITY_MAX, needed)
         end
-        local currentCap = inv:getCapacity()
-        if currentCap < targetCap then
-            inv:setCapacity(targetCap)
+        local md = player:getModData()
+        local ownedCapacity = md[INVENTORY_CAPACITY_APPLIED_KEY]
+        local currentOk, currentCap = pcall(inv.getCapacity, inv)
+        if currentOk and type(currentCap) == "number" then
+            if ownedCapacity ~= nil and currentCap ~= ownedCapacity then
+                md[INVENTORY_CAPACITY_APPLIED_KEY] = nil
+                ownedCapacity = nil
+            end
+
+            local mayRaise = currentCap < targetCap
+            local mayLowerOwned = currentCap > targetCap and ownedCapacity == currentCap
+            if mayRaise or mayLowerOwned then
+                local setOk = pcall(inv.setCapacity, inv, targetCap)
+                if setOk then
+                    md[INVENTORY_CAPACITY_APPLIED_KEY] = targetCap
+                end
+            end
         end
     end
 

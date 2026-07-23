@@ -408,6 +408,161 @@ test("carry reconciliation allows high inventory capacity with RemoveInventoryLi
     _activatedMods = {}
 end)
 
+local function makeCarryOwnershipInventory(capacity, failGet, failSet)
+    return {
+        _capacity = capacity,
+        _calls = {},
+        getCapacity = function(self)
+            if failGet then error("injected getCapacity failure") end
+            return self._capacity
+        end,
+        setCapacity = function(self, value)
+            if failSet then error("injected setCapacity failure") end
+            self._calls[#self._calls + 1] = value
+            self._capacity = value
+        end,
+    }
+end
+
+test("carry ownership initial below-floor reconciliation records the applied floor", function()
+    local inv = makeCarryOwnershipInventory(12)
+    local p = MockPlayer({}, { inventory = inv })
+    UTCore.reconcileAggregatedModifiers(p)
+    assert_eq(inv._capacity, 50)
+    assert_eq(p:getModData().UT_inventoryCapacityApplied, 50)
+end)
+
+test("carry ownership raise records the exact UTCore-applied capacity", function()
+    local inv = makeCarryOwnershipInventory(50)
+    local p = MockPlayer({}, { inventory = inv })
+    UTCore.applyCarryWeight(p, 52, "raise")
+    UTCore.reconcileAggregatedModifiers(p)
+    assert_eq(inv._capacity, 60)
+    assert_eq(p:getModData().UT_inventoryCapacityApplied, 60)
+end)
+
+test("carry ownership safely lowers a capacity still owned by UTCore", function()
+    local inv = makeCarryOwnershipInventory(50)
+    local p = MockPlayer({}, { inventory = inv })
+    UTCore.applyCarryWeight(p, 52, "dynamic")
+    UTCore.reconcileAggregatedModifiers(p)
+    UTCore.applyCarryWeight(p, 42, "dynamic")
+    UTCore.reconcileAggregatedModifiers(p)
+    assert_eq(inv._capacity, 50)
+    assert_eq(p:getModData().UT_inventoryCapacityApplied, 50)
+end)
+
+test("carry ownership never lowers a capacity changed by an external owner", function()
+    local inv = makeCarryOwnershipInventory(50)
+    local p = MockPlayer({}, { inventory = inv })
+    UTCore.applyCarryWeight(p, 52, "dynamic")
+    UTCore.reconcileAggregatedModifiers(p)
+    inv._capacity = 55
+    UTCore.applyCarryWeight(p, 42, "dynamic")
+    UTCore.reconcileAggregatedModifiers(p)
+    assert_eq(inv._capacity, 55)
+    assert_eq(p:getModData().UT_inventoryCapacityApplied, nil)
+end)
+
+test("carry ownership repeated identical reconciliation is idempotent", function()
+    local inv = makeCarryOwnershipInventory(50)
+    local p = MockPlayer({}, { inventory = inv })
+    UTCore.applyCarryWeight(p, 52, "dynamic")
+    UTCore.reconcileAggregatedModifiers(p)
+    UTCore.reconcileAggregatedModifiers(p)
+    assert_eq(#inv._calls, 1)
+    assert_eq(inv._calls[1], 60)
+end)
+
+test("carry ownership composes flat and strength carry sources", function()
+    local inv = makeCarryOwnershipInventory(50)
+    local p = MockPlayer({}, { inventory = inv, perkLevels = { Strength = 5 } })
+    UTCore.applyCarryWeight(p, 60, "flat")
+    UTCore.applyStrengthCarryWeight(p, 4, "strength")
+    UTCore.reconcileAggregatedModifiers(p)
+    assert_eq(p:getMaxWeightBase(), 74)
+    assert_eq(inv._capacity, 74)
+end)
+
+test("carry ownership source removal lowers to the remaining composed target", function()
+    local inv = makeCarryOwnershipInventory(50)
+    local p = MockPlayer({}, { inventory = inv })
+    UTCore.applyCarryWeight(p, 60, "persistent")
+    UTCore.applyCarryWeight(p, 10, "temporary")
+    UTCore.reconcileAggregatedModifiers(p)
+    UTCore.applyCarryWeight(p, nil, "temporary")
+    UTCore.reconcileAggregatedModifiers(p)
+    assert_eq(p:getMaxWeightBase(), 68)
+    assert_eq(inv._capacity, 68)
+end)
+
+test("carry ownership does not transfer to a replacement player", function()
+    local firstInv = makeCarryOwnershipInventory(50)
+    local first = MockPlayer({}, { inventory = firstInv })
+    UTCore.applyCarryWeight(first, 60, "first")
+    UTCore.reconcileAggregatedModifiers(first)
+
+    local replacementInv = makeCarryOwnershipInventory(68)
+    local replacement = MockPlayer({}, { inventory = replacementInv })
+    UTCore.applyCarryWeight(replacement, 42, "replacement")
+    UTCore.reconcileAggregatedModifiers(replacement)
+    assert_eq(replacementInv._capacity, 68)
+    assert_eq(replacement:getModData().UT_inventoryCapacityApplied, nil)
+end)
+
+test("carry ownership reconstructs from persisted player state after save load", function()
+    local inv = makeCarryOwnershipInventory(50)
+    local original = MockPlayer({}, { inventory = inv })
+    UTCore.applyCarryWeight(original, 60, "persistent")
+    UTCore.applyCarryWeight(original, 10, "temporary")
+    UTCore.reconcileAggregatedModifiers(original)
+    assert_eq(original:getMaxWeightBase(), 78)
+    assert_eq(inv._capacity, 78)
+    assert_eq(original:getModData().UT_inventoryCapacityApplied, 78)
+
+    local loadedInv = makeCarryOwnershipInventory(78)
+    local loaded = MockPlayer({}, { inventory = loadedInv })
+    for key, value in pairs(original:getModData()) do
+        loaded:getModData()[key] = value
+    end
+    loaded:setMaxWeightBase(78)
+    assert_eq(loaded:getModData().UT_inventoryCapacityApplied, 78)
+    UTCore.applyCarryWeight(loaded, nil, "temporary")
+    assert_eq(loaded:getModData().UT_carryTargetBase, 68)
+    assert_eq(loaded:getModData().UT_inventoryCapacityApplied, 78)
+    UTCore.reconcileAggregatedModifiers(loaded)
+    assert_eq(loadedInv._capacity, 68)
+    assert_eq(loaded:getModData().UT_inventoryCapacityApplied, 68)
+end)
+
+test("carry ownership tolerates nil missing inventory and bridge failures", function()
+    assert_eq(UTCore.reconcileAggregatedModifiers(nil), nil)
+    assert_eq(UTCore.reconcileAggregatedModifiers({}), nil)
+    UTCore.reconcileAggregatedModifiers(MockPlayer())
+
+    local getFailure = MockPlayer({}, {
+        inventory = makeCarryOwnershipInventory(20, true, false),
+    })
+    assert_true(pcall(UTCore.reconcileAggregatedModifiers, getFailure))
+
+    local setFailureInv = makeCarryOwnershipInventory(20, false, true)
+    local setFailure = MockPlayer({}, { inventory = setFailureInv })
+    assert_true(pcall(UTCore.reconcileAggregatedModifiers, setFailure))
+    assert_eq(setFailure:getModData().UT_inventoryCapacityApplied, nil)
+end)
+
+test("carry ownership source and release files have byte parity", function()
+    local sourcePath = base .. "../media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+    local releasePath = base .. "../release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_StatModifiers.lua"
+    local sourceFile = assert(io.open(sourcePath, "rb"))
+    local releaseFile = assert(io.open(releasePath, "rb"))
+    local sourceBytes = sourceFile:read("*a")
+    local releaseBytes = releaseFile:read("*a")
+    sourceFile:close()
+    releaseFile:close()
+    assert_eq(sourceBytes, releaseBytes)
+end)
+
 -- applyBleedRate
 test("applyBleedRate stores multiplier in moddata", function()
     local p = MockPlayer()
