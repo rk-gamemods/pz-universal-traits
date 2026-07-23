@@ -831,7 +831,21 @@ local function boundedEngineApplyEpoch(raw, values, registrationEpoch)
     }
 end
 
-local function applyEngineTargets(vehicle, ownership, targets, registrationEpoch)
+local function engineApplyEpochs(ownership, definitionKey)
+    local raw = ownership.applyAttempts.engineFields
+    if type(raw) == "table" and type(raw.byDefinition) == "table" then
+        return raw, raw.byDefinition[definitionKey]
+    end
+
+    -- Adopt one legacy scalar/epoch as the current definition's record. Any
+    -- malformed value is normalized by boundedEngineApplyEpoch and fails closed.
+    local epochs = { byDefinition = {} }
+    epochs.byDefinition[definitionKey] = raw or 0
+    ownership.applyAttempts.engineFields = epochs
+    return epochs, epochs.byDefinition[definitionKey]
+end
+
+local function applyEngineTargets(vehicle, ownership, targets, registrationEpoch, definitionKey)
     local values = {}
     local needsWrite = false
     for field in pairs(ENGINE_FIELDS) do
@@ -843,11 +857,12 @@ local function applyEngineTargets(vehicle, ownership, targets, registrationEpoch
         end
     end
     if not needsWrite then return end
+    local epochs, rawEpoch = engineApplyEpochs(ownership, definitionKey)
     local epoch = boundedEngineApplyEpoch(
-        ownership.applyAttempts.engineFields or 0,
+        rawEpoch == nil and 0 or rawEpoch,
         values,
         registrationEpoch or 0)
-    ownership.applyAttempts.engineFields = epoch
+    epochs.byDefinition[definitionKey] = epoch
     if epoch.count >= MAX_RESTORE_ATTEMPTS then return end
 
     local _, loudnessInput = loudnessTargetAndInput(values.engineLoudness)
@@ -875,12 +890,17 @@ local function applyEngineTargets(vehicle, ownership, targets, registrationEpoch
             end
         end
     end
-    if not pending then ownership.applyAttempts.engineFields = nil end
+    if not pending then
+        epochs.byDefinition[definitionKey] = nil
+        if next(epochs.byDefinition) == nil then
+            ownership.applyAttempts.engineFields = nil
+        end
+    end
 end
 
 --- applyVehicleMod(player, stateKey, mods[, vehicleOverride])
 -- Reconciles one selected state against per-field ownership evidence.
-function UTCore.applyVehicleMod(player, stateKey, mods, vehicleOverride, registrationEpoch)
+function UTCore.applyVehicleMod(player, stateKey, mods, vehicleOverride, registrationEpoch, definitionKey)
     if not player or not player.isDriving or not player:isDriving() then return end
     local vehicle = vehicleOverride or (player.getVehicle and player:getVehicle())
     if not vehicle then return end
@@ -907,7 +927,7 @@ function UTCore.applyVehicleMod(player, stateKey, mods, vehicleOverride, registr
 
     local targets = desiredTargets(ownership, mods)
     applySimpleTargets(vehicle, ownership, targets)
-    applyEngineTargets(vehicle, ownership, targets, registrationEpoch)
+    applyEngineTargets(vehicle, ownership, targets, registrationEpoch, definitionKey or stateKey)
 end
 
 -- Registers a vehicle trait so the shared enter/load/exit listeners can apply it.
@@ -957,7 +977,7 @@ function UTCore.syncVehicleTrait(player, vehicle)
     end
 
     UTCore.applyVehicleMod(player, selected.stateKey, selected.mods, targetVehicle,
-        selected.registrationEpoch)
+        selected.registrationEpoch, selected.traitId)
 end
 
 -- Tracks the engine's real one-argument OnEnterVehicle contract and detects

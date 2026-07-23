@@ -2940,7 +2940,7 @@ test("Vehicle grouped apply normalizes hostile persisted attempt state to a boun
 
         for _ = 1, 20 do UTCore.syncVehicleTrait(player, vehicle) end
 
-        local normalized = ownership.applyAttempts.engineFields
+        local normalized = ownership.applyAttempts.engineFields.byDefinition[traitId]
         assert_eq(vehicle._setterCalls.engineFeature, callsBefore,
             hostile.name .. " persisted state must not reopen an unbounded setter loop")
         assert_true(type(normalized) == "table",
@@ -2948,6 +2948,89 @@ test("Vehicle grouped apply normalizes hostile persisted attempt state to a boun
         assert_eq(normalized.count, 2,
             hostile.name .. " persisted state must normalize to the terminal bounded count")
     end
+end)
+
+test("Vehicle grouped apply retry budgets are independent per trait definition", function()
+    UTCore._vehicleTraitDefs = {}
+    local traitA = "UniversalTraits:UT_retryIdentityA"
+    local traitB = "UniversalTraits:UT_retryIdentityB"
+    local stateKey = "UT_sharedRetryIdentity"
+    local modsA = { engineQuality = 0.5, engineLoudness = 0.5, enginePower = 2 }
+    local modsB = { engineQuality = 0.5, engineLoudness = 0.5, enginePower = 2 }
+    local vehicle = MockVehicle()
+    vehicle.setEngineFeature = function(self, quality, loudness)
+        self._setterCalls.engineFeature = (self._setterCalls.engineFeature or 0) + 1
+        self._engineQuality = quality
+        self._engineLoudness = math.floor(loudness / 2.7)
+        error("bounded grouped apply failure")
+    end
+    local player = MockPlayer({traitA, traitB}, { vehicle = vehicle, driving = true })
+    UTCore.registerVehicleTrait(traitA, stateKey, modsA, 1)
+    UTCore.registerVehicleTrait(traitB, stateKey, modsB, 1)
+    local function applyDefinition(traitId, mods, generation)
+        UTCore.applyVehicleMod(player, stateKey, mods, vehicle, generation, traitId)
+    end
+
+    applyDefinition(traitA, modsA, 1)
+    applyDefinition(traitA, modsA, 1)
+    assert_eq(vehicle._setterCalls.engineFeature, 2, "trait A must exhaust exactly its own budget")
+
+    applyDefinition(traitB, modsB, 1)
+    applyDefinition(traitB, modsB, 1)
+    assert_eq(vehicle._setterCalls.engineFeature, 4, "trait B must receive its own two attempts")
+
+    for _ = 1, 5 do
+        applyDefinition(traitA, modsA, 1)
+        applyDefinition(traitB, modsB, 1)
+    end
+    assert_eq(vehicle._setterCalls.engineFeature, 4,
+        "alternating unchanged definitions must retain A=2 and B=2 exhausted budgets")
+
+    local reloadedB = { engineQuality = 0.5, engineLoudness = 0.5, enginePower = 2 }
+    UTCore.registerVehicleTrait(traitB, stateKey, reloadedB, 1)
+    applyDefinition(traitB, reloadedB, 2)
+    applyDefinition(traitB, reloadedB, 2)
+    assert_eq(vehicle._setterCalls.engineFeature, 6, "explicit B reload must rearm only B")
+    UTCore.registerVehicleTrait(traitB, stateKey, reloadedB, 1)
+    for _ = 1, 5 do applyDefinition(traitB, reloadedB, 2) end
+    assert_eq(vehicle._setterCalls.engineFeature, 6,
+        "duplicate registration of B's identical object must not rearm")
+
+    for _ = 1, 5 do applyDefinition(traitA, modsA, 1) end
+    assert_eq(vehicle._setterCalls.engineFeature, 6, "B reload must leave A exhausted")
+
+    local changedB = {
+        engineQuality = 0.5,
+        engineLoudness = 0.5,
+        enginePower = 3,
+    }
+    UTCore.registerVehicleTrait(traitB, stateKey, changedB, 1)
+    applyDefinition(traitB, changedB, 3)
+    applyDefinition(traitB, changedB, 3)
+    assert_eq(vehicle._setterCalls.engineFeature, 8, "B tuple change must rearm only B")
+    applyDefinition(traitA, modsA, 1)
+    assert_eq(vehicle._setterCalls.engineFeature, 8, "B tuple change must not rearm A")
+end)
+
+test("Vehicle grouped apply malformed per-definition entries fail closed independently", function()
+    local traitA = "UniversalTraits:UT_malformedDefinitionA"
+    local traitB = "UniversalTraits:UT_malformedDefinitionB"
+    local vehicle, player = exhaustedEngineApplyFixture(traitA, "UT_malformedDefinitionState")
+    local ownership = vehicle:getModData().UT_vehicleTraitOwnership
+    ownership.applyAttempts.engineFields.byDefinition[traitA] = { count = "bad" }
+    ownership.applyAttempts.engineFields.byDefinition[traitB] = 0 / 0
+    local callsBefore = vehicle._setterCalls.engineFeature
+
+    for _ = 1, 10 do UTCore.syncVehicleTrait(player, vehicle) end
+
+    local normalized = ownership.applyAttempts.engineFields.byDefinition[traitA]
+    assert_eq(vehicle._setterCalls.engineFeature, callsBefore,
+        "malformed current-definition entry must not reopen the setter loop")
+    assert_true(type(normalized) == "table",
+        "malformed current-definition entry must normalize to a table")
+    assert_eq(normalized.count, 2, "malformed current-definition entry must normalize terminal")
+    assert_true(ownership.applyAttempts.engineFields.byDefinition[traitB] ~= nil,
+        "normalizing one definition must not discard another definition's entry")
 end)
 
 test("Vehicle grouped apply target tuple change rearms one bounded epoch and applies recovered power", function()
