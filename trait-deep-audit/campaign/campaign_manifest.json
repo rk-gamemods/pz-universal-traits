@@ -40,8 +40,8 @@
     "trait_batches/batch_12.jsonl",
     "translation_audit.json"
   ],
-  "file_count": 159,
-  "total_bytes": 13568136,
+  "file_count": 162,
+  "total_bytes": 13600766,
   "files": [
     {
       "path": ".gitattributes",
@@ -154,6 +154,13 @@
       "byte_semantics": "utf-8-lf",
       "bytes": 5049,
       "sha256": "0AFCA5667FE30263A831EC5D0EFD677CD5D57D850A51B10DCBC5382052138588"
+    },
+    {
+      "path": "change-impact/humanhamster-owned-state-contract.json",
+      "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 5480,
+      "sha256": "FEC6339AA02C9C0F206D81625E5E2B0C9255C31A1C36584035477FD02529951B"
     },
     {
       "path": "change-impact/immuneresponse-infection-channel-resolution.json",
@@ -313,22 +320,22 @@
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2271645,
-      "sha256": "A5CF5EA3D6CF37703281E93E429834891CA27D8B2D506204806B92522060165A"
+      "bytes": 2272183,
+      "sha256": "570F9F03BD1042061D52D5A695010CDF81B2D1E09471E3B991C1FD762B27F0E3"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2099560,
-      "sha256": "4B0ED448F7507550591BDFD9FE56F598AC8F4A114652B0EB1F2B3FB29FC1D096"
+      "bytes": 2098977,
+      "sha256": "7F63E24BF839C1F538FF81902E401167EABC109F77A43695200649B06967BC30"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1293220,
-      "sha256": "5044D164A3378EF2EF087BAD04D7D3578EC1EA73B109EFBD0BC5640DE338CF99"
+      "bytes": 1293716,
+      "sha256": "9623C1AE622E37AA6EA893C4F5990266CBAE043D39D8ED9FD7D9752510ACC96F"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
@@ -355,8 +362,8 @@
       "path": "independent_reviews/traits_05_08.json",
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
-      "bytes": 255635,
-      "sha256": "B1CDBE8BBEE77E5C4D9417E0E77E1EF69178E8F34BD4C18B825038266D7E9D53"
+      "bytes": 255732,
+      "sha256": "83B0AFE9B530358D8813012A83A0F5281D3E6D0CEC51EE0A98A0DB940EF84B68"
     },
     {
       "path": "independent_reviews/traits_09_12.json",
@@ -376,29 +383,29 @@
       "path": "recurring_pattern_findings.json",
       "kind": "recurring-pattern-report",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1787,
-      "sha256": "3CD43E4EEBDC1C3F60B89BDA2CF0F171B7E808A8B7155B92D0F7314B3FC46300"
+      "bytes": 1811,
+      "sha256": "375DA55217663EB24A74DB6323527F96755B7D47CFB4D9C177C1F6B0ACAF7AFF"
     },
     {
       "path": "release_blocker_queue.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 2939,
-      "sha256": "74B19B13DF6BE8E4197FB5E5F421EAD6A092D273FD0427F2C3E8A1A049750792"
+      "sha256": "E0E65F55C388FEBECFD8B8080EB643B64B676A43652410EBE3770CC33E649C4E"
     },
     {
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2072950,
-      "sha256": "F350BA896063278583FADF515A8702F5490F9DF59F8E30D5018F9C49C97D9109"
+      "bytes": 2068346,
+      "sha256": "3F68FFC1DD475A68745FAD37AF78C80E0D12F7B0B40F1680EFE5F7D598C9CB45"
     },
     {
       "path": "remediation_summary.json",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
       "bytes": 1211,
-      "sha256": "2E9AB9F4E13A8A7BE72F7BAE0D4B5F7E6E5747E3BD3D091CFCEFC6C1D488A581"
+      "sha256": "3D6D5D559D84E6C759831F6B6C6C85AB91DFE105EC2E3CDFE19BD7A162122A7D"
     },
     {
       "path": "runtime-traces/utcore-wave-01.jsonl",
@@ -653,6 +660,13 @@
       "sha256": "89B148C79A1D65B264FAB4A748AF703B5BE2E270643EA23D4D5220F422A41AA6"
     },
     {
+      "path": "tests/test_regenerate_humanhamster.py",
+      "kind": "regression-test",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 9773,
+      "sha256": "3712B902FDA3A29AA2DF3C9737D13E7AA0CDF82C53F47AFDEC8C4AC41F8B880E"
+    },
+    {
       "path": "tests/test_regenerate_immuneresponse.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
@@ -905,6 +919,13 @@
       "sha256": "6ED53C8B1F6AB513CC83E6597BBBAE7AE11FDC92339D6D2CE155E90EDCFF3A1B"
     },
     {
+      "path": "tools/regenerate_humanhamster.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 19594,
+      "sha256": "D77E52B987D3B3A6B653EC1A8FEB6FD3FD9B8071E8CF7AD628A9986A034AEB7C"
+    },
+    {
       "path": "tools/regenerate_immuneresponse.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
@@ -1097,8 +1118,8 @@
       "path": "trait_batches/batch_05.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 94983,
-      "sha256": "BA60BE0BC7B63050926D20FF18FDA9C43CD9CEE84F5540E3200E7D9227F7A9D5"
+      "bytes": 96503,
+      "sha256": "3B947F6228AB251E6E17074CF88F62A636D3EDFA01474F1E2DE2CC30ED42433D"
     },
     {
       "path": "trait_batches/batch_06.jsonl",
@@ -1153,8 +1174,8 @@
       "path": "translation_audit.json",
       "kind": "translation-audit",
       "byte_semantics": "utf-8-lf",
-      "bytes": 495881,
-      "sha256": "5145413A9EFA28CF2807C2321EDEDB0A872E20BBB0454EE328C829E1541184B7"
+      "bytes": 496176,
+      "sha256": "D5FD509BB608FF804EF080E3F3831DBC3C93407948FE476D49019E909B77DE57"
     }
   ]
 }

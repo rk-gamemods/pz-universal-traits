@@ -15,7 +15,7 @@
   "summary": {
     "findings": 1,
     "unknown_event_names": 0,
-    "literal_percent_keys": 1,
+    "literal_percent_keys": 2,
     "source_release_drift_files": 0
   },
   "findings": [
@@ -26,14 +26,14 @@
       "confidence": "high",
       "title": "Translator preprocessing mutates literal percent signs in English descriptions",
       "anchors": [
-        "UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI.json (keys: UI_UT_woodsplitterDesc)"
+        "UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI.json (keys: UI_UT_humanhamsterDesc, UI_UT_woodsplitterDesc)"
       ],
       "affected_surfaces": [
         "description",
         "localization",
         "runtime"
       ],
-      "reproduction_evidence": "Applying the current two-step Translator replacement changes 1 no-argument descriptions.",
+      "reproduction_evidence": "Applying the current two-step Translator replacement changes 2 no-argument descriptions.",
       "missing_proof": "",
       "recommended_correction": "Encode literal percent signs using the Translator-safe representation verified for this game build.",
       "smallest_regression_test": "Load every flagged key through the current Translator path without format arguments and compare the rendered text byte-for-byte with intended copy."

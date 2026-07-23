@@ -1,0 +1,163 @@
+{
+  "schema": "ut-humanhamster-owned-state-contract-v1",
+  "trait_id": "UniversalTraits:UT_humanhamster",
+  "authority": {
+    "accepted_implementation_commits": [
+      "a2e89918da843e8f45c0e65115713f7f2d1ed027",
+      "8141d1a4230d7dd23bd9cb79f537e5af8b45f77f"
+    ],
+    "pz_snapshot": "SVN revision 964",
+    "final_independent_review": {
+      "verdict": "ACCEPT",
+      "snapshot": "8141d1a4",
+      "focused_cases": 13,
+      "full_cases": 570,
+      "blocking_findings": 0
+    }
+  },
+  "review_iterations": [
+    {
+      "snapshot": "a2e89918",
+      "disposition": "changes-requested",
+      "finding": "Dispatcher deactivation did not remove Human Hamster-owned carry and craving state.",
+      "resolved_by": "8141d1a4"
+    },
+    {
+      "snapshot": "8141d1a4",
+      "disposition": "accepted",
+      "finding": "Production teardown preserved external +4 and unrelated state, recomputing capacity 14 to 12.",
+      "resolved_by": null
+    }
+  ],
+  "accepted_intent": {
+    "cost": -1,
+    "carry_contribution": 2,
+    "qualifying_reset": "inventory at least 80 percent full and an inventory container is worn",
+    "craving_tiers": [
+      {
+        "after_minutes": 10,
+        "stress_per_minute": 0.02
+      },
+      {
+        "after_minutes": 30,
+        "stress_per_minute": 0.04
+      },
+      {
+        "after_minutes": 60,
+        "stress_per_minute": 0.08
+      }
+    ],
+    "english": "Carry 2 more weight. If your inventory is below 80% full or you are not wearing an inventory container, craving builds each minute and adds 0.02/0.04/0.08 stress per minute after 10/30/60 minutes. Meeting both conditions resets craving."
+  },
+  "api_contract": {
+    "collection": "WornItems",
+    "count": "size()",
+    "indexing": "zero-based getItemByIndex(int)",
+    "return": "InventoryItem",
+    "retired_invalid_call": "numeric getItem(i)"
+  },
+  "lifecycle": {
+    "ownership": "Human Hamster contributes only its own carry bucket and craving state.",
+    "teardown": [
+      "trait loss",
+      "player replacement",
+      "death",
+      "dispatcher deactivation",
+      "duplicate module evaluation"
+    ],
+    "external_composition": "External carry buckets and unrelated state remain untouched."
+  },
+  "resolved_findings": [
+    "B05-HAMSTER-001",
+    "B05-HAMSTER-002"
+  ],
+  "regression_cases": [
+    "WornItems size and zero-based getItemByIndex",
+    "exact cost and English contract",
+    "exact +2 carry ownership",
+    "80 percent plus worn-container reset",
+    "10/30/60 minute stress tiers",
+    "trait-loss cleanup",
+    "player-replacement cleanup",
+    "death cleanup",
+    "dispatcher-deactivation cleanup",
+    "duplicate-evaluation cleanup",
+    "external +4 carry preservation",
+    "unrelated-state preservation",
+    "source-release parity"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua",
+      "sha256": "84C15A015DE6F4ED2A8B3A2E5183142F6B313E1E3CD199673A99F7DC84FDF50D",
+      "bytes": 6288
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua",
+      "sha256": "84C15A015DE6F4ED2A8B3A2E5183142F6B313E1E3CD199673A99F7DC84FDF50D",
+      "bytes": 6288
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "58C5DE47626CB2E39F87586EA96367B18D53C662F14B7B0F3D9295BCC9FC746F",
+      "bytes": 37141
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "58C5DE47626CB2E39F87586EA96367B18D53C662F14B7B0F3D9295BCC9FC746F",
+      "bytes": 37141
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/media/registries.lua",
+      "sha256": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+      "bytes": 23864
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/registries.lua",
+      "sha256": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+      "bytes": 23864
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "3CFAD184EFD2B0254762E48F1726EEAD1F5A722130A58D5F3F8DEEA870E35802",
+      "bytes": 377229
+    },
+    {
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "sha256": "8C12DC397D81E9B96230B8FFA3BCA82F115D9AEA09F03549EE75990A9E80F6B1",
+      "bytes": 82698
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_humanhamster.md",
+      "sha256": "37929D46FCE91C5A8F0AC97E9D249BD3573EA93F8F5841E3DE2A75D5C4E7B0C8",
+      "bytes": 3949
+    }
+  ],
+  "retained_runtime_proof": [
+    "live current-build Kahlua execution",
+    "full desktop relaunch",
+    "current-version save-load"
+  ],
+  "separate_blockers": [
+    "152 broader API baseline issues",
+    "containerObj.getContainer smoke coverage",
+    "missing root poster.png"
+  ],
+  "runtime_proof": "Unobserved; static and standard-Lua evidence do not establish current-version live gameplay.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment",
+    "rebalance"
+  ]
+}

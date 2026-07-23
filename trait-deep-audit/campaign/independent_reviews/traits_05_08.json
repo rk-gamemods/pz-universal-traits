@@ -1065,34 +1065,34 @@
         "local/PZCodebase-61973d88 current API symbols where invoked"
       ],
       "release_parity": {
-        "source_runtime_sha256": "AED61A4C95D3B02AEC5608D58AB55166929A5763F5ABB37D5FF5269F3ADDBB5C",
-        "release_runtime_sha256": "AED61A4C95D3B02AEC5608D58AB55166929A5763F5ABB37D5FF5269F3ADDBB5C",
+        "runtime_source": "84C15A015DE6F4ED2A8B3A2E5183142F6B313E1E3CD199673A99F7DC84FDF50D",
+        "runtime_release": "84C15A015DE6F4ED2A8B3A2E5183142F6B313E1E3CD199673A99F7DC84FDF50D",
+        "ui_source": "58C5DE47626CB2E39F87586EA96367B18D53C662F14B7B0F3D9295BCC9FC746F",
+        "ui_release": "58C5DE47626CB2E39F87586EA96367B18D53C662F14B7B0F3D9295BCC9FC746F",
+        "definition_source": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+        "definition_release": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+        "registry_source": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+        "registry_release": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+        "tests": "3CFAD184EFD2B0254762E48F1726EEAD1F5A722130A58D5F3F8DEEA870E35802",
+        "mocks": "8C12DC397D81E9B96230B8FFA3BCA82F115D9AEA09F03549EE75990A9E80F6B1",
         "state": "proven-correct"
       },
-      "omissions": [
-        {
-          "id": "IR0508-OM-002",
-          "state": "confirmed-defect",
-          "severity": "medium",
-          "confidence": "high",
-          "premise": "Apart from the recorded WornItems overload defect, the +2 carry source persists in player modData and has no trait-removal cleanup.",
-          "anchors": [
-            "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua",
-            "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua:229-242",
-            "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua"
-          ],
-          "affected_surfaces": [
-            "trait removal",
-            "persistent player state",
-            "carry reconciliation"
-          ],
-          "reproduction_evidence": "applyCarryWeight stores a source-keyed carryFlatAdd value; no inverse nil write exists.",
-          "missing_proof": "Dynamic removal was not run; this cleanup defect becomes observable once B05-HAMSTER-001 is repaired.",
-          "recommended_correction": "On trait loss, delete the named carry source and reconcile max weight/container state.",
-          "smallest_regression_test": "Apply the fixed trait, remove it, and assert +2 and its bucket disappear before/after reload.",
-          "title": "Human Hamster carry state survives trait removal"
-        }
-      ]
+      "omissions": [],
+      "accepted_overall_state": "runtime-unproven",
+      "independent_state": "runtime-unproven",
+      "supported_accepted_finding_ids": [
+        "B05-HAMSTER-001",
+        "B05-HAMSTER-002"
+      ],
+      "rejected_accepted_finding_ids": [],
+      "omission_disposition": "No Human Hamster-specific static omission remains after API, copy, carry ownership, craving ownership, dispatcher teardown, replacement, death, and duplicate-evaluation proof.",
+      "unresolved_runtime_proof_ids": [
+        "RP0508-KAHLUA-001",
+        "RP0508-SAVELOAD-001",
+        "RP0508-BALANCE-PERF-001",
+        "RP0508-LOCALE-001"
+      ],
+      "resolution_record": "change-impact/humanhamster-owned-state-contract.json"
     },
     {
       "trait_id": "UniversalTraits:UT_idealweight",

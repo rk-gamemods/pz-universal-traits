@@ -46,14 +46,14 @@
   },
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "29C24133912335231DA8ED2E8462B64D9DBE837A0F553E3988547AEA52347D8D",
-    "independent_reviews/traits_05_08.json": "B1CDBE8BBEE77E5C4D9417E0E77E1EF69178E8F34BD4C18B825038266D7E9D53",
+    "independent_reviews/traits_05_08.json": "83B0AFE9B530358D8813012A83A0F5281D3E6D0CEC51EE0A98A0DB940EF84B68",
     "independent_reviews/traits_09_12.json": "A5322FD2CE42AA99B66AEF17BC4A915B1E924852503C59FFC2E6944197B2102E",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "4FD54923B0938C3294AB5E9D0C0168A08FDBF353A73FBE83BCE7F5DDF8B911F2",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
     "trait_batches/batch_03.jsonl": "DE80C7E88D64E27AEDFA1248A855290E9892605D7A1800D9933BFFFBD8271DA9",
     "trait_batches/batch_04.jsonl": "7BE87A0648404822CC35EE0904E3E4CC43391B4F955363D61BE1E3B8FEC6DA6E",
-    "trait_batches/batch_05.jsonl": "BA60BE0BC7B63050926D20FF18FDA9C43CD9CEE84F5540E3200E7D9227F7A9D5",
+    "trait_batches/batch_05.jsonl": "3B947F6228AB251E6E17074CF88F62A636D3EDFA01474F1E2DE2CC30ED42433D",
     "trait_batches/batch_06.jsonl": "32B529C5117E409EBFC41BF178BB94BFDD8301716D6187AC4950CF983A32CAAB",
     "trait_batches/batch_07.jsonl": "0483F4C2595D692E19FD6F60DE04E5D633C7942497A2669CF1B48459C0AFA771",
     "trait_batches/batch_08.jsonl": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A",
@@ -61,14 +61,14 @@
     "trait_batches/batch_10.jsonl": "33304EC69C6072CE027BFD779AB0E2332EEDE70DC56B6920468F46BC4A2ABE31",
     "trait_batches/batch_11.jsonl": "D1617D3F6DE1E81879EB3FA2B81F7DA1058630E103CF1DFD2D907B026311D959",
     "trait_batches/batch_12.jsonl": "3578367CB91C26719B23781AED4347327F5121A33FBBA47CE36891DC42DCEC9C",
-    "translation_audit.json": "5145413A9EFA28CF2807C2321EDEDB0A872E20BBB0454EE328C829E1541184B7"
+    "translation_audit.json": "D5FD509BB608FF804EF080E3F3831DBC3C93407948FE476D49019E909B77DE57"
   },
   "counts": {
     "traits": 198,
     "unique_traits": 198,
     "findings": 164,
     "independent_reviewed_traits": 198,
-    "independent_review_findings": 118,
+    "independent_review_findings": 117,
     "independent_review_states": {
       "accepted": 84,
       "confirmed-defect": 29,
@@ -78,15 +78,15 @@
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 54,
+      "confirmed-defect": 53,
       "coverage-gap": 12,
-      "runtime-unproven": 107
+      "runtime-unproven": 108
     },
     "dimension_states": {
-      "proven-correct": 2800,
-      "confirmed-defect": 201,
-      "coverage-gap": 755,
-      "runtime-unproven": 996
+      "proven-correct": 2801,
+      "confirmed-defect": 199,
+      "coverage-gap": 753,
+      "runtime-unproven": 999
     }
   },
   "independent_review_findings": [
@@ -936,27 +936,6 @@
       "missing_proof": "A B42 swing-timing sample is still needed to quantify animation/attack consequences.",
       "recommended_correction": "Remove the hidden effect or document its exact formula and cap; align source/release/EN.",
       "smallest_regression_test": "Invoke the hook at Strength 0/5/10 and assert bounded documented delay, then perform one live timing check."
-    },
-    {
-      "id": "IR0508-OM-002",
-      "state": "confirmed-defect",
-      "severity": "medium",
-      "confidence": "high",
-      "title": "Human Hamster carry state survives trait removal",
-      "anchors": [
-        "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua",
-        "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua:229-242",
-        "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua"
-      ],
-      "affected_surfaces": [
-        "trait removal",
-        "persistent player state",
-        "carry reconciliation"
-      ],
-      "reproduction_evidence": "applyCarryWeight stores a source-keyed carryFlatAdd value; no inverse nil write exists.",
-      "missing_proof": "Dynamic removal was not run; this cleanup defect becomes observable once B05-HAMSTER-001 is repaired.",
-      "recommended_correction": "On trait loss, delete the named carry source and reconcile max weight/container state.",
-      "smallest_regression_test": "Apply the fixed trait, remove it, and assert +2 and its bucket disappear before/after reload."
     },
     {
       "id": "IR0508-OM-003",
@@ -25023,12 +25002,12 @@
     {
       "trait_id": "UniversalTraits:UT_humanhamster",
       "batch": "batch_05",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
           "evidence": [
-            "CharacterTrait.register exact ID UniversalTraits:UT_humanhamster."
+            "CharacterTrait.register uses the exact UniversalTraits:UT_humanhamster id."
           ],
           "missing_proof": [
             "none"
@@ -25040,19 +25019,19 @@
         "definition_parser": {
           "state": "proven-correct",
           "evidence": [
-            "Complete closed-world parser inventory reports one unique definition; inspected block Cost=-1."
+            "Cost -1, no XP boosts or grants, no exclusions, and multiplayer disabled."
           ],
           "missing_proof": [
             "none"
           ],
           "source_dimensions": [
-            "complete_script_parser"
+            "definition_parser"
           ]
         },
         "namespace": {
           "state": "proven-correct",
           "evidence": [
-            "Registration, CharacterTrait field, and runtime TRAIT_ID use UniversalTraits:UT_humanhamster."
+            "Registration, definition CharacterTrait, runtime TRAIT_ID, and English keys are consistently namespaced."
           ],
           "missing_proof": [
             "none"
@@ -25064,7 +25043,7 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "Cost=-1; XP=none; exclusions=none."
+            "Cost -1; no XP boosts, grants, or exclusions; single-player only."
           ],
           "missing_proof": [
             "none"
@@ -25076,7 +25055,7 @@
         "source_intent": {
           "state": "proven-correct",
           "evidence": [
-            "Source/comment and shipped behavior reviewed: +2 carry; craving stress after 10/30/60 minutes unless >=80% full and bag worn."
+            "Accepted intent preserves +2 carry and the existing 80 percent plus worn-container craving model with 10/30/60 minute stress tiers."
           ],
           "missing_proof": [
             "none"
@@ -25088,34 +25067,34 @@
         "runtime_path": {
           "state": "proven-correct",
           "evidence": [
-            "Per-trait runtime traced: +2 carry; craving stress after 10/30/60 minutes unless >=80% full and bag worn."
+            "Owned tick dispatch applies only the Human Hamster carry bucket, evaluates inventory load and WornItems through size plus zero-based getItemByIndex, and updates craving stress."
           ],
           "missing_proof": [
             "none"
           ],
           "source_dimensions": [
-            "runtime_ut_core_path"
+            "runtime_path"
           ]
         },
         "numbers": {
           "state": "proven-correct",
           "evidence": [
-            "+2 carry; craving stress after 10/30/60 minutes unless >=80% full and bag worn"
+            "+2 carry; craving resets only at 80 percent or more capacity with a worn inventory container; stress adds 0.02/0.04/0.08 per minute after 10/30/60 minutes."
           ],
           "missing_proof": [
             "none"
           ],
           "source_dimensions": [
-            "numerical_behavior"
+            "numbers"
           ]
         },
         "cadence": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "OnCreatePlayer + EveryOneMinute"
+            "One owned callback evaluates the trait per in-game minute."
           ],
           "missing_proof": [
-            "none"
+            "Live current-build callback cadence remains unobserved."
           ],
           "source_dimensions": [
             "cadence"
@@ -25124,7 +25103,7 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
-            "No explicit cooldown beyond stated event cadence."
+            "No cooldown exists; craving is tiered accumulated minute state."
           ],
           "missing_proof": [
             "none"
@@ -25134,24 +25113,24 @@
           ]
         },
         "reset_save_load": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "modData/tick state inspected; persistent modData survives save-load where used."
+            "Focused proof removes only Human Hamster-owned carry and craving on trait loss, replacement, death, dispatcher deactivation, and duplicate module evaluation."
           ],
           "missing_proof": [
-            "No save/load or character-removal runtime test; trait removal cleanup not proven."
+            "Full relaunch and current-version save-load remain unobserved."
           ],
           "source_dimensions": [
             "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Current WornItems Java API compared to numeric call; defect recorded."
+            "SVN 964 WornItems exposes size() and zero-based getItemByIndex(int), returning InventoryItem; the invalid numeric getItem call is removed."
           ],
           "missing_proof": [
-            "No live Kahlua bridge execution."
+            "none"
           ],
           "source_dimensions": [
             "java_lua"
@@ -25160,10 +25139,10 @@
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "Lua is syntactically exercised by standard-Lua tests where loaded."
+            "Accepted source uses Kahlua-compatible Lua shapes and current static bridge signatures."
           ],
           "missing_proof": [
-            "No in-game Kahlua run."
+            "Live current-build Kahlua execution remains unobserved."
           ],
           "source_dimensions": [
             "kahlua"
@@ -25172,19 +25151,19 @@
         "events": {
           "state": "proven-correct",
           "evidence": [
-            "Handlers register at module load on OnCreatePlayer + EveryOneMinute; no explicit removal observed."
+            "The trait uses one dispatcher registration with explicit teardown; duplicate evaluation replaces prior owned state without stacking."
           ],
           "missing_proof": [
-            "No repeated require/reload or player-switch runtime proof."
+            "none"
           ],
           "source_dimensions": [
-            "event_lifecycle"
+            "events"
           ]
         },
         "stacking_interactions": {
           "state": "proven-correct",
           "evidence": [
-            "Script exclusions=none; shared UT_MET reviewed where applicable."
+            "Focused production teardown preserves an external +4 carry bucket and unrelated state while recomputing capacity from 14 to 12."
           ],
           "missing_proof": [
             "none"
@@ -25196,7 +25175,7 @@
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "DisabledInMultiplayer=true in the complete definition."
+            "DisabledInMultiplayer is true and multiplayer support is a product non-goal."
           ],
           "missing_proof": [
             "none"
@@ -25208,19 +25187,19 @@
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "EN key UI_UT_humanhamster exists and resolves to a nonempty display name."
+            "Exact English display name is Human Hamster."
           ],
           "missing_proof": [
             "none"
           ],
           "source_dimensions": [
-            "display_name"
+            "display"
           ]
         },
         "description": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "EN description compared independently with script/runtime: +2 carry; craving stress after 10/30/60 minutes unless >=80% full and bag worn."
+            "English states +2 carry, the 80 percent plus worn-container condition, tier timing, exact stress amounts, cadence, and reset."
           ],
           "missing_proof": [
             "none"
@@ -25232,58 +25211,58 @@
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "Inventory reports EN as the only locale."
+            "Exact English keys exist with source-release parity."
           ],
           "missing_proof": [
-            "No non-EN locale exists to validate."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
-            "localization_absent_locales"
+            "localization"
           ]
         },
         "balance": {
           "state": "runtime-unproven",
           "evidence": [
-            "Cost -1 compared qualitatively with +2 carry; craving stress after 10/30/60 minutes unless >=80% full and bag worn."
+            "Accepted cost -1, +2 carry, and existing craving tiers are unchanged."
           ],
           "missing_proof": [
-            "No gameplay telemetry, controlled balance trial, or cohort data."
+            "No gameplay balance observation exists."
           ],
           "source_dimensions": [
             "balance"
           ]
         },
         "performance": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "Cadence reviewed (OnCreatePlayer + EveryOneMinute); tick handlers are throttled where stated."
+            "The minute handler performs bounded inventory and worn-item traversal with early guards."
           ],
           "missing_proof": [
-            "No profiler capture in an actual game session."
+            "No current-build profiler capture exists."
           ],
           "source_dimensions": [
             "performance"
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Assigned references and focused assertions in UniversalTraits/test/run_tests.lua inspected; registration inventory coverage exists."
+            "Thirteen focused cases cover WornItems indexing, carry/craving behavior, ownership composition, all teardown paths, duplicate evaluation, metadata, copy, and parity; full suite passes 570/570."
           ],
           "missing_proof": [
-            "Standard-Lua mocks do not prove Kahlua/engine integration or every boundary/reset path."
+            "none"
           ],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "UTCoreMocks boundaries inspected through directly reached tests."
+            "Focused doubles implement size plus zero-based getItemByIndex and expose dispatcher teardown, carry buckets, craving state, death, replacement, and unrelated state."
           ],
           "missing_proof": [
-            "Mocks can diverge from current Java overloads; humanhamster demonstrates this risk."
+            "none"
           ],
           "source_dimensions": [
             "mocks"
@@ -25292,7 +25271,7 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "Per-trait source and release Lua hashes are equal."
+            "Runtime and English source/release pairs are byte-identical; definition and registry counterparts remain identical."
           ],
           "missing_proof": [
             "none"
@@ -25302,12 +25281,12 @@
           ]
         },
         "packaging": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "42.0 release placement checked for assigned per-trait file when present; script-only traits require only shared registries/script/translation package surfaces."
+            "Human Hamster-owned 42.0 runtime, UI, definition, and registry counterparts are present and identical."
           ],
           "missing_proof": [
-            "none"
+            "Whole-package verification remains blocked by the separately tracked missing root poster.png."
           ],
           "source_dimensions": [
             "packaging"
@@ -25319,17 +25298,17 @@
         "B05-HAMSTER-002"
       ],
       "unknowns": [
-        "No matching Build 42.19 in-game/Kahlua execution, save-load cycle, multiplayer execution, or profiler trace.",
-        "No non-English locale coverage.",
-        "No empirical balance telemetry."
+        "Live current-build Kahlua execution remains unobserved.",
+        "Full desktop relaunch and current-version save-load remain unobserved.",
+        "No non-English UniversalTraits locale exists.",
+        "Gameplay balance and profiler behavior remain unobserved.",
+        "Whole-package verification remains blocked by the separately tracked missing root poster.png."
       ],
-      "translation_terminal_state": "coverage-gap",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_05_08.json",
         "review_state": "needs-correction",
-        "omission_finding_ids": [
-          "IR0508-OM-002"
-        ],
+        "omission_finding_ids": [],
         "cross_finding_ids": [
           "IR0508-X-005"
         ],
@@ -25339,9 +25318,10 @@
         ],
         "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [
-          "No matching Build 42.19 in-game/Kahlua execution, save-load cycle, multiplayer execution, or profiler trace.",
-          "No non-English locale coverage.",
-          "No empirical balance telemetry."
+          "RP0508-KAHLUA-001",
+          "RP0508-SAVELOAD-001",
+          "RP0508-BALANCE-PERF-001",
+          "RP0508-LOCALE-001"
         ]
       }
     },
