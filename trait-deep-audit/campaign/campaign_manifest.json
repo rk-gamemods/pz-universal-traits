@@ -265,7 +265,7 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 4283,
-      "sha256": "04AC9C62D5777E83AE12644488236A899F844A2B0CDD2BF1B7D1671CA2ACED6C"
+      "sha256": "88BFFC73BCB2A8F021D497A18DE1301832B364B3448D38F21344EB793D87CCFD"
     },
     {
       "path": "change-impact/superimmune-infection-channel-resolution.json",
@@ -349,7 +349,7 @@
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
       "bytes": 2095533,
-      "sha256": "5224A355EEF07AD31590FE22190E81098ECF7666B112890680A9FDA87BA55435"
+      "sha256": "329DE026B822771477933FC7517AB047BB18501BB401B72D5B61CE09A6103FE4"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
@@ -391,7 +391,7 @@
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
       "bytes": 127026,
-      "sha256": "A5322FD2CE42AA99B66AEF17BC4A915B1E924852503C59FFC2E6944197B2102E"
+      "sha256": "898B276B2F51C416901224C240F6CE185BB60CD979F9CF3F1DB7A74021297C02"
     },
     {
       "path": "independent_reviews/ut_core_integration.json",

@@ -75,13 +75,13 @@
     },
     {
       "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
-      "sha256": "850D680158E8C8E154D551D54A04DEAD40648076853AD8FEF1973D4046A3B35F",
-      "bytes": 37049
+      "sha256": "58C5DE47626CB2E39F87586EA96367B18D53C662F14B7B0F3D9295BCC9FC746F",
+      "bytes": 37141
     },
     {
       "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
-      "sha256": "850D680158E8C8E154D551D54A04DEAD40648076853AD8FEF1973D4046A3B35F",
-      "bytes": 37049
+      "sha256": "58C5DE47626CB2E39F87586EA96367B18D53C662F14B7B0F3D9295BCC9FC746F",
+      "bytes": 37141
     },
     {
       "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
@@ -105,13 +105,13 @@
     },
     {
       "path": "UniversalTraits/test/run_tests.lua",
-      "sha256": "0310B318C9A6A04FBB38674B563C7DA247A987BCF5CC194E0DF7C14ECDF3B50F",
-      "bytes": 368801
+      "sha256": "171CB838FF380AB42BF327F08FDD256A47859B5B9A7366CFDB6BB051419BEC89",
+      "bytes": 393129
     },
     {
       "path": "UniversalTraits/test/UTTestMocks.lua",
-      "sha256": "72641DDCEE3B92AFA1DCD688529AC4338D9293DEB10430DBF6C2C03A4B2BBC00",
-      "bytes": 82589
+      "sha256": "82DA5436E39918C94A39117D6D07066AA49A6440A652E6AF9F4F62D37F85E78E",
+      "bytes": 83345
     },
     {
       "path": "trait-deep-audit/active/batch/traits/UT_sundayrunner.md",
