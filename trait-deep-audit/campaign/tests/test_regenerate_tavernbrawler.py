@@ -55,6 +55,17 @@ class TavernBrawlerGeneratorSafetyTests(unittest.TestCase):
         self.assertEqual(set(GENERATOR.build_plan(self.root, self.campaign)), set(GENERATOR.OWNED_OUTPUTS))
         self.assertEqual({name: getattr(GENERATOR.base, name) for name in names}, before)
 
+    def test_committed_outputs_are_first_pass_fixed_point(self) -> None:
+        plan = GENERATOR.build_plan(self.root, self.campaign)
+        stale = [
+            relative
+            for relative in GENERATOR.OWNED_OUTPUTS
+            if not (self.campaign / relative).is_file()
+            or GENERATOR._normalized_bytes(self.campaign / relative)
+            != plan[relative].replace(b"\r\n", b"\n")
+        ]
+        self.assertEqual(stale, [], "committed Tavern outputs must be exact before any generator run")
+
     def test_non_target_batch_and_review_records_are_preserved(self) -> None:
         batch = self.campaign / "trait_batches" / "batch_11.jsonl"
         review = self.campaign / "independent_reviews" / "traits_09_12.json"
@@ -95,6 +106,43 @@ class TavernBrawlerGeneratorSafetyTests(unittest.TestCase):
         self.assertTrue(any("Kahlua" in value for value in row["unknowns"]))
         dimensions = {item["dimension"] for item in jsonl(self.campaign / "remediation_queue.jsonl") if item.get("trait_id") == GENERATOR.TRAIT and item.get("subject_type") == "trait-dimension"}
         self.assertTrue({"kahlua", "reset_save_load", "balance", "performance", "packaging"}.issubset(dimensions))
+
+    def test_injected_promotion_failure_rolls_back_all_outputs_and_configuration(self) -> None:
+        names = ("TRAIT", "FINDINGS", "_plan_batch", "_plan_review", "OWNED_OUTPUTS")
+        base_before = {name: getattr(GENERATOR.base, name) for name in names}
+        metadata_before = GENERATOR.HELPER._metadata
+        ledger_sha256_before = GENERATOR.build_final_trait_ledger._sha256
+        transaction_outputs_before = GENERATOR.transaction.OWNED_OUTPUTS
+        plan = GENERATOR.build_plan(self.root, self.campaign)
+        plan[GENERATOR.OWNED_OUTPUTS[0]] += b" "
+        plan[GENERATOR.OWNED_OUTPUTS[1]] += b" "
+        before = files(self.campaign)
+        calls = 0
+
+        def fail_second(source: str | Path, destination: str | Path) -> None:
+            nonlocal calls
+            calls += 1
+            if calls == 2:
+                raise OSError("injected promotion failure")
+            Path(source).replace(destination)
+
+        with self.assertRaisesRegex(OSError, "injected promotion failure"):
+            GENERATOR.commit_plan(plan, self.campaign, replace=fail_second)
+
+        self.assertEqual(files(self.campaign), before)
+        self.assertEqual(
+            {name: getattr(GENERATOR.base, name) for name in names},
+            base_before,
+        )
+        self.assertIs(GENERATOR.HELPER._metadata, metadata_before)
+        self.assertIs(GENERATOR.build_final_trait_ledger._sha256, ledger_sha256_before)
+        self.assertIs(GENERATOR.transaction.OWNED_OUTPUTS, transaction_outputs_before)
+        self.assertFalse(
+            any(
+                path.name.startswith(".regenerate-owlperson-")
+                for path in self.campaign.iterdir()
+            )
+        )
 
 
 if __name__ == "__main__":

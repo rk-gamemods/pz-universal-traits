@@ -64,13 +64,13 @@
     },
     {
       "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
-      "sha256": "C2CD8EBDA750EC4A51825A01E2E3C9BC7D959BA11AA48478058511DA8383BD68",
-      "bytes": 37408
+      "sha256": "850D680158E8C8E154D551D54A04DEAD40648076853AD8FEF1973D4046A3B35F",
+      "bytes": 37049
     },
     {
       "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
-      "sha256": "C2CD8EBDA750EC4A51825A01E2E3C9BC7D959BA11AA48478058511DA8383BD68",
-      "bytes": 37408
+      "sha256": "850D680158E8C8E154D551D54A04DEAD40648076853AD8FEF1973D4046A3B35F",
+      "bytes": 37049
     },
     {
       "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
@@ -94,13 +94,13 @@
     },
     {
       "path": "UniversalTraits/test/run_tests.lua",
-      "sha256": "6CE268411FC3D88B3EB542381A580838D21F763E4EB13A0DAB1AC228A7086B7F",
-      "bytes": 327842
+      "sha256": "B11B03FC31A0EB16FFA70BAFB4A0495D1FA0EEBB4FD7ED1F1252D94CAAB0903E",
+      "bytes": 333450
     },
     {
       "path": "UniversalTraits/test/UTTestMocks.lua",
-      "sha256": "5C22685399E9E4350E673DAEBBB2EFDC72FBCBBA5A30BDCA1455E69E7E6E1DA3",
-      "bytes": 80486
+      "sha256": "B8CB09E20A967EA0BAADFA59E694EFD286525778F221247C7D9FBC8DB1B75C34",
+      "bytes": 81134
     },
     {
       "path": "trait-deep-audit/active/batch/traits/UT_tavernbrawler.md",

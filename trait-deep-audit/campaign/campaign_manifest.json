@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 152,
-  "total_bytes": 13488689,
+  "total_bytes": 13491972,
   "files": [
     {
       "path": "HAPPY_PATH_PRIORITY.md",
@@ -237,7 +237,7 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 4005,
-      "sha256": "D7DCCD579DFF70EA18BA9794C6FAA033C56CD33E6437506635C9095E8220E73F"
+      "sha256": "9AC1D06B04C8F5F419532CC73571800243BE94419879CBF49C233CBEB3745141"
     },
     {
       "path": "change-impact/thickblood-weighted-bleed-damage.json",
@@ -300,7 +300,7 @@
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
       "bytes": 2095988,
-      "sha256": "83502B5F2DFF7E8A2E2A8D840A0D4E1DEF5468F1B799B4A5F8DDBD2BC2C3C5FA"
+      "sha256": "73F6D75C6A76E124384C953EBE27D124F0E6C04E3231B9175F3DF37F1011D400"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
@@ -342,7 +342,7 @@
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
       "bytes": 124726,
-      "sha256": "AA491419095B7F6037BCC5C0CD6434FADAE3A22DC4539144D5DE508F6F3C3773"
+      "sha256": "C18D6417F4F824C3001B3BB851B2EBD7DDD4EDFF7661B445C125E1F9C791ADFF"
     },
     {
       "path": "independent_reviews/ut_core_integration.json",
@@ -712,8 +712,8 @@
       "path": "tests/test_regenerate_tavernbrawler.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 5273,
-      "sha256": "F0513070693C1C3F87EDFCEF3D22A4939D14B366E869589AB4F61761B7D6E1A2"
+      "bytes": 7494,
+      "sha256": "46E6F45405B03945C447BB9FDCDBBDF82C64409A95E58B25DA41EA0665DC91D0"
     },
     {
       "path": "tests/test_regenerate_thickblood.py",
@@ -964,8 +964,8 @@
       "path": "tools/regenerate_tavernbrawler.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 14839,
-      "sha256": "E7B26179CBEDB173AB4FFDBC880709AC93B18987B0220F391D335D35FFB445A4"
+      "bytes": 15901,
+      "sha256": "2A30B9A18BF313CBE487E0F5EA5FEF1FD90983D7C9584EC403F54FC5627EF530"
     },
     {
       "path": "tools/regenerate_thickblood.py",
@@ -1105,7 +1105,7 @@
       "kind": "translation-audit",
       "byte_semantics": "utf-8-lf",
       "bytes": 495891,
-      "sha256": "F79934AE0D8A23065A4020C36EE3406DB2A177D4EFFE7CB428398A625EF1D279"
+      "sha256": "42291B3C6F33E262ABF00127A2BF26E8CDE1728A81204747EBD32F667962FD4F"
     }
   ]
 }

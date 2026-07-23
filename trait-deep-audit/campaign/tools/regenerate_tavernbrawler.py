@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator
 
+import build_final_trait_ledger
 import regenerate_owlperson as transaction
 import regenerate_martial as base
 from campaign_cli import no_arg_command
@@ -40,6 +42,23 @@ OWNED_OUTPUTS = (
 
 def _dimension(state: str, evidence: str, missing: str = "") -> dict[str, Any]:
     return HELPER._dimension(state, evidence, missing) if missing else HELPER._dimension(state, evidence)
+
+
+def _metadata(root: Path, relative: str) -> dict[str, object]:
+    data = _normalized_bytes(root / relative)
+    return {
+        "path": relative,
+        "sha256": hashlib.sha256(data).hexdigest().upper(),
+        "bytes": len(data),
+    }
+
+
+def _normalized_bytes(path: Path) -> bytes:
+    return path.read_bytes().replace(b"\r\n", b"\n")
+
+
+def _normalized_sha256(path: Path) -> str:
+    return hashlib.sha256(_normalized_bytes(path)).hexdigest().upper()
 
 
 def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
@@ -106,7 +125,7 @@ def _plan_inventory(root: Path, campaign: Path, plan: dict[str, bytes]) -> None:
     artifact = json.loads((campaign / relative).read_text(encoding="utf-8"))
     for source in (RUNTIME, RELEASE, SOURCE_UI, RELEASE_UI, SOURCE_DEFINITION, RELEASE_DEFINITION,
                    SOURCE_REGISTRY, RELEASE_REGISTRY, MOCKS, TESTS, ACTIVE_AUDIT):
-        HELPER._update_fingerprints(artifact, source, HELPER._metadata(root, source))
+        HELPER._update_fingerprints(artifact, source, _metadata(root, source))
     plan[relative] = HELPER._json_bytes(artifact)
 
 
@@ -123,16 +142,16 @@ def _plan_review(root: Path, campaign: Path, plan: dict[str, bytes]) -> None:
     row["unresolved_runtime_proof_ids"] = ["RP0912-KAHLUA-001", "RP0912-SAVELOAD-001", "RP0912-BALANCE-PERF-001", "RP0912-LOCALE-001"]
     row["resolution_record"] = RESOLUTION
     row["release_parity"] = {
-        "runtime_source": HELPER._metadata(root, RUNTIME)["sha256"],
-        "runtime_release": HELPER._metadata(root, RELEASE)["sha256"],
-        "ui_source": HELPER._metadata(root, SOURCE_UI)["sha256"],
-        "ui_release": HELPER._metadata(root, RELEASE_UI)["sha256"],
-        "definition_source": HELPER._metadata(root, SOURCE_DEFINITION)["sha256"],
-        "definition_release": HELPER._metadata(root, RELEASE_DEFINITION)["sha256"],
-        "registry_source": HELPER._metadata(root, SOURCE_REGISTRY)["sha256"],
-        "registry_release": HELPER._metadata(root, RELEASE_REGISTRY)["sha256"],
-        "tests": HELPER._metadata(root, TESTS)["sha256"],
-        "mocks": HELPER._metadata(root, MOCKS)["sha256"],
+        "runtime_source": _metadata(root, RUNTIME)["sha256"],
+        "runtime_release": _metadata(root, RELEASE)["sha256"],
+        "ui_source": _metadata(root, SOURCE_UI)["sha256"],
+        "ui_release": _metadata(root, RELEASE_UI)["sha256"],
+        "definition_source": _metadata(root, SOURCE_DEFINITION)["sha256"],
+        "definition_release": _metadata(root, RELEASE_DEFINITION)["sha256"],
+        "registry_source": _metadata(root, SOURCE_REGISTRY)["sha256"],
+        "registry_release": _metadata(root, RELEASE_REGISTRY)["sha256"],
+        "tests": _metadata(root, TESTS)["sha256"],
+        "mocks": _metadata(root, MOCKS)["sha256"],
         "state": "proven-correct",
     }
     plan[relative] = HELPER._json_bytes(artifact)
@@ -156,7 +175,7 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
         "resolved_findings": list(FINDINGS),
         "resolved_independent_defects": ["armed-prone false positive", "wrong event signature", "test/mock false confidence", "duplicate handler"],
         "retained_runtime_proof": ["current-build Kahlua", "live event arguments and stomp flag", "health ordering", "handler count", "kill attribution", "new game and save-load", "death and repeated world entry", "gameplay and balance", "profiler", "rendered English", "non-English localization", "source poster issue"],
-        "files": [HELPER._metadata(root, source) for source in files],
+        "files": [_metadata(root, source) for source in files],
         "runtime_proof": "Unobserved; static and standard-Lua evidence do not establish current-version live gameplay.",
         "non_goals": ["multiplayer", "backward save migration", "deployment"],
     })
@@ -173,11 +192,17 @@ def _configured_base() -> Iterator[None]:
         "_plan_review": _plan_review, "_plan_resolution": _plan_resolution,
     }
     originals = {name: getattr(base, name) for name in replacements}
+    original_metadata = HELPER._metadata
+    original_ledger_sha256 = build_final_trait_ledger._sha256
     try:
         for name, value in replacements.items():
             setattr(base, name, value)
+        HELPER._metadata = _metadata
+        build_final_trait_ledger._sha256 = _normalized_sha256
         yield
     finally:
+        build_final_trait_ledger._sha256 = original_ledger_sha256
+        HELPER._metadata = original_metadata
         for name, value in originals.items():
             setattr(base, name, value)
 
@@ -191,6 +216,14 @@ def build_plan(root: Path = ROOT, campaign: Path = CAMPAIGN) -> dict[str, bytes]
 
 
 def commit_plan(plan: dict[str, bytes], campaign: Path = CAMPAIGN, replace=transaction.os.replace) -> list[str]:
+    if set(plan) != set(OWNED_OUTPUTS):
+        raise ValueError("refusing a non-canonical Tavern Brawler output set")
+    if all(
+        (campaign / relative).is_file()
+        and _normalized_bytes(campaign / relative) == plan[relative].replace(b"\r\n", b"\n")
+        for relative in OWNED_OUTPUTS
+    ):
+        return []
     original = transaction.OWNED_OUTPUTS
     try:
         transaction.OWNED_OUTPUTS = OWNED_OUTPUTS
