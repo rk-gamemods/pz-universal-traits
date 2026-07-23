@@ -3452,6 +3452,26 @@ test("humanhamster death and inactive teardown clear owned state", function()
     assert_eq(inactive:getModData()["UT_hamsterCraving"], nil)
 end)
 
+test("humanhamster dispatcher teardown clears only Human Hamster owned state", function()
+    local player = humanHamsterPlayer(0, MockWornItems(0, 0), { stress = 0.35 })
+    UTCore.applyCarryWeight(player, 4, "external_trait")
+    Events.OnCreatePlayer:fire(0, player)
+    UTCore.rebuildActiveHandlers(player)
+    player:getModData()["UT_hamsterCraving"] = 20
+    player:getModData()["unrelated_state"] = "preserved"
+
+    assert_eq(player:getMaxWeightBase(), 14)
+    assert_eq(humanHamsterCarryBucket(player)[HUMAN_HAMSTER_ID], 2)
+    UTCore.teardownActiveTickHandlers("invalid-player")
+
+    assert_eq(player:getMaxWeightBase(), 12)
+    assert_eq(humanHamsterCarryBucket(player)[HUMAN_HAMSTER_ID], nil)
+    assert_eq(humanHamsterCarryBucket(player)["external_trait"], 4)
+    assert_eq(player:getModData()["UT_hamsterCraving"], nil)
+    assert_eq(player:getModData()["unrelated_state"], "preserved")
+    assert_eq(player:getStats():get(CharacterStat.STRESS), 0.35)
+end)
+
 test("humanhamster save load and duplicate module evaluation keep one owned source", function()
     local player = humanHamsterPlayer(0, MockWornItems(0, 0))
     Events.OnCreatePlayer:fire(0, player)
@@ -3463,9 +3483,14 @@ test("humanhamster save load and duplicate module evaluation keep one owned sour
 
     dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua")
     Events.OnCreatePlayer:fire(0, loaded)
+    local handlerCount = 0
+    for _, handler in ipairs(UTCore._tickHandlers) do
+        if handler.id == HUMAN_HAMSTER_ID then handlerCount = handlerCount + 1 end
+    end
     local before = loaded:getModData()["UT_hamsterCraving"] or 0
     fireHumanHamsterMinute(loaded)
 
+    assert_eq(handlerCount, 1, "duplicate module evaluation must leave one dispatcher handler")
     assert_eq(loaded:getMaxWeightBase(), 10)
     assert_eq(humanHamsterCarryBucket(loaded)[HUMAN_HAMSTER_ID], 2)
     assert_eq(loaded:getModData()["UT_hamsterCraving"], before + 1,

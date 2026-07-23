@@ -170,6 +170,28 @@ local function onEveryMinute()
     end
 end
 
+local function onTick(player)
+    if generation ~= runtime.generation then return end
+    syncPlayer(player)
+end
+
+local function onTeardown(_reason)
+    local player = runtime.activePlayer
+    clearOwnedState(player)
+    if runtime.activePlayer == player then
+        runtime.activePlayer = nil
+    end
+end
+
+if UTCore.unregisterTickHandler then
+    UTCore.unregisterTickHandler(TRAIT_ID, "reload")
+end
+UTCore.registerTickHandler(TRAIT_ID, onTick, {
+    throttle = 30,
+    vehicleAware = true,
+    teardown = onTeardown,
+})
+
 Events.OnCreatePlayer.Add(onCreatePlayer)
 Events.EveryOneMinute.Add(onEveryMinute)
 
