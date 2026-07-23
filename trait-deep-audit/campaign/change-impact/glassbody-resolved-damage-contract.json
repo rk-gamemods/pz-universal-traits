@@ -48,13 +48,13 @@
     },
     {
       "path": "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "90D640940B4F264CA349E6D300FB8297314DDDCA428CF6C6F16BA88755604EC5",
-      "bytes": 8365
+      "sha256": "41AB026369724CC6CD018E4D04E3DB99198D2924D8B759561B2118D31183A508",
+      "bytes": 8795
     },
     {
       "path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "90D640940B4F264CA349E6D300FB8297314DDDCA428CF6C6F16BA88755604EC5",
-      "bytes": 8365
+      "sha256": "41AB026369724CC6CD018E4D04E3DB99198D2924D8B759561B2118D31183A508",
+      "bytes": 8795
     },
     {
       "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
@@ -68,8 +68,8 @@
     },
     {
       "path": "UT_CORE/test/run_tests.lua",
-      "sha256": "9B40402B1860EAC2A4CC507C3A53065C7208EF7A120311ABBEF3F46382D5E5A3",
-      "bytes": 173674
+      "sha256": "F1DD4E9FE1F2159CD5C29B025E8D719BB1CF55B5B29D6FA903B1773B33E8E21F",
+      "bytes": 181429
     },
     {
       "path": "UT_CORE/test/UTCoreMocks.lua",
@@ -83,8 +83,8 @@
     },
     {
       "path": "UniversalTraits/test/run_tests.lua",
-      "sha256": "553347950739269EE40B9BBBA712AE02DA0EBE06EA190B1F3847B67315892D5B",
-      "bytes": 456295
+      "sha256": "429718B43AADBDEA7A25ECB76C1A3CE6188D0D6259B6169E14E0B5C1CA9D74AB",
+      "bytes": 459448
     },
     {
       "path": "trait-deep-audit/active/batch/traits/UT_glassbody.md",
@@ -103,7 +103,9 @@
     "same-process hook reload",
     "depleted-body-part weighted distribution",
     "activation and trait reset",
-    "all read-bridge failures and post-mutation setter rollback",
+    "hostile receiver reads and BodyPartType static member lookup/invocation",
+    "hostile core-registration lookup/invocation with bounded calls and no direct fallback",
+    "post-mutation setter rollback",
     "rollback-failure containment and exact setter-call bounds"
   ],
   "preserved_surfaces": [

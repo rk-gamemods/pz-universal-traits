@@ -10868,13 +10868,13 @@
         {
           "id": "exact_runtime_path_through_ut_core_or_script_only_behavior",
           "state": "runtime-unproven",
-          "evidence": "The aggregate observer and hostile bridge containment are statically proven for observable net loss.",
+          "evidence": "The aggregate observer plus exact hostile receiver, BodyPartType static, and core-registration containment are statically proven for observable net loss.",
           "missing_proof": "Same-update healing can hide incoming loss, and Build 42 exposes no complete post-resolution per-source signal."
         },
         {
           "id": "numerical_behavior",
           "state": "runtime-unproven",
-          "evidence": "The aggregate observer and hostile bridge containment are statically proven for observable net loss.",
+          "evidence": "The aggregate observer plus exact hostile receiver, BodyPartType static, and core-registration containment are statically proven for observable net loss.",
           "missing_proof": "Same-update healing can hide incoming loss, and Build 42 exposes no complete post-resolution per-source signal."
         },
         {
@@ -10910,7 +10910,7 @@
         {
           "id": "event_lifecycle",
           "state": "runtime-unproven",
-          "evidence": "The aggregate observer and hostile bridge containment are statically proven for observable net loss.",
+          "evidence": "The aggregate observer plus exact hostile receiver, BodyPartType static, and core-registration containment are statically proven for observable net loss.",
           "missing_proof": "Same-update healing can hide incoming loss, and Build 42 exposes no complete post-resolution per-source signal."
         },
         {
@@ -11022,8 +11022,8 @@
       "release_parity": {
         "trait_runtime": "F72B0DC0D21AF27755E576E142F50FF834A82BA38742BC64FCA32EE2BFBC1AC5",
         "trait_release": "F72B0DC0D21AF27755E576E142F50FF834A82BA38742BC64FCA32EE2BFBC1AC5",
-        "hook_runtime": "90D640940B4F264CA349E6D300FB8297314DDDCA428CF6C6F16BA88755604EC5",
-        "hook_release": "90D640940B4F264CA349E6D300FB8297314DDDCA428CF6C6F16BA88755604EC5",
+        "hook_runtime": "41AB026369724CC6CD018E4D04E3DB99198D2924D8B759561B2118D31183A508",
+        "hook_release": "41AB026369724CC6CD018E4D04E3DB99198D2924D8B759561B2118D31183A508",
         "state": "proven-correct"
       },
       "resolution_record": "change-impact/glassbody-resolved-damage-contract.json"

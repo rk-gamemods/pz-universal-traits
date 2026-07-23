@@ -154,7 +154,7 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
     )
     dimensions["tests"] = _dimension(
         "proven",
-        "Observed aggregate loss, weighted exactness with depleted parts, finite clamps, near-death and overkill, recursion prevention, activation/reset, hostile read bridges, post-mutation setter throws, rollback failure containment with exact call bounds, player replacement, and same-process reload are regression-protected. Tests do not overclaim same-update damage hidden by healing.",
+        "Observed aggregate loss, weighted exactness with depleted parts, finite clamps, near-death and overkill, recursion prevention, activation/reset, hostile receiver reads, static BodyPartType member lookup and invocation, core-registration lookup and invocation, post-mutation setter throws, rollback failure containment, bounded hostile calls, player replacement, and same-process reload are regression-protected. Tests do not overclaim same-update damage hidden by healing.",
     )
     dimensions["mocks"] = _dimension(
         "proven",
@@ -313,7 +313,7 @@ def _plan_trait_review(root: Path, campaign: Path, plan: dict[str, bytes]) -> No
     ):
         _checked_dimension(row, dimension_id).update(
             state="runtime-unproven",
-            evidence="The aggregate observer and hostile bridge containment are statically proven for observable net loss.",
+            evidence="The aggregate observer plus exact hostile receiver, BodyPartType static, and core-registration containment are statically proven for observable net loss.",
             missing_proof="Same-update healing can hide incoming loss, and Build 42 exposes no complete post-resolution per-source signal.",
         )
     omission = _exactly_one(row["omissions"], "id", OMISSION, relative)
@@ -424,7 +424,7 @@ def _plan_integration_review(root: Path, campaign: Path, plan: dict[str, bytes])
             state="runtime-unproven",
             resolution_state="requires-user-decision",
             resolution_evidence=(
-                "The hook no longer consumes OnWeaponHitCharacter. Aggregate overall body-health deltas drive one bounded extra reduction with hostile bridge and delayed recalculation coverage, but same-update healing remains indistinguishable."
+                "The hook no longer consumes OnWeaponHitCharacter. Aggregate overall body-health deltas drive one bounded extra reduction with hostile receiver, static member lookup/invocation, core-registration lookup/invocation, and delayed recalculation coverage, but same-update healing remains indistinguishable."
             ),
             missing_proof="No complete source-faithful resolved-damage signal exists in the inspected Build 42 producer surface; user direction remains required.",
         )
@@ -518,7 +518,9 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
                 "same-process hook reload",
                 "depleted-body-part weighted distribution",
                 "activation and trait reset",
-                "all read-bridge failures and post-mutation setter rollback",
+                "hostile receiver reads and BodyPartType static member lookup/invocation",
+                "hostile core-registration lookup/invocation with bounded calls and no direct fallback",
+                "post-mutation setter rollback",
                 "rollback-failure containment and exact setter-call bounds",
             ],
             "preserved_surfaces": [

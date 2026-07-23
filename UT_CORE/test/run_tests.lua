@@ -3316,12 +3316,6 @@ test("DamageMultHook contains every throwing or malformed read bridge", function
         { "list get", function(_, h) h.bodyParts.get = function() error("get") end end },
         { "part getHealth", function(_, h) h.parts[1].getHealth = function() error("health") end end },
         { "part getType", function(_, h) h.parts[1].getType = function() error("type") end end },
-        { "type index", function()
-            BodyPartType.ToIndex = function() error("index") end
-        end },
-        { "damage weight", function()
-            BodyPartType.getDamageModifyer = function() error("weight") end
-        end },
     }
 
     for _, case in ipairs(cases) do
@@ -3336,6 +3330,106 @@ test("DamageMultHook contains every throwing or malformed read bridge", function
         assert_eq(#health.setCalls(), 0, case[1] .. " failure must not write")
         BodyPartType.ToIndex = savedToIndex
         BodyPartType.getDamageModifyer = savedWeight
+        health.restore()
+    end
+end)
+
+test("DamageMultHook contains hostile static lookup and calls with exact bounds", function()
+    local originalBodyPartType = BodyPartType
+    local cases = {
+        {
+            name = "malformed ToIndex member",
+            install = function()
+                BodyPartType = {
+                    ToIndex = "not-a-function",
+                    getDamageModifyer = originalBodyPartType.getDamageModifyer,
+                }
+            end,
+            expectedLookups = 0,
+            expectedCalls = 0,
+        },
+        {
+            name = "throwing ToIndex lookup",
+            install = function(state)
+                BodyPartType = setmetatable({}, {
+                    __index = function(_, key)
+                        state.lookups = state.lookups + 1
+                        if key == "ToIndex" then error("ToIndex lookup") end
+                        return originalBodyPartType[key]
+                    end,
+                })
+            end,
+            expectedLookups = 2,
+            expectedCalls = 0,
+        },
+        {
+            name = "malformed getDamageModifyer member",
+            install = function()
+                BodyPartType = {
+                    ToIndex = originalBodyPartType.ToIndex,
+                    getDamageModifyer = false,
+                }
+            end,
+            expectedLookups = 0,
+            expectedCalls = 0,
+        },
+        {
+            name = "throwing getDamageModifyer lookup",
+            install = function(state)
+                BodyPartType = setmetatable({}, {
+                    __index = function(_, key)
+                        state.lookups = state.lookups + 1
+                        if key == "getDamageModifyer" then error("modifier lookup") end
+                        return originalBodyPartType[key]
+                    end,
+                })
+            end,
+            expectedLookups = 2,
+            expectedCalls = 0,
+        },
+        {
+            name = "throwing ToIndex call",
+            install = function(state)
+                BodyPartType = {
+                    ToIndex = function()
+                        state.calls = state.calls + 1
+                        error("ToIndex call")
+                    end,
+                    getDamageModifyer = originalBodyPartType.getDamageModifyer,
+                }
+            end,
+            expectedLookups = 0,
+            expectedCalls = 1,
+        },
+        {
+            name = "throwing getDamageModifyer call",
+            install = function(state)
+                BodyPartType = {
+                    ToIndex = originalBodyPartType.ToIndex,
+                    getDamageModifyer = function()
+                        state.calls = state.calls + 1
+                        error("modifier call")
+                    end,
+                }
+            end,
+            expectedLookups = 0,
+            expectedCalls = 1,
+        },
+    }
+
+    for _, case in ipairs(cases) do
+        BodyPartType = originalBodyPartType
+        local p, health = makeDamageMultPlayer(1.5, 100)
+        UTCore._damageMultUpdateHandler(p)
+        local state = { lookups = 0, calls = 0 }
+        case.install(state)
+        health.setResolvedHealth(80)
+        local ok = pcall(UTCore._damageMultUpdateHandler, p)
+        BodyPartType = originalBodyPartType
+        assert(ok, case.name .. " must not escape")
+        assert_eq(#health.setCalls(), 0, case.name .. " must not write")
+        assert_eq(state.lookups, case.expectedLookups, case.name .. " lookup bound")
+        assert_eq(state.calls, case.expectedCalls, case.name .. " call bound")
         health.restore()
     end
 end)
@@ -3414,11 +3508,10 @@ test("DamageMultHook reload replaces behavior without adding a dispatcher", func
         "expected no damage-multiplier weapon listener after reload")
 end)
 
-test("DamageMultHook reload contains throwing event Add and Remove bridges", function()
+test("DamageMultHook reload contains throwing event Remove bridges", function()
     local savedRegister = UTCore.registerCoreHandler
     local savedWeaponRemove = Events.OnWeaponHitCharacter.Remove
     local savedUpdateRemove = Events.OnPlayerUpdate.Remove
-    local savedUpdateAdd = Events.OnPlayerUpdate.Add
 
     UTCore._damageMultWeaponHitHandler = function() end
     UTCore._damageMultDirectHandler = function() end
@@ -3429,13 +3522,95 @@ test("DamageMultHook reload contains throwing event Add and Remove bridges", fun
 
     Events.OnWeaponHitCharacter.Remove = savedWeaponRemove
     Events.OnPlayerUpdate.Remove = savedUpdateRemove
-    UTCore.registerCoreHandler = nil
-    Events.OnPlayerUpdate.Add = function() error("update add") end
-    local okAdd = pcall(dofile, base .. "../media/lua/shared/UTCore/UTCore_DamageMultHook.lua")
-    assert(okAdd, "throwing event Add bridge must not escape")
-
     UTCore.registerCoreHandler = savedRegister
-    Events.OnPlayerUpdate.Add = savedUpdateAdd
+    dofile(base .. "../media/lua/shared/UTCore/UTCore_DamageMultHook.lua")
+end)
+
+test("DamageMultHook fails closed for hostile core registration with exact bounds", function()
+    local originalRegister = UTCore.registerCoreHandler
+    local originalMetatable = getmetatable(UTCore)
+    local originalAdd = Events.OnPlayerUpdate.Add
+    local originalCount = UTCore.getCoreHandlerCount()
+    local cases = {
+        {
+            name = "missing registration",
+            install = function() UTCore.registerCoreHandler = nil end,
+            expectedLookups = 0,
+            expectedCalls = 0,
+        },
+        {
+            name = "malformed registration",
+            install = function() UTCore.registerCoreHandler = "not-a-function" end,
+            expectedLookups = 0,
+            expectedCalls = 0,
+        },
+        {
+            name = "throwing registration lookup",
+            install = function(state)
+                UTCore.registerCoreHandler = nil
+                setmetatable(UTCore, {
+                    __index = function(_, key)
+                        if key == "registerCoreHandler" then
+                            state.lookups = state.lookups + 1
+                            error("registration lookup")
+                        end
+                        if originalMetatable and originalMetatable.__index then
+                            if type(originalMetatable.__index) == "function" then
+                                return originalMetatable.__index(UTCore, key)
+                            end
+                            return originalMetatable.__index[key]
+                        end
+                        return nil
+                    end,
+                })
+            end,
+            expectedLookups = 1,
+            expectedCalls = 0,
+        },
+        {
+            name = "post-mutation throwing registration call",
+            install = function(state)
+                UTCore.registerCoreHandler = function(...)
+                    state.calls = state.calls + 1
+                    originalRegister(...)
+                    error("post-mutation registration call")
+                end
+            end,
+            expectedLookups = 0,
+            expectedCalls = 1,
+        },
+    }
+
+    for _, case in ipairs(cases) do
+        setmetatable(UTCore, originalMetatable)
+        UTCore.registerCoreHandler = originalRegister
+        local state = { lookups = 0, calls = 0, adds = 0 }
+        Events.OnPlayerUpdate.Add = function(...)
+            state.adds = state.adds + 1
+            return originalAdd(...)
+        end
+        case.install(state)
+        local ok = pcall(dofile, base .. "../media/lua/shared/UTCore/UTCore_DamageMultHook.lua")
+        assert(ok, case.name .. " must not escape")
+        assert_eq(state.lookups, case.expectedLookups, case.name .. " lookup bound")
+        assert_eq(state.calls, case.expectedCalls, case.name .. " call bound")
+        assert_eq(state.adds, 0, case.name .. " must not install a direct fallback")
+        assert_eq(UTCore.getCoreHandlerCount(), originalCount,
+            case.name .. " must not partially change the registry")
+        local damageRows = 0
+        for _, row in ipairs(UTCore._coreHandlers) do
+            if row.id == "DamageMultHook" then
+                damageRows = damageRows + 1
+                assert_eq(row.fn, UTCore._damageMultTickDispatcher,
+                    case.name .. " must retain only the safe dispatcher")
+            end
+        end
+        assert_eq(damageRows, 1, case.name .. " must retain exactly one safe registration")
+    end
+
+    setmetatable(UTCore, originalMetatable)
+    UTCore.registerCoreHandler = originalRegister
+    Events.OnPlayerUpdate.Add = originalAdd
     dofile(base .. "../media/lua/shared/UTCore/UTCore_DamageMultHook.lua")
 end)
 

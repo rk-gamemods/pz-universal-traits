@@ -41,6 +41,13 @@ local function callFunction(container, functionName, ...)
     return pcall(fn, ...)
 end
 
+local function readFunction(container, functionName)
+    if container == nil then return false, nil end
+    local okFunction, fn = pcall(function() return container[functionName] end)
+    if not okFunction or type(fn) ~= "function" then return false, nil end
+    return true, fn
+end
+
 local function rollbackAndMeasure(plan, affectedCount)
     for index = affectedCount, 1, -1 do
         local change = plan[index]
@@ -65,9 +72,16 @@ end
 
 local function applyExactOverallLoss(bodyDamage, requestedLoss)
     if not isFinite(requestedLoss) or requestedLoss <= 0 then return 0 end
-    if not BodyPartType
-            or type(BodyPartType.ToIndex) ~= "function"
-            or type(BodyPartType.getDamageModifyer) ~= "function" then
+    local okBodyPartType, bodyPartType = pcall(function() return BodyPartType end)
+    if not okBodyPartType or bodyPartType == nil then
+        return 0
+    end
+    local okToIndex, toIndex = readFunction(bodyPartType, "ToIndex")
+    local okDamageModifier, getDamageModifier = readFunction(
+        bodyPartType,
+        "getDamageModifyer"
+    )
+    if not okToIndex or not okDamageModifier then
         return 0
     end
 
@@ -89,8 +103,8 @@ local function applyExactOverallLoss(bodyDamage, requestedLoss)
 
         local okPart, part = callMethod(bodyParts, "get", index)
         local okType, partType = callMethod(part, "getType")
-        local okTypeIndex, typeIndex = pcall(BodyPartType.ToIndex, partType)
-        local okModifier, modifier = pcall(BodyPartType.getDamageModifyer, typeIndex)
+        local okTypeIndex, typeIndex = pcall(toIndex, partType)
+        local okModifier, modifier = pcall(getDamageModifier, typeIndex)
         if not okPart or not part or not okType
                 or not okTypeIndex or not isFinite(typeIndex)
                 or typeIndex ~= index or typeIndex ~= math.floor(typeIndex)
@@ -230,15 +244,18 @@ if Events and Events.OnPlayerUpdate and UTCore._damageMultDirectHandler then
     UTCore._damageMultDirectHandler = nil
 end
 
-if UTCore.registerCoreHandler then
+local okRegister, registerCoreHandler = readFunction(UTCore, "registerCoreHandler")
+if okRegister then
     if not UTCore._damageMultTickDispatcher then
         UTCore._damageMultTickDispatcher = function(player, tick)
             local handler = UTCore._damageMultUpdateHandler
             if handler then handler(player, tick) end
         end
-        UTCore.registerCoreHandler("DamageMultHook", UTCore._damageMultTickDispatcher, { priority = 0 })
     end
-elseif Events and Events.OnPlayerUpdate then
-    UTCore._damageMultDirectHandler = onPlayerUpdate
-    callFunction(Events.OnPlayerUpdate, "Add", UTCore._damageMultDirectHandler)
+    pcall(
+        registerCoreHandler,
+        "DamageMultHook",
+        UTCore._damageMultTickDispatcher,
+        { priority = 0 }
+    )
 end
