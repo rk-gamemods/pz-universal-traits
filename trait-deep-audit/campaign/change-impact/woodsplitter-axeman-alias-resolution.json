@@ -21,7 +21,7 @@
     "existing_saves": "superseded non-goal; saves may be invalidated and no migration or legacy-state contract is required",
     "effects": [
       "Axe-category tree damage x1.5",
-      "Axe attack-time result x0.95",
+      "HandWeapon getSpeedMod Axeman branch is not production-consumed",
       "chop speed 1.0 versus 0.8",
       "new-character rare pine-tree key-ring eligibility"
     ],
@@ -68,13 +68,13 @@
       "ordinal": 7,
       "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
       "disposition": "changed-copy-correction",
-      "reason": "Copy now states general axe combat/swing animation speed."
+      "reason": "Copy now states faster axe attacks without an unsupported getSpeedMod or exact final-ratio claim."
     },
     {
       "ordinal": 8,
       "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
       "disposition": "changed-copy-correction",
-      "reason": "Copy now states general axe combat/swing animation speed."
+      "reason": "Copy now states faster axe attacks without an unsupported getSpeedMod or exact final-ratio claim."
     },
     {
       "ordinal": 9,
@@ -389,8 +389,9 @@
       "grant retention",
       "profession-switch removal and repopulation",
       "tree damage x1.5",
-      "attack-time x0.95",
-      "general axe combat speed 1.0 versus 0.8",
+      "calculateCombatSpeed consumes getChopTreeSpeed for axe attacks",
+      "no production getSpeedMod consumer in current B42 Java source",
+      "Lumberjack grants base:axeman",
       "pine key-ring eligibility",
       "grant/non-stacking"
     ],

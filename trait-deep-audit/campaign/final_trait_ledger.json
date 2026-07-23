@@ -60,8 +60,8 @@
     "trait_batches/batch_09.jsonl": "7493EABBF27471F551A42E6B750D8927EC80B36404B51ED6E7CBC74349EAFE44",
     "trait_batches/batch_10.jsonl": "0B4D9F886C24F1CFEB96D07F013B90F28B579A0086D1DB80DBEDC68671FEBE34",
     "trait_batches/batch_11.jsonl": "D1617D3F6DE1E81879EB3FA2B81F7DA1058630E103CF1DFD2D907B026311D959",
-    "trait_batches/batch_12.jsonl": "AD66AE06FB18C88A6FF3C7AAF9EBF0699B8C803CAE1B0DF471FDBEC765A2FF26",
-    "translation_audit.json": "B0B28426A93039B475982BED08870475C23D8F8A3B41FCC843DF92A65E2B1C89"
+    "trait_batches/batch_12.jsonl": "0D668CE4517CD35E208A253B4214905C00C658B5BB97E970D14E1F52FC5DB850",
+    "translation_audit.json": "DC734D6A5EB01E5D596E94301364784BD84F3A0D311EE46C68FCD34982BB12D1"
   },
   "counts": {
     "traits": 198,
@@ -62273,7 +62273,7 @@
         "numbers": {
           "state": "proven-correct",
           "evidence": [
-            "vanilla anchors prove tree damage x1.5, attack time x0.95, and general axe combat speed 1.0 versus 0.8"
+            "vanilla anchors prove tree damage x1.5 and calculateCombatSpeed consumption of the Axeman 1.0-versus-0.8 chop-speed branch; later modifiers prevent an exact final animation-ratio claim"
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -62375,7 +62375,7 @@
         "description": {
           "state": "proven-correct",
           "evidence": [
-            "copy separates tree damage, attack time, general axe speed, key ring, and grant/non-stacking"
+            "copy states +1 Axe, 50% bonus tree damage, faster axe attacks, key-ring eligibility, and source exclusivity without an unsupported final timing ratio"
           ],
           "missing_proof": [],
           "source_dimensions": [

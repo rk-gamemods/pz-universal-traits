@@ -70,24 +70,24 @@
       "quantification": "At equal animation cadence this is 50% more tree damage per hit and approximately 33.3% fewer hits for the same tree, subject to integer damage/overkill and durability/endurance behavior."
     },
     {
-      "effect": "0.95 axe attack-time multiplier",
-      "mechanic": "HandWeapon applies an Axeman multiplier of 0.95 inside the axe attack-time calculation, multiplicatively with the Axe-level timing table.",
+      "effect": "unconsumed HandWeapon getSpeedMod Axeman branch",
+      "mechanic": "HandWeapon defines an Axeman multiplier inside getSpeedMod, but current B42 Java source has no production caller, so it is not part of the supported contract.",
       "estimated_point_value": {
-        "low": 0.5,
-        "high": 1.0
+        "low": 0.0,
+        "high": 0.0
       },
-      "timing": "Permanent combat value from the first usable axe through late game; limited to axes and constrained by stamina, spacing, weapon supply, and animation/combat conditions.",
-      "quantification": "A 0.95 duration multiplier is about 5.26% more attacks per unit time when timing is the limiting factor, not a flat 5% damage increase and not an additive skill bonus."
+      "timing": "No supported production value is assigned while the method has no caller.",
+      "quantification": "The dormant method body is excluded from balance arithmetic and player-facing copy."
     },
     {
       "effect": "ChopTreeSpeed 1.0 instead of 0.8",
-      "mechanic": "IsoGameCharacter.getChopTreeSpeed returns 1.0 with Axeman and 0.8 otherwise; axe combat speed is multiplied by this variable in the tree-chopping path.",
+      "mechanic": "IsoGameCharacter.getChopTreeSpeed returns 1.0 with Axeman and 0.8 otherwise; calculateCombatSpeed consumes it for axe attacks before later modifiers.",
       "estimated_point_value": {
         "low": 0.5,
         "high": 1.0
       },
-      "timing": "Same wood-production windows as tree damage; it improves real-time throughput rather than per-hit resource efficiency.",
-      "quantification": "1.0/0.8 is 1.25 times baseline chop cadence. Combined with 1.5 tree damage, the idealized damage-throughput ratio is 1.875 times baseline, corresponding to about 46.7% of baseline chopping time for equal tree health, before rounding, endurance, movement, and action overhead."
+      "timing": "This supports the qualitative faster-axe-attacks claim, not an exact final animation ratio.",
+      "quantification": "The raw branch differs by 1.0 versus 0.8, but later calculateCombatSpeed modifiers prevent treating 1.0/0.8 as the final player-observed ratio."
     },
     {
       "effect": "pine key-ring eligibility",
@@ -101,7 +101,7 @@
     }
   ],
   "interaction_and_opportunity_cost": {
-    "nonstacking": "Vanilla Axeman checks are boolean. A second source does not produce 2.25 tree damage, another 0.95 timing multiplier, or ChopTreeSpeed above 1.0.",
+    "nonstacking": "Vanilla Axeman checks are boolean. A second source does not produce 2.25 tree damage, an unproven getSpeedMod timing multiplier, or ChopTreeSpeed above 1.0.",
     "direct_axeman_overlap": "Selection-time exclusion removes the zero-value duplicate purchase and is required for the 4-point price to be honest.",
     "profession_overlap": "A profession-granted Axeman must also block Wood Splitter. The profession route carries the opportunity cost of choosing that occupation and bundles other profession-specific benefits/tradeoffs; Wood Splitter's value is chiefly that it makes the Axeman package available to other professions for trait points.",
     "lumberjack_adjacent_benefits_not_included": [
@@ -111,7 +111,7 @@
     ],
     "single_player_scope": "DisabledInMultiplayer=true makes this a single-player-only trait. That restriction does not warrant pricing below its single-player build value because points are paid only where the trait is selectable.",
     "early_game": "High value: immediate Axe level improves access/competence while permanent attack and chopping modifiers apply before the character has accumulated gear, skills, and stockpiled logs.",
-    "late_game": "Mixed value: the +1 starting level is less important, but the 0.95 attack-time modifier and Axeman tree multipliers remain permanent. Abundant materials and mature bases reduce the marginal economic value of chopping."
+    "late_game": "Mixed value: the +1 starting level is less important, but Axeman tree damage and faster axe attacks remain permanent. Abundant materials and mature bases reduce the marginal economic value of chopping."
   },
   "comparative_pricing": {
     "audited_sample_note": "A bounded extraction from explicit cost statements in final_trait_ledger.json yielded 41 positive observations; it is an audit-evidence sample, not a guaranteed one-row-per-trait census because ledger wording is heterogeneous.",
@@ -202,7 +202,7 @@
     "adopted_findings": [
       "The prior cost 3 covered +1 Axe plus a dead/mismatched claimed double-damage runtime.",
       "The prior runtime used nonexistent OnTreeChopped and incorrect IsoTree getHp/setHp mocks; it is not balance evidence for the corrected package.",
-      "Vanilla Axeman is a four-consumer package: 1.5 tree damage, 0.95 axe timing, ChopTreeSpeed 1.0 versus 0.8, and pine key-ring eligibility.",
+      "The supported Axeman package includes 1.5 tree damage, faster axe attacks through calculateCombatSpeed, and pine key-ring eligibility; getSpeedMod has no production caller.",
       "No authorized in-game telemetry establishes real usage frequency, time saved, survival effect, or pick-rate dominance."
     ],
     "uncertainty_rules": [
@@ -225,7 +225,7 @@
     "procedure": [
       "Use identical axe item, condition, fatigue/endurance, tree size/health, game speed, and Axe level.",
       "Record hits and elapsed action time to fell at least 10 matched trees per arm; verify treatment damage per hit is 1.5 times control subject to integer rounding and that elapsed chop time approaches the formula-predicted combined direction.",
-      "Against a controlled non-tree target, record at least 30 matched axe attack cycles per arm and compare median cycle duration; expected treatment/control ratio is approximately 0.95 when other timing inputs are fixed.",
+      "Against a controlled non-tree target, record matched axe attack cycles per arm and confirm only that Axeman produces faster axe attacks; do not require an exact final ratio.",
       "Create new characters only and record whether the pine key ring appears as an eligibility smoke check, without treating nonappearance in a small sample as a failure unless spawn selection is deterministic.",
       "Capture character-creation evidence that direct/profession-granted Axeman and Wood Splitter cannot coexist."
     ],
@@ -252,5 +252,5 @@
     "The numeric Lumberjack occupation cost was not exposed by the current indexed sources under this task's no-command/no-index boundary, so it is deliberately not asserted or used as a quantitative price anchor.",
     "The current index anchors the pre-correction Wood Splitter source; this artifact evaluates the explicitly supplied corrected contract of +1 Axe plus inherited Axeman and required selection-time exclusion."
   ],
-  "copy_scope": "The 1.0 versus 0.8 branch is consumed by calculateCombatSpeed for general axe combat/swing animations, not only tree actions."
+  "copy_scope": "The 1.0 versus 0.8 getChopTreeSpeed branch is consumed by calculateCombatSpeed for axe attacks. Later modifiers also contribute, so no exact final animation ratio is claimed."
 }

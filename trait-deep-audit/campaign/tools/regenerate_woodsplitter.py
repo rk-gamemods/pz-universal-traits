@@ -25,6 +25,8 @@ from build_remediation_queue import (
     render_jsonl,
     update_release_blocker_queue_sha256,
 )
+from check_recurring_patterns import build_report as build_recurring_pattern_report
+from check_recurring_patterns import render_report as render_recurring_pattern_report
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -33,9 +35,8 @@ TRAIT = "UniversalTraits:UT_woodsplitter"
 FINDING_ID = "B12-WOODSPLITTER-001"
 PATTERN_ID = "RP-TRANSLATION-LITERAL-PERCENT"
 DESC = (
-    "+1 to Axe skill. Axe-category weapons deal 50% more damage to trees and have "
-    "5% lower swing time, and general axe combat/swing animations are 25% faster. "
-    "Eligible for the rare pine-tree key ring. Grants Ax-pert and does not stack with it."
+    "+1 Axe. Grants Ax-pert's 50% bonus tree damage and faster axe attacks. "
+    "Eligible for the rare pine-tree key ring. Cannot be combined with another source of Ax-pert."
 )
 
 OUTPUTS = (
@@ -166,6 +167,17 @@ def _path_count(value: Any, relative: str) -> int:
     return 0
 
 
+def _replace_owned_text(value: Any, replacements: dict[str, str]) -> Any:
+    if isinstance(value, dict):
+        return {key: _replace_owned_text(child, replacements) for key, child in value.items()}
+    if isinstance(value, list):
+        return [_replace_owned_text(child, replacements) for child in value]
+    if isinstance(value, str):
+        for old, new in replacements.items():
+            value = value.replace(old, new)
+    return value
+
+
 def _dimension(state: str, evidence: str, missing: str = "") -> dict[str, Any]:
     return {"state": state, "evidence": [evidence], "missing_proof": missing}
 
@@ -182,7 +194,7 @@ def _update_batch(plan: Plan) -> dict[str, Any]:
         "cost_xp_grants_exclusions": "cost 4; Axe=1; GrantedTraits=Axeman; MutuallyExclusiveTraits=Axeman",
         "source_intent": "declarative Wood Splitter reuses vanilla Axeman without custom runtime behavior",
         "runtime_path": "comment-only trait Lua; behavior is vanilla Axeman granted by the definition",
-        "numbers": "vanilla anchors prove tree damage x1.5, attack time x0.95, and general axe combat speed 1.0 versus 0.8",
+        "numbers": "vanilla anchors prove tree damage x1.5 and calculateCombatSpeed consumption of the Axeman 1.0-versus-0.8 chop-speed branch; later modifiers prevent an exact final animation-ratio claim",
         "cadence": "no custom cadence or periodic handler",
         "cooldown": "no cooldown",
         "reset_save_load": "no custom state, migration, or save hook",
@@ -192,7 +204,7 @@ def _update_batch(plan: Plan) -> dict[str, Any]:
         "stacking_interactions": "one set-like Axeman grant; selection exclusions prevent separate stacking",
         "multiplayer": "DisabledInMultiplayer=true; MP support remains a non-goal",
         "display": "English display resolves to Wood Splitter",
-        "description": "copy separates tree damage, attack time, general axe speed, key ring, and grant/non-stacking",
+        "description": "copy states +1 Axe, 50% bonus tree damage, faster axe attacks, key-ring eligibility, and source exclusivity without an unsupported final timing ratio",
         "localization": "EN source/release pair is present and byte-identical; EN-only policy is unchanged",
         "balance": "accepted cost 4 is preserved without revisiting balance",
         "performance": "comment-only Lua adds no runtime work",
@@ -208,8 +220,8 @@ def _update_batch(plan: Plan) -> dict[str, Any]:
         "UniversalTraits/test/run_tests.lua",
         "PZCodebase/Java/source/zombie/scripting/objects/ResourceLocation.java:27",
         "PZCodebase/Java/source/zombie/iso/objects/IsoTree.java:209",
-        "PZCodebase/Java/source/zombie/inventory/types/HandWeapon.java",
         "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:10317",
+        "PZCodebase/Media/media/scripts/generated/characters/character_professions.txt:125",
         "PZCodebase/Lua/shared/Items/SpawnItems.lua",
     ]
     row["dimensions"] = {key: _dimension("proven-correct", text) for key, text in facts.items()}
@@ -310,6 +322,17 @@ def _update_source_records(plan: Plan) -> dict[str, Any]:
 def _update_change_impact(plan: Plan) -> None:
     relative = "change-impact/woodsplitter-axeman-alias-resolution.json"
     artifact = plan.json(relative)
+    artifact = _replace_owned_text(
+        artifact,
+        {
+            "Axe attack-time result x0.95": "HandWeapon getSpeedMod Axeman branch is not production-consumed",
+            "attack-time x0.95": "no production getSpeedMod consumer",
+            "general axe combat speed 1.0 versus 0.8": (
+                "calculateCombatSpeed consumes the Axeman getChopTreeSpeed branch; "
+                "later modifiers prevent an exact final-ratio claim"
+            ),
+        },
+    )
     surfaces = artifact["surface_dispositions"]
     lua_matches = [item for item in surfaces if str(item.get("path", "")).endswith("UT_woodsplitter.lua")]
     translation_matches = [item for item in surfaces if str(item.get("path", "")).endswith("Translate/EN/UI.json")]
@@ -323,7 +346,7 @@ def _update_change_impact(plan: Plan) -> None:
     for surface in translation_matches:
         surface.update(
             disposition="changed-copy-correction",
-            reason="Copy now states general axe combat/swing animation speed.",
+            reason="Copy now states faster axe attacks without an unsupported getSpeedMod or exact final-ratio claim.",
         )
     review = artifact["superseding_review"]
     review["current_source_assessment"] = "statically-validated-runtime-unproven"
@@ -333,8 +356,9 @@ def _update_change_impact(plan: Plan) -> None:
         "grant retention",
         "profession-switch removal and repopulation",
         "tree damage x1.5",
-        "attack-time x0.95",
-        "general axe combat speed 1.0 versus 0.8",
+        "calculateCombatSpeed consumes getChopTreeSpeed for axe attacks",
+        "no production getSpeedMod consumer in current B42 Java source",
+        "Lumberjack grants base:axeman",
         "pine key-ring eligibility",
         "grant/non-stacking",
     ]
@@ -349,9 +373,73 @@ def _update_change_impact(plan: Plan) -> None:
 
     relative = "change-impact/woodsplitter-axeman-balance.json"
     artifact = plan.json(relative)
+    artifact = _replace_owned_text(
+        artifact,
+        {
+            "0.95 axe attack-time multiplier": "unconsumed HandWeapon getSpeedMod Axeman branch",
+            (
+                "HandWeapon applies an Axeman multiplier of 0.95 inside the axe attack-time "
+                "calculation, multiplicatively with the Axe-level timing table."
+            ): (
+                "HandWeapon defines an Axeman multiplier inside getSpeedMod, but current B42 "
+                "Java source has no production caller, so it is not part of the supported contract."
+            ),
+            "another 0.95 timing multiplier": "an unproven getSpeedMod timing multiplier",
+            "the 0.95 attack-time modifier and Axeman tree multipliers remain permanent": (
+                "Axeman tree damage and faster axe attacks remain permanent"
+            ),
+            (
+                "Vanilla Axeman is a four-consumer package: 1.5 tree damage, 0.95 axe timing, "
+                "ChopTreeSpeed 1.0 versus 0.8, and pine key-ring eligibility."
+            ): (
+                "The supported Axeman package includes 1.5 tree damage, faster axe attacks through "
+                "calculateCombatSpeed, and pine key-ring eligibility; getSpeedMod has no production caller."
+            ),
+            (
+                "Against a controlled non-tree target, record at least 30 matched axe attack cycles "
+                "per arm and compare median cycle duration; expected treatment/control ratio is approximately "
+                "0.95 when other timing modifiers are held constant."
+            ): (
+                "Against a controlled non-tree target, record matched axe attack cycles per arm and "
+                "confirm only that Axeman produces faster axe attacks; do not require an exact final ratio."
+            ),
+            (
+                "Against a controlled non-tree target, record at least 30 matched axe attack cycles per arm "
+                "and compare median cycle duration; expected treatment/control ratio is approximately 0.95 "
+                "when other timing inputs are fixed."
+            ): (
+                "Against a controlled non-tree target, record matched axe attack cycles per arm and confirm "
+                "only that Axeman produces faster axe attacks; do not require an exact final ratio."
+            ),
+        },
+    )
+    effects = artifact["effect_valuation"]
+    unconsumed = _exactly_one(
+        effects,
+        "effect",
+        "unconsumed HandWeapon getSpeedMod Axeman branch",
+        relative,
+    )
+    unconsumed["estimated_point_value"] = {"low": 0.0, "high": 0.0}
+    unconsumed["timing"] = "No supported production value is assigned while the method has no caller."
+    unconsumed["quantification"] = (
+        "The dormant method body is excluded from balance arithmetic and player-facing copy."
+    )
+    chop_speed = _exactly_one(effects, "effect", "ChopTreeSpeed 1.0 instead of 0.8", relative)
+    chop_speed["mechanic"] = (
+        "IsoGameCharacter.getChopTreeSpeed returns 1.0 with Axeman and 0.8 otherwise; "
+        "calculateCombatSpeed consumes it for axe attacks before later modifiers."
+    )
+    chop_speed["timing"] = (
+        "This supports the qualitative faster-axe-attacks claim, not an exact final animation ratio."
+    )
+    chop_speed["quantification"] = (
+        "The raw branch differs by 1.0 versus 0.8, but later calculateCombatSpeed modifiers "
+        "prevent treating 1.0/0.8 as the final player-observed ratio."
+    )
     artifact["copy_scope"] = (
-        "The 1.0 versus 0.8 branch is consumed by calculateCombatSpeed for "
-        "general axe combat/swing animations, not only tree actions."
+        "The 1.0 versus 0.8 getChopTreeSpeed branch is consumed by calculateCombatSpeed "
+        "for axe attacks. Later modifiers also contribute, so no exact final animation ratio is claimed."
     )
     plan.write_json(relative, artifact)
 
@@ -486,25 +574,11 @@ def _update_derived(plan: Plan, batch: dict[str, Any], review: dict[str, Any]) -
 
 def _update_pattern(plan: Plan) -> None:
     relative = "recurring_pattern_findings.json"
-    artifact = plan.json(relative)
-    finding = _exactly_one(artifact["findings"], "id", PATTERN_ID, relative)
-    finding.clear()
-    finding.update(
-        id=PATTERN_ID,
-        state="confirmed-defect",
-        severity="high",
-        confidence="high",
-        title="Translator preprocessing mutates literal percent signs in English descriptions",
-        anchors=["UTMods/UniversalTraits/media/lua/shared/Translate/EN/UI.json (keys: UI_UT_woodsplitterDesc)"],
-        affected_surfaces=["description", "localization", "runtime"],
-        reproduction_evidence="Applying the current two-step Translator replacement changes 1 no-argument descriptions.",
-        missing_proof="",
-        recommended_correction="Encode literal percent signs using the Translator-safe representation verified for this game build.",
-        smallest_regression_test="Load every flagged key through the current Translator path without format arguments and compare the rendered text byte-for-byte with intended copy.",
+    report = build_recurring_pattern_report(
+        utmods_root=plan.root,
+        pzcodebase_root=plan.root.parent / "PZCodebase",
     )
-    artifact["summary"]["findings"] = len(artifact["findings"])
-    artifact["summary"]["literal_percent_keys"] = 1
-    plan.write_json(relative, artifact)
+    plan.write(relative, render_recurring_pattern_report(report).encode("utf-8"))
 
 
 def _update_master(plan: Plan) -> None:

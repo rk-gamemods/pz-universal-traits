@@ -8935,12 +8935,6 @@ test("tavernbrawler duplicate module evaluation leaves exactly one handler", fun
     assert_eq(zombie:getHealth(), 70, "reload-safe handler must apply exactly once")
 end)
 
-test("woodsplitter inherits exact vanilla Axeman formulas", function()
-    assert_eq(12 * 1.5, 18, "tree damage multiplier is exactly 1.5")
-    assert_eq(0.83 * 0.95, 0.7885, "axe swing-time multiplier is exactly 0.95")
-    assert_eq(1.0 / 0.8, 1.25, "general axe combat/swing animation is exactly 25% faster")
-end)
-
 test("woodsplitter has no weapon mutation or fake tree event", function()
     local f = assert(io.open(base .. "../media/lua/shared/UniversalTraits/traits/UT_woodsplitter.lua", "r"))
     local source = f:read("*a")
@@ -9064,7 +9058,7 @@ test("woodsplitter selection and repopulation follow the engine contract", funct
     assert_true(not available[WOOD], "repopulation after profession switch keeps Wood Splitter excluded")
 end)
 
-test("woodsplitter anchors all four vanilla Axeman effects in SVN 964", function()
+test("woodsplitter anchors current vanilla Axeman production contracts", function()
     local function read(path)
         local f = assert(io.open(base .. "../../../PZCodebase/" .. path, "r"))
         local source = f:read("*a")
@@ -9074,17 +9068,41 @@ test("woodsplitter anchors all four vanilla Axeman effects in SVN 964", function
     local tree = read("Java/source/zombie/iso/objects/IsoTree.java")
     assert_true(tree:find("hasTrait(CharacterTrait.AXEMAN)", 1, true) ~= nil, "tree checks Axeman")
     assert_true(tree:find("dmg *= 1.5F", 1, true) ~= nil, "tree damage is multiplied by 1.5")
-    local weapon = read("Java/source/zombie/inventory/types/HandWeapon.java")
-    assert_true(weapon:find("mod = 0.95F", 1, true) ~= nil, "axe attack-time multiplier is 0.95")
     local character = read("Java/source/zombie/characters/IsoGameCharacter.java")
     assert_true(character:find("CharacterTrait.AXEMAN) ? 1.0F : 0.8F", 1, true) ~= nil,
         "Axeman speed branch is 1.0 versus 0.8")
     local axeCategory = assert(character:find("weapon.isOfWeaponCategory(WeaponCategory.AXE)", 1, true))
     local combatUse = assert(character:find("combatSpeed *= this.getChopTreeSpeed();", axeCategory, true))
     assert_true(axeCategory < combatUse, "general axe calculateCombatSpeed consumes the Axeman speed branch")
+    local professions = read("Media/media/scripts/generated/characters/character_professions.txt")
+    local lumberjack = professions:match("character_profession_definition%s+base:lumberjack%s*(%b{})")
+    assert_true(lumberjack ~= nil, "current Lumberjack profession definition exists")
+    assert_true(lumberjack:find("GrantedTraits%s*=%s*base:axeman"), "Lumberjack grants base:axeman")
     local spawn = read("Lua/shared/Items/SpawnItems.lua")
     assert_true(spawn:find("[CharacterTrait.AXEMAN] = { ItemKey.Container.KEY_RING_PINE_TREE", 1, true) ~= nil,
         "Axeman is eligible for the pine-tree key ring")
+end)
+
+test("woodsplitter rejects an unconsumed HandWeapon speed claim", function()
+    local pzRoot = base .. "../../../PZCodebase"
+    local command = 'git -C "' .. pzRoot .. '" grep -n -F "getSpeedMod(" -- Java/source'
+    local pipe = assert(io.popen(command, "r"))
+    local matches = pipe:read("*a")
+    local ok, _, code = pipe:close()
+    assert_true(ok or code == 0, "current PZCodebase getSpeedMod source scan must succeed")
+    local handWeaponDefinitions, handWeaponConsumers = 0, {}
+    for line in matches:gmatch("[^\r\n]+") do
+        if line:find("HandWeapon.java", 1, true)
+                and line:find("public float getSpeedMod(IsoGameCharacter chr)", 1, true) then
+            handWeaponDefinitions = handWeaponDefinitions + 1
+        elseif not line:find("public float getSpeedMod()", 1, true)
+                and not line:find("this.getSpeedMod()", 1, true) then
+            handWeaponConsumers[#handWeaponConsumers + 1] = line
+        end
+    end
+    assert_eq(handWeaponDefinitions, 1, "current HandWeapon getSpeedMod definition must remain inspectable")
+    assert_eq(#handWeaponConsumers, 0,
+        "HandWeapon.getSpeedMod must remain unconsumed unless copy and evidence are reviewed")
 end)
 
 dofile(base .. "test_scrounger_runtime.lua").run(test, assert_eq, assert_true, base)

@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 174,
-  "total_bytes": 13737813,
+  "total_bytes": 13742417,
   "files": [
     {
       "path": ".gitattributes",
@@ -327,43 +327,43 @@
       "path": "change-impact/woodsplitter-axeman-alias-resolution.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
-      "bytes": 17752,
-      "sha256": "62911A31D51A733D115B239135AB69437770D751E567752FC6EE17095D4010D7"
+      "bytes": 17973,
+      "sha256": "7586DCB58C1DD1B9B870D0336D51E70F8A2491274025FB2F5ADA36A75E200CBC"
     },
     {
       "path": "change-impact/woodsplitter-axeman-alias.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
-      "bytes": 23535,
-      "sha256": "1CD7522841BD4434A43ACA6D00176D1487A8628FEBE755D6B8FAFF09BBFE1CCF"
+      "bytes": 23802,
+      "sha256": "0DE2EF979D19C3AAB7E87C30727F51A868D4510671B90EE63030C930EB1F1817"
     },
     {
       "path": "change-impact/woodsplitter-axeman-balance.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
-      "bytes": 17190,
-      "sha256": "8C17A7342F1F51CCE8A947D220427FE6E2E10AB56A706BC5436728B35FD128D1"
+      "bytes": 16923,
+      "sha256": "AD871E6E1A015AB02C8178EE9E531EB7F167C926DED2D54F2BB0C7C2D1AC42D4"
     },
     {
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2272470,
-      "sha256": "0DCB1E57AED0498F37565A022F6B6CD0BC669DD9F0712BCA1C2D20DDF1B13A7C"
+      "bytes": 2272609,
+      "sha256": "A3742B826AFE5F481F14AF7CF1CC41CD6579C0B5C3FBC258B582150E1361CE3A"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2098735,
-      "sha256": "69481B3142AB222604E2641980517195437DCE84FF611943010D271C17F80B47"
+      "bytes": 2098874,
+      "sha256": "2F208F134D4D6D6C2430A873FF3D739184DD0A57F0272B001FA328BCCCE74B4B"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1293379,
-      "sha256": "472CB45C80028A4177AEA766BD0C8B433ABF4D5A075E1DE2C04DD73FD739A3F5"
+      "bytes": 1293518,
+      "sha256": "65EFA3290B40A5AFACEF3491FA2646C204ABB31637B1B31918124053EA8B6063"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
@@ -1153,8 +1153,8 @@
       "path": "tools/regenerate_woodsplitter.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 33824,
-      "sha256": "0F46CDE06DF050810FC6E2D525DE5A81CFB4E9641FCCC6226B0FA98CC6E74828"
+      "bytes": 37781,
+      "sha256": "BC67A1887EB17161D3E8936B9FF046464848389F65D0F84AE7C2BF5C83780A25"
     },
     {
       "path": "tools/run_campaign_tests.py",
@@ -1251,15 +1251,15 @@
       "path": "trait_batches/batch_12.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 90682,
-      "sha256": "AD66AE06FB18C88A6FF3C7AAF9EBF0699B8C803CAE1B0DF471FDBEC765A2FF26"
+      "bytes": 90841,
+      "sha256": "0D668CE4517CD35E208A253B4214905C00C658B5BB97E970D14E1F52FC5DB850"
     },
     {
       "path": "translation_audit.json",
       "kind": "translation-audit",
       "byte_semantics": "utf-8-lf",
-      "bytes": 496434,
-      "sha256": "B0B28426A93039B475982BED08870475C23D8F8A3B41FCC843DF92A65E2B1C89"
+      "bytes": 496284,
+      "sha256": "DC734D6A5EB01E5D596E94301364784BD84F3A0D311EE46C68FCD34982BB12D1"
     }
   ]
 }
