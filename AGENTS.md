@@ -113,9 +113,11 @@ Passing totals are determined by the current suite output; do not preserve trans
   release gate; or when focused evidence cannot bound the impact. Do not rerun it for
   documentation-only, index-only, or isolated trait iterations whose focused inputs and
   shared dependencies have not changed.
-- The full campaign command is:
+- The full campaign boundary command runs each test module in an isolated subprocess with up to
+  four concurrent workers. Use it only at the milestones above; focused tests remain the normal
+  iteration path:
 
-    py -3 -m unittest discover -s trait-deep-audit/campaign/tests -p 'test_*.py'
+    py -3 -B trait-deep-audit/campaign/tools/run_campaign_tests.py
 
 Additional local update-safety commands:
 
