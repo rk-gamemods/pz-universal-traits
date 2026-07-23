@@ -642,6 +642,114 @@ test("carry receiver ownership malformed buckets do not invent ownership", funct
     assert_eq(p:getModData().UT_carryReceiverLastApplied, nil)
 end)
 
+test("carry receiver ownership rejects non-boolean active markers", function()
+    local p = makeCarryReceiverPlayer({
+        maxWeightBase = 19,
+        moddata = { UT_carryReceiverActive = "true" },
+    })
+    UTCore.applyCarryWeight(p, 4, "flat")
+    UTCore.reconcileAggregatedModifiers(p)
+    assert_eq(p:getMaxWeightBase(), 19)
+    assert_eq(#p._carryReceiverWrites, 0)
+    assert_eq(p:getModData().UT_carryReceiverActive, "true")
+end)
+
+test("carry receiver ownership rejects partial tuples", function()
+    local p = makeCarryReceiverPlayer({
+        maxWeightBase = 21,
+        moddata = {
+            UT_carryReceiverActive = true,
+            UT_carryReceiverBaseline = 8,
+        },
+    })
+    UTCore.applyCarryWeight(p, 4, "flat")
+    UTCore.reconcileAggregatedModifiers(p)
+    assert_eq(p:getMaxWeightBase(), 21)
+    assert_eq(#p._carryReceiverWrites, 0)
+    assert_eq(p:getModData().UT_carryReceiverBaseline, 8)
+    assert_eq(p:getModData().UT_carryReceiverLastApplied, nil)
+end)
+
+test("carry receiver ownership rejects malformed baseline and last values", function()
+    local cases = {
+        { baseline = "8", lastApplied = 12 },
+        { baseline = 8, lastApplied = "12" },
+        { baseline = 0 / 0, lastApplied = 12 },
+        { baseline = 8, lastApplied = math.huge },
+    }
+    for index, values in ipairs(cases) do
+        local p = makeCarryReceiverPlayer({
+            maxWeightBase = 22 + index,
+            moddata = {
+                UT_carryReceiverActive = true,
+                UT_carryReceiverBaseline = values.baseline,
+                UT_carryReceiverLastApplied = values.lastApplied,
+            },
+        })
+        UTCore.applyCarryWeight(p, 4, "flat")
+        UTCore.reconcileAggregatedModifiers(p)
+        assert_eq(p:getMaxWeightBase(), 22 + index, "malformed case " .. tostring(index))
+        assert_eq(#p._carryReceiverWrites, 0, "malformed case " .. tostring(index))
+    end
+end)
+
+test("carry receiver ownership preserves foreign receiver for inconsistent tuples", function()
+    local p = makeCarryReceiverPlayer({
+        maxWeightBase = 27,
+        moddata = {
+            UT_carryReceiverActive = false,
+            UT_carryReceiverBaseline = 8,
+            UT_carryReceiverLastApplied = 12,
+        },
+    })
+    UTCore.applyCarryWeight(p, 6, "flat")
+    UTCore.reconcileAggregatedModifiers(p)
+    assert_eq(p:getMaxWeightBase(), 27)
+    assert_eq(#p._carryReceiverWrites, 0)
+    assert_eq(p:getModData().UT_carryReceiverActive, false)
+    assert_eq(p:getModData().UT_carryReceiverBaseline, 8)
+    assert_eq(p:getModData().UT_carryReceiverLastApplied, 12)
+end)
+
+test("carry receiver ownership clears malformed metadata only at zero sources", function()
+    local p = makeCarryReceiverPlayer({
+        maxWeightBase = 29,
+        moddata = {
+            UT_carryReceiverActive = "invalid",
+            UT_carryReceiverBaseline = 8,
+        },
+    })
+    UTCore.applyCarryWeight(p, 4, "flat")
+    UTCore.reconcileAggregatedModifiers(p)
+    assert_eq(p:getModData().UT_carryReceiverActive, "invalid")
+    UTCore.applyCarryWeight(p, nil, "flat")
+    UTCore.reconcileAggregatedModifiers(p)
+    assert_eq(p:getMaxWeightBase(), 29)
+    assert_eq(#p._carryReceiverWrites, 0)
+    assert_eq(p:getModData().UT_carryReceiverActive, nil)
+    assert_eq(p:getModData().UT_carryReceiverBaseline, nil)
+    assert_eq(p:getModData().UT_carryReceiverLastApplied, nil)
+end)
+
+test("carry receiver ownership reacquires after zero-source malformed cleanup", function()
+    local p = makeCarryReceiverPlayer({
+        maxWeightBase = 31,
+        moddata = {
+            UT_carryReceiverActive = true,
+            UT_carryReceiverLastApplied = "invalid",
+        },
+    })
+    UTCore.reconcileAggregatedModifiers(p)
+    assert_eq(p:getModData().UT_carryReceiverActive, nil)
+    assert_eq(p:getModData().UT_carryReceiverLastApplied, nil)
+    UTCore.applyCarryWeight(p, 4, "flat")
+    UTCore.reconcileAggregatedModifiers(p)
+    assert_eq(p:getMaxWeightBase(), 12)
+    assert_eq(p:getModData().UT_carryReceiverActive, true)
+    assert_eq(p:getModData().UT_carryReceiverBaseline, 31)
+    assert_eq(p:getModData().UT_carryReceiverLastApplied, 12)
+end)
+
 test("carry ownership initial below-floor reconciliation records the applied floor", function()
     local inv = makeCarryOwnershipInventory(12)
     local p = MockPlayer({}, { inventory = inv })

@@ -203,15 +203,31 @@ local function clearCarryReceiverOwnership(md)
     md[CARRY_RECEIVER_LAST_APPLIED_KEY] = nil
 end
 
+local function clearCarryReceiverState(md)
+    clearCarryReceiverOwnership(md)
+    md[CARRY_RECEIVER_ACTIVE_KEY] = nil
+end
+
+local function isFiniteNumber(value)
+    return type(value) == "number"
+        and value == value
+        and value ~= math.huge
+        and value ~= -math.huge
+end
+
 local function reconcileCarryReceiver(player, md, summary)
     local carryActive = summary.carryActive == true
-    local wasActive = md[CARRY_RECEIVER_ACTIVE_KEY] == true
+    local activeMarker = md[CARRY_RECEIVER_ACTIVE_KEY]
     local baseline = md[CARRY_RECEIVER_BASELINE_KEY]
     local lastApplied = md[CARRY_RECEIVER_LAST_APPLIED_KEY]
+    local stateAbsent = activeMarker == nil and baseline == nil and lastApplied == nil
+    local stateOwned = activeMarker == true
+        and isFiniteNumber(baseline)
+        and isFiniteNumber(lastApplied)
 
-    if carryActive and not wasActive then
+    if carryActive and stateAbsent then
         local currentOk, current = callMethod(player, "getMaxWeightBase")
-        if not currentOk or type(current) ~= "number" then return end
+        if not currentOk or not isFiniteNumber(current) then return end
 
         -- Persist the transition and ownership fence before the first write.
         -- If the setter fails, the unchanged receiver still matches the fence
@@ -229,11 +245,11 @@ local function reconcileCarryReceiver(player, md, summary)
     end
 
     if carryActive then
-        -- Missing or malformed current-version evidence cannot prove ownership.
-        -- Preserve it for diagnosis/retry and do not acquire a new baseline.
-        if type(baseline) ~= "number" or type(lastApplied) ~= "number" then return end
+        -- Any existing malformed, partial, or inconsistent tuple cannot prove
+        -- ownership. Preserve it and the receiver until all sources leave.
+        if not stateOwned then return end
         local currentOk, current = callMethod(player, "getMaxWeightBase")
-        if not currentOk or type(current) ~= "number" then return end
+        if not currentOk or not isFiniteNumber(current) then return end
         if current ~= lastApplied then
             -- A foreign writer changed the receiver. Clear only UTCore's
             -- ownership fence, retain the active marker, and do not reacquire
@@ -250,20 +266,19 @@ local function reconcileCarryReceiver(player, md, summary)
         return
     end
 
-    if not wasActive then return end
-    if type(baseline) ~= "number" or type(lastApplied) ~= "number" then
-        -- An invalidated active period has no owned value to restore.
-        if baseline == nil and lastApplied == nil then
-            md[CARRY_RECEIVER_ACTIVE_KEY] = nil
-        end
+    if stateAbsent then return end
+    if not stateOwned then
+        -- With no live carry sources, malformed ownership metadata is stale.
+        -- Clear it without touching the foreign receiver so a later clean
+        -- active period can acquire a new baseline.
+        clearCarryReceiverState(md)
         return
     end
 
     local currentOk, current = callMethod(player, "getMaxWeightBase")
-    if not currentOk or type(current) ~= "number" then return end
+    if not currentOk or not isFiniteNumber(current) then return end
     if current ~= lastApplied then
-        clearCarryReceiverOwnership(md)
-        md[CARRY_RECEIVER_ACTIVE_KEY] = nil
+        clearCarryReceiverState(md)
         return
     end
 
@@ -272,8 +287,7 @@ local function reconcileCarryReceiver(player, md, summary)
         setOk = callMethod(player, "setMaxWeightBase", baseline)
     end
     if setOk then
-        clearCarryReceiverOwnership(md)
-        md[CARRY_RECEIVER_ACTIVE_KEY] = nil
+        clearCarryReceiverState(md)
     end
 end
 
