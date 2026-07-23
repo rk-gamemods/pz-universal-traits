@@ -6585,11 +6585,84 @@ end
 test("twohanded_axes applies exactly 10 displayed points and is idempotent", function()
     local weapon = MockWeapon("FireAxe", 0, true, true,
         { criticalChance = 10, categories = { WeaponCategory.AXE } })
+    local setCriticalChance = weapon.setCriticalChance
+    local setterCalls = 0
+    weapon.setCriticalChance = function(self, value)
+        setterCalls = setterCalls + 1
+        setCriticalChance(self, value)
+    end
     local player = MockPlayer({ TWO_HANDED_AXES_ID }, { primaryHandItem = weapon })
+    fireTwoHandedAxes(player, 30)
+    assert_eq(weapon:getRawCriticalChance(), 20, "initial cadence must set the owned raw target")
+    assert_eq(weapon:getCriticalChance(), 20, "initial cadence must set the displayed target")
+    assert_eq(setterCalls, 1, "initial cadence must write the target exactly once")
+    assert_true(UTCore._twoHandedAxesState.trackedWeapons[weapon] ~= nil,
+        "initial cadence must establish ownership")
     fireTwoHandedAxes(player, 90)
+    assert_eq(setterCalls, 1, "unchanged repeated cadences must not call the setter")
+    assert_true(UTCore._twoHandedAxesState.trackedWeapons[weapon] ~= nil,
+        "unchanged repeated cadences must retain ownership")
+    assert_eq(weapon:getRawCriticalChance(), 20, "unchanged repeated cadences must preserve raw target")
     assert_eq(weapon:getCriticalChance(), 20, "repeated updates must keep exactly +10 displayed")
     restoreTwoHandedAxesByUnequip(player)
     assert_eq(weapon:getCriticalChance(), 10, "unequip must restore the original chance")
+end)
+
+test("twohanded_axes uses exact scale-relative tolerance before rewriting", function()
+    local weapon = {
+        _mockType = "HandWeapon",
+        raw = 10,
+        sharpness = 1,
+        moddata = {},
+        getModData = function(self) return self.moddata end,
+        isTwoHandWeapon = function() return true end,
+        isOfWeaponCategory = function(_, category) return category == WeaponCategory.AXE end,
+        hasSharpness = function() return true end,
+        getSharpness = function(self) return self.sharpness end,
+        setSharpness = function(self, value) self.sharpness = value end,
+        getCriticalChance = function(self) return self.raw * self.sharpness end,
+        setCriticalChance = function(self, value) self.raw = value end,
+        getRawCriticalChance = function(self) return self.raw end,
+    }
+    local setCriticalChance = weapon.setCriticalChance
+    local setterCalls = 0
+    weapon.setCriticalChance = function(self, value)
+        setterCalls = setterCalls + 1
+        setCriticalChance(self, value)
+    end
+    local player = MockPlayer({ TWO_HANDED_AXES_ID }, { primaryHandItem = weapon })
+
+    fireTwoHandedAxes(player, 30)
+    assert_eq(setterCalls, 1, "initial adoption must write once")
+    assert_eq(weapon:getRawCriticalChance(), 20, "precondition: initial raw target is 20")
+    assert_eq(weapon:getCriticalChance(), 20, "precondition: initial displayed target is 20")
+
+    weapon:setSharpness(1 + 1.9e-9)
+    fireTwoHandedAxes(player, 30)
+    assert_eq(setterCalls, 1, "difference inside 1e-9 scale-relative tolerance must skip setter")
+    assert_eq(weapon:getRawCriticalChance(), 20, "inside-tolerance skip must preserve raw value")
+    assert_eq(weapon:getCriticalChance(), 20 * (1 + 1.9e-9),
+        "inside-tolerance skip must preserve displayed value")
+
+    local ownedRawBonus = UTCore._twoHandedAxesState.trackedWeapons[weapon].appliedRawBonus
+    weapon:setSharpness(1.000001)
+    fireTwoHandedAxes(player, 30)
+    assert_eq(setterCalls, 2, "materially outside tolerance must call setter exactly once")
+    local expectedBaseRaw = 20 - ownedRawBonus
+    local expectedDisplayed = expectedBaseRaw * 1.000001 + 10
+    local expectedRaw = expectedDisplayed / 1.000001
+    assert_true(math.abs(weapon:getRawCriticalChance() - expectedRaw) < 1e-12,
+        "outside-tolerance refresh must restore the correct owned raw target")
+    assert_true(math.abs(weapon:getCriticalChance() - expectedDisplayed) < 1e-12,
+        "outside-tolerance refresh must restore the correct displayed target")
+
+    fireTwoHandedAxes(player, 90)
+    assert_eq(setterCalls, 2, "restored target must not compound or rewrite")
+    assert_true(math.abs(weapon:getRawCriticalChance() - expectedRaw) < 1e-12,
+        "repeated cadences must preserve the restored raw target")
+    assert_true(math.abs(weapon:getCriticalChance() - expectedDisplayed) < 1e-12,
+        "repeated cadences must preserve the restored displayed target")
+    restoreTwoHandedAxesByUnequip(player)
 end)
 
 test("twohanded_axes enforces category and handedness boundaries", function()
