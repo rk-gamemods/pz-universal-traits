@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 171,
-  "total_bytes": 13681036,
+  "total_bytes": 13682901,
   "files": [
     {
       "path": ".gitattributes",
@@ -782,8 +782,8 @@
       "path": "tests/test_regenerate_sundayrunner.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 10350,
-      "sha256": "25FF66BB2D528BF4AB0CAFB701B37E633D612135CE22A19A98A497FB80FC5C6F"
+      "bytes": 11523,
+      "sha256": "D31999C0B780CAF0949BB6C61D127A8CF280A9F28AEC9191EE8BA9945D7F7611"
     },
     {
       "path": "tests/test_regenerate_superimmune.py",
@@ -1076,8 +1076,8 @@
       "path": "tools/regenerate_sundayrunner.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 14845,
-      "sha256": "108BA623802A858DC3CE1AE2A8DD2D7CA34EFADA2A5EF098D644E37E1DAC8B1D"
+      "bytes": 15537,
+      "sha256": "E645AD9614DD1F6E9F0674F1B441836E1D19290BDCF9D0D37683BAE1C15290B4"
     },
     {
       "path": "tools/regenerate_superimmune.py",
