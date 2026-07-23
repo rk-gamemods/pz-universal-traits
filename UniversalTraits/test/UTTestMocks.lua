@@ -1063,8 +1063,11 @@ if not _G.Events.OnCreatePlayer then
     _G.Events.OnCreatePlayer = {
         Add  = function(fn) table.insert(_createPlayerHandlers, fn) end,
         Remove = function(fn)
-            for i = #_createPlayerHandlers, 1, -1 do
-                if _createPlayerHandlers[i] == fn then table.remove(_createPlayerHandlers, i) end
+            for i = 1, #_createPlayerHandlers do
+                if _createPlayerHandlers[i] == fn then
+                    table.remove(_createPlayerHandlers, i)
+                    return
+                end
             end
         end,
         getHandlerCount = function() return #_createPlayerHandlers end,

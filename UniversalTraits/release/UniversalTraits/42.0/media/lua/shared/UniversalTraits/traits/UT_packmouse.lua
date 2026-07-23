@@ -3,8 +3,22 @@
 -- OnNewGame: UTCore.applyCarryWeight(player, -2)
 
 local TRAIT_ID = "UniversalTraits:UT_packmouse"
-UTPackMouseLifecycle = UTPackMouseLifecycle or {}
-local state = UTPackMouseLifecycle
+UTCore._packMouseLifecycle = UTCore._packMouseLifecycle or {}
+local state = UTCore._packMouseLifecycle
+UTPackMouseLifecycle = state
+
+if state.onCreatePlayer and not state.implementation then
+    state.implementation = state.onCreatePlayer
+    state.reloadRetry = {
+        reason = "legacy handler state requires a fresh process",
+    }
+    state.registration = {
+        attempted = true,
+        outcome = "legacy_registration_unknown",
+        cardinality = "unknown",
+    }
+    return
+end
 
 local SNAPSHOT_KEYS = {
     "UT_modifierBuckets",
@@ -133,7 +147,6 @@ local function clearTrackedPlayer()
 end
 
 local function onCreatePlayer(_playerIndex, player)
-    if state.onCreatePlayer ~= onCreatePlayer then return end
     if not retryPendingRollback() then return end
 
     if state.player and state.player ~= player then
@@ -163,105 +176,63 @@ local function onCreatePlayer(_playerIndex, player)
     end
 end
 
-local function runEventOperation(operation, handler)
-    if not operation then
-        return false, "missing operation"
-    end
-    local ok, result = pcall(operation, handler)
-    if not ok then
-        return false, tostring(result)
-    end
-    if result == false then
-        return false, "explicit false"
-    end
-    return true, nil
-end
-
-local function canonicalizeEventHandler(event, preferredHandler, otherHandler, reason)
-    local recovery = {
-        preferredHandler = preferredHandler,
-        otherHandler = otherHandler,
-        reason = reason,
-        attempts = {},
-    }
-
-    for round = 1, 2 do
-        local attempt = {}
-        recovery.attempts[round] = attempt
-        attempt.removePreferred, attempt.removePreferredError =
-            runEventOperation(event and event.Remove, preferredHandler)
-        attempt.removeOther, attempt.removeOtherError =
-            runEventOperation(event and event.Remove, otherHandler)
-        attempt.addPreferred, attempt.addPreferredError =
-            runEventOperation(event and event.Add, preferredHandler)
-
-        if attempt.removePreferred and attempt.removeOther and attempt.addPreferred then
-            state.onCreatePlayer = preferredHandler
-            state.eventRecovery = nil
-            return true
-        end
-    end
-
-    state.onCreatePlayer = preferredHandler
-    state.eventRecovery = recovery
-    return false
-end
-
-local event = Events.OnCreatePlayer
-local pendingRecovery = state.eventRecovery
-if pendingRecovery then
-    if not canonicalizeEventHandler(
-        event,
-        pendingRecovery.preferredHandler,
-        pendingRecovery.otherHandler,
-        "retry: " .. tostring(pendingRecovery.reason)
-    ) then
-        return
-    end
-end
-
-local retainedHandler = state.onCreatePlayer
-if retainedHandler then
+local retainedImplementation = state.implementation
+if retainedImplementation then
     if not retryPendingRollback() or not clearTrackedPlayer() then
+        state.reloadRetry = {
+            implementation = onCreatePlayer,
+            reason = "old state cleanup failed",
+        }
         return
     end
 
-    local added, addError = runEventOperation(event and event.Add, onCreatePlayer)
-    if not added then
-        local removedNew, removeNewError =
-            runEventOperation(event and event.Remove, onCreatePlayer)
-        state.onCreatePlayer = retainedHandler
-        if removedNew then
-            state.eventRecovery = nil
-        else
-            state.eventRecovery = {
-                preferredHandler = retainedHandler,
-                otherHandler = onCreatePlayer,
-                reason = "Add replacement failed: " .. tostring(addError)
-                    .. "; replacement cleanup failed: " .. tostring(removeNewError),
-                attempts = {},
-            }
+    state.implementation = onCreatePlayer
+    state.onCreatePlayer = onCreatePlayer
+    state.reloadRetry = nil
+    if state.registration and state.registration.attempted then
+        return
+    end
+end
+
+state.implementation = onCreatePlayer
+state.onCreatePlayer = onCreatePlayer
+
+if not state.dispatcher then
+    state.dispatcher = function(...)
+        local implementation = state.implementation
+        if implementation then
+            return implementation(...)
         end
-        return
     end
+end
 
-    local removedOld, removeOldError =
-        runEventOperation(event and event.Remove, retainedHandler)
-    if removedOld then
-        state.onCreatePlayer = onCreatePlayer
-        state.eventRecovery = nil
-        return
-    end
-
-    canonicalizeEventHandler(
-        event,
-        onCreatePlayer,
-        retainedHandler,
-        "Remove retained handler failed: " .. tostring(removeOldError)
-    )
+local event = Events and Events.OnCreatePlayer or nil
+local add = event and event.Add or nil
+if not add then
+    state.registration = {
+        attempted = false,
+        outcome = "not_attempted",
+        reason = "OnCreatePlayer.Add unavailable",
+        cardinality = "unknown",
+    }
     return
 end
 
-if runEventOperation(event and event.Add, onCreatePlayer) then
-    state.onCreatePlayer = onCreatePlayer
+local ok, result = pcall(add, state.dispatcher)
+local outcome = "call_completed"
+local registrationError = nil
+if not ok then
+    outcome = "outcome_unknown"
+    registrationError = tostring(result)
+elseif result == false then
+    outcome = "outcome_unknown"
+    registrationError = "explicit false"
 end
+state.registration = {
+    attempted = true,
+    callCompleted = ok,
+    outcome = outcome,
+    returnValue = ok and result or nil,
+    error = registrationError,
+    cardinality = "unknown",
+}

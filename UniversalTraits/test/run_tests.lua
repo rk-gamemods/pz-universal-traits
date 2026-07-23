@@ -4419,370 +4419,203 @@ test("packmouse invalid and dead teardown clear tracked ownership safely", funct
     assert_true(okInvalid, "invalid bridge receiver must not raise")
 end)
 
-test("packmouse duplicate load keeps one handler and clears stale source", function()
-    local p = fireCreatePlayer(PACKMOUSE_ID)
-    local handlers = Events.OnCreatePlayer.getHandlerCount()
+test("packmouse event mock Remove deletes only the first matching callback identity", function()
+    local calls = 0
+    local callback = function() calls = calls + 1 end
+    Events.OnCreatePlayer.Add(callback)
+    Events.OnCreatePlayer.Add(callback)
 
-    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+    Events.OnCreatePlayer.Remove(callback)
+    Events.OnCreatePlayer:fire(0, MockPlayer({}))
+    assert_eq(calls, 1, "one duplicate callback must remain after first-match removal")
 
-    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlers, "reload must replace one handler")
-    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], nil, "reload teardown must clear stale source")
+    Events.OnCreatePlayer.Remove(callback)
 end)
 
-test("packmouse duplicate load retains the old retry handler until cleanup succeeds", function()
+test("packmouse duplicate load reuses one dispatcher and swaps only implementation", function()
     local p = fireCreatePlayer(PACKMOUSE_ID)
-    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
-    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
-    local originalReconcile = UTCore.reconcileAggregatedModifiers
-    local cleanupAttempts = 0
+    local dispatcher = UTPackMouseLifecycle.dispatcher
+    local implementation = UTPackMouseLifecycle.implementation
+    local handlers = Events.OnCreatePlayer.getHandlerCount()
+    local event = Events.OnCreatePlayer
+    local originalAdd, originalRemove = event.Add, event.Remove
+    event.Add = function() error("reload must not call Add") end
+    event.Remove = function() error("reload must not call Remove") end
 
-    UTCore.reconcileAggregatedModifiers = function(player)
-        cleanupAttempts = cleanupAttempts + 1
+    local ok, err = pcall(dofile, base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+    event.Add, event.Remove = originalAdd, originalRemove
+    assert_true(ok, "duplicate load must avoid event operations: " .. tostring(err))
+    assert_eq(UTPackMouseLifecycle.dispatcher, dispatcher, "dispatcher identity must be persistent")
+    assert_true(UTPackMouseLifecycle.implementation ~= implementation,
+        "successful cleanup must replace only the implementation pointer")
+    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlers, "reload must not multiply callbacks")
+    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], nil, "reload cleanup must clear stale source")
+end)
+
+test("packmouse cleanup failure preserves pointer and honest retry state", function()
+    local p = fireCreatePlayer(PACKMOUSE_ID)
+    local dispatcher = UTPackMouseLifecycle.dispatcher
+    local implementation = UTPackMouseLifecycle.implementation
+    local handlers = Events.OnCreatePlayer.getHandlerCount()
+    local originalReconcile = UTCore.reconcileAggregatedModifiers
+    UTCore.reconcileAggregatedModifiers = function()
         error("injected duplicate-load cleanup failure")
     end
 
-    local firstLoadOk, firstLoadError =
-        pcall(dofile, base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
-    assert_true(firstLoadOk, "failed duplicate load must return safely: " .. tostring(firstLoadError))
-    assert_eq(cleanupAttempts, 1, "first duplicate load must attempt cleanup once")
-    assert_eq(UTPackMouseLifecycle.onCreatePlayer, oldHandler,
-        "failed cleanup must retain the exact old retry handler identity")
-    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount,
-        "failed cleanup must retain exactly one old handler")
-    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], -2,
-        "failed cleanup must retain the retry-owned Pack Mouse source")
-    assert_eq(UTPackMouseLifecycle.player, p, "failed cleanup must retain tracked player state")
-
-    local secondLoadOk, secondLoadError =
-        pcall(dofile, base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
-    assert_true(secondLoadOk, "repeated failed load must return safely: " .. tostring(secondLoadError))
-    assert_eq(cleanupAttempts, 2, "repeated duplicate load must retry cleanup once")
-    assert_eq(UTPackMouseLifecycle.onCreatePlayer, oldHandler,
-        "repeated failure must still retain the exact old handler")
-    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount,
-        "repeated failure must not stack handlers")
+    local ok, err = pcall(dofile, base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+    assert_true(ok, "cleanup failure must be contained: " .. tostring(err))
+    assert_eq(UTPackMouseLifecycle.dispatcher, dispatcher, "dispatcher identity")
+    assert_eq(UTPackMouseLifecycle.implementation, implementation, "old implementation pointer")
+    assert_eq(UTPackMouseLifecycle.onCreatePlayer, implementation, "compatibility pointer")
+    assert_true(UTPackMouseLifecycle.reloadRetry ~= nil, "failed cleanup must retain retry evidence")
+    assert_eq(UTPackMouseLifecycle.player, p, "failed cleanup must preserve tracked player")
+    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], -2, "failed cleanup must preserve owned source")
+    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlers, "failure must not add callbacks")
 
     UTCore.reconcileAggregatedModifiers = originalReconcile
     p:setMockTrait(PACKMOUSE_ID, false)
     Events.OnCreatePlayer:fire(0, p)
-    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], nil,
-        "later old-handler retry must remove the stale source")
-    assert_eq(UTPackMouseLifecycle.player, nil, "later retry must clear tracked player state")
-    assert_eq(UTPackMouseLifecycle.onCreatePlayer, oldHandler,
-        "event retry must not replace the retained handler")
-    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount,
-        "successful event retry must retain exactly one handler")
+    assert_eq(UTPackMouseLifecycle.player, nil, "old implementation must remain able to retry cleanup")
 
     dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
-    local replacementHandler = UTPackMouseLifecycle.onCreatePlayer
-    assert_true(replacementHandler ~= oldHandler,
-        "successful duplicate cleanup must install a replacement identity")
-    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount,
-        "successful duplicate cleanup must remove old identity and install one replacement")
-
-    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
-    assert_true(UTPackMouseLifecycle.onCreatePlayer ~= replacementHandler,
-        "repeated successful evaluation must replace the prior exact identity")
-    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount,
-        "repeated successful evaluation must never stack handlers")
+    assert_true(UTPackMouseLifecycle.implementation ~= implementation,
+        "later successful evaluation must replace the implementation pointer")
+    assert_eq(UTPackMouseLifecycle.reloadRetry, nil, "successful retry must clear retry evidence")
+    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlers, "retry must not multiply callbacks")
 end)
 
-local function withPackMouseEventPatch(add, remove, fn)
-    local event = Events.OnCreatePlayer
-    local originalAdd = event.Add
-    local originalRemove = event.Remove
-    event.Add = function(handler) return add(originalAdd, handler) end
-    event.Remove = function(handler) return remove(originalRemove, handler) end
+local function withIsolatedPackMouseLifecycle(event, fn)
+    local originalEvent = Events.OnCreatePlayer
+    local originalState = UTCore._packMouseLifecycle
+    local originalGlobal = UTPackMouseLifecycle
+    Events.OnCreatePlayer = event
+    UTCore._packMouseLifecycle = nil
+    UTPackMouseLifecycle = nil
 
     local ok, err = pcall(fn)
-    event.Add = originalAdd
-    event.Remove = originalRemove
+    Events.OnCreatePlayer = originalEvent
+    UTCore._packMouseLifecycle = originalState
+    UTPackMouseLifecycle = originalGlobal
     if not ok then error(err) end
 end
 
-local function reloadPackMouse()
-    return pcall(dofile, base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
-end
+test("packmouse legacy pre-dispatcher state is preserved without event mutation", function()
+    local legacyHandler = function() end
+    local eventCalls = 0
+    local event = {
+        Add = function() eventCalls = eventCalls + 1 end,
+        Remove = function() eventCalls = eventCalls + 1 end,
+    }
 
-test("packmouse replacement Add throw retains the exact registered old handler", function()
-    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
-    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
-
-    withPackMouseEventPatch(
-        function() error("injected Add throw") end,
-        function(originalRemove, handler) return originalRemove(handler) end,
-        function()
-            local ok, err = reloadPackMouse()
-            assert_true(ok, "Add throw must be contained: " .. tostring(err))
-        end
-    )
-
-    assert_eq(UTPackMouseLifecycle.onCreatePlayer, oldHandler, "old lifecycle identity")
-    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount, "one registered old handler")
+    withIsolatedPackMouseLifecycle(event, function()
+        UTCore._packMouseLifecycle = { onCreatePlayer = legacyHandler }
+        UTPackMouseLifecycle = UTCore._packMouseLifecycle
+        dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+        assert_eq(UTPackMouseLifecycle.implementation, legacyHandler, "legacy pointer must be preserved")
+        assert_eq(UTPackMouseLifecycle.dispatcher, nil, "legacy state cannot prove a dispatcher exists")
+        assert_eq(UTPackMouseLifecycle.registration.outcome, "legacy_registration_unknown",
+            "legacy registration evidence must remain honest")
+        assert_true(UTPackMouseLifecycle.reloadRetry.reason:find("fresh process", 1, true) ~= nil,
+            "legacy state must require a fresh process")
+        assert_eq(eventCalls, 0, "legacy migration must not guess with Add or Remove")
+    end)
 end)
 
-test("packmouse replacement Add false retains the exact registered old handler", function()
-    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
-    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
-
-    withPackMouseEventPatch(
-        function() return false end,
-        function(originalRemove, handler) return originalRemove(handler) end,
-        function()
-            local ok, err = reloadPackMouse()
-            assert_true(ok, "Add false must be contained: " .. tostring(err))
-        end
-    )
-
-    assert_eq(UTPackMouseLifecycle.onCreatePlayer, oldHandler, "old lifecycle identity")
-    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount, "one registered old handler")
-end)
-
-test("packmouse replacement Add post-mutation throw removes the uncertain new handler", function()
-    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
-    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
-
-    withPackMouseEventPatch(
-        function(originalAdd, handler)
-            originalAdd(handler)
-            error("injected post-mutation Add throw")
+test("packmouse fresh nil-return Add records unknown cardinality and never retries", function()
+    local handlers = {}
+    local addCalls = 0
+    local event = {
+        Add = function(handler)
+            addCalls = addCalls + 1
+            handlers[#handlers + 1] = handler
+            return nil
         end,
-        function(originalRemove, handler) return originalRemove(handler) end,
-        function()
-            local ok, err = reloadPackMouse()
-            assert_true(ok, "post-mutation Add throw must be contained: " .. tostring(err))
-        end
-    )
+        Remove = function() error("dispatcher lifecycle must not call Remove") end,
+    }
 
-    assert_eq(UTPackMouseLifecycle.onCreatePlayer, oldHandler, "old lifecycle identity")
-    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount, "uncertain new handler removed")
-    assert_eq(UTPackMouseLifecycle.eventRecovery, nil, "successful cleanup needs no recovery")
+    withIsolatedPackMouseLifecycle(event, function()
+        dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+        local state = UTPackMouseLifecycle
+        local dispatcher = state.dispatcher
+        assert_eq(addCalls, 1, "fresh lifecycle must make one Add attempt")
+        assert_eq(#handlers, 1, "host mock records the one attempted dispatcher")
+        assert_eq(state.registration.outcome, "call_completed", "completed nil-return call evidence")
+        assert_eq(state.registration.cardinality, "unknown", "nil Add cannot prove callback count")
+
+        dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+        assert_eq(state.dispatcher, dispatcher, "duplicate evaluation must reuse dispatcher identity")
+        assert_eq(addCalls, 1, "ambiguous completed Add must never be retried")
+        assert_eq(#handlers, 1, "supported fresh lifecycle must not multiply callbacks")
+    end)
 end)
 
-test("packmouse replacement Add post-mutation false removes the uncertain new handler", function()
-    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
-    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
+test("packmouse post-mutation Add failure remains ambiguous and is not retried", function()
+    local handlers = {}
+    local addCalls = 0
+    local event = {
+        Add = function(handler)
+            addCalls = addCalls + 1
+            handlers[#handlers + 1] = handler
+            error("injected post-mutation Add failure")
+        end,
+    }
 
-    withPackMouseEventPatch(
-        function(originalAdd, handler)
-            originalAdd(handler)
+    withIsolatedPackMouseLifecycle(event, function()
+        dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+        local state = UTPackMouseLifecycle
+        assert_eq(state.registration.outcome, "outcome_unknown", "failed Add evidence")
+        assert_eq(state.registration.cardinality, "unknown", "failed Add cannot prove callback count")
+        assert_true(state.registration.error:find("post%-mutation Add failure") ~= nil,
+            "failure detail must be retained")
+
+        dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+        assert_eq(addCalls, 1, "ambiguous Add failure must not be retried")
+        assert_eq(#handlers, 1, "no compensating operation may multiply or remove uncertain state")
+    end)
+end)
+
+test("packmouse explicit-false Add remains ambiguous and is not retried", function()
+    local addCalls = 0
+    local event = {
+        Add = function()
+            addCalls = addCalls + 1
             return false
         end,
-        function(originalRemove, handler) return originalRemove(handler) end,
-        function()
-            local ok, err = reloadPackMouse()
-            assert_true(ok, "post-mutation Add false must be contained: " .. tostring(err))
-        end
-    )
+    }
 
-    assert_eq(UTPackMouseLifecycle.onCreatePlayer, oldHandler, "old lifecycle identity")
-    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount, "uncertain new handler removed")
-    assert_eq(UTPackMouseLifecycle.eventRecovery, nil, "successful cleanup needs no recovery")
+    withIsolatedPackMouseLifecycle(event, function()
+        dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+        local state = UTPackMouseLifecycle
+        assert_eq(state.registration.callCompleted, true, "false return still completed the public call")
+        assert_eq(state.registration.outcome, "outcome_unknown", "false cannot prove pre-mutation failure")
+        assert_eq(state.registration.error, "explicit false", "false evidence must be retained")
+        assert_eq(state.registration.cardinality, "unknown", "false Add cannot prove callback count")
+
+        dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+        assert_eq(addCalls, 1, "ambiguous explicit-false Add must not be retried")
+    end)
 end)
 
-test("packmouse persistent pre-mutation retained Remove false records and retries recovery", function()
-    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
-    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
+test("packmouse retries registration only when Add was never attempted", function()
+    local event = {}
+    local handlers = {}
+    local addCalls = 0
 
-    withPackMouseEventPatch(
-        function(originalAdd, handler) return originalAdd(handler) end,
-        function(originalRemove, handler)
-            if handler == oldHandler then return false end
-            return originalRemove(handler)
-        end,
-        function()
-            local ok, err = reloadPackMouse()
-            assert_true(ok, "Remove false must be contained: " .. tostring(err))
+    withIsolatedPackMouseLifecycle(event, function()
+        dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+        local state = UTPackMouseLifecycle
+        local dispatcher = state.dispatcher
+        assert_eq(state.registration.attempted, false, "missing Add is a safe non-attempt")
+
+        event.Add = function(handler)
+            addCalls = addCalls + 1
+            handlers[#handlers + 1] = handler
         end
-    )
-
-    assert_true(UTPackMouseLifecycle.eventRecovery ~= nil, "unavailable removal must stay explicit")
-    assert_true(Events.OnCreatePlayer.getHandlerCount() > handlerCount,
-        "persistent pre-mutation failure leaves an honestly degraded duplicate")
-
-    local ok, err = reloadPackMouse()
-    assert_true(ok, "normal retry must be contained: " .. tostring(err))
-    assert_eq(UTPackMouseLifecycle.eventRecovery, nil, "normal retry recovers exact state")
-    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount, "normal retry restores one handler")
-end)
-
-test("packmouse persistent pre-mutation retained Remove throw records and retries recovery", function()
-    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
-    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
-
-    withPackMouseEventPatch(
-        function(originalAdd, handler) return originalAdd(handler) end,
-        function(originalRemove, handler)
-            if handler == oldHandler then error("injected Remove throw") end
-            return originalRemove(handler)
-        end,
-        function()
-            local ok, err = reloadPackMouse()
-            assert_true(ok, "Remove throw must be contained: " .. tostring(err))
-        end
-    )
-
-    assert_true(UTPackMouseLifecycle.eventRecovery ~= nil, "unavailable removal must stay explicit")
-    assert_true(Events.OnCreatePlayer.getHandlerCount() > handlerCount,
-        "persistent pre-mutation failure leaves an honestly degraded duplicate")
-
-    local ok, err = reloadPackMouse()
-    assert_true(ok, "normal retry must be contained: " .. tostring(err))
-    assert_eq(UTPackMouseLifecycle.eventRecovery, nil, "normal retry recovers exact state")
-    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount, "normal retry restores one handler")
-end)
-
-test("packmouse post-mutation retained Remove throw canonicalizes one replacement", function()
-    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
-    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
-    local injected = false
-
-    withPackMouseEventPatch(
-        function(originalAdd, handler) return originalAdd(handler) end,
-        function(originalRemove, handler)
-            if handler == oldHandler and not injected then
-                injected = true
-                originalRemove(handler)
-                error("injected post-mutation retained Remove throw")
-            end
-            return originalRemove(handler)
-        end,
-        function()
-            local ok, err = reloadPackMouse()
-            assert_true(ok, "post-mutation Remove throw must be contained: " .. tostring(err))
-        end
-    )
-
-    assert_true(UTPackMouseLifecycle.onCreatePlayer ~= oldHandler, "replacement identity committed")
-    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount, "exactly one replacement handler")
-    assert_eq(UTPackMouseLifecycle.eventRecovery, nil, "canonicalization completed")
-end)
-
-test("packmouse post-mutation retained Remove false canonicalizes one replacement", function()
-    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
-    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
-    local injected = false
-
-    withPackMouseEventPatch(
-        function(originalAdd, handler) return originalAdd(handler) end,
-        function(originalRemove, handler)
-            if handler == oldHandler and not injected then
-                injected = true
-                originalRemove(handler)
-                return false
-            end
-            return originalRemove(handler)
-        end,
-        function()
-            local ok, err = reloadPackMouse()
-            assert_true(ok, "post-mutation Remove false must be contained: " .. tostring(err))
-        end
-    )
-
-    assert_true(UTPackMouseLifecycle.onCreatePlayer ~= oldHandler, "replacement identity committed")
-    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount, "exactly one replacement handler")
-    assert_eq(UTPackMouseLifecycle.eventRecovery, nil, "canonicalization completed")
-end)
-
-test("packmouse rollback-new Remove pre-mutation failure recovers in the bounded second round", function()
-    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
-    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
-    local removeCalls = 0
-
-    withPackMouseEventPatch(
-        function(originalAdd, handler) return originalAdd(handler) end,
-        function(originalRemove, handler)
-            removeCalls = removeCalls + 1
-            if removeCalls <= 2 then return false end
-            return originalRemove(handler)
-        end,
-        function()
-            local ok, err = reloadPackMouse()
-            assert_true(ok, "rollback Remove failure must be contained: " .. tostring(err))
-        end
-    )
-
-    assert_eq(removeCalls, 5, "canonicalization must finish in the bounded second round")
-    assert_true(UTPackMouseLifecycle.onCreatePlayer ~= oldHandler, "replacement identity committed")
-    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount, "exactly one replacement handler")
-    assert_eq(UTPackMouseLifecycle.eventRecovery, nil, "bounded retry completed")
-end)
-
-test("packmouse rollback-new Remove post-mutation failure recovers in the bounded second round", function()
-    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
-    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
-    local oldFailureInjected = false
-    local newFailureInjected = false
-
-    withPackMouseEventPatch(
-        function(originalAdd, handler) return originalAdd(handler) end,
-        function(originalRemove, handler)
-            if handler == oldHandler and not oldFailureInjected then
-                oldFailureInjected = true
-                return false
-            end
-            if handler ~= oldHandler and not newFailureInjected then
-                newFailureInjected = true
-                originalRemove(handler)
-                error("injected post-mutation rollback Remove throw")
-            end
-            return originalRemove(handler)
-        end,
-        function()
-            local ok, err = reloadPackMouse()
-            assert_true(ok, "post-mutation rollback failure must be contained: " .. tostring(err))
-        end
-    )
-
-    assert_true(UTPackMouseLifecycle.onCreatePlayer ~= oldHandler, "replacement identity committed")
-    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount, "exactly one replacement handler")
-    assert_eq(UTPackMouseLifecycle.eventRecovery, nil, "bounded retry completed")
-end)
-
-test("packmouse hostile compensation retains explicit degraded evidence then retries", function()
-    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
-
-    withPackMouseEventPatch(
-        function(originalAdd, handler) return originalAdd(handler) end,
-        function() return false end,
-        function()
-            local ok, err = reloadPackMouse()
-            assert_true(ok, "hostile operations must be contained: " .. tostring(err))
-        end
-    )
-
-    assert_true(UTPackMouseLifecycle.eventRecovery ~= nil, "degraded state must be explicit")
-    assert_eq(#UTPackMouseLifecycle.eventRecovery.attempts, 2, "recovery is bounded to two rounds")
-    assert_true(Events.OnCreatePlayer.getHandlerCount() > handlerCount,
-        "hostile mock leaves duplicates and must not be reported as exact")
-
-    local ok, err = reloadPackMouse()
-    assert_true(ok, "later recovery retry must be contained: " .. tostring(err))
-    assert_eq(UTPackMouseLifecycle.eventRecovery, nil, "later normal operations recover exact state")
-    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount, "retry restores one handler")
-end)
-
-test("packmouse nil-return Add and Remove operations complete replacement", function()
-    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
-    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
-
-    withPackMouseEventPatch(
-        function(originalAdd, handler)
-            originalAdd(handler)
-            return nil
-        end,
-        function(originalRemove, handler)
-            originalRemove(handler)
-            return nil
-        end,
-        function()
-            local ok, err = reloadPackMouse()
-            assert_true(ok, "nil event operations must succeed: " .. tostring(err))
-        end
-    )
-
-    assert_true(UTPackMouseLifecycle.onCreatePlayer ~= oldHandler, "replacement identity")
-    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount, "one replacement handler")
+        dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+        assert_eq(state.dispatcher, dispatcher, "safe retry must retain dispatcher identity")
+        assert_eq(addCalls, 1, "safe retry must attempt registration once")
+        assert_eq(handlers[1], dispatcher, "safe retry must register the stable dispatcher")
+    end)
 end)
 
 test("packmouse deactivation preserves a foreign receiver through shared ownership fence", function()
