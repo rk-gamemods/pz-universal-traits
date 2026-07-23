@@ -781,7 +781,57 @@ local function applySimpleTargets(vehicle, ownership, targets)
     if initialMassWritten then vehicleCall(vehicle, "updateTotalMass") end
 end
 
-local function applyEngineTargets(vehicle, ownership, targets)
+local function boundedEngineApplyEpoch(raw, values, registrationEpoch)
+    local function validEpochValue(value, maximum)
+        return type(value) == "number"
+            and value == value
+            and value ~= math.huge
+            and value ~= -math.huge
+            and value == math.floor(value)
+            and value >= 0
+            and (maximum == nil or value <= maximum)
+    end
+
+    local count = nil
+    local wellFormedTable = false
+    local sameBoundary = false
+    if type(raw) == "number" then
+        if raw == raw and raw ~= math.huge and raw ~= -math.huge
+            and raw == math.floor(raw) and raw >= 0 then
+            count = math.min(raw, MAX_RESTORE_ATTEMPTS)
+            sameBoundary = true
+        end
+    elseif type(raw) == "table" then
+        local rawCount = raw.count
+        local rawRegistrationEpoch = raw.registrationEpoch
+        if validEpochValue(rawCount, MAX_RESTORE_ATTEMPTS)
+            and validEpochValue(rawRegistrationEpoch)
+            and validEpochValue(raw.engineQuality, 100)
+            and validEpochValue(raw.engineLoudness)
+            and validEpochValue(raw.enginePower) then
+            count = rawCount
+            wellFormedTable = true
+            sameBoundary = raw.engineQuality == values.engineQuality
+                and raw.engineLoudness == values.engineLoudness
+                and raw.enginePower == values.enginePower
+                and rawRegistrationEpoch == registrationEpoch
+        end
+    end
+
+    -- Malformed persisted state fails closed at the bounded limit. A valid
+    -- legacy scalar keeps its count and adopts the current explicit boundary.
+    if count == nil then count = MAX_RESTORE_ATTEMPTS end
+    if wellFormedTable and not sameBoundary then count = 0 end
+    return {
+        count = count,
+        engineQuality = values.engineQuality,
+        engineLoudness = values.engineLoudness,
+        enginePower = values.enginePower,
+        registrationEpoch = registrationEpoch,
+    }
+end
+
+local function applyEngineTargets(vehicle, ownership, targets, registrationEpoch)
     local values = {}
     local needsWrite = false
     for field in pairs(ENGINE_FIELDS) do
@@ -793,13 +843,17 @@ local function applyEngineTargets(vehicle, ownership, targets)
         end
     end
     if not needsWrite then return end
-    local attempts = ownership.applyAttempts.engineFields or 0
-    if attempts >= MAX_RESTORE_ATTEMPTS then return end
+    local epoch = boundedEngineApplyEpoch(
+        ownership.applyAttempts.engineFields or 0,
+        values,
+        registrationEpoch or 0)
+    ownership.applyAttempts.engineFields = epoch
+    if epoch.count >= MAX_RESTORE_ATTEMPTS then return end
 
     local _, loudnessInput = loudnessTargetAndInput(values.engineLoudness)
     vehicleCall(vehicle, "setEngineFeature",
         values.engineQuality, loudnessInput, values.enginePower)
-    ownership.applyAttempts.engineFields = attempts + 1
+    epoch.count = epoch.count + 1
 
     -- A Java bridge failure can occur after a partial grouped write. Read back
     -- every owned field. Intended values stay owned, unchanged values remain
@@ -826,7 +880,7 @@ end
 
 --- applyVehicleMod(player, stateKey, mods[, vehicleOverride])
 -- Reconciles one selected state against per-field ownership evidence.
-function UTCore.applyVehicleMod(player, stateKey, mods, vehicleOverride)
+function UTCore.applyVehicleMod(player, stateKey, mods, vehicleOverride, registrationEpoch)
     if not player or not player.isDriving or not player:isDriving() then return end
     local vehicle = vehicleOverride or (player.getVehicle and player:getVehicle())
     if not vehicle then return end
@@ -853,7 +907,7 @@ function UTCore.applyVehicleMod(player, stateKey, mods, vehicleOverride)
 
     local targets = desiredTargets(ownership, mods)
     applySimpleTargets(vehicle, ownership, targets)
-    applyEngineTargets(vehicle, ownership, targets)
+    applyEngineTargets(vehicle, ownership, targets, registrationEpoch)
 end
 
 -- Registers a vehicle trait so the shared enter/load/exit listeners can apply it.
@@ -861,6 +915,12 @@ end
 function UTCore.registerVehicleTrait(traitId, stateKey, mods, priority)
     for _, def in ipairs(UTCore._vehicleTraitDefs) do
         if def.traitId == traitId then
+            local changedDefinition = def.stateKey ~= stateKey
+                or def.mods ~= mods
+                or def.priority ~= (priority or 0)
+            if changedDefinition then
+                def.registrationEpoch = (def.registrationEpoch or 1) + 1
+            end
             def.stateKey = stateKey
             def.mods = mods
             def.priority = priority or 0
@@ -873,6 +933,7 @@ function UTCore.registerVehicleTrait(traitId, stateKey, mods, priority)
         stateKey = stateKey,
         mods = mods,
         priority = priority or 0,
+        registrationEpoch = 1,
     }
 end
 
@@ -895,7 +956,8 @@ function UTCore.syncVehicleTrait(player, vehicle)
         return
     end
 
-    UTCore.applyVehicleMod(player, selected.stateKey, selected.mods, targetVehicle)
+    UTCore.applyVehicleMod(player, selected.stateKey, selected.mods, targetVehicle,
+        selected.registrationEpoch)
 end
 
 -- Tracks the engine's real one-argument OnEnterVehicle contract and detects

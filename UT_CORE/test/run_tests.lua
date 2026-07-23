@@ -2903,6 +2903,137 @@ test("Vehicle grouped apply permanent failure is bounded", function()
         "bounded unchanged power must not be suppressed")
 end)
 
+local function exhaustedEngineApplyFixture(traitId, stateKey)
+    UTCore._vehicleTraitDefs = {}
+    local vehicle = MockVehicle()
+    vehicle.setEngineFeature = function(self, quality, loudness)
+        self._setterCalls.engineFeature = (self._setterCalls.engineFeature or 0) + 1
+        self._engineQuality = quality
+        self._engineLoudness = math.floor(loudness / 2.7)
+        error("bounded grouped apply failure")
+    end
+    local player = MockPlayer({traitId}, { vehicle = vehicle, driving = true })
+    local mods = { engineQuality = 0.5, engineLoudness = 0.5, enginePower = 2 }
+    UTCore.registerVehicleTrait(traitId, stateKey, mods, 1)
+    UTCore.syncVehicleTrait(player, vehicle)
+    UTCore.syncVehicleTrait(player, vehicle)
+    return vehicle, player, mods
+end
+
+test("Vehicle grouped apply normalizes hostile persisted attempt state to a bounded terminal epoch", function()
+    local hostileStates = {
+        { name = "NaN", value = 0 / 0 },
+        { name = "positive infinity", value = math.huge },
+        { name = "negative infinity", value = -math.huge },
+        { name = "string", value = "1" },
+        { name = "table", value = {} },
+        { name = "fraction", value = 0.5 },
+        { name = "negative", value = -1 },
+        { name = "oversized", value = 999999 },
+    }
+    for index, hostile in ipairs(hostileStates) do
+        local traitId = "UniversalTraits:UT_hostile" .. index
+        local vehicle, player = exhaustedEngineApplyFixture(traitId, "UT_hostileState" .. index)
+        local ownership = vehicle:getModData().UT_vehicleTraitOwnership
+        ownership.applyAttempts.engineFields = hostile.value
+        local callsBefore = vehicle._setterCalls.engineFeature
+
+        for _ = 1, 20 do UTCore.syncVehicleTrait(player, vehicle) end
+
+        local normalized = ownership.applyAttempts.engineFields
+        assert_eq(vehicle._setterCalls.engineFeature, callsBefore,
+            hostile.name .. " persisted state must not reopen an unbounded setter loop")
+        assert_true(type(normalized) == "table",
+            hostile.name .. " persisted state must normalize once to an explicit epoch")
+        assert_eq(normalized.count, 2,
+            hostile.name .. " persisted state must normalize to the terminal bounded count")
+    end
+end)
+
+test("Vehicle grouped apply target tuple change rearms one bounded epoch and applies recovered power", function()
+    local traitId = "UniversalTraits:UT_testdriver"
+    local vehicle, player = exhaustedEngineApplyFixture(traitId, "UT_testdriverState")
+    for _ = 1, 10 do UTCore.syncVehicleTrait(player, vehicle) end
+    assert_eq(vehicle._setterCalls.engineFeature, 2,
+        "ordinary reconciliation must not rearm an exhausted epoch")
+
+    vehicle.setEngineFeature = MockVehicle().setEngineFeature
+    UTCore.registerVehicleTrait(traitId, "UT_testdriverState", {
+        engineQuality = 0.5,
+        engineLoudness = 0.5,
+        enginePower = 3,
+    }, 1)
+    UTCore.syncVehicleTrait(player, vehicle)
+
+    assert_eq(vehicle._setterCalls.engineFeature, 3,
+        "changed intended tuple must grant exactly one fresh successful attempt")
+    assert_eq(vehicle:getEnginePower(), 300,
+        "recovered setter must apply the exact changed power target")
+end)
+
+test("Vehicle same-state definition reload creates one epoch and duplicate registration cannot rearm it", function()
+    local traitId = "UniversalTraits:UT_testdriver"
+    local vehicle, player = exhaustedEngineApplyFixture(traitId, "UT_testdriverState")
+    local reloadedMods = { engineQuality = 0.5, engineLoudness = 0.5, enginePower = 2 }
+
+    -- A newly constructed definition table is the explicit reload boundary.
+    UTCore.registerVehicleTrait(traitId, "UT_testdriverState", reloadedMods, 1)
+    UTCore.syncVehicleTrait(player, vehicle)
+    UTCore.syncVehicleTrait(player, vehicle)
+    assert_eq(vehicle._setterCalls.engineFeature, 4,
+        "same-target reload must receive one fresh two-attempt epoch")
+
+    -- Repeating the exact registration object is duplicate registration, not
+    -- another reload boundary.
+    UTCore.registerVehicleTrait(traitId, "UT_testdriverState", reloadedMods, 1)
+    for _ = 1, 10 do UTCore.syncVehicleTrait(player, vehicle) end
+    assert_eq(vehicle._setterCalls.engineFeature, 4,
+        "duplicate registration must not double-rearm the exhausted epoch")
+end)
+
+test("Vehicle foreign engine divergence remains suppressed across a reload boundary", function()
+    local traitId = "UniversalTraits:UT_testdriver"
+    local vehicle, player = exhaustedEngineApplyFixture(traitId, "UT_testdriverState")
+    vehicle._enginePower = 150
+    local callsBefore = vehicle._setterCalls.engineFeature
+
+    UTCore.registerVehicleTrait(traitId, "UT_testdriverState", {
+        engineQuality = 0.5,
+        engineLoudness = 0.5,
+        enginePower = 3,
+    }, 1)
+    for _ = 1, 5 do UTCore.syncVehicleTrait(player, vehicle) end
+
+    local ownership = vehicle:getModData().UT_vehicleTraitOwnership
+    assert_eq(vehicle._setterCalls.engineFeature, callsBefore,
+        "foreign divergence must suppress grouped writes even after reload")
+    assert_eq(vehicle:getEnginePower(), 150, "foreign divergent power must be preserved")
+    assert_eq(ownership.fields.enginePower, nil, "foreign power ownership must be relinquished")
+    assert_eq(ownership.suppressed.enginePower, true, "foreign power must remain suppressed")
+end)
+
+test("Vehicle grouped apply retry epochs are isolated across vehicles and traits", function()
+    local failedVehicle, failedPlayer = exhaustedEngineApplyFixture(
+        "UniversalTraits:UT_failedDriver", "UT_failedDriverState")
+    assert_eq(failedVehicle._setterCalls.engineFeature, 2, "first vehicle must exhaust its own epoch")
+
+    local secondTrait = "UniversalTraits:UT_otherDriver"
+    local secondVehicle = MockVehicle()
+    local secondPlayer = MockPlayer({secondTrait}, { vehicle = secondVehicle, driving = true })
+    UTCore.registerVehicleTrait(secondTrait, "UT_otherDriverState", {
+        enginePower = 3,
+    }, 1)
+    UTCore.syncVehicleTrait(secondPlayer, secondVehicle)
+
+    assert_eq(secondVehicle._setterCalls.engineFeature, 1,
+        "another trait on another vehicle must receive an independent budget")
+    assert_eq(secondVehicle:getEnginePower(), 300,
+        "independent trait and vehicle state must apply its own target")
+    UTCore.syncVehicleTrait(failedPlayer, failedVehicle)
+    assert_eq(failedVehicle._setterCalls.engineFeature, 2,
+        "other trait activity must not rearm the exhausted vehicle")
+end)
+
 test("Vehicle engine fields reject fractional acquisition reads without consuming retries", function()
     for _, hostile in ipairs({
         { field = "engineQuality", getter = "getEngineQuality", value = 50.5 },
