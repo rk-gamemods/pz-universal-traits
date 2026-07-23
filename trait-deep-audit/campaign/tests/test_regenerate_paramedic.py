@@ -129,11 +129,12 @@ class ParamedicGeneratorSafetyTests(unittest.TestCase):
         self.assertEqual(
             {anchor["id"] for anchor in hook["semantic_anchors"]},
             {
-                "double_apply_guard",
                 "independent_half_factor",
                 "additive_modifiers_before_paramedic",
-                "constructor_marks_applied",
                 "constructor_installation",
+                "get_duration_skips_constructor_adjusted_action",
+                "constructor_skips_already_adjusted_action",
+                "constructor_marks_adjusted_after_half_factor",
             },
         )
         self.assertEqual(
@@ -148,6 +149,50 @@ class ParamedicGeneratorSafetyTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "exact 42.0 release mirror diverge"):
             GENERATOR.build_plan(self.root, self.campaign)
         self.assertEqual(before, _files(self.campaign))
+
+    def test_guard_removal_from_both_parity_copies_is_rejected_without_artifact_writes(self) -> None:
+        for relative in (GENERATOR.SHARED_RUNTIME, GENERATOR.SHARED_RELEASE):
+            path = self.root / relative
+            source = path.read_text(encoding="utf-8")
+            changed = source.replace(
+                "            action._utParamedicDurationApplied = true\n",
+                "",
+                1,
+            )
+            self.assertNotEqual(source, changed)
+            path.write_text(changed, encoding="utf-8")
+        before = _files(self.campaign)
+        with self.assertRaisesRegex(ValueError, "double-apply guard drifted"):
+            GENERATOR.build_plan(self.root, self.campaign)
+        self.assertEqual(before, _files(self.campaign))
+
+    def test_guard_removal_from_one_parity_copy_is_rejected_without_artifact_writes(self) -> None:
+        path = self.root / GENERATOR.SHARED_RUNTIME
+        source = path.read_text(encoding="utf-8")
+        changed = source.replace(
+            "    if timedAction._utParamedicDurationApplied or not hasParamedic(timedAction) then\n",
+            "    if not hasParamedic(timedAction) then\n",
+            1,
+        )
+        self.assertNotEqual(source, changed)
+        path.write_text(changed, encoding="utf-8")
+        before = _files(self.campaign)
+        with self.assertRaisesRegex(ValueError, "exact 42.0 release mirror diverge"):
+            GENERATOR.build_plan(self.root, self.campaign)
+        self.assertEqual(before, _files(self.campaign))
+
+    def test_evidence_fingerprints_are_checkout_line_ending_invariant(self) -> None:
+        expected = GENERATOR.build_plan(self.root, self.campaign)
+        for relative in (
+            GENERATOR.RUNTIME, GENERATOR.RELEASE, GENERATOR.SHARED_RUNTIME,
+            GENERATOR.SHARED_RELEASE, GENERATOR.SOURCE_UI, GENERATOR.RELEASE_UI,
+            GENERATOR.SOURCE_DEFINITION, GENERATOR.RELEASE_DEFINITION,
+            GENERATOR.MOCKS, GENERATOR.TESTS, GENERATOR.ACTIVE_AUDIT,
+        ):
+            path = self.root / relative
+            normalized = path.read_bytes().replace(b"\r\n", b"\n")
+            path.write_bytes(normalized.replace(b"\n", b"\r\n"))
+        self.assertEqual(expected, GENERATOR.build_plan(self.root, self.campaign))
 
     def test_shared_blocker_removes_only_paramedic_queue_id(self) -> None:
         self._run()

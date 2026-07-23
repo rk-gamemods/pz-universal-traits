@@ -74,11 +74,6 @@
     ],
     "semantic_anchors": [
       {
-        "id": "double_apply_guard",
-        "kind": "line-independent-source-fragment",
-        "fragment": "timedAction._utParamedicDurationApplied or not hasParamedic(timedAction)"
-      },
-      {
         "id": "independent_half_factor",
         "kind": "line-independent-source-fragment",
         "fragment": "math.floor(duration * 0.5)"
@@ -89,14 +84,21 @@
         "fragment": "duration = applyParamedicFactor(timedAction, duration)"
       },
       {
-        "id": "constructor_marks_applied",
-        "kind": "line-independent-source-fragment",
-        "fragment": "action._utParamedicDurationApplied = true"
-      },
-      {
         "id": "constructor_installation",
         "kind": "line-independent-source-fragment",
         "fragment": "patchConstructor(\"ISMedicalCheckAction\")\n    patchConstructor(\"ISSplint\")"
+      },
+      {
+        "id": "get_duration_skips_constructor_adjusted_action",
+        "kind": "semantic-source-contract"
+      },
+      {
+        "id": "constructor_skips_already_adjusted_action",
+        "kind": "semantic-source-contract"
+      },
+      {
+        "id": "constructor_marks_adjusted_after_half_factor",
+        "kind": "semantic-source-contract"
       }
     ],
     "ordering": {
@@ -129,13 +131,13 @@
     },
     {
       "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
-      "sha256": "F3590F0EBC9B613FE24AD7522A6B3E812072F1653B2BB185D040FC7EB3A8459D",
-      "bytes": 37447
+      "sha256": "703DAB02EB09267B8320838615556980D993A40BC9255BCB6A9A1A3E21313016",
+      "bytes": 37131
     },
     {
       "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
-      "sha256": "F3590F0EBC9B613FE24AD7522A6B3E812072F1653B2BB185D040FC7EB3A8459D",
-      "bytes": 37447
+      "sha256": "703DAB02EB09267B8320838615556980D993A40BC9255BCB6A9A1A3E21313016",
+      "bytes": 37131
     },
     {
       "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
@@ -149,13 +151,13 @@
     },
     {
       "path": "UT_CORE/test/run_tests.lua",
-      "sha256": "99B9CADF6E44E56A5D34CDF80B38B93DFCC0EE36DAA7574C4A6EDDC4BFCA6400",
-      "bytes": 184487
+      "sha256": "11BFA899D98E5A18180BC6EE9899FBC20A53DEE8C7424DF7A80A295CD0CB491C",
+      "bytes": 191609
     },
     {
       "path": "UniversalTraits/test/run_tests.lua",
-      "sha256": "F2552A79464F8CDCE1B9BEA4723CE2C2B16CA9A1B0441FEC1F397F4A33BFE8DB",
-      "bytes": 462370
+      "sha256": "012945F8B57E00BA200C498CD53AEAFF1B43F658C0A96878089884B8E5DAAD19",
+      "bytes": 454434
     },
     {
       "path": "trait-deep-audit/active/batch/traits/UT_paramedic.md",
