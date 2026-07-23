@@ -40,8 +40,8 @@
     "trait_batches/batch_12.jsonl",
     "translation_audit.json"
   ],
-  "file_count": 171,
-  "total_bytes": 13697065,
+  "file_count": 174,
+  "total_bytes": 13731647,
   "files": [
     {
       "path": ".gitattributes",
@@ -240,6 +240,13 @@
       "sha256": "BFFEA63C27A423BB6731FF36FF2D7821049DC2AE586C94F2F5EEE7719E67DA5F"
     },
     {
+      "path": "change-impact/short_blades-critical-chance-lifecycle.json",
+      "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 4130,
+      "sha256": "995237A68A875020385F4EC7981D3A7CBF75E7667C41E5897E0F4826E1B4AD22"
+    },
+    {
       "path": "change-impact/squirrel-fatigue-contract.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
@@ -341,22 +348,22 @@
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2270245,
-      "sha256": "6F49295B82D3883E617FE448E21F646847164D5A313BCAAD3F1D7695E1F9C214"
+      "bytes": 2271678,
+      "sha256": "4D5756AD483E901FFA43D862EAC49858F80803A3C9F7BF637173BBF6F8C9F09A"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2096509,
-      "sha256": "D59F6A76CF78434626447BC74BD8F576E5C27230C5F7BB108533B3762A925307"
+      "bytes": 2098649,
+      "sha256": "9EB069579C8E5617E0001CA250C33DA3C8BBDA0A86E598DDD7D3C747A992FB85"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1291680,
-      "sha256": "009FDCCCA9731AB9BC5B30ABD7AEF97A76A261DE52D5BC3F24230E394F9D299E"
+      "bytes": 1293313,
+      "sha256": "B9E3558A9F19D9D67ACBEF76D27999B24864B2B96D20FEC1AF79092EE69F9CF6"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
@@ -390,8 +397,8 @@
       "path": "independent_reviews/traits_09_12.json",
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
-      "bytes": 128127,
-      "sha256": "0D373AD505C8246237B05EB8FD9F981C763F4A6ABB3F1DF80337FE6AF43047F2"
+      "bytes": 128316,
+      "sha256": "C13D6E432C4AD272ED0C2510CBB8C527FEF3394CEC13AEA6AF2D9C0FB21B118E"
     },
     {
       "path": "independent_reviews/ut_core_integration.json",
@@ -412,21 +419,21 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 2861,
-      "sha256": "9E6C5A2269DC390340A50850D40A9BFAA206F57B191F33745987ED0D0B4B5F9C"
+      "sha256": "75687694E5A126001965B2A58A3AEE9E815FA00A2551DCC7DA2DBBF1C4B562A3"
     },
     {
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2043778,
-      "sha256": "A6D71305175FBF9026D258380E2F25B62748ACE794106E5A86D90017D070AD60"
+      "bytes": 2039006,
+      "sha256": "7A2336D863DC0C150A73C2809874C4DC103A22F87FB842ECA0EFCCCE970422EB"
     },
     {
       "path": "remediation_summary.json",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
       "bytes": 1213,
-      "sha256": "4E4AA8F732D025B79784AE03283A121D7B4CD14F1C8A72934462A2FC7D768047"
+      "sha256": "5106B586D09732AB591D4CFA93708BB1AAB6C83AA5F8107198DDDA8CA4EB6F99"
     },
     {
       "path": "runtime-traces/utcore-wave-01.jsonl",
@@ -586,8 +593,8 @@
       "path": "source_inventory.json",
       "kind": "source-inventory",
       "byte_semantics": "utf-8-lf",
-      "bytes": 230054,
-      "sha256": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7"
+      "bytes": 229648,
+      "sha256": "01FC9DA5EAA5353D106D852734D8B31B20DB750069908B03879DE3C6127B2919"
     },
     {
       "path": "tests/test_campaign_tools.py",
@@ -756,6 +763,13 @@
       "byte_semantics": "utf-8-lf",
       "bytes": 7620,
       "sha256": "94E32882118692F67ED6520E051431C33907E485B1B10D4F7E2409A4C2860256"
+    },
+    {
+      "path": "tests/test_regenerate_short_blades.py",
+      "kind": "regression-test",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 8346,
+      "sha256": "58116D13DB8F2F960AD86213CA7146635CA44C45416592A11A9296FDA63323D1"
     },
     {
       "path": "tests/test_regenerate_squirrel.py",
@@ -1052,6 +1066,13 @@
       "sha256": "B7A073731A85707FBB1AA57C5EBE6FDBF4779450A9F2E461BDF23D825327E806"
     },
     {
+      "path": "tools/regenerate_short_blades.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 19473,
+      "sha256": "31CA781E51BF87988DC13A384B1C9432EA978EC0D75E421F6EAA02050DC025D0"
+    },
+    {
       "path": "tools/regenerate_squirrel.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
@@ -1216,8 +1237,8 @@
       "path": "trait_batches/batch_10.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 113086,
-      "sha256": "33304EC69C6072CE027BFD779AB0E2332EEDE70DC56B6920468F46BC4A2ABE31"
+      "bytes": 115331,
+      "sha256": "0B4D9F886C24F1CFEB96D07F013B90F28B579A0086D1DB80DBEDC68671FEBE34"
     },
     {
       "path": "trait_batches/batch_11.jsonl",
@@ -1237,8 +1258,8 @@
       "path": "translation_audit.json",
       "kind": "translation-audit",
       "byte_semantics": "utf-8-lf",
-      "bytes": 496263,
-      "sha256": "910237369FCAFE9CD126A1CF3D9D995A2C483D016F853632BEA6CF4B2D4B480E"
+      "bytes": 496434,
+      "sha256": "B0B28426A93039B475982BED08870475C23D8F8A3B41FCC843DF92A65E2B1C89"
     }
   ]
 }

@@ -1,0 +1,96 @@
+{
+  "schema": "ut-short_blades-critical-chance-lifecycle-v1",
+  "trait_id": "UniversalTraits:UT_short_blades",
+  "authority": {
+    "accepted_baseline": "pre-campaign UTMods master",
+    "accepted_contract": "cost 4, SmallBlade=2, +10 displayed critical-chance points on exact Small Blade weapons, plus the retained primary-hand 50 percent melee-delay effect",
+    "pz_snapshot": "SVN revision 964; Steam BuildID 23504596 is recorded outside VERSION.json"
+  },
+  "accepted_intent": {
+    "cost": 4,
+    "xp_boosts": {
+      "SmallBlade": 2
+    },
+    "weapon_category": "WeaponCategory.SMALL_BLADE",
+    "displayed_critical_chance_delta": 10,
+    "displayed_critical_chance_cap": 100,
+    "dispatch_throttle": 30,
+    "runtime_scope": "single-player"
+  },
+  "resolved_findings": [
+    "B10-SHORT_BLADES-001"
+  ],
+  "engine_evidence": [
+    "PZCodebase/Java/source/zombie/inventory/types/HandWeapon.java:1495-1500,1612-1845",
+    "PZCodebase/Java/source/zombie/scripting/objects/Item.java:2149",
+    "UT_CORE/media/lua/shared/UTCore/UTCore_TickDispatch.lua:28-177,379-496",
+    "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_short_blades.lua"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_short_blades.lua",
+      "sha256": "A1EFE1ACCA12E5A86B5E11EB63034FEE7883CEDAE5E30C5CFA3D0404F32D7AD2",
+      "bytes": 3240
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_short_blades.lua",
+      "sha256": "A1EFE1ACCA12E5A86B5E11EB63034FEE7883CEDAE5E30C5CFA3D0404F32D7AD2",
+      "bytes": 3240
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "15117B546322119860F0D5B4D5A9C5F44335A105C45C6CC76EEA5DFB5F87F19C",
+      "bytes": 37522
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "15117B546322119860F0D5B4D5A9C5F44335A105C45C6CC76EEA5DFB5F87F19C",
+      "bytes": 37522
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "sha256": "522CF240BA3BC8386A53B1247D82632A0A8ED8F5C6EFF64873C271B5F19B6F95",
+      "bytes": 85377
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "0985BFD7050B896067C2858F164AC6DC87FC1E41024794B6903B12F3CDEECDA0",
+      "bytes": 411259
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_short_blades.md",
+      "sha256": "A6461E21970968F2966C1254834496CDA2E696B01F8B4555BD9F3990E35818F6",
+      "bytes": 1678
+    }
+  ],
+  "regression_cases": [
+    "exact +10 displayed critical chance without compounding",
+    "100 cap with exact capped-delta restoration",
+    "sharpness-adjusted getter and raw setter conversion",
+    "non-Small-Blade and zero-sharpness rejection",
+    "swap and unequip restoration",
+    "primary-secondary identity deduplication",
+    "later external raw-field change preservation",
+    "external raw mutation preservation and independent restoration",
+    "duplicate load teardown and one registration",
+    "definition, exact English, and source-release parity"
+  ],
+  "performance_model": "One light handler runs every 30 player updates and examines at most two equipped items plus the small tracked-weapon set.",
+  "runtime_proof": "Unobserved; requires full Exit to Desktop, current-build Kahlua, equip/swap/drop/transfer, trait removal, death, repeated world entry, save/load, sharpness, external modifier overlap, rendered English, balance, and profiler observation.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment",
+    "changing Short Blade cost, skill grant, magnitude, category, or intended stacking"
+  ]
+}

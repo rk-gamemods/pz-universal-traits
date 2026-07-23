@@ -108,7 +108,7 @@
     "UI_UT_long_blades": "Long Blade",
     "UI_UT_long_bladesDesc": "+2 to Long Blade. Long blade attacks have +10 percent critical hit chance.",
     "UI_UT_short_blades": "Short Blade",
-    "UI_UT_short_bladesDesc": "+2 to Small Blade. Short blade attacks have +10 percent critical hit chance.",
+    "UI_UT_short_bladesDesc": "+2 to Small Blade. Small Blade weapons have +10 critical-chance points, and primary-hand attacks with them have 50 percent lower melee delay.",
     "UI_UT_ingenuitive": "Ingenuitive",
     "UI_UT_ingenuitiveDesc": "You find creative solutions where others see dead ends. +2 to Electrical and +1 to Metalworking.",
     "UI_UT_generator": "Generator Know-How",

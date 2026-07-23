@@ -4030,6 +4030,7 @@ dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_woodsplitter.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_incomprehensive.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_cleaver.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_long_blades.lua")
+dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_short_blades.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_long_blunts.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_onehanded_axes.lua")
 dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_prospear.lua")
@@ -6848,6 +6849,222 @@ test("cleaver contract, definition, and source-release copies match", function()
         assert_eq(readAll(base .. "../media/" .. path),
             readAll(base .. "../release/UniversalTraits/42.0/media/" .. path),
             "Cleaver source and release must match for " .. path)
+    end
+end)
+
+-- short_blades: +10 displayed crit on exact Small Blade category
+local SHORT_BLADES_ID = "UniversalTraits:UT_short_blades"
+local SHORT_BLADES_RUNTIME = "../media/lua/shared/UniversalTraits/traits/UT_short_blades.lua"
+local shortBladesHandler = nil
+local registerShortBladesHandler = UTCore.registerTickHandler
+UTCore.registerTickHandler = function(traitId, fn, opts)
+    if traitId == SHORT_BLADES_ID then shortBladesHandler = fn end
+    return registerShortBladesHandler(traitId, fn, opts)
+end
+dofile(base .. SHORT_BLADES_RUNTIME)
+UTCore.registerTickHandler = registerShortBladesHandler
+assert_true(shortBladesHandler ~= nil, "Short Blade module must register its tick handler")
+local SHORT_BLADE_CATEGORY = {}
+local LONG_BLADE_CATEGORY = {}
+
+local function shortBladeWeapon(rawCrit, sharpness)
+    return MockWeapon("KitchenKnife", 0, false, true, {
+        criticalChance = rawCrit,
+        sharpness = sharpness,
+        categories = { SHORT_BLADE_CATEGORY },
+    })
+end
+
+local function fireShortBlades(player, count)
+    local savedWeaponCategory = _G.WeaponCategory
+    _G.WeaponCategory = { SMALL_BLADE = SHORT_BLADE_CATEGORY }
+    for tick = 30, count or 30, 30 do
+        if UTCore.hasTrait(player, SHORT_BLADES_ID) then
+            shortBladesHandler(player, {
+                primaryWeapon = player:getPrimaryHandItem(),
+                secondaryWeapon = player:getSecondaryHandItem(),
+            })
+        end
+    end
+    _G.WeaponCategory = savedWeaponCategory
+end
+
+local function clearShortBladeHands(player)
+    player:setPrimaryHandItem(nil)
+    player:setSecondaryHandItem(nil)
+    fireShortBlades(player, 30)
+end
+
+test("short_blades applies exact displayed delta, sharpness conversion, and cap", function()
+    local ordinary = shortBladeWeapon(15)
+    local sharp = shortBladeWeapon(20, 0.5)
+    local capped = shortBladeWeapon(95)
+    local player = MockPlayer({ SHORT_BLADES_ID }, {
+        primaryHandItem = ordinary,
+        secondaryHandItem = sharp,
+    })
+    assert_true(ordinary:isOfWeaponCategory(SHORT_BLADE_CATEGORY),
+        "mock precondition: exact Small Blade category")
+    assert_true(instanceof(ordinary, "HandWeapon"),
+        "mock precondition: weapon is a HandWeapon")
+    assert_true(UTCore.hasTrait(player, SHORT_BLADES_ID),
+        "mock precondition: player has Short Blade")
+    fireShortBlades(player, 60)
+    assert_eq(ordinary:getCriticalChance(), 25, "ordinary weapon must gain 10 displayed points once")
+    assert_eq(sharp:getCriticalChance(), 20, "sharp weapon display must rise from 10 to 20")
+    assert_eq(sharp:getRawCriticalChance(), 40, "raw setter input must bridge the sharpness multiplier")
+
+    player:setPrimaryHandItem(capped)
+    player:setSecondaryHandItem(nil)
+    fireShortBlades(player, 30)
+    assert_eq(ordinary:getCriticalChance(), 15, "swap must restore the ordinary weapon")
+    assert_eq(sharp:getRawCriticalChance(), 20, "swap must restore the sharp weapon raw field")
+    assert_eq(capped:getCriticalChance(), 100, "displayed chance must cap at 100")
+    clearShortBladeHands(player)
+    assert_eq(capped:getCriticalChance(), 95, "cap restoration must remove only the applied delta")
+end)
+
+test("short_blades accepts only exact Small Blade and fails closed at zero sharpness", function()
+    local misleadingName = MockWeapon("SmallBladeReplica", 0, false, true, {
+        criticalChance = 15,
+        categories = { LONG_BLADE_CATEGORY },
+    })
+    local zeroSharp = shortBladeWeapon(15, 0)
+    local nonSharp = shortBladeWeapon(15)
+    local player = MockPlayer({ SHORT_BLADES_ID }, {
+        primaryHandItem = misleadingName,
+        secondaryHandItem = zeroSharp,
+    })
+    fireShortBlades(player, 30)
+    assert_eq(misleadingName:getCriticalChance(), 15, "name and Long Blade category must not qualify")
+    assert_eq(zeroSharp:getRawCriticalChance(), 15, "zero sharpness must be a safe no-op")
+
+    player:setPrimaryHandItem(nonSharp)
+    player:setSecondaryHandItem(nil)
+    fireShortBlades(player, 30)
+    assert_eq(nonSharp:getCriticalChance(), 25, "non-sharp Small Blade weapons must remain eligible")
+    clearShortBladeHands(player)
+end)
+
+test("short_blades reconciles both hands and deduplicates the same object", function()
+    local primary = shortBladeWeapon(10)
+    local secondary = shortBladeWeapon(30)
+    local player = MockPlayer({ SHORT_BLADES_ID }, {
+        primaryHandItem = primary,
+        secondaryHandItem = secondary,
+    })
+    fireShortBlades(player, 30)
+    assert_eq(primary:getCriticalChance(), 20, "primary weapon must be boosted")
+    assert_eq(secondary:getCriticalChance(), 40, "secondary weapon must be boosted")
+
+    player:setSecondaryHandItem(primary)
+    fireShortBlades(player, 30)
+    assert_eq(secondary:getCriticalChance(), 30, "removed secondary weapon must restore")
+    assert_eq(primary:getCriticalChance(), 20, "same-object hand alias must not compound")
+    clearShortBladeHands(player)
+end)
+
+test("short_blades trait removal restores and re-add reapplies", function()
+    local weapon = shortBladeWeapon(15)
+    local player = MockPlayer({ SHORT_BLADES_ID }, { primaryHandItem = weapon })
+    UTCore.rebuildActiveHandlers(player)
+    fireShortBlades(player, 30)
+    player:setMockTrait(SHORT_BLADES_ID, false)
+    UTCore.rebuildActiveHandlers(player)
+    fireShortBlades(player, 30)
+    assert_eq(weapon:getCriticalChance(), 15, "trait loss must restore the owned delta")
+    player:setMockTrait(SHORT_BLADES_ID, true)
+    UTCore.rebuildActiveHandlers(player)
+    fireShortBlades(player, 30)
+    assert_eq(weapon:getCriticalChance(), 25, "trait re-add must reactivate the handler")
+    clearShortBladeHands(player)
+end)
+
+test("short_blades restoration preserves later external raw mutation", function()
+    local weapon = shortBladeWeapon(15)
+    local player = MockPlayer({ SHORT_BLADES_ID }, { primaryHandItem = weapon })
+    fireShortBlades(player, 30)
+    weapon:setCriticalChance(30)
+    clearShortBladeHands(player)
+    assert_eq(weapon:getRawCriticalChance(), 20,
+        "restoration must remove only this trait's raw 10-point delta")
+end)
+
+test("short_blades bounds category and critical bridge failures", function()
+    local categoryFailure = shortBladeWeapon(15)
+    categoryFailure.isOfWeaponCategory = function() error("injected category bridge failure") end
+    local getterFailure = shortBladeWeapon(20)
+    getterFailure.getCriticalChance = function() error("injected getter bridge failure") end
+    local setterFailure = shortBladeWeapon(25)
+    setterFailure.setCriticalChance = function() error("injected setter bridge failure") end
+    local player = MockPlayer({ SHORT_BLADES_ID }, {
+        primaryHandItem = categoryFailure,
+        secondaryHandItem = getterFailure,
+    })
+    fireShortBlades(player, 30)
+    assert_eq(categoryFailure:getRawCriticalChance(), 15, "category failure must fail closed")
+    assert_eq(getterFailure:getRawCriticalChance(), 20, "getter failure must fail closed")
+
+    player:setPrimaryHandItem(setterFailure)
+    player:setSecondaryHandItem(nil)
+    fireShortBlades(player, 30)
+    assert_eq(setterFailure:getRawCriticalChance(), 25, "setter failure must not create owned state")
+end)
+
+test("short_blades duplicate load, unregister, and invalid-player teardown restore", function()
+    local weapon = shortBladeWeapon(15)
+    local player = MockPlayer({ SHORT_BLADES_ID }, { primaryHandItem = weapon })
+    UTCore.rebuildActiveHandlers(player)
+    fireShortBlades(player, 30)
+    dofile(base .. SHORT_BLADES_RUNTIME)
+    assert_eq(weapon:getCriticalChance(), 15, "duplicate load teardown must restore")
+    local registrations = 0
+    for i = 1, #UTCore._tickHandlers do
+        if UTCore._tickHandlers[i].id == SHORT_BLADES_ID then registrations = registrations + 1 end
+    end
+    assert_eq(registrations, 1, "duplicate load must leave exactly one handler")
+
+    UTCore.rebuildActiveHandlers(player)
+    fireShortBlades(player, 30)
+    player:setDead(true)
+    UTCore.teardownActiveTickHandlers("invalid-player")
+    assert_eq(weapon:getCriticalChance(), 15, "invalid-player teardown must restore")
+    player:setDead(false)
+    UTCore.unregisterTickHandler(SHORT_BLADES_ID, "test")
+    dofile(base .. SHORT_BLADES_RUNTIME)
+end)
+
+test("short_blades contract, delay disclosure, definition, and parity match", function()
+    local function readAll(path)
+        local file = assert(io.open(path, "rb"))
+        local content = file:read("*a")
+        file:close()
+        return content
+    end
+    local expected = "+2 to Small Blade. Small Blade weapons have +10 critical-chance points, and primary-hand attacks with them have 50 percent lower melee delay."
+    local sourceUI = readAll(base .. "../media/lua/shared/Translate/EN/UI.json")
+    local releaseUI = readAll(base .. "../release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json")
+    assert_eq(sourceUI:match('"UI_UT_short_bladesDesc"%s*:%s*"([^"]+)"'), expected,
+        "source Short Blade copy must disclose both runtime paths")
+    assert_eq(releaseUI:match('"UI_UT_short_bladesDesc"%s*:%s*"([^"]+)"'), expected,
+        "release Short Blade copy must match source")
+
+    local sourceDefinition = readAll(base .. "../media/scripts/UT_character_traits.txt")
+    local block = sourceDefinition:match(
+        "character_trait_definition%s+UniversalTraits:UT_short_blades%s*(%b{})")
+    assert_true(block ~= nil, "Short Blade definition must exist")
+    assert_true(block:find("Cost%s*=%s*4[%s,]"), "Short Blade must retain cost 4")
+    assert_true(block:find("XPBoosts%s*=%s*SmallBlade%s*=%s*2[%s,]"),
+        "Short Blade must retain +2 Small Blade")
+
+    for _, path in ipairs({
+        "lua/shared/UniversalTraits/traits/UT_short_blades.lua",
+        "lua/shared/Translate/EN/UI.json",
+        "scripts/UT_character_traits.txt",
+    }) do
+        assert_eq(readAll(base .. "../media/" .. path),
+            readAll(base .. "../release/UniversalTraits/42.0/media/" .. path),
+            "Short Blade source and release must match for " .. path)
     end
 end)
 

@@ -47,8 +47,8 @@
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "C8314A582A7F0AF549FD45EC289FAA62BB616A8679E098B20A9043817BF22984",
     "independent_reviews/traits_05_08.json": "D255A15AFCA8FC010573892EEA19FDC404F30F3066879C1939B702BEF5B2A474",
-    "independent_reviews/traits_09_12.json": "0D373AD505C8246237B05EB8FD9F981C763F4A6ABB3F1DF80337FE6AF43047F2",
-    "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
+    "independent_reviews/traits_09_12.json": "C13D6E432C4AD272ED0C2510CBB8C527FEF3394CEC13AEA6AF2D9C0FB21B118E",
+    "source_inventory.json": "01FC9DA5EAA5353D106D852734D8B31B20DB750069908B03879DE3C6127B2919",
     "trait_batches/batch_01.jsonl": "4FD54923B0938C3294AB5E9D0C0168A08FDBF353A73FBE83BCE7F5DDF8B911F2",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
     "trait_batches/batch_03.jsonl": "DE80C7E88D64E27AEDFA1248A855290E9892605D7A1800D9933BFFFBD8271DA9",
@@ -58,10 +58,10 @@
     "trait_batches/batch_07.jsonl": "0483F4C2595D692E19FD6F60DE04E5D633C7942497A2669CF1B48459C0AFA771",
     "trait_batches/batch_08.jsonl": "B8D4BEB66BDC2B74EBDC6DE1873D07B31099ADE4B2482D284B1FD000CCCC94B4",
     "trait_batches/batch_09.jsonl": "7493EABBF27471F551A42E6B750D8927EC80B36404B51ED6E7CBC74349EAFE44",
-    "trait_batches/batch_10.jsonl": "33304EC69C6072CE027BFD779AB0E2332EEDE70DC56B6920468F46BC4A2ABE31",
+    "trait_batches/batch_10.jsonl": "0B4D9F886C24F1CFEB96D07F013B90F28B579A0086D1DB80DBEDC68671FEBE34",
     "trait_batches/batch_11.jsonl": "D1617D3F6DE1E81879EB3FA2B81F7DA1058630E103CF1DFD2D907B026311D959",
     "trait_batches/batch_12.jsonl": "AD66AE06FB18C88A6FF3C7AAF9EBF0699B8C803CAE1B0DF471FDBEC765A2FF26",
-    "translation_audit.json": "910237369FCAFE9CD126A1CF3D9D995A2C483D016F853632BEA6CF4B2D4B480E"
+    "translation_audit.json": "B0B28426A93039B475982BED08870475C23D8F8A3B41FCC843DF92A65E2B1C89"
   },
   "counts": {
     "traits": 198,
@@ -71,22 +71,22 @@
     "independent_review_findings": 117,
     "independent_review_states": {
       "accepted": 87,
-      "confirmed-defect": 29,
+      "confirmed-defect": 28,
       "coverage-gap": 20,
       "needs-correction": 48,
-      "runtime-unproven": 14
+      "runtime-unproven": 15
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 52,
+      "confirmed-defect": 51,
       "coverage-gap": 12,
-      "runtime-unproven": 109
+      "runtime-unproven": 110
     },
     "dimension_states": {
-      "proven-correct": 2813,
-      "confirmed-defect": 192,
-      "coverage-gap": 747,
-      "runtime-unproven": 1000
+      "proven-correct": 2817,
+      "confirmed-defect": 185,
+      "coverage-gap": 745,
+      "runtime-unproven": 1005
     }
   },
   "independent_review_findings": [
@@ -50246,24 +50246,28 @@
     {
       "trait_id": "UniversalTraits:UT_short_blades",
       "batch": "batch_10",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
           "evidence": [
-            "One namespaced registration exists."
+            "The namespaced registry entry, complete definition, runtime key, and English keys agree."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "registration"
           ]
         },
         "definition_parser": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "Complete definition grants SmallBlade=2 and parses through the current engine."
+            "The complete source and release definitions are byte-identical and parse in the standard-Lua consistency suite."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current-build ScriptManager parsing has not been observed in game."
+          ],
           "source_dimensions": [
             "definition_parser"
           ]
@@ -50271,9 +50275,11 @@
         "namespace": {
           "state": "proven-correct",
           "evidence": [
-            "Registration, definition and UI keys agree."
+            "All owned surfaces use UniversalTraits:UT_short_blades."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "namespace"
           ]
@@ -50281,39 +50287,47 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "Cost 4; +2 weapon perk; no grants; 16 weapon-tree exclusions and all assigned definition reverse edges are present."
+            "Cost is 4, XPBoosts grants SmallBlade=2, the reciprocal weapon-tree exclusions are unchanged, and DisabledInMultiplayer is true."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "cost_xp_grants_exclusions_reverse_exclusions"
+            "cost_xp_grants_exclusions"
           ]
         },
         "source_intent": {
           "state": "proven-correct",
           "evidence": [
-            "UI promises both +2 skill and +10% critical hit chance."
+            "Pre-campaign master establishes +2 Small Blade and +10 displayed critical chance; current accepted runtime also retains the primary-hand 50 percent melee-delay effect."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_intent"
           ]
         },
         "runtime_path": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Explicit script-only classification: no per-trait Lua exists in source or release; engine XPBoost application is the only behavior path."
+            "The UTCore handler reconciles equipped Small Blade weapons, applies one owner-scoped raw delta, and restores every no-longer-eligible tracked object."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "runtime_path"
           ]
         },
         "numbers": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "+2 starting perk level; advertised +10 percentage points critical chance has no implementing field or hook."
+            "The effect adds exactly 10 displayed critical-chance points, caps at 100, and records the actual applied raw delta."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "numbers"
           ]
@@ -50321,9 +50335,11 @@
         "cadence": {
           "state": "proven-correct",
           "evidence": [
-            "No runtime cadence for script-only XP boost."
+            "UTCore dispatches the light handler every 30 player updates, including vehicle reconciliation."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cadence"
           ]
@@ -50331,20 +50347,22 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
-            "None."
+            "Short Blade has no cooldown beyond its 30-update reconciliation cadence."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cooldown"
           ]
         },
         "reset_save_load": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "Starting level applied during character creation; no runtime state."
+            "Unequip, swap, unregister, duplicate load, trait-handler deactivation, and invalid-player teardown all use the same delta restoration path; SVN 964 HandWeapon save/load omits criticalChance."
           ],
           "missing_proof": [
-            "Add and run a focused regression covering save/load plus the cited stale-state, removal, or re-addition edge."
+            "A full current-build drop/transfer, repeated-world-entry, death, and save/load observation remains required."
           ],
           "source_dimensions": [
             "reset_save_load"
@@ -50353,39 +50371,47 @@
         "java_lua": {
           "state": "proven-correct",
           "evidence": [
-            "Current parser maps XPBoosts directly; IsoGameCharacter.applyTraits levels the perk by the configured integer."
+            "SVN 964 proves HandWeapon category membership, sharpness, displayed getter, raw setter, save/load field list, and script initialization contracts."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "java_lua"
           ]
         },
         "kahlua": {
-          "state": "confirmed-defect",
+          "state": "runtime-unproven",
           "evidence": [
-            "No trait-specific Kahlua file."
+            "The implementation uses Kahlua-compatible tables, identity keys, pcall, numeric loops, and verified Java receiver methods."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current-build Kahlua execution is unobserved."
+          ],
           "source_dimensions": [
             "kahlua"
           ]
         },
         "events": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Character creation script path only."
+            "One reload-safe UTCore registration owns the handler and teardown callback; UTCore rebuild and invalid-player paths invoke teardown."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "lifecycle"
+            "events"
           ]
         },
         "stacking_interactions": {
           "state": "proven-correct",
           "evidence": [
-            "Weapon-tree exclusions are bidirectional; absent crit path cannot stack."
+            "Identity deduplication and the per-owner raw delta preserve later external changes without changing the separate primary-hand melee-delay path."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "stacking_interactions"
           ]
@@ -50393,9 +50419,11 @@
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "DisabledInMultiplayer=true."
+            "The definition disables Short Blade in multiplayer and multiplayer support is an explicit product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "multiplayer"
           ]
@@ -50403,19 +50431,23 @@
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "EN display Short Blade."
+            "The exact English display name is Short Blade."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "display"
           ]
         },
         "description": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Correct for +2; false for +10% critical hit chance."
+            "English exactly states +2 Small Blade, +10 critical-chance points, and the primary-hand 50 percent melee-delay effect."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "description"
           ]
@@ -50423,54 +50455,58 @@
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "EN pair only."
+            "The exact English keys exist in source and release."
           ],
           "missing_proof": [
-            "Inventory both assigned UI keys in every supported non-English locale and run the localization completeness check."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
-            "localization_absent_locales"
+            "localization"
           ]
         },
         "balance": {
-          "state": "confirmed-defect",
+          "state": "runtime-unproven",
           "evidence": [
-            "Cost 4 purchases only the +2 level, not the advertised crit bonus."
+            "Static behavior remains the pre-campaign cost 4, +2 skill, and +10 displayed critical-chance contract."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "No gameplay telemetry or comparative balance session exists."
+          ],
           "source_dimensions": [
             "balance"
           ]
         },
         "performance": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "No runtime cost."
+            "The 30-update handler examines at most two equipped items plus the small tracked-weapon set."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "No current-build profiler capture exists."
+          ],
           "source_dimensions": [
             "performance"
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Catalog/parser consistency only; no crit behavior test."
+            "Focused tests cover exact delta, cap, sharpness domains, exact category rejection, both hands, swap, deduplication, trait lifecycle, external changes, bridge failures, reload, delay scope, definition, copy, and parity."
           ],
           "missing_proof": [
-            "Add and run the smallest regression test named by the associated finding or unknown."
+            "none"
           ],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "No missing-runtime assertion; mocks cannot prove a nonexistent crit hook."
+            "MockWeapon reproduces SVN 964's sharpness-adjusted getter, raw setter, exact WeaponCategory membership, and raw-field assertion surface."
           ],
           "missing_proof": [
-            "Update the focused mock boundary to reproduce the cited engine event, signature, timing, indexing, or persistence semantics, then rerun the affected test."
+            "none"
           ],
           "source_dimensions": [
             "mocks"
@@ -50479,19 +50515,23 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "Definition/UI match release and both source/release omit a runtime file."
+            "Short Blade runtime, definition, and English source and 42.0 release pairs are byte-identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_release_parity"
           ]
         },
         "packaging": {
-          "state": "confirmed-defect",
+          "state": "coverage-gap",
           "evidence": [
-            "Omission is not packaging drift; it is a behavior gap because the description requires runtime behavior."
+            "All Short Blade-owned 42.0 runtime, definition, and English counterparts are present and identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Read-only package verification reports no release drift; UniversalTraits lacks the separately tracked source poster."
+          ],
           "source_dimensions": [
             "packaging"
           ]
@@ -50501,13 +50541,16 @@
         "B10-SHORT_BLADES-001"
       ],
       "unknowns": [
-        "No in-game character-creation screenshot/run; parser behavior is proven from current Java source.",
-        "Potential generic crit hook outside the assigned/runtime inventory was searched by closed-world inventory but not observed at runtime."
+        "Current-build Kahlua execution, full relaunch, repeated world entry, death, and current-version save/load remain unobserved.",
+        "Live drop/transfer and concurrent external critical-chance mutation remain unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory.",
+        "Multiplayer and backward save migration are explicit non-goals."
       ],
-      "translation_terminal_state": "confirmed-defect",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_09_12.json",
-        "review_state": "confirmed-defect",
+        "review_state": "runtime-unproven",
         "omission_finding_ids": [],
         "cross_finding_ids": [
           "IR0912-FINDING-STATE-001",

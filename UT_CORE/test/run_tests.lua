@@ -1532,6 +1532,37 @@ test("MeleeDelayHook classifies every WeaponCategory and rejects an adjacent tra
     end)
 end)
 
+test("Short Blade keeps its accepted 50 percent delay effect primary-hand only", function()
+    withMeleeDelayTestState(nil, function()
+        _G.WeaponCategory = {
+            AXE = {}, BLUNT = {}, SMALL_BLUNT = {},
+            LONG_BLADE = {}, SMALL_BLADE = {}, SPEAR = {},
+        }
+        local smallBlade = MockWeapon("Knife", nil, false, true, {
+            categories = { WeaponCategory.SMALL_BLADE },
+        })
+        local unrelatedPrimary = MockWeapon("Bat", nil, false, true, {
+            categories = { WeaponCategory.BLUNT },
+        })
+        local primary = MockPlayer({ "UniversalTraits:UT_short_blades" }, {
+            primaryHandItem = smallBlade,
+            meleeDelay = 20,
+        })
+        UTCore._meleeDelayOnPlayerUpdate(primary)
+        assert_eq(primary:getMeleeDelay(), 10,
+            "Short Blade must retain the primary-hand delay multiplier")
+
+        local secondaryOnly = MockPlayer({ "UniversalTraits:UT_short_blades" }, {
+            primaryHandItem = unrelatedPrimary,
+            secondaryHandItem = smallBlade,
+            meleeDelay = 20,
+        })
+        UTCore._meleeDelayOnPlayerUpdate(secondaryOnly)
+        assert_eq(secondaryOnly:getMeleeDelay(), 20,
+            "secondary-hand Small Blade must not drive melee delay")
+    end)
+end)
+
 test("MeleeDelayHook derives one- and two-handed category flags", function()
     local cases = {
         { "one-handed", false, "UniversalTraits:UT_onehanded_axes", "UniversalTraits:UT_twohanded_axes" },

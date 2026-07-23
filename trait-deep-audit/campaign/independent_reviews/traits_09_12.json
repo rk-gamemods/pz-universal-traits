@@ -1359,7 +1359,7 @@
       "resolution_record": "change-impact/sharpshooter-weapon-lifecycle.json"
     },
     {
-      "accepted_overall_state": "confirmed-defect",
+      "accepted_overall_state": "runtime-unproven",
       "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_10.jsonl:7",
       "cross_finding_ids": [
         "IR0912-FINDING-STATE-001",
@@ -1367,8 +1367,8 @@
         "IR0912-PERCENT-001",
         "IR10-MELEE-SHARED-001"
       ],
-      "independent_state": "confirmed-defect",
-      "omission_disposition": "none beyond referenced cross-trait findings",
+      "independent_state": "runtime-unproven",
+      "omission_disposition": "B10-SHORT_BLADES-001 is implemented and statically validated. The trait now has both the critical-chance and primary-hand melee-delay runtime paths; current-build execution, balance/performance, and absent locales remain unresolved.",
       "omissions": [],
       "rejected_accepted_finding_ids": [],
       "source_batch": "batch_10",
