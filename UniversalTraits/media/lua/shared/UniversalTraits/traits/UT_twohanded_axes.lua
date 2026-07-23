@@ -27,13 +27,39 @@ local function isEligible(weapon)
     return ok and eligible == true
 end
 
-local function getRawCriticalChance(weapon)
-    local displayed = weapon:getCriticalChance()
-    if not weapon:hasSharpness() then return displayed, 1 end
+local function isFiniteNumber(value)
+    return type(value) == "number"
+        and value == value
+        and value ~= math.huge
+        and value ~= -math.huge
+end
 
-    local sharpness = weapon:getSharpness()
-    if not sharpness or sharpness <= 0 then return nil, nil end
-    return displayed / sharpness, sharpness
+local function getRawCriticalChance(weapon)
+    local ok, raw, sharpness = pcall(function()
+        local displayed = weapon:getCriticalChance()
+        if not isFiniteNumber(displayed) then return nil, nil end
+
+        local hasSharpness = weapon:hasSharpness()
+        if hasSharpness == false then return displayed, 1 end
+        if hasSharpness ~= true then return nil, nil end
+
+        local currentSharpness = weapon:getSharpness()
+        if not isFiniteNumber(currentSharpness) or currentSharpness <= 0 then
+            return nil, nil
+        end
+        return displayed / currentSharpness, currentSharpness
+    end)
+    if not ok or not isFiniteNumber(raw) or not isFiniteNumber(sharpness) then
+        return nil, nil
+    end
+    return raw, sharpness
+end
+
+local function setRawCriticalChance(weapon, value)
+    if not isFiniteNumber(value) then return false end
+    return pcall(function()
+        weapon:setCriticalChance(value)
+    end)
 end
 
 local function restoreWeapon(weapon)
@@ -42,7 +68,7 @@ local function restoreWeapon(weapon)
 
     local raw = getRawCriticalChance(weapon)
     if raw then
-        weapon:setCriticalChance(raw - tracked.appliedRawBonus)
+        setRawCriticalChance(weapon, raw - tracked.appliedRawBonus)
     end
     state.trackedWeapons[weapon] = nil
 end
@@ -63,8 +89,11 @@ local function boostWeapon(weapon)
     local targetRaw = targetDisplayed / sharpness
     local appliedRawBonus = targetRaw - baseRaw
 
-    weapon:setCriticalChance(targetRaw)
-    state.trackedWeapons[weapon] = { appliedRawBonus = appliedRawBonus }
+    if setRawCriticalChance(weapon, targetRaw) then
+        state.trackedWeapons[weapon] = { appliedRawBonus = appliedRawBonus }
+    else
+        state.trackedWeapons[weapon] = nil
+    end
 end
 
 local function onTick(_player, tick)

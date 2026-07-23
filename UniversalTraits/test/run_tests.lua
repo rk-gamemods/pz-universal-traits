@@ -6624,6 +6624,96 @@ test("twohanded_axes safely rejects zero sharpness and API failures", function()
     assert_eq(weapon:getCriticalChance(), 15, "eligibility API failure must restore owned state")
 end)
 
+test("twohanded_axes contains every critical-state getter and setter failure", function()
+    local getterFailures = {
+        {
+            name = "getCriticalChance",
+            breakWeapon = function(weapon)
+                weapon.getCriticalChance = function() error("getCriticalChance failure") end
+            end,
+        },
+        {
+            name = "hasSharpness",
+            breakWeapon = function(weapon)
+                weapon.hasSharpness = function() error("hasSharpness failure") end
+            end,
+        },
+        {
+            name = "getSharpness",
+            breakWeapon = function(weapon)
+                weapon.getSharpness = function() error("getSharpness failure") end
+            end,
+        },
+    }
+    for _, case in ipairs(getterFailures) do
+        local weapon = MockWeapon("FireAxe", 0, true, true, {
+            criticalChance = 15, sharpness = 1,
+            categories = { WeaponCategory.AXE },
+        })
+        local getRaw = weapon.getRawCriticalChance
+        local setterCalls = 0
+        local setCriticalChance = weapon.setCriticalChance
+        weapon.setCriticalChance = function(self, value)
+            setterCalls = setterCalls + 1
+            setCriticalChance(self, value)
+        end
+        case.breakWeapon(weapon)
+
+        local player = MockPlayer({ TWO_HANDED_AXES_ID }, { primaryHandItem = weapon })
+        fireTwoHandedAxes(player, 30)
+        assert_eq(getRaw(weapon), 15, case.name .. " failure must preserve raw chance")
+        assert_eq(setterCalls, 0, case.name .. " failure must not attempt mutation")
+        assert_eq(UTCore._twoHandedAxesState.trackedWeapons[weapon], nil,
+            case.name .. " failure must not adopt the weapon")
+    end
+
+    local weapon = MockWeapon("FireAxe", 0, true, true, {
+        criticalChance = 15, categories = { WeaponCategory.AXE },
+    })
+    local getRaw = weapon.getRawCriticalChance
+    local setterCalls = 0
+    weapon.setCriticalChance = function()
+        setterCalls = setterCalls + 1
+        error("setCriticalChance failure")
+    end
+    local player = MockPlayer({ TWO_HANDED_AXES_ID }, { primaryHandItem = weapon })
+    fireTwoHandedAxes(player, 30)
+    assert_eq(getRaw(weapon), 15, "setter failure must preserve the observed raw chance")
+    assert_eq(setterCalls, 1, "setter failure fixture must exercise exactly one attempted write")
+    assert_eq(UTCore._twoHandedAxesState.trackedWeapons[weapon], nil,
+        "setter failure must not leave tracked ownership")
+end)
+
+test("twohanded_axes rejects every invalid sharpness domain", function()
+    local invalidSharpness = {
+        { name = "nonnumber", value = "invalid" },
+        { name = "NaN", value = 0 / 0 },
+        { name = "positive infinity", value = math.huge },
+        { name = "negative infinity", value = -math.huge },
+        { name = "zero", value = 0 },
+        { name = "negative", value = -1 },
+    }
+    for _, case in ipairs(invalidSharpness) do
+        local weapon = MockWeapon("FireAxe", 0, true, true, {
+            criticalChance = 15, sharpness = case.value,
+            categories = { WeaponCategory.AXE },
+        })
+        local getRaw = weapon.getRawCriticalChance
+        local setterCalls = 0
+        local setCriticalChance = weapon.setCriticalChance
+        weapon.setCriticalChance = function(self, value)
+            setterCalls = setterCalls + 1
+            setCriticalChance(self, value)
+        end
+        local player = MockPlayer({ TWO_HANDED_AXES_ID }, { primaryHandItem = weapon })
+        fireTwoHandedAxes(player, 30)
+        assert_eq(getRaw(weapon), 15, case.name .. " sharpness must preserve raw chance")
+        assert_eq(setterCalls, 0, case.name .. " sharpness must be rejected before mutation")
+        assert_eq(UTCore._twoHandedAxesState.trackedWeapons[weapon], nil,
+            case.name .. " sharpness must not adopt the weapon")
+    end
+end)
+
 test("twohanded_axes caps displayed chance and converts sharpness domains", function()
     local cases = {
         { 0.5, 20, 20, 40 },
@@ -6731,6 +6821,68 @@ test("twohanded_axes duplicate load restores and leaves one handler", function()
         end
     end
     assert_eq(registrations, 1, "duplicate load must leave exactly one handler")
+end)
+
+test("twohanded_axes teardown isolates owners and drains state after setter failure", function()
+    local weaponA = MockWeapon("OwnerAFireAxe", 0, true, true,
+        { criticalChance = 15, categories = { WeaponCategory.AXE } })
+    local weaponB = MockWeapon("OwnerBFireAxe", 0, true, true,
+        { criticalChance = 35, categories = { WeaponCategory.AXE } })
+    local ownerA = MockPlayer({ TWO_HANDED_AXES_ID }, { primaryHandItem = weaponA })
+    local ownerB = MockPlayer({ TWO_HANDED_AXES_ID }, { primaryHandItem = weaponB })
+    fireTwoHandedAxes(ownerA, 30)
+    assert_eq(weaponA:getCriticalChance(), 25, "owner A precondition must be boosted")
+    fireTwoHandedAxes(ownerB, 30)
+    assert_eq(weaponA:getCriticalChance(), 15,
+        "owner B dispatch must retire owner A state without cross-owner leakage")
+    assert_eq(weaponB:getCriticalChance(), 45, "owner B precondition must be boosted")
+
+    ownerB:setSecondaryHandItem(weaponA)
+    fireTwoHandedAxes(ownerB, 30)
+    assert_eq(weaponA:getCriticalChance(), 25,
+        "the transferred exact object may be adopted independently by its current owner")
+
+    local ownerASetterCalls = 0
+    weaponA.setCriticalChance = function()
+        ownerASetterCalls = ownerASetterCalls + 1
+        error("owner A restore failure")
+    end
+    dofile(base .. TWO_HANDED_AXES_RUNTIME)
+
+    assert_eq(ownerASetterCalls, 1, "owner A failing restore must be attempted once")
+    assert_eq(weaponB:getCriticalChance(), 35,
+        "owner A restore failure must not block owner B restoration")
+    assert_eq(UTCore._twoHandedAxesState.trackedWeapons[weaponA], nil,
+        "owner A tracking must be retired after failed restoration")
+    assert_eq(UTCore._twoHandedAxesState.trackedWeapons[weaponB], nil,
+        "owner B tracking must be retired after successful restoration")
+end)
+
+test("twohanded_axes setter-failure reload unregisters without retry or duplication", function()
+    local weapon = MockWeapon("FireAxe", 0, true, true,
+        { criticalChance = 15, categories = { WeaponCategory.AXE } })
+    local player = MockPlayer({ TWO_HANDED_AXES_ID }, { primaryHandItem = weapon })
+    fireTwoHandedAxes(player, 30)
+    assert_eq(weapon:getCriticalChance(), 25, "reload failure precondition must be boosted")
+
+    local setterCalls = 0
+    weapon.setCriticalChance = function()
+        setterCalls = setterCalls + 1
+        error("reload restore failure")
+    end
+    dofile(base .. TWO_HANDED_AXES_RUNTIME)
+    dofile(base .. TWO_HANDED_AXES_RUNTIME)
+
+    local registrations = 0
+    for i = 1, #UTCore._tickHandlers do
+        if UTCore._tickHandlers[i].id == TWO_HANDED_AXES_ID then
+            registrations = registrations + 1
+        end
+    end
+    assert_eq(setterCalls, 1, "cleared state must not retry the failed restore on another reload")
+    assert_eq(registrations, 1, "setter-failure reload must leave exactly one handler")
+    assert_eq(UTCore._twoHandedAxesState.trackedWeapons[weapon], nil,
+        "setter-failure reload must finish local state cleanup")
 end)
 
 test("twohanded_axes contract and source-release copies match", function()
