@@ -52,8 +52,30 @@ class TavernBrawlerGeneratorSafetyTests(unittest.TestCase):
     def test_exact_ownership_and_shared_base_restoration(self) -> None:
         names = ("TRAIT", "FINDINGS", "_plan_batch", "_plan_review", "OWNED_OUTPUTS")
         before = {name: getattr(GENERATOR.base, name) for name in names}
+        report_before = GENERATOR.remediation.build_report
         self.assertEqual(set(GENERATOR.build_plan(self.root, self.campaign)), set(GENERATOR.OWNED_OUTPUTS))
         self.assertEqual({name: getattr(GENERATOR.base, name) for name in names}, before)
+        self.assertIs(GENERATOR.remediation.build_report, report_before)
+
+    def test_reviewed_recurring_pattern_artifact_is_consumed(self) -> None:
+        original = GENERATOR.remediation.build_report
+
+        def reject_dynamic_scan() -> dict:
+            raise AssertionError("dynamic recurring-pattern scan must not run")
+
+        GENERATOR.remediation.build_report = reject_dynamic_scan
+        try:
+            self.assertEqual(set(GENERATOR.build_plan(self.root, self.campaign)), set(GENERATOR.OWNED_OUTPUTS))
+        finally:
+            GENERATOR.remediation.build_report = original
+
+    def test_reviewed_recurring_pattern_binding_restores_after_exception(self) -> None:
+        original = GENERATOR.remediation.build_report
+        with self.assertRaisesRegex(RuntimeError, "injected protected-block failure"):
+            with GENERATOR._reviewed_recurring_findings(self.campaign):
+                self.assertIsNot(GENERATOR.remediation.build_report, original)
+                raise RuntimeError("injected protected-block failure")
+        self.assertIs(GENERATOR.remediation.build_report, original)
 
     def test_committed_outputs_are_first_pass_fixed_point(self) -> None:
         plan = GENERATOR.build_plan(self.root, self.campaign)

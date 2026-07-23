@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 171,
-  "total_bytes": 13682901,
+  "total_bytes": 13684766,
   "files": [
     {
       "path": ".gitattributes",
@@ -279,7 +279,7 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 4005,
-      "sha256": "5754EA46CBE854F821CB055D7E536C09B034D68DE726DD5E89F86DA43B7635D6"
+      "sha256": "A453AF27A7235E04E33B2355E4819408C555D8B8F395967493607418CDF4D3AE"
     },
     {
       "path": "change-impact/thickblood-weighted-bleed-damage.json",
@@ -349,7 +349,7 @@
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
       "bytes": 2095533,
-      "sha256": "329DE026B822771477933FC7517AB047BB18501BB401B72D5B61CE09A6103FE4"
+      "sha256": "B2C9C5EB334F9624A941AD8268693DD9AE4DBF37789A8B43E19598DEFBE82566"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
@@ -391,7 +391,7 @@
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
       "bytes": 127026,
-      "sha256": "898B276B2F51C416901224C240F6CE185BB60CD979F9CF3F1DB7A74021297C02"
+      "sha256": "8F79E90310CA2B0E7C409C1D6930D7B8A88CF30B2266D4D235CEBD3A0BCB9482"
     },
     {
       "path": "independent_reviews/ut_core_integration.json",
@@ -796,8 +796,8 @@
       "path": "tests/test_regenerate_tavernbrawler.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 7935,
-      "sha256": "820CA688682532923E05E4B8B8F2B72BDD8003E3B2E51209D251607A60688843"
+      "bytes": 9108,
+      "sha256": "3C8319606E21F8C4024B38F34A882327EC0A823E36077DC1BDB7642AE1F3A2D6"
     },
     {
       "path": "tests/test_regenerate_thickblood.py",
@@ -1090,8 +1090,8 @@
       "path": "tools/regenerate_tavernbrawler.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 15477,
-      "sha256": "0D5CCC48C9FD6E738CDF56E37CE461DC84E40F24E237F174AE60F69640DF5334"
+      "bytes": 16169,
+      "sha256": "54EB92E431C3F0B88FD4D969D546EA62B63880A918ABC3EF2237D08AFBCBBEAB"
     },
     {
       "path": "tools/regenerate_thickblood.py",

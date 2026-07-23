@@ -9,6 +9,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator
 
+import build_remediation_queue as remediation
 import regenerate_owlperson as transaction
 import regenerate_martial as base
 from campaign_cli import no_arg_command
@@ -177,6 +178,22 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
 
 
 @contextmanager
+def _reviewed_recurring_findings(campaign: Path) -> Iterator[None]:
+    """Keep derived projections bound to the reviewed campaign artifact."""
+    path = campaign / "recurring_pattern_findings.json"
+    artifact = json.loads(path.read_text(encoding="utf-8"))
+    findings = artifact.get("findings")
+    if not isinstance(findings, list):
+        raise ValueError("recurring pattern findings artifact is malformed")
+    original = remediation.build_report
+    try:
+        remediation.build_report = lambda: artifact
+        yield
+    finally:
+        remediation.build_report = original
+
+
+@contextmanager
 def _configured_base() -> Iterator[None]:
     replacements = {
         "TRAIT": TRAIT, "FINDINGS": FINDINGS, "DESCRIPTION": DESCRIPTION, "RUNTIME": RUNTIME,
@@ -200,7 +217,7 @@ def _configured_base() -> Iterator[None]:
 
 
 def build_plan(root: Path = ROOT, campaign: Path = CAMPAIGN) -> dict[str, bytes]:
-    with _configured_base():
+    with _reviewed_recurring_findings(campaign), _configured_base():
         plan = base.build_plan(root, campaign)
     if set(plan) != set(OWNED_OUTPUTS):
         raise RuntimeError("Tavern Brawler output plan escaped its ownership set")
