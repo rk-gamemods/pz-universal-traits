@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 171,
-  "total_bytes": 13678157,
+  "total_bytes": 13681036,
   "files": [
     {
       "path": ".gitattributes",
@@ -677,8 +677,8 @@
       "path": "tests/test_regenerate_gordanite.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 10669,
-      "sha256": "AF28DA4137BBB09256DB0FE7EFF4742FD552F0151CCE87B452D52817D85A3DF2"
+      "bytes": 12857,
+      "sha256": "853597926FCB9D0A2D4E5CD5E099AC645B3F73D6727F3B9AF8257EBBBFAED1A2"
     },
     {
       "path": "tests/test_regenerate_gourmand.py",
@@ -957,8 +957,8 @@
       "path": "tools/regenerate_gordanite.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 22302,
-      "sha256": "69BD2A3809EB803D3B97E6E20B9A9940FB91CF5F960A1D85F1F392AF0C16B188"
+      "bytes": 22993,
+      "sha256": "E12D999B16C2D7DAB8F58361DDBA42648FE7EE5DF2F306AE16C8BBE4BC22DA13"
     },
     {
       "path": "tools/regenerate_gourmand.py",

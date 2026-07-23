@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import shutil
@@ -94,6 +95,60 @@ class GordaniteGeneratorSafetyTests(unittest.TestCase):
         cross = next(item for item in review["cross_trait_findings"] if item["id"] == GENERATOR.FOOD_CROSS_FINDING)
         self.assertEqual(cross["state"], "proven-correct")
         self.assertEqual(cross["affected_surfaces"], [])
+
+    def test_clean_committed_snapshot_is_a_first_pass_fixed_point(self) -> None:
+        self.assertEqual(self.run_generator(), [])
+
+        queue = jsonl(self.campaign / "remediation_queue.jsonl")
+        ledger = json.loads((self.campaign / "final_trait_ledger.json").read_bytes())
+        self.assertEqual(len(queue), 2154)
+        self.assertEqual(
+            len([row for row in queue if row["trait_id"] == GENERATOR.TRAIT]),
+            7,
+        )
+        self.assertEqual(len(ledger["independent_review_findings"]), 117)
+
+        review = json.loads(
+            (self.campaign / "independent_reviews" / "traits_01_04.json").read_bytes()
+        )
+        cross = next(
+            row
+            for row in review["cross_trait_findings"]
+            if row["id"] == GENERATOR.FOOD_CROSS_FINDING
+        )
+        self.assertEqual(cross["state"], "proven-correct")
+        self.assertEqual(cross["affected_surfaces"], [])
+
+        blocker_queue = json.loads(
+            (self.campaign / "release_blocker_queue.json").read_bytes()
+        )
+        blocker = next(
+            row
+            for row in blocker_queue["identities"]
+            if row["semantic_identity"] == GENERATOR.SHARED_BLOCKER
+        )
+        self.assertEqual(
+            blocker["queue_ids"],
+            [
+                "finding:IR0104-ALLERGIC-HOOK-STACK",
+                "finding:IR0104-ANTIVAXXER-HOOK-STACK",
+                "finding:IR0104-ADDICTEDTOCAFFEINE-HOOK-STACK",
+                "dimension:UniversalTraits:UT_pillsallergy:events",
+            ],
+        )
+
+        relative = "tests/test_regenerate_gordanite.py"
+        test_bytes = (self.campaign / relative).read_bytes().replace(b"\r\n", b"\n")
+        manifest = json.loads(
+            (self.campaign / "campaign_manifest.json").read_bytes()
+        )
+        manifest_row = next(row for row in manifest["files"] if row["path"] == relative)
+        self.assertEqual(manifest_row["byte_semantics"], "utf-8-lf")
+        self.assertEqual(manifest_row["bytes"], len(test_bytes))
+        self.assertEqual(
+            manifest_row["sha256"],
+            hashlib.sha256(test_bytes).hexdigest().upper(),
+        )
 
     def test_rejected_commit_never_appears_in_accepted_fields(self) -> None:
         self.run_generator()
