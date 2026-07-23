@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 174,
-  "total_bytes": 13731647,
+  "total_bytes": 13737813,
   "files": [
     {
       "path": ".gitattributes",
@@ -215,8 +215,8 @@
       "path": "change-impact/owlperson-circadian-contract.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
-      "bytes": 3818,
-      "sha256": "59C28F05AC89AF9E52D8B1AF8AC1E6F30A9100BD5730E654ED94342310A73CB8"
+      "bytes": 3856,
+      "sha256": "37376CA2A7DB1260BA0F7B627DB60FA413BA4299AEF9E70BF91B38C62730B4F3"
     },
     {
       "path": "change-impact/paramedic-medical-action-resolution.json",
@@ -348,22 +348,22 @@
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2271678,
-      "sha256": "4D5756AD483E901FFA43D862EAC49858F80803A3C9F7BF637173BBF6F8C9F09A"
+      "bytes": 2272470,
+      "sha256": "0DCB1E57AED0498F37565A022F6B6CD0BC669DD9F0712BCA1C2D20DDF1B13A7C"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2098649,
-      "sha256": "9EB069579C8E5617E0001CA250C33DA3C8BBDA0A86E598DDD7D3C747A992FB85"
+      "bytes": 2098735,
+      "sha256": "69481B3142AB222604E2641980517195437DCE84FF611943010D271C17F80B47"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1293313,
-      "sha256": "B9E3558A9F19D9D67ACBEF76D27999B24864B2B96D20FEC1AF79092EE69F9CF6"
+      "bytes": 1293379,
+      "sha256": "472CB45C80028A4177AEA766BD0C8B433ABF4D5A075E1DE2C04DD73FD739A3F5"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
@@ -390,8 +390,8 @@
       "path": "independent_reviews/traits_05_08.json",
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
-      "bytes": 256916,
-      "sha256": "D255A15AFCA8FC010573892EEA19FDC404F30F3066879C1939B702BEF5B2A474"
+      "bytes": 256958,
+      "sha256": "440B5A395270AD3EEACC783B53B113518B5180D00ACBE2373D94C66EA603D31C"
     },
     {
       "path": "independent_reviews/traits_09_12.json",
@@ -419,21 +419,21 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 2861,
-      "sha256": "75687694E5A126001965B2A58A3AEE9E815FA00A2551DCC7DA2DBBF1C4B562A3"
+      "sha256": "16A411D99633B0AEA0D55B4BA2D4569254406B374767EDC581627209D7D1CBA8"
     },
     {
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2039006,
-      "sha256": "7A2336D863DC0C150A73C2809874C4DC103A22F87FB842ECA0EFCCCE970422EB"
+      "bytes": 2039237,
+      "sha256": "FEF1DC1A1AE54DDB75069546B3D2104ACA32425081236C009E3A79E51CDE75C8"
     },
     {
       "path": "remediation_summary.json",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
       "bytes": 1213,
-      "sha256": "5106B586D09732AB591D4CFA93708BB1AAB6C83AA5F8107198DDDA8CA4EB6F99"
+      "sha256": "8110A7D3CD3E6D492ED4DABB2E04354CAFED7FC07E27BBD4BB2F507451829F7B"
     },
     {
       "path": "runtime-traces/utcore-wave-01.jsonl",
@@ -740,8 +740,8 @@
       "path": "tests/test_regenerate_owlperson.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 8266,
-      "sha256": "A4BCD772718D5487A818F10EE65FB5849778ACBFA63A0BCB4142AA29405E911E"
+      "bytes": 10203,
+      "sha256": "D9DB4AAAF292B686748C5C1288385808F9EECB1A53A506AF9A29D83BC55B9CA8"
     },
     {
       "path": "tests/test_regenerate_paramedic.py",
@@ -1034,8 +1034,8 @@
       "path": "tools/regenerate_owlperson.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 20104,
-      "sha256": "AFD745882A066A757BE568673B40C63D3CDCF1130EBA63DB448BF65A74088123"
+      "bytes": 21950,
+      "sha256": "1741284A22DB9587E2FAE03CC855FCD4BB45CFCCF59CDAF85587665C2EFA09EB"
     },
     {
       "path": "tools/regenerate_paramedic.py",
@@ -1216,8 +1216,8 @@
       "path": "trait_batches/batch_07.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 89144,
-      "sha256": "0483F4C2595D692E19FD6F60DE04E5D633C7942497A2669CF1B48459C0AFA771"
+      "bytes": 90272,
+      "sha256": "1A554765021A167458955E851DBDA4197520CB1CBFAFB724E68C9806696B6B43"
     },
     {
       "path": "trait_batches/batch_08.jsonl",

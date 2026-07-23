@@ -46,7 +46,7 @@
   },
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "C8314A582A7F0AF549FD45EC289FAA62BB616A8679E098B20A9043817BF22984",
-    "independent_reviews/traits_05_08.json": "D255A15AFCA8FC010573892EEA19FDC404F30F3066879C1939B702BEF5B2A474",
+    "independent_reviews/traits_05_08.json": "440B5A395270AD3EEACC783B53B113518B5180D00ACBE2373D94C66EA603D31C",
     "independent_reviews/traits_09_12.json": "C13D6E432C4AD272ED0C2510CBB8C527FEF3394CEC13AEA6AF2D9C0FB21B118E",
     "source_inventory.json": "01FC9DA5EAA5353D106D852734D8B31B20DB750069908B03879DE3C6127B2919",
     "trait_batches/batch_01.jsonl": "4FD54923B0938C3294AB5E9D0C0168A08FDBF353A73FBE83BCE7F5DDF8B911F2",
@@ -55,7 +55,7 @@
     "trait_batches/batch_04.jsonl": "8954D8E8AEE90F826FBD0D7DCCC3E026FF9C8E05BAF2438CEBF6179DE7CE7A93",
     "trait_batches/batch_05.jsonl": "3B947F6228AB251E6E17074CF88F62A636D3EDFA01474F1E2DE2CC30ED42433D",
     "trait_batches/batch_06.jsonl": "32B529C5117E409EBFC41BF178BB94BFDD8301716D6187AC4950CF983A32CAAB",
-    "trait_batches/batch_07.jsonl": "0483F4C2595D692E19FD6F60DE04E5D633C7942497A2669CF1B48459C0AFA771",
+    "trait_batches/batch_07.jsonl": "1A554765021A167458955E851DBDA4197520CB1CBFAFB724E68C9806696B6B43",
     "trait_batches/batch_08.jsonl": "B8D4BEB66BDC2B74EBDC6DE1873D07B31099ADE4B2482D284B1FD000CCCC94B4",
     "trait_batches/batch_09.jsonl": "7493EABBF27471F551A42E6B750D8927EC80B36404B51ED6E7CBC74349EAFE44",
     "trait_batches/batch_10.jsonl": "0B4D9F886C24F1CFEB96D07F013B90F28B579A0086D1DB80DBEDC68671FEBE34",
@@ -66,7 +66,7 @@
   "counts": {
     "traits": 198,
     "unique_traits": 198,
-    "findings": 164,
+    "findings": 165,
     "independent_reviewed_traits": 198,
     "independent_review_findings": 117,
     "independent_review_states": {
@@ -38845,6 +38845,7 @@
       },
       "finding_ids": [
         "B07-UT_owlperson-timeofday-domain",
+        "B07-UT_owlperson-net-zero-copy",
         "B07-UT_owlperson-runtime-proof"
       ],
       "unknowns": [
@@ -38861,6 +38862,7 @@
         "cross_finding_ids": [],
         "verified_first_pass_finding_ids": [
           "B07-UT_owlperson-timeofday-domain",
+          "B07-UT_owlperson-net-zero-copy",
           "B07-UT_owlperson-runtime-proof"
         ],
         "rejected_first_pass_finding_ids": [],

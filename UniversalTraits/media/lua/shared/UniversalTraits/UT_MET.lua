@@ -81,6 +81,12 @@ UT_MET.AlcoholDetox = {
 	"UniversalTraits:UT_alcoholic_III",
 }
 
+-- Day and night preference pair
+UT_MET.DayNight = {
+	"UniversalTraits:UT_owlperson",
+	"UniversalTraits:UT_larkperson",
+}
+
 -- Helper function: Get the MET group containing a given trait ID.
 -- Returns the group array if found, or nil if the trait is not in any group.
 function UT_MET.getGroupFor(traitId)
@@ -93,6 +99,7 @@ function UT_MET.getGroupFor(traitId)
 		UT_MET.BleedRate,
 		UT_MET.Stumble,
 		UT_MET.AlcoholDetox,
+		UT_MET.DayNight,
 	}
 
 	for _, group in ipairs(groups) do

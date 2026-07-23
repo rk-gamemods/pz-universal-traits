@@ -24,7 +24,8 @@
     "runtime_scope": "single-player"
   },
   "resolved_findings": [
-    "B07-UT_owlperson-timeofday-domain"
+    "B07-UT_owlperson-timeofday-domain",
+    "B07-UT_owlperson-net-zero-copy"
   ],
   "retained_runtime_findings": [
     "B07-UT_owlperson-runtime-proof"
@@ -46,13 +47,13 @@
     },
     {
       "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
-      "sha256": "A17DA8BB28A5EF86505A90A1C8CA9B7637E42614847DC551FD4C6E3563D2A536",
-      "bytes": 37309
+      "sha256": "15117B546322119860F0D5B4D5A9C5F44335A105C45C6CC76EEA5DFB5F87F19C",
+      "bytes": 37522
     },
     {
       "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
-      "sha256": "A17DA8BB28A5EF86505A90A1C8CA9B7637E42614847DC551FD4C6E3563D2A536",
-      "bytes": 37309
+      "sha256": "15117B546322119860F0D5B4D5A9C5F44335A105C45C6CC76EEA5DFB5F87F19C",
+      "bytes": 37522
     },
     {
       "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
@@ -66,13 +67,13 @@
     },
     {
       "path": "UniversalTraits/test/UTTestMocks.lua",
-      "sha256": "FF176266CC9075A2222D84AAD1CF05AE6B8DDCF4BF733CBBF8A8C34F5502046C",
-      "bytes": 76718
+      "sha256": "522CF240BA3BC8386A53B1247D82632A0A8ED8F5C6EFF64873C271B5F19B6F95",
+      "bytes": 85377
     },
     {
       "path": "UniversalTraits/test/run_tests.lua",
-      "sha256": "C4EBB9EF0AD2B994502064827F9F75423AFD87A89D3353A54E2AE707833982EB",
-      "bytes": 295023
+      "sha256": "288F3C5810DC98DA1C3FECAC2D96441CDD4F26BF2354EF0ED2CCEBA402A78935",
+      "bytes": 412502
     },
     {
       "path": "trait-deep-audit/active/batch/traits/UT_owlperson.md",

@@ -506,6 +506,7 @@ test("script trait definitions resolve cleanly and preserve UT_MET coverage", fu
         UT_MET.Prowess,
         UT_MET.Driving,
         UT_MET.BleedRate,
+        UT_MET.DayNight,
     }
 
     for _, group in ipairs(grouped_traits) do
@@ -2071,6 +2072,26 @@ test("gordanite is declaration-only and does not mutate food or register a tick"
     for _, handler in ipairs(UTCore._tickHandlers or {}) do
         assert_true(handler.id ~= "UniversalTraits:UT_gordanite", "Gordanite must not register a tick")
     end
+end)
+
+test("UT_MET DayNight resolves exact members without changing unrelated groups", function()
+    assert_eq(#UT_MET.DayNight, 2, "DayNight must contain exactly two traits")
+    assert_eq(UT_MET.DayNight[1], "UniversalTraits:UT_owlperson",
+        "DayNight first member must be Night Owl")
+    assert_eq(UT_MET.DayNight[2], "UniversalTraits:UT_larkperson",
+        "DayNight second member must be Early Bird")
+    assert_eq(UT_MET.getGroupFor("UniversalTraits:UT_owlperson"), UT_MET.DayNight,
+        "Night Owl must resolve to DayNight")
+    assert_eq(UT_MET.getGroupFor("UniversalTraits:UT_larkperson"), UT_MET.DayNight,
+        "Early Bird must resolve to DayNight")
+    assert_eq(UT_MET.getGroupFor("UniversalTraits:UT_specaid"), UT_MET.Specialization,
+        "existing specialization membership must remain unchanged")
+    assert_eq(UT_MET.getGroupFor("UniversalTraits:UT_thickblood"), UT_MET.BleedRate,
+        "existing bleed membership must remain unchanged")
+    assert_eq(UT_MET.getGroupFor("UniversalTraits:UT_packmouse"), nil,
+        "unrelated ungrouped traits must remain ungrouped")
+    assert_eq(UT_MET.getGroupFor("UniversalTraits:UT_missing"), nil,
+        "unknown traits must remain ungrouped")
 end)
 
 local function makeCaughtFish()

@@ -3704,6 +3704,7 @@
       ],
       "verified_finding_ids": [
         "B07-UT_owlperson-timeofday-domain",
+        "B07-UT_owlperson-net-zero-copy",
         "B07-UT_owlperson-runtime-proof"
       ],
       "rejected_finding_ids": [],
@@ -3724,8 +3725,8 @@
         "trait_release": "60D7FA2FAC1ABA40BC8619B631398EC089FC4CD8662D69CE77F4A4926483E213",
         "definition_runtime": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
         "definition_release": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
-        "english_runtime": "A17DA8BB28A5EF86505A90A1C8CA9B7637E42614847DC551FD4C6E3563D2A536",
-        "english_release": "A17DA8BB28A5EF86505A90A1C8CA9B7637E42614847DC551FD4C6E3563D2A536",
+        "english_runtime": "15117B546322119860F0D5B4D5A9C5F44335A105C45C6CC76EEA5DFB5F87F19C",
+        "english_release": "15117B546322119860F0D5B4D5A9C5F44335A105C45C6CC76EEA5DFB5F87F19C",
         "state": "proven-correct"
       },
       "omissions": [],

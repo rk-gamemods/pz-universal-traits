@@ -12,11 +12,11 @@
       "proven-correct": 2817,
       "runtime-unproven": 1005
     },
-    "finding_records": 282,
+    "finding_records": 283,
     "finding_states": {
       "confirmed-defect": 199,
       "coverage-gap": 5,
-      "proven-correct": 68,
+      "proven-correct": 69,
       "runtime-unproven": 10
     },
     "open_queue_records": 2149,

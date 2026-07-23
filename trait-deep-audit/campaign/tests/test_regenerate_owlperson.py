@@ -150,7 +150,7 @@ class OwlPersonGeneratorSafetyTests(unittest.TestCase):
         )
         self.assertEqual(
             [finding["resolution_state"] for finding in batch["findings"]],
-            ["proven-correct", "runtime-unproven"],
+            ["proven-correct", "proven-correct", "runtime-unproven"],
         )
 
         review = json.loads(
@@ -188,8 +188,62 @@ class OwlPersonGeneratorSafetyTests(unittest.TestCase):
             if row.get("subject_type") == "finding"
         }
         self.assertEqual(
-            finding_states, {GENERATOR.FINDINGS[1]: "runtime-unproven"}
+            finding_states, {GENERATOR.FINDINGS[2]: "runtime-unproven"}
         )
+
+        resolution = json.loads(
+            (self.campaign / GENERATOR.RESOLUTION).read_bytes()
+        )
+        self.assertEqual(
+            resolution["resolved_findings"], list(GENERATOR.FINDINGS[:2])
+        )
+        self.assertEqual(
+            resolution["retained_runtime_findings"], [GENERATOR.FINDINGS[2]]
+        )
+
+    def test_missing_net_zero_finding_is_restored_everywhere(self) -> None:
+        batch_path = self.campaign / "trait_batches" / "batch_07.jsonl"
+        rows = _jsonl(batch_path)
+        target = next(row for row in rows if row["trait_id"] == GENERATOR.TRAIT)
+        target["findings"] = [
+            finding
+            for finding in target["findings"]
+            if finding["id"] != GENERATOR.FINDINGS[1]
+        ]
+        batch_path.write_text(
+            "".join(
+                json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n"
+                for row in rows
+            ),
+            encoding="utf-8",
+            newline="\n",
+        )
+
+        self._run()
+
+        batch = next(
+            row
+            for row in _jsonl(batch_path)
+            if row["trait_id"] == GENERATOR.TRAIT
+        )
+        self.assertEqual(
+            [finding["id"] for finding in batch["findings"]],
+            list(GENERATOR.FINDINGS),
+        )
+        for relative in (
+            "final_trait_ledger.json",
+            "final_trait_ledger_rows.jsonl",
+            "dimension_ledger_rows.jsonl",
+            "remediation_queue.jsonl",
+        ):
+            self.assertIn(GENERATOR.FINDINGS[1], (self.campaign / relative).read_text())
+        review = json.loads(
+            (self.campaign / "independent_reviews" / "traits_05_08.json").read_bytes()
+        )
+        trait = next(
+            row for row in review["per_trait_review"] if row["trait_id"] == GENERATOR.TRAIT
+        )
+        self.assertIn(GENERATOR.FINDINGS[1], trait["verified_finding_ids"])
 
     def test_second_pass_is_fixed_point(self) -> None:
         self._run()

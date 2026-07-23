@@ -21,6 +21,7 @@ HELPER = base.base.base.shared.base
 TRAIT = "UniversalTraits:UT_owlperson"
 FINDINGS = (
     "B07-UT_owlperson-timeofday-domain",
+    "B07-UT_owlperson-net-zero-copy",
     "B07-UT_owlperson-runtime-proof",
 )
 DESCRIPTION = (
@@ -181,7 +182,47 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
             "Current-build Kahlua execution after full relaunch, repeated world entry, current-version save/load, rendered English, balance, and profiler observation remain unrun."
         ),
     )
-    runtime_finding = HELPER._exactly_one(row["findings"], "id", FINDINGS[1], relative)
+    copy_finding = next(
+        (finding for finding in row["findings"] if finding.get("id") == FINDINGS[1]),
+        None,
+    )
+    if copy_finding is None:
+        copy_finding = {
+            "id": FINDINGS[1],
+            "severity": "medium",
+            "confidence": "high",
+            "title": "Guaranteed daily net-zero claim ignored clamps and phase",
+            "anchors": [
+                "UniversalTraits/media/lua/shared/Translate/EN/UI.json (UI_UT_owlpersonDesc)",
+                "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_owlperson.lua",
+            ],
+            "affected_surfaces": ["description", "numerical", "localization"],
+            "reproduction_evidence": (
+                "Equal nominal rates do not guarantee equal starting and ending stress after "
+                "either branch reaches 0 or 1, or when observation starts in a different phase."
+            ),
+            "recommended_correction": (
+                "State the exact windows, deltas, clamps, and equal nominal rates without "
+                "promising a net endpoint."
+            ),
+            "smallest_regression_test": (
+                "Assert the exact English sentence and source-release equality."
+            ),
+        }
+        row["findings"].insert(1, copy_finding)
+    copy_finding.update(
+        resolution_state="proven-correct",
+        resolution_evidence=(
+            "Source and release English state the exact windows, deltas, clamps, and "
+            "unconditional scope, and describe equal and opposite rates without promising "
+            "a net endpoint."
+        ),
+        missing_proof="",
+        remaining_runtime_proof=(
+            "Rendered current-build English remains unobserved until a full-relaunch game run."
+        ),
+    )
+    runtime_finding = HELPER._exactly_one(row["findings"], "id", FINDINGS[2], relative)
     runtime_finding.update(
         resolution_state="runtime-unproven",
         resolution_evidence=(
@@ -298,8 +339,8 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
                 "exclusions": ["UniversalTraits:UT_larkperson"],
                 "runtime_scope": "single-player",
             },
-            "resolved_findings": [FINDINGS[0]],
-            "retained_runtime_findings": [FINDINGS[1]],
+            "resolved_findings": [FINDINGS[0], FINDINGS[1]],
+            "retained_runtime_findings": [FINDINGS[2]],
             "engine_evidence": [
                 "PZCodebase/Java/source/zombie/GameTime.java:738,1050",
                 RUNTIME,
