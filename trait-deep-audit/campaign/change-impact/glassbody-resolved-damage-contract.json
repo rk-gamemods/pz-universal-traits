@@ -48,13 +48,13 @@
     },
     {
       "path": "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "41AB026369724CC6CD018E4D04E3DB99198D2924D8B759561B2118D31183A508",
-      "bytes": 8795
+      "sha256": "852F50EDB90ECB4CD48DC266C2E0467637B6C620F7688C4E45FB7A7DF644094F",
+      "bytes": 11746
     },
     {
       "path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "41AB026369724CC6CD018E4D04E3DB99198D2924D8B759561B2118D31183A508",
-      "bytes": 8795
+      "sha256": "852F50EDB90ECB4CD48DC266C2E0467637B6C620F7688C4E45FB7A7DF644094F",
+      "bytes": 11746
     },
     {
       "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
@@ -68,8 +68,8 @@
     },
     {
       "path": "UT_CORE/test/run_tests.lua",
-      "sha256": "F1DD4E9FE1F2159CD5C29B025E8D719BB1CF55B5B29D6FA903B1773B33E8E21F",
-      "bytes": 181429
+      "sha256": "18785248C83AA0879845018574DD78862BD2CB911DF136295283A850CDA5CD7F",
+      "bytes": 188317
     },
     {
       "path": "UT_CORE/test/UTCoreMocks.lua",
@@ -83,8 +83,8 @@
     },
     {
       "path": "UniversalTraits/test/run_tests.lua",
-      "sha256": "429718B43AADBDEA7A25ECB76C1A3CE6188D0D6259B6169E14E0B5C1CA9D74AB",
-      "bytes": 459448
+      "sha256": "F2552A79464F8CDCE1B9BEA4723CE2C2B16CA9A1B0441FEC1F397F4A33BFE8DB",
+      "bytes": 462370
     },
     {
       "path": "trait-deep-audit/active/batch/traits/UT_glassbody.md",
@@ -104,10 +104,23 @@
     "depleted-body-part weighted distribution",
     "activation and trait reset",
     "hostile receiver reads and BodyPartType static member lookup/invocation",
-    "hostile core-registration lookup/invocation with bounded calls and no direct fallback",
+    "missing and malformed core registrar",
+    "registrar that throws before or after partial mutation",
+    "registrar that inserts unsafe matching rows",
+    "registrar that inserts unsafe and intended rows then throws",
+    "registrar that ignores the supplied key",
+    "duplicate intended rows and duplicate module load",
+    "exact core registry row counts and dispatcher function identity",
     "post-mutation setter rollback",
     "rollback-failure containment and exact setter-call bounds"
   ],
+  "registration_invariant": {
+    "handler_id": "DamageMultHook",
+    "success_state": "exactly one canonical keyed row with the stable dispatcher",
+    "failure_state": "zero rows matching the handler id or dispatcher function",
+    "rollback_surface": "UTCore._coreHandlers plus UTCore._coreHandlerCount",
+    "direct_event_fallback": false
+  },
   "preserved_surfaces": [
     "trait cost",
     "all-source scope",

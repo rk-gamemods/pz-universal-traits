@@ -244,18 +244,94 @@ if Events and Events.OnPlayerUpdate and UTCore._damageMultDirectHandler then
     UTCore._damageMultDirectHandler = nil
 end
 
-local okRegister, registerCoreHandler = readFunction(UTCore, "registerCoreHandler")
-if okRegister then
-    if not UTCore._damageMultTickDispatcher then
-        UTCore._damageMultTickDispatcher = function(player, tick)
-            local handler = UTCore._damageMultUpdateHandler
-            if handler then handler(player, tick) end
+local CORE_HANDLER_ID = "DamageMultHook"
+
+if not UTCore._damageMultTickDispatcher then
+    UTCore._damageMultTickDispatcher = function(player, tick)
+        local handler = UTCore._damageMultUpdateHandler
+        if handler then handler(player, tick) end
+    end
+end
+
+local function captureUnrelatedCoreHandlers()
+    local okHandlers, handlers = pcall(function() return UTCore._coreHandlers end)
+    local okCount, count = pcall(function() return UTCore._coreHandlerCount end)
+    if not okHandlers or type(handlers) ~= "table"
+            or not okCount or not isFinite(count)
+            or count < 0 or count ~= math.floor(count) then
+        return nil
+    end
+
+    local unrelated = {}
+    for index = 1, count do
+        local row = handlers[index]
+        if type(row) ~= "table" then return nil end
+        local okId, id = pcall(function() return row.id end)
+        local okFn, fn = pcall(function() return row.fn end)
+        if not okId or not okFn then return nil end
+        if id ~= CORE_HANDLER_ID and fn ~= UTCore._damageMultTickDispatcher then
+            unrelated[#unrelated + 1] = row
         end
     end
-    pcall(
-        registerCoreHandler,
-        "DamageMultHook",
-        UTCore._damageMultTickDispatcher,
-        { priority = 0 }
-    )
+    return unrelated
+end
+
+local function publishCoreHandlers(unrelated, includeDispatcher)
+    local handlers = {}
+    for index, row in ipairs(unrelated) do
+        handlers[index] = row
+    end
+    if includeDispatcher then
+        handlers[#handlers + 1] = {
+            id = CORE_HANDLER_ID,
+            fn = UTCore._damageMultTickDispatcher,
+            throttle = 0,
+            priority = 0,
+        }
+    end
+    UTCore._coreHandlers = handlers
+    UTCore._coreHandlerCount = #handlers
+    UTCore._coreHandlersDirty = true
+end
+
+local unrelated = captureUnrelatedCoreHandlers()
+if unrelated then
+    -- Start from zero matching rows. The registrar is allowed to fail or mutate
+    -- before failing, so its writes are treated as provisional until verified.
+    publishCoreHandlers(unrelated, false)
+
+    local okRegister, registerCoreHandler = readFunction(UTCore, "registerCoreHandler")
+    local registered = false
+    if okRegister then
+        local okCall = pcall(
+            registerCoreHandler,
+            CORE_HANDLER_ID,
+            UTCore._damageMultTickDispatcher,
+            { priority = 0 }
+        )
+        if okCall then
+            local okHandlers, handlers = pcall(function() return UTCore._coreHandlers end)
+            local okCount, count = pcall(function() return UTCore._coreHandlerCount end)
+            if okHandlers and type(handlers) == "table"
+                    and okCount and isFinite(count)
+                    and count >= 0 and count == math.floor(count) then
+                for index = 1, count do
+                    local row = handlers[index]
+                    if type(row) == "table" then
+                        local okId, id = pcall(function() return row.id end)
+                        local okFn, fn = pcall(function() return row.fn end)
+                        if okId and id == CORE_HANDLER_ID
+                                and okFn and fn == UTCore._damageMultTickDispatcher then
+                            registered = true
+                            break
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    -- Restore the pre-call unrelated rows and publish either one verified,
+    -- canonical dispatcher or no matching handler at all.
+    publishCoreHandlers(unrelated, registered)
 end

@@ -45,14 +45,14 @@
     }
   },
   "source_artifact_sha256": {
-    "independent_reviews/traits_01_04.json": "0B742F176B133648F55B1971021DE12D4F6C0D9E9661D187723D08BE645BDF24",
+    "independent_reviews/traits_01_04.json": "28290D11B93B49E59F2D40A8390CB1410843A34E39B07E730265E2916788DC42",
     "independent_reviews/traits_05_08.json": "883A5158842ABA11E5AD03996F639A9967315128DD6C37F32B5D9B0502DCC859",
     "independent_reviews/traits_09_12.json": "C13D6E432C4AD272ED0C2510CBB8C527FEF3394CEC13AEA6AF2D9C0FB21B118E",
     "source_inventory.json": "01FC9DA5EAA5353D106D852734D8B31B20DB750069908B03879DE3C6127B2919",
     "trait_batches/batch_01.jsonl": "4FD54923B0938C3294AB5E9D0C0168A08FDBF353A73FBE83BCE7F5DDF8B911F2",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
     "trait_batches/batch_03.jsonl": "DE80C7E88D64E27AEDFA1248A855290E9892605D7A1800D9933BFFFBD8271DA9",
-    "trait_batches/batch_04.jsonl": "21EBFFD1572647C3F0204D07AF5927564785F33E55DBCEC448576622D6470EF0",
+    "trait_batches/batch_04.jsonl": "F42978FA29E397639A7EFF7C4B0BE5C82DC96D3E9C25B2903E55BCC20CFEC87A",
     "trait_batches/batch_05.jsonl": "3B947F6228AB251E6E17074CF88F62A636D3EDFA01474F1E2DE2CC30ED42433D",
     "trait_batches/batch_06.jsonl": "32B529C5117E409EBFC41BF178BB94BFDD8301716D6187AC4950CF983A32CAAB",
     "trait_batches/batch_07.jsonl": "1A554765021A167458955E851DBDA4197520CB1CBFAFB724E68C9806696B6B43",
@@ -20994,7 +20994,7 @@
         "tests": {
           "state": "proven-correct",
           "evidence": [
-            "Observed aggregate loss, weighted exactness with depleted parts, finite clamps, near-death and overkill, recursion prevention, activation/reset, hostile receiver reads, static BodyPartType member lookup and invocation, core-registration lookup and invocation, post-mutation setter throws, rollback failure containment, bounded hostile calls, player replacement, and same-process reload are regression-protected. Tests do not overclaim same-update damage hidden by healing."
+            "Observed aggregate loss, weighted exactness with depleted parts, finite clamps, near-death and overkill, recursion prevention, activation/reset, hostile receiver reads, static BodyPartType member lookup and invocation, hostile core-registration rollback and normalization, post-mutation setter throws, rollback failure containment, exact row and call bounds, player replacement, and same-process reload are regression-protected. Tests do not overclaim same-update damage hidden by healing."
           ],
           "missing_proof": [
             "none"

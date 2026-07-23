@@ -3595,19 +3595,20 @@ test("DamageMultHook fails closed for hostile core registration with exact bound
     local originalRegister = UTCore.registerCoreHandler
     local originalMetatable = getmetatable(UTCore)
     local originalAdd = Events.OnPlayerUpdate.Add
-    local originalCount = UTCore.getCoreHandlerCount()
     local cases = {
         {
             name = "missing registration",
             install = function() UTCore.registerCoreHandler = nil end,
             expectedLookups = 0,
             expectedCalls = 0,
+            expectedSafe = false,
         },
         {
             name = "malformed registration",
             install = function() UTCore.registerCoreHandler = "not-a-function" end,
             expectedLookups = 0,
             expectedCalls = 0,
+            expectedSafe = false,
         },
         {
             name = "throwing registration lookup",
@@ -3631,24 +3632,110 @@ test("DamageMultHook fails closed for hostile core registration with exact bound
             end,
             expectedLookups = 1,
             expectedCalls = 0,
+            expectedSafe = false,
         },
         {
-            name = "post-mutation throwing registration call",
+            name = "throwing registration call",
             install = function(state)
-                UTCore.registerCoreHandler = function(...)
+                UTCore.registerCoreHandler = function()
                     state.calls = state.calls + 1
-                    originalRegister(...)
-                    error("post-mutation registration call")
+                    error("registration call")
                 end
             end,
             expectedLookups = 0,
             expectedCalls = 1,
+            expectedSafe = false,
+        },
+        {
+            name = "unsafe matching row then throw",
+            install = function(state)
+                UTCore.registerCoreHandler = function(id)
+                    state.calls = state.calls + 1
+                    table.insert(UTCore._coreHandlers, {
+                        id = id,
+                        fn = function() error("unsafe") end,
+                        throttle = 0,
+                        priority = 0,
+                    })
+                    UTCore._coreHandlerCount = UTCore._coreHandlerCount + 1
+                    error("unsafe row inserted")
+                end
+            end,
+            expectedLookups = 0,
+            expectedCalls = 1,
+            expectedSafe = false,
+        },
+        {
+            name = "unsafe and intended rows then throw",
+            install = function(state)
+                UTCore.registerCoreHandler = function(id, fn)
+                    state.calls = state.calls + 1
+                    table.insert(UTCore._coreHandlers, {
+                        id = id,
+                        fn = function() error("unsafe") end,
+                    })
+                    table.insert(UTCore._coreHandlers, { id = id, fn = fn })
+                    UTCore._coreHandlerCount = UTCore._coreHandlerCount + 2
+                    error("mixed rows inserted")
+                end
+            end,
+            expectedLookups = 0,
+            expectedCalls = 1,
+            expectedSafe = false,
+        },
+        {
+            name = "registration ignores key",
+            install = function(state)
+                UTCore.registerCoreHandler = function(_, fn)
+                    state.calls = state.calls + 1
+                    table.insert(UTCore._coreHandlers, {
+                        id = "IgnoredDamageMultKey",
+                        fn = fn,
+                    })
+                    UTCore._coreHandlerCount = UTCore._coreHandlerCount + 1
+                end
+            end,
+            expectedLookups = 0,
+            expectedCalls = 1,
+            expectedSafe = false,
+        },
+        {
+            name = "partial table mutation without count",
+            install = function(state)
+                UTCore.registerCoreHandler = function(id)
+                    state.calls = state.calls + 1
+                    table.insert(UTCore._coreHandlers, {
+                        id = id,
+                        fn = function() error("unsafe") end,
+                    })
+                    error("count not updated")
+                end
+            end,
+            expectedLookups = 0,
+            expectedCalls = 1,
+            expectedSafe = false,
+        },
+        {
+            name = "duplicate intended rows",
+            install = function(state)
+                UTCore.registerCoreHandler = function(id, fn)
+                    state.calls = state.calls + 1
+                    table.insert(UTCore._coreHandlers, { id = id, fn = fn })
+                    table.insert(UTCore._coreHandlers, { id = id, fn = fn })
+                    UTCore._coreHandlerCount = UTCore._coreHandlerCount + 2
+                end
+            end,
+            expectedLookups = 0,
+            expectedCalls = 1,
+            expectedSafe = true,
         },
     }
 
     for _, case in ipairs(cases) do
         setmetatable(UTCore, originalMetatable)
         UTCore.registerCoreHandler = originalRegister
+        originalRegister("DamageMultHook", UTCore._damageMultTickDispatcher, { priority = 0 })
+        local originalCount = UTCore.getCoreHandlerCount()
         local state = { lookups = 0, calls = 0, adds = 0 }
         Events.OnPlayerUpdate.Add = function(...)
             state.adds = state.adds + 1
@@ -3660,17 +3747,23 @@ test("DamageMultHook fails closed for hostile core registration with exact bound
         assert_eq(state.lookups, case.expectedLookups, case.name .. " lookup bound")
         assert_eq(state.calls, case.expectedCalls, case.name .. " call bound")
         assert_eq(state.adds, 0, case.name .. " must not install a direct fallback")
-        assert_eq(UTCore.getCoreHandlerCount(), originalCount,
-            case.name .. " must not partially change the registry")
+        local expectedCount = originalCount - (case.expectedSafe and 0 or 1)
+        assert_eq(UTCore.getCoreHandlerCount(), expectedCount,
+            case.name .. " must leave the exact total row count")
+        assert_eq(#UTCore._coreHandlers, expectedCount,
+            case.name .. " table and authoritative count must agree")
         local damageRows = 0
         for _, row in ipairs(UTCore._coreHandlers) do
-            if row.id == "DamageMultHook" then
+            if row.id == "DamageMultHook" or row.fn == UTCore._damageMultTickDispatcher then
                 damageRows = damageRows + 1
+                assert_eq(row.id, "DamageMultHook",
+                    case.name .. " matching row must retain the canonical key")
                 assert_eq(row.fn, UTCore._damageMultTickDispatcher,
-                    case.name .. " must retain only the safe dispatcher")
+                    case.name .. " matching row must retain the exact safe dispatcher")
             end
         end
-        assert_eq(damageRows, 1, case.name .. " must retain exactly one safe registration")
+        assert_eq(damageRows, case.expectedSafe and 1 or 0,
+            case.name .. " must leave exactly the expected safe registrations")
     end
 
     setmetatable(UTCore, originalMetatable)

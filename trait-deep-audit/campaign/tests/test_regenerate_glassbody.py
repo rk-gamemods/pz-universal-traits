@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import shutil
@@ -184,6 +185,27 @@ class GlassBodyGeneratorSafetyTests(unittest.TestCase):
             },
         )
         self.assertNotIn("confirmed-defect", {row["state"] for row in queue})
+        resolution = json.loads(
+            (self.campaign / GENERATOR.RESOLUTION).read_bytes()
+        )
+        self.assertEqual(
+            resolution["registration_invariant"],
+            {
+                "handler_id": "DamageMultHook",
+                "success_state": "exactly one canonical keyed row with the stable dispatcher",
+                "failure_state": "zero rows matching the handler id or dispatcher function",
+                "rollback_surface": "UTCore._coreHandlers plus UTCore._coreHandlerCount",
+                "direct_event_fallback": False,
+            },
+        )
+        self.assertEqual(
+            resolution["open_policy_question"]["status"],
+            "requires-user-decision",
+        )
+        metadata = {row["path"]: row for row in resolution["files"]}
+        for relative in (GENERATOR.HOOK, GENERATOR.HOOK_RELEASE):
+            expected = hashlib.sha256((self.root / relative).read_bytes()).hexdigest().upper()
+            self.assertEqual(metadata[relative]["sha256"], expected)
 
     def test_second_pass_is_a_fixed_point(self) -> None:
         self._run()

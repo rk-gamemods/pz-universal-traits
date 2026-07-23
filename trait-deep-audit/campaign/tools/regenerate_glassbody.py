@@ -154,7 +154,7 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
     )
     dimensions["tests"] = _dimension(
         "proven",
-        "Observed aggregate loss, weighted exactness with depleted parts, finite clamps, near-death and overkill, recursion prevention, activation/reset, hostile receiver reads, static BodyPartType member lookup and invocation, core-registration lookup and invocation, post-mutation setter throws, rollback failure containment, bounded hostile calls, player replacement, and same-process reload are regression-protected. Tests do not overclaim same-update damage hidden by healing.",
+        "Observed aggregate loss, weighted exactness with depleted parts, finite clamps, near-death and overkill, recursion prevention, activation/reset, hostile receiver reads, static BodyPartType member lookup and invocation, hostile core-registration rollback and normalization, post-mutation setter throws, rollback failure containment, exact row and call bounds, player replacement, and same-process reload are regression-protected. Tests do not overclaim same-update damage hidden by healing.",
     )
     dimensions["mocks"] = _dimension(
         "proven",
@@ -313,7 +313,7 @@ def _plan_trait_review(root: Path, campaign: Path, plan: dict[str, bytes]) -> No
     ):
         _checked_dimension(row, dimension_id).update(
             state="runtime-unproven",
-            evidence="The aggregate observer plus exact hostile receiver, BodyPartType static, and core-registration containment are statically proven for observable net loss.",
+            evidence="The aggregate observer plus exact hostile receiver, BodyPartType static, and fail-closed core-registration normalization are statically proven for observable net loss.",
             missing_proof="Same-update healing can hide incoming loss, and Build 42 exposes no complete post-resolution per-source signal.",
         )
     omission = _exactly_one(row["omissions"], "id", OMISSION, relative)
@@ -424,7 +424,7 @@ def _plan_integration_review(root: Path, campaign: Path, plan: dict[str, bytes])
             state="runtime-unproven",
             resolution_state="requires-user-decision",
             resolution_evidence=(
-                "The hook no longer consumes OnWeaponHitCharacter. Aggregate overall body-health deltas drive one bounded extra reduction with hostile receiver, static member lookup/invocation, core-registration lookup/invocation, and delayed recalculation coverage, but same-update healing remains indistinguishable."
+                "The hook no longer consumes OnWeaponHitCharacter. Aggregate overall body-health deltas drive one bounded extra reduction with hostile receiver, static member lookup/invocation, fail-closed core-registration normalization, and delayed recalculation coverage, but same-update healing remains indistinguishable."
             ),
             missing_proof="No complete source-faithful resolved-damage signal exists in the inspected Build 42 producer surface; user direction remains required.",
         )
@@ -519,10 +519,23 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
                 "depleted-body-part weighted distribution",
                 "activation and trait reset",
                 "hostile receiver reads and BodyPartType static member lookup/invocation",
-                "hostile core-registration lookup/invocation with bounded calls and no direct fallback",
+                "missing and malformed core registrar",
+                "registrar that throws before or after partial mutation",
+                "registrar that inserts unsafe matching rows",
+                "registrar that inserts unsafe and intended rows then throws",
+                "registrar that ignores the supplied key",
+                "duplicate intended rows and duplicate module load",
+                "exact core registry row counts and dispatcher function identity",
                 "post-mutation setter rollback",
                 "rollback-failure containment and exact setter-call bounds",
             ],
+            "registration_invariant": {
+                "handler_id": "DamageMultHook",
+                "success_state": "exactly one canonical keyed row with the stable dispatcher",
+                "failure_state": "zero rows matching the handler id or dispatcher function",
+                "rollback_surface": "UTCore._coreHandlers plus UTCore._coreHandlerCount",
+                "direct_event_fallback": False,
+            },
             "preserved_surfaces": [
                 "trait cost",
                 "all-source scope",

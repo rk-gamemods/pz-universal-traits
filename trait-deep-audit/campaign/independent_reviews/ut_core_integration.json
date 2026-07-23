@@ -95,10 +95,10 @@
     },
     {
       "path": "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "41ab026369724cc6cd018e4d04e3db99198d2924d8b759561b2118d31183a508",
-      "bytes": 8795,
+      "sha256": "852f50edb90ecb4cd48dc266c2e0467637b6c620f7688c4e45fb7a7df644094f",
+      "bytes": 11746,
       "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "release_sha256": "41ab026369724cc6cd018e4d04e3db99198d2924d8b759561b2118d31183a508",
+      "release_sha256": "852f50edb90ecb4cd48dc266c2e0467637b6c620f7688c4e45fb7a7df644094f",
       "release_parity": "exact"
     },
     {
@@ -802,10 +802,10 @@
     },
     {
       "path": "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "41ab026369724cc6cd018e4d04e3db99198d2924d8b759561b2118d31183a508",
-      "bytes": 8795,
+      "sha256": "852f50edb90ecb4cd48dc266c2e0467637b6c620f7688c4e45fb7a7df644094f",
+      "bytes": 11746,
       "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "release_sha256": "41ab026369724cc6cd018e4d04e3db99198d2924d8b759561b2118d31183a508",
+      "release_sha256": "852f50edb90ecb4cd48dc266c2e0467637b6c620f7688c4e45fb7a7df644094f",
       "release_parity": "exact",
       "source_role": "safe aggregate body-health loss multiplier pending complete-source policy",
       "overall_state": "runtime-unproven",
@@ -3463,7 +3463,7 @@
       ],
       "disposition": "partially_rejected_and_refined",
       "resolution_state": "requires-user-decision",
-      "resolution_evidence": "The hook no longer consumes OnWeaponHitCharacter. Aggregate overall body-health deltas drive one bounded extra reduction with hostile receiver, static member lookup/invocation, core-registration lookup/invocation, and delayed recalculation coverage, but same-update healing remains indistinguishable."
+      "resolution_evidence": "The hook no longer consumes OnWeaponHitCharacter. Aggregate overall body-health deltas drive one bounded extra reduction with hostile receiver, static member lookup/invocation, fail-closed core-registration normalization, and delayed recalculation coverage, but same-update healing remains indistinguishable."
     },
     {
       "id": "IC-RPF-002",
@@ -3524,7 +3524,7 @@
       "recommended_correction": "Capture a pending hit at the producer and reconcile after native damage on the next verified update.",
       "smallest_regression_test": "Start at 100 health, fire the event before native 10 damage, then reconcile once and assert the configured total loss.",
       "resolution_state": "requires-user-decision",
-      "resolution_evidence": "The hook no longer consumes OnWeaponHitCharacter. Aggregate overall body-health deltas drive one bounded extra reduction with hostile receiver, static member lookup/invocation, core-registration lookup/invocation, and delayed recalculation coverage, but same-update healing remains indistinguishable."
+      "resolution_evidence": "The hook no longer consumes OnWeaponHitCharacter. Aggregate overall body-health deltas drive one bounded extra reduction with hostile receiver, static member lookup/invocation, fail-closed core-registration normalization, and delayed recalculation coverage, but same-update healing remains indistinguishable."
     },
     {
       "id": "IC-OM-002",

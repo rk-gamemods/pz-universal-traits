@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 174,
-  "total_bytes": 13758898,
+  "total_bytes": 13761570,
   "files": [
     {
       "path": ".gitattributes",
@@ -145,8 +145,8 @@
       "path": "change-impact/glassbody-resolved-damage-contract.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
-      "bytes": 6582,
-      "sha256": "82AEF7B90081BBCFC732E20CD448E7D1DFD1E5C02FB0C98D4BFE14594AD81F82"
+      "bytes": 7238,
+      "sha256": "95E6CDE9C780592D5EC51B5E248769228DC9E3A03B5ED09ABE94543ED415D2B1"
     },
     {
       "path": "change-impact/gordanite-native-delta-resolution.json",
@@ -348,22 +348,22 @@
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2273491,
-      "sha256": "FAF75C55B377048220CCC6C3B2EC4E694E54E708AE6DFA0E67CF4C844EC12C13"
+      "bytes": 2273508,
+      "sha256": "532B5B7E8D81E2AA8742E98E80EFDABF9EB747F4F90767743088DB6CE07BE05C"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2100261,
-      "sha256": "C5ED9F9304A50C6250A595DF72F8705B4FEF9BEA53125C70C22CD833EC909ABB"
+      "bytes": 2100278,
+      "sha256": "4E0F8A6579BDA5862589BDDE6276B3FE7896F95B7AC42365AE0CB56859AED4F8"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1294532,
-      "sha256": "B045705C2EF3E6B35D23182F40E6AE17F232E6EE20F5FFC2630DC498AFEECD74"
+      "bytes": 1294549,
+      "sha256": "AB839B6F246EB0B99EB350F7DBF65E437F36026F3C7C320159672876EF933FA0"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
@@ -383,8 +383,8 @@
       "path": "independent_reviews/traits_01_04.json",
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
-      "bytes": 676780,
-      "sha256": "0B742F176B133648F55B1971021DE12D4F6C0D9E9661D187723D08BE645BDF24"
+      "bytes": 676822,
+      "sha256": "28290D11B93B49E59F2D40A8390CB1410843A34E39B07E730265E2916788DC42"
     },
     {
       "path": "independent_reviews/traits_05_08.json",
@@ -404,8 +404,8 @@
       "path": "independent_reviews/ut_core_integration.json",
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
-      "bytes": 175999,
-      "sha256": "A7993BCE0A7BB457170C90D0AF808504F15E60351C36359C500F2AB7AB27B15F"
+      "bytes": 176017,
+      "sha256": "0D3B2F988BFEBB4F192ADD6C2F34E5BA1F160A4F7B70B074BCD79BDADC1E75A7"
     },
     {
       "path": "recurring_pattern_findings.json",
@@ -677,8 +677,8 @@
       "path": "tests/test_regenerate_glassbody.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 10296,
-      "sha256": "964A4A6C51B1BC29BC3FD2DDC6899EEFAA3DFD97F220DC7F75718D0F80EAA30A"
+      "bytes": 11338,
+      "sha256": "DD6E763007F4274D7E01E3C820F5E284BCD440CE8235D3AB47991C47DFF3B615"
     },
     {
       "path": "tests/test_regenerate_gordanite.py",
@@ -964,8 +964,8 @@
       "path": "tools/regenerate_glassbody.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 34172,
-      "sha256": "DF2DE2604FEB41742D2B9F8D873B829716ACAA087B30FAC72171B6B92F577942"
+      "bytes": 35018,
+      "sha256": "34D4FAA47E4DABA5798C87BF5EB84B71CED7F516C8D9D9C1A5FAAD250B839F45"
     },
     {
       "path": "tools/regenerate_gordanite.py",
@@ -1195,8 +1195,8 @@
       "path": "trait_batches/batch_04.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 112716,
-      "sha256": "21EBFFD1572647C3F0204D07AF5927564785F33E55DBCEC448576622D6470EF0"
+      "bytes": 112733,
+      "sha256": "F42978FA29E397639A7EFF7C4B0BE5C82DC96D3E9C25B2903E55BCC20CFEC87A"
     },
     {
       "path": "trait_batches/batch_05.jsonl",
