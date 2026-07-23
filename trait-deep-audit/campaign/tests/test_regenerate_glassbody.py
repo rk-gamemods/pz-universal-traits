@@ -185,6 +185,14 @@ class GlassBodyGeneratorSafetyTests(unittest.TestCase):
             },
         )
         self.assertNotIn("confirmed-defect", {row["state"] for row in queue})
+        translation = next(
+            row
+            for row in json.loads(
+                (self.campaign / "translation_audit.json").read_bytes()
+            )["per_trait_ledger"]
+            if row["trait_id"] == GENERATOR.TRAIT
+        )
+        self.assertEqual(translation["fingerprint_byte_semantics"], "canonical-lf")
         resolution = json.loads(
             (self.campaign / GENERATOR.RESOLUTION).read_bytes()
         )
@@ -194,7 +202,14 @@ class GlassBodyGeneratorSafetyTests(unittest.TestCase):
                 "handler_id": "DamageMultHook",
                 "success_state": "exactly one canonical keyed row with the stable dispatcher",
                 "failure_state": "zero rows matching the handler id or dispatcher function",
-                "rollback_surface": "UTCore._coreHandlers plus UTCore._coreHandlerCount",
+                "rollback_surface": (
+                    "exact bounded pairs snapshot of UTCore._coreHandlers plus "
+                    "_coreHandlerCount and _coreHandlersDirty"
+                ),
+                "unrelated_state": (
+                    "preserve every unrelated numeric, sparse, high-hole, and "
+                    "nonnumeric key/value identity"
+                ),
                 "direct_event_fallback": False,
             },
         )
@@ -204,7 +219,12 @@ class GlassBodyGeneratorSafetyTests(unittest.TestCase):
         )
         metadata = {row["path"]: row for row in resolution["files"]}
         for relative in (GENERATOR.HOOK, GENERATOR.HOOK_RELEASE):
-            expected = hashlib.sha256((self.root / relative).read_bytes()).hexdigest().upper()
+            expected = hashlib.sha256(
+                (self.root / relative)
+                .read_bytes()
+                .replace(b"\r\n", b"\n")
+                .replace(b"\r", b"\n")
+            ).hexdigest().upper()
             self.assertEqual(metadata[relative]["sha256"], expected)
 
     def test_second_pass_is_a_fixed_point(self) -> None:
@@ -212,6 +232,24 @@ class GlassBodyGeneratorSafetyTests(unittest.TestCase):
         first = _all_files(self.campaign)
         self.assertEqual(self._run(), [])
         self.assertEqual(_all_files(self.campaign), first)
+        relative = Path(GENERATOR.HOOK)
+        path = self.root / relative
+        lf = b"first\nsecond\nthird\n"
+        expected = hashlib.sha256(lf).hexdigest().upper()
+        for data in (
+            lf,
+            lf.replace(b"\n", b"\r\n"),
+            b"first\r\nsecond\nthird\r",
+        ):
+            path.write_bytes(data)
+            self.assertEqual(
+                GENERATOR._metadata(self.root, relative.as_posix()),
+                {
+                    "path": relative.as_posix(),
+                    "sha256": expected,
+                    "bytes": len(lf),
+                },
+            )
 
     def test_duplicate_target_record_is_rejected_without_writes(self) -> None:
         batch = self.campaign / "trait_batches" / "batch_04.jsonl"
