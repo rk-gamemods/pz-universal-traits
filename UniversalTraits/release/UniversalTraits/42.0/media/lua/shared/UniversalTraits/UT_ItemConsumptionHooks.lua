@@ -6,6 +6,7 @@
 --   UT_anorexy:             adds 0.10 stress after food is actually consumed
 --   UT_competitiveeater:    removes 10 boredom and 0.05 hunger after food is consumed
 --   UT_badteeth:            adds head pain proportional to the food-healing timer increase
+--   UT_gourmand:            adds 50% of the hunger/boredom/unhappiness benefit actually consumed
 --   UT_antivaxxer:          stress spike when non-beta-blocker medication consumed
 --   UT_pillsallergy:        food sickness +15 when any medication is consumed
 --   UT_wildplantsallergy:   food sickness +20 when any foraged item is consumed
@@ -18,6 +19,7 @@ local CAFFEINE_KEYWORDS = { "Coffee", "EnergyDrink", "Espresso", "Cola", "Chocol
 local ANOREXY_ID = "UniversalTraits:UT_anorexy"
 local COMPETITIVE_EATER_ID = "UniversalTraits:UT_competitiveeater"
 local BAD_TEETH_ID = "UniversalTraits:UT_badteeth"
+local GOURMAND_ID = "UniversalTraits:UT_gourmand"
 
 -- Exact InventoryItem:getType() identities for current vanilla medications.
 local MEDICATION_TYPES = {
@@ -204,8 +206,44 @@ local function tryReadFoodHealingState(character)
     return bodyDamage, timer
 end
 
-local function applyPostConsumptionEffects(character, consumedFraction, previousFoodTimer)
+local function readMealBenefitState(character)
+    if not character then return nil end
+    local stats = character:getStats()
+    return {
+        hunger = stats:get(CharacterStat.HUNGER),
+        boredom = stats:get(CharacterStat.BOREDOM),
+        unhappiness = stats:get(CharacterStat.UNHAPPINESS),
+    }
+end
+
+local function tryReadMealBenefitState(character)
+    local ok, state = pcall(readMealBenefitState, character)
+    if not ok then return nil end
+    return state
+end
+
+local function applyGourmandBonus(character, item, previousState)
+    if not previousState or not isFoodItem(item) then return end
+    if not item.getCategory or item:getCategory() ~= "Food" then return end
+    if not UTCore.hasTrait(character, GOURMAND_ID) then return end
+
+    local stats = character:getStats()
+    local current = readMealBenefitState(character)
+    local function addHalfOfBenefit(stat, before, after)
+        if type(before) == "number" and type(after) == "number" and after < before then
+            stats:set(stat, math.max(0.0, after - ((before - after) * 0.5)))
+        end
+    end
+
+    addHalfOfBenefit(CharacterStat.HUNGER, previousState.hunger, current.hunger)
+    addHalfOfBenefit(CharacterStat.BOREDOM, previousState.boredom, current.boredom)
+    addHalfOfBenefit(CharacterStat.UNHAPPINESS, previousState.unhappiness, current.unhappiness)
+end
+
+local function applyPostConsumptionEffects(character, item, consumedFraction, previousFoodTimer, previousMealState)
     if not character or not consumedFraction or consumedFraction <= 0 then return end
+
+    applyGourmandBonus(character, item, previousMealState)
 
     local stats = character:getStats()
     if UTCore.hasTrait(character, ANOREXY_ID) then
@@ -241,8 +279,10 @@ local function hookISEatFoodActionPostConsumption()
         if type(originalComplete) == "function" then
             local function completeWrapper(self)
                 local _, previousFoodTimer = tryReadFoodHealingState(self.character)
+                local previousMealState = tryReadMealBenefitState(self.character)
                 local result = originalComplete(self)
-                pcall(applyPostConsumptionEffects, self.character, self.percentage or 1.0, previousFoodTimer)
+                pcall(applyPostConsumptionEffects, self.character, self.item, self.percentage or 1.0,
+                    previousFoodTimer, previousMealState)
                 return result
             end
             ISEatFoodAction.complete = completeWrapper
@@ -255,9 +295,11 @@ local function hookISEatFoodActionPostConsumption()
         if type(originalEat) == "function" then
             local function partialWrapper(self, food, percentage)
                 local _, previousFoodTimer = tryReadFoodHealingState(self.character)
+                local previousMealState = tryReadMealBenefitState(self.character)
                 local result = originalEat(self, food, percentage)
                 local consumedFraction = (self.percentage or 1.0) * (percentage or 0)
-                pcall(applyPostConsumptionEffects, self.character, consumedFraction, previousFoodTimer)
+                pcall(applyPostConsumptionEffects, self.character, food, consumedFraction,
+                    previousFoodTimer, previousMealState)
                 return result
             end
             ISEatFoodAction.eat = partialWrapper

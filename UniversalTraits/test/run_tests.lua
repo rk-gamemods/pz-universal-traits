@@ -7511,29 +7511,242 @@ test("fitted player replacement tears down old state and handles the new player"
 end)
 
 -- ─── gourmand: food stat modification ──────────────────────────────────────────
-test("gourmand boosts hunger relief by 50%", function()
-    local food = MockFoodItemFull("Steak", { hungChange = -20, unhappyChange = -10, boredomChange = -8, category = "Food" })
-    local inv = MockInventoryFull({ food })
-    local p = MockPlayer({ "UniversalTraits:UT_gourmand" }, { inventory = inv })
-    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
-    assert_eq(food:getHungChange(), -30, "gourmand should boost hunger relief from -20 to -30")
+local GOURMAND_ID = "UniversalTraits:UT_gourmand"
+
+local function gourmandFood(category)
+    return MockFoodItemFull("Steak", {
+        hungChange = -0.40,
+        unhappyChange = -12,
+        boredomChange = -8,
+        category = category or "Food",
+    })
+end
+
+local function assertGourmandItemUnchanged(food)
+    assert_close(food:getHungChange(), -0.40, 0.000001, "Gourmand must not mutate food hunger")
+    assert_eq(food:getUnhappyChange(), -12, "Gourmand must not mutate food unhappiness")
+    assert_eq(food:getBoredomChange(), -8, "Gourmand must not mutate food boredom")
+    assert_eq(next(food:getModData()), nil, "Gourmand must not write food modData")
+end
+
+local function nativeMealChange(hunger, boredom, unhappiness)
+    return function(self)
+        local stats = self.character:getStats()
+        stats:set(CharacterStat.HUNGER, hunger)
+        stats:set(CharacterStat.BOREDOM, boredom)
+        stats:set(CharacterStat.UNHAPPINESS, unhappiness)
+    end
+end
+
+test("gourmand adds exact 50% of completed meal benefits without item mutation", function()
+    local food = gourmandFood()
+    local p = MockPlayer({ GOURMAND_ID }, { hunger = 0.9, boredom = 40, unhappiness = 50 })
+    ISEatFoodAction.complete({
+        character = p,
+        item = food,
+        percentage = 1.0,
+        _onComplete = nativeMealChange(0.5, 32, 38),
+    })
+    assert_close(p:getStats():get(CharacterStat.HUNGER), 0.30, 0.000001,
+        "0.40 native hunger relief plus 50% must total 0.60")
+    assert_eq(p:getStats():get(CharacterStat.BOREDOM), 28,
+        "8 native boredom relief plus 50% must total 12")
+    assert_eq(p:getStats():get(CharacterStat.UNHAPPINESS), 32,
+        "12 native unhappiness relief plus 50% must total 18")
+    assertGourmandItemUnchanged(food)
 end)
 
-test("gourmand improves happiness on food", function()
-    local food = MockFoodItemFull("Steak", { hungChange = -20, unhappyChange = -10, boredomChange = -8, category = "Food" })
-    local inv = MockInventoryFull({ food })
-    local p = MockPlayer({ "UniversalTraits:UT_gourmand" }, { inventory = inv })
-    for i = 1, 30 do Events.OnPlayerUpdate:fire(p) end
-    assert_eq(food:getUnhappyChange(), -15, "gourmand should boost unhappy from -10 to -15")
-    assert_eq(food:getBoredomChange(), -12, "gourmand should boost boredom from -8 to -12")
+test("gourmand applies exact proportional bonus to interrupted partial consumption", function()
+    local food = gourmandFood()
+    local p = MockPlayer({ GOURMAND_ID }, { hunger = 0.8, boredom = 30, unhappiness = 40 })
+    ISEatFoodAction.eat({
+        character = p,
+        item = food,
+        percentage = 0.5,
+        _onEat = nativeMealChange(0.7, 28, 37),
+    }, food, 0.5)
+    assert_close(p:getStats():get(CharacterStat.HUNGER), 0.65, 0.000001,
+        "0.10 partial hunger relief must receive an exact 0.05 bonus")
+    assert_eq(p:getStats():get(CharacterStat.BOREDOM), 27,
+        "2 partial boredom relief must receive an exact 1 bonus")
+    assert_close(p:getStats():get(CharacterStat.UNHAPPINESS), 35.5, 0.000001,
+        "3 partial unhappiness relief must receive an exact 1.5 bonus")
+    assertGourmandItemUnchanged(food)
 end)
 
-test("gourmand does NOT compound food bonuses on repeated ticks", function()
-    local food = MockFoodItemFull("Steak", { hungChange = -20, unhappyChange = -10, boredomChange = -8, category = "Food" })
-    local inv = MockInventoryFull({ food })
-    local p = MockPlayer({ "UniversalTraits:UT_gourmand" }, { inventory = inv })
-    for i = 1, 90 do Events.OnPlayerUpdate:fire(p) end
-    assert_eq(food:getHungChange(), -30, "gourmand hunger should NOT compound: still -30")
+test("gourmand handles repeated bites without compounding or persistent state", function()
+    local food = gourmandFood()
+    local p = MockPlayer({ GOURMAND_ID }, { hunger = 0.9, boredom = 30, unhappiness = 30 })
+    local action = {
+        character = p,
+        item = food,
+        percentage = 0.5,
+        _onEat = function(self)
+            local stats = self.character:getStats()
+            stats:set(CharacterStat.HUNGER, stats:get(CharacterStat.HUNGER) - 0.1)
+            stats:set(CharacterStat.BOREDOM, stats:get(CharacterStat.BOREDOM) - 2)
+            stats:set(CharacterStat.UNHAPPINESS, stats:get(CharacterStat.UNHAPPINESS) - 3)
+        end,
+    }
+    ISEatFoodAction.eat(action, food, 0.5)
+    ISEatFoodAction.eat(action, food, 0.5)
+    assert_close(p:getStats():get(CharacterStat.HUNGER), 0.60, 0.000001,
+        "two bites must each add only half of that bite's native relief")
+    assert_eq(p:getStats():get(CharacterStat.BOREDOM), 24, "repeated boredom bonus must be proportional")
+    assert_eq(p:getStats():get(CharacterStat.UNHAPPINESS), 21, "repeated mood bonus must be proportional")
+    assert_eq(next(p:getModData()), nil, "Gourmand must not write persistent player modData")
+    assertGourmandItemUnchanged(food)
+end)
+
+test("gourmand ignores canceled, harmful, non-food, and missing-trait paths", function()
+    local food = gourmandFood()
+    local p = MockPlayer({ GOURMAND_ID }, { hunger = 0.8, boredom = 20, unhappiness = 20 })
+    ISEatFoodAction.eat({
+        character = p,
+        item = food,
+        percentage = 1.0,
+        _onEat = nativeMealChange(0.7, 20, 20),
+    }, food, 0)
+    assert_eq(p:getStats():get(CharacterStat.HUNGER), 0.7,
+        "zero-consumption path must not add a Gourmand bonus")
+
+    local noTrait = MockPlayer({}, { hunger = 0.8, boredom = 20, unhappiness = 20 })
+    ISEatFoodAction.complete({
+        character = noTrait,
+        item = food,
+        _onComplete = nativeMealChange(0.6, 20, 20),
+    })
+    assert_eq(noTrait:getStats():get(CharacterStat.HUNGER), 0.6,
+        "player without Gourmand must receive only native relief")
+
+    local nonFood = gourmandFood("Medical")
+    ISEatFoodAction.complete({
+        character = p,
+        item = nonFood,
+        _onComplete = nativeMealChange(0.6, 25, 25),
+    })
+    assert_eq(p:getStats():get(CharacterStat.HUNGER), 0.6, "non-food must not receive a bonus")
+    assert_eq(p:getStats():get(CharacterStat.BOREDOM), 25, "harmful mood changes must not be amplified")
+    assert_eq(p:getStats():get(CharacterStat.UNHAPPINESS), 25, "harmful mood changes must remain native")
+end)
+
+test("gourmand follows current eater and trait state across transfer and replacement", function()
+    local sharedFood = gourmandFood()
+    local oldPlayer = MockPlayer({ GOURMAND_ID }, { hunger = 0.8, boredom = 20, unhappiness = 20 })
+    ISEatFoodAction.complete({
+        character = oldPlayer,
+        item = sharedFood,
+        _onComplete = nativeMealChange(0.6, 20, 20),
+    })
+    assert_close(oldPlayer:getStats():get(CharacterStat.HUNGER), 0.5, 0.000001,
+        "eligible eater must receive the bonus")
+
+    local replacement = MockPlayer({}, { hunger = 0.8, boredom = 20, unhappiness = 20 })
+    ISEatFoodAction.complete({
+        character = replacement,
+        item = sharedFood,
+        _onComplete = nativeMealChange(0.6, 20, 20),
+    })
+    assert_eq(replacement:getStats():get(CharacterStat.HUNGER), 0.6,
+        "transferred food must not carry old eater state")
+    assertGourmandItemUnchanged(sharedFood)
+end)
+
+test("gourmand trait removal and save-load or death replacement do not leak state", function()
+    local food = gourmandFood()
+    local original = MockPlayer({ GOURMAND_ID }, { hunger = 0.8, boredom = 20, unhappiness = 20 })
+    original:setMockTrait(GOURMAND_ID, false)
+    ISEatFoodAction.complete({
+        character = original,
+        item = food,
+        _onComplete = nativeMealChange(0.6, 20, 20),
+    })
+    assert_eq(original:getStats():get(CharacterStat.HUNGER), 0.6,
+        "removing Gourmand must disable the bonus immediately")
+
+    local loadedReplacement = MockPlayer({ GOURMAND_ID }, {
+        hunger = 0.8,
+        boredom = 20,
+        unhappiness = 20,
+        moddata = {},
+    })
+    ISEatFoodAction.complete({
+        character = loadedReplacement,
+        item = food,
+        _onComplete = nativeMealChange(0.6, 20, 20),
+    })
+    assert_close(loadedReplacement:getStats():get(CharacterStat.HUNGER), 0.5, 0.000001,
+        "new player instance after load or death replacement must evaluate its own trait")
+    assert_eq(original:getStats():get(CharacterStat.HUNGER), 0.6,
+        "replacement consumption must not change the old or dead player")
+    assert_eq(next(loadedReplacement:getModData()), nil,
+        "save-load correctness must not require persistent Gourmand state")
+    assertGourmandItemUnchanged(food)
+end)
+
+test("gourmand duplicate module evaluation remains single-application", function()
+    dofile(base .. "../media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua")
+    Events.OnGameStart.fire()
+    local food = gourmandFood()
+    local p = MockPlayer({ GOURMAND_ID }, { hunger = 0.8, boredom = 20, unhappiness = 20 })
+    ISEatFoodAction.complete({
+        character = p,
+        item = food,
+        _onComplete = nativeMealChange(0.6, 20, 20),
+    })
+    assert_close(p:getStats():get(CharacterStat.HUNGER), 0.5, 0.000001,
+        "duplicate load must not stack a second 50% bonus")
+end)
+
+test("gourmand snapshot errors and missing player never block native consumption", function()
+    local food = gourmandFood()
+    local p = MockPlayer({ GOURMAND_ID }, { hunger = 0.8, boredom = 20, unhappiness = 20 })
+    local originalGetStats = p.getStats
+    local reads = 0
+    p.getStats = function(self)
+        reads = reads + 1
+        if reads == 1 then error("injected Gourmand snapshot failure") end
+        return originalGetStats(self)
+    end
+    local action = {
+        character = p,
+        item = food,
+        _onComplete = function(self)
+            originalGetStats(self.character):set(CharacterStat.HUNGER, 0.6)
+        end,
+    }
+    assert_eq(ISEatFoodAction.complete(action), true, "snapshot failure must preserve native result")
+    assert_eq(action._originalCompleteCalls, 1, "native consumption must still run exactly once")
+    assert_eq(originalGetStats(p):get(CharacterStat.HUNGER), 0.6,
+        "failed Gourmand snapshot must leave native relief intact")
+    assert_true(pcall(ISEatFoodAction.complete, { character = nil, item = food }),
+        "missing player must not escape as a Gourmand error")
+end)
+
+test("gourmand no longer polls or owns state and source-release copies match", function()
+    local food = gourmandFood()
+    local p = MockPlayer({ GOURMAND_ID }, { inventory = MockInventoryFull({ food }) })
+    for _ = 1, 90 do Events.OnPlayerUpdate:fire(p) end
+    assertGourmandItemUnchanged(food)
+    for _, handler in ipairs(UTCore._tickHandlers or {}) do
+        assert_true(handler.id ~= GOURMAND_ID, "Gourmand must not retain a tick handler")
+    end
+
+    local function readAll(path)
+        local file = assert(io.open(path, "rb"))
+        local content = file:read("*a")
+        file:close()
+        return content
+    end
+    local paths = {
+        "lua/shared/UniversalTraits/traits/UT_gourmand.lua",
+        "lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+    }
+    for _, path in ipairs(paths) do
+        assert_eq(readAll(base .. "../media/" .. path),
+            readAll(base .. "../release/UniversalTraits/42.0/media/" .. path),
+            "Gourmand source and release must match for " .. path)
+    end
 end)
 
 -- ─── trackman: trap condition restoration ──────────────────────────────────────
