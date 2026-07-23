@@ -253,85 +253,167 @@ if not UTCore._damageMultTickDispatcher then
     end
 end
 
-local function captureUnrelatedCoreHandlers()
+local MAX_CORE_REGISTRY_KEYS = 256
+
+local function captureCoreRegistry()
     local okHandlers, handlers = pcall(function() return UTCore._coreHandlers end)
     local okCount, count = pcall(function() return UTCore._coreHandlerCount end)
+    local okDirty, dirty = pcall(function() return UTCore._coreHandlersDirty end)
     if not okHandlers or type(handlers) ~= "table"
-            or not okCount or not isFinite(count)
-            or count < 0 or count ~= math.floor(count) then
+            or not okCount or not isFinite(count) or count < 0
+            or count > MAX_CORE_REGISTRY_KEYS or count ~= math.floor(count)
+            or not okDirty then
         return nil
     end
 
-    local unrelated = {}
-    for index = 1, count do
-        local row = handlers[index]
-        if type(row) ~= "table" then return nil end
-        local okId, id = pcall(function() return row.id end)
-        local okFn, fn = pcall(function() return row.fn end)
-        if not okId or not okFn then return nil end
-        if id ~= CORE_HANDLER_ID and fn ~= UTCore._damageMultTickDispatcher then
-            unrelated[#unrelated + 1] = row
+    local entries = {}
+    local okPairs = pcall(function()
+        for key, value in pairs(handlers) do
+            if #entries >= MAX_CORE_REGISTRY_KEYS then
+                error("core registry exceeds bounded snapshot")
+            end
+            entries[#entries + 1] = { key = key, value = value }
+        end
+    end)
+    if not okPairs then return nil end
+
+    return {
+        handlers = handlers,
+        entries = entries,
+        count = count,
+        dirty = dirty,
+    }
+end
+
+local function isDamageMultRow(row)
+    if type(row) ~= "table" then return false end
+    local okId, id = pcall(function() return row.id end)
+    local okFn, fn = pcall(function() return row.fn end)
+    return (okId and id == CORE_HANDLER_ID)
+        or (okFn and fn == UTCore._damageMultTickDispatcher)
+end
+
+local function restoreRegistry(snapshot, removeDamageMult)
+    local handlers = snapshot.handlers
+    local currentKeys = {}
+    local okPairs = pcall(function()
+        for key in pairs(handlers) do
+            if #currentKeys >= MAX_CORE_REGISTRY_KEYS then
+                error("core registry exceeds bounded restore")
+            end
+            currentKeys[#currentKeys + 1] = key
+        end
+    end)
+    if not okPairs then return false end
+
+    for _, key in ipairs(currentKeys) do
+        handlers[key] = nil
+    end
+    for _, entry in ipairs(snapshot.entries) do
+        if not removeDamageMult or not isDamageMultRow(entry.value) then
+            handlers[entry.key] = entry.value
         end
     end
-    return unrelated
-end
-
-local function publishCoreHandlers(unrelated, includeDispatcher)
-    local handlers = {}
-    for index, row in ipairs(unrelated) do
-        handlers[index] = row
-    end
-    if includeDispatcher then
-        handlers[#handlers + 1] = {
-            id = CORE_HANDLER_ID,
-            fn = UTCore._damageMultTickDispatcher,
-            throttle = 0,
-            priority = 0,
-        }
-    end
     UTCore._coreHandlers = handlers
-    UTCore._coreHandlerCount = #handlers
-    UTCore._coreHandlersDirty = true
+    UTCore._coreHandlerCount = snapshot.count
+    UTCore._coreHandlersDirty = snapshot.dirty
+    return true
 end
 
-local unrelated = captureUnrelatedCoreHandlers()
-if unrelated then
-    -- Start from zero matching rows. The registrar is allowed to fail or mutate
-    -- before failing, so its writes are treated as provisional until verified.
-    publishCoreHandlers(unrelated, false)
+local function validateSandbox(handlers, count)
+    if type(handlers) ~= "table" or not isFinite(count)
+            or count < 1 or count > MAX_CORE_REGISTRY_KEYS
+            or count ~= math.floor(count) then
+        return false
+    end
+    local entries = 0
+    local valid = true
+    local okPairs = pcall(function()
+        for key, row in pairs(handlers) do
+            entries = entries + 1
+            if entries > MAX_CORE_REGISTRY_KEYS
+                    or type(key) ~= "number" or key < 1 or key > count
+                    or key ~= math.floor(key) or type(row) ~= "table"
+                    or row.id ~= CORE_HANDLER_ID
+                    or row.fn ~= UTCore._damageMultTickDispatcher then
+                valid = false
+            end
+        end
+    end)
+    if not okPairs or not valid or entries ~= count then return false end
+    for index = 1, count do
+        if handlers[index] == nil then return false end
+    end
+    return true
+end
 
+local function publishCanonicalDispatcher(snapshot)
+    local matchingKeys = {}
+    local occupied = {}
+    for _, entry in ipairs(snapshot.entries) do
+        occupied[entry.key] = true
+        if isDamageMultRow(entry.value) then
+            matchingKeys[#matchingKeys + 1] = entry.key
+        end
+    end
+
+    local targetKey = nil
+    for _, key in ipairs(matchingKeys) do
+        if type(key) == "number" and key >= 1 and key <= snapshot.count
+                and key == math.floor(key) then
+            if targetKey ~= nil then return false end
+            targetKey = key
+        end
+    end
+    if targetKey == nil then
+        targetKey = snapshot.count + 1
+        if occupied[targetKey] then return false end
+    end
+
+    for index = 1, snapshot.count do
+        local value = snapshot.handlers[index]
+        if index ~= targetKey and (value == nil or isDamageMultRow(value)) then
+            return false
+        end
+    end
+
+    if not restoreRegistry(snapshot, true) then return false end
+    snapshot.handlers[targetKey] = {
+        id = CORE_HANDLER_ID,
+        fn = UTCore._damageMultTickDispatcher,
+        throttle = 0,
+        priority = 0,
+    }
+    if targetKey > snapshot.count then
+        UTCore._coreHandlerCount = targetKey
+    end
+    UTCore._coreHandlersDirty = true
+    return true
+end
+
+local snapshot = captureCoreRegistry()
+if snapshot then
     local okRegister, registerCoreHandler = readFunction(UTCore, "registerCoreHandler")
     local registered = false
     if okRegister then
-        local okCall = pcall(
+        UTCore._coreHandlers = {}
+        UTCore._coreHandlerCount = 0
+        UTCore._coreHandlersDirty = snapshot.dirty
+        local okCall, result = pcall(
             registerCoreHandler,
             CORE_HANDLER_ID,
             UTCore._damageMultTickDispatcher,
             { priority = 0 }
         )
-        if okCall then
+        if okCall and result ~= false then
             local okHandlers, handlers = pcall(function() return UTCore._coreHandlers end)
             local okCount, count = pcall(function() return UTCore._coreHandlerCount end)
-            if okHandlers and type(handlers) == "table"
-                    and okCount and isFinite(count)
-                    and count >= 0 and count == math.floor(count) then
-                for index = 1, count do
-                    local row = handlers[index]
-                    if type(row) == "table" then
-                        local okId, id = pcall(function() return row.id end)
-                        local okFn, fn = pcall(function() return row.fn end)
-                        if okId and id == CORE_HANDLER_ID
-                                and okFn and fn == UTCore._damageMultTickDispatcher then
-                            registered = true
-                            break
-                        end
-                    end
-                end
-            end
+            registered = okHandlers and okCount and validateSandbox(handlers, count)
         end
     end
 
-    -- Restore the pre-call unrelated rows and publish either one verified,
-    -- canonical dispatcher or no matching handler at all.
-    publishCoreHandlers(unrelated, registered)
+    restoreRegistry(snapshot, false)
+    if not registered or not publishCanonicalDispatcher(snapshot) then
+        restoreRegistry(snapshot, true)
+    end
 end

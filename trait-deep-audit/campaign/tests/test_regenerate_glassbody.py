@@ -194,7 +194,14 @@ class GlassBodyGeneratorSafetyTests(unittest.TestCase):
                 "handler_id": "DamageMultHook",
                 "success_state": "exactly one canonical keyed row with the stable dispatcher",
                 "failure_state": "zero rows matching the handler id or dispatcher function",
-                "rollback_surface": "UTCore._coreHandlers plus UTCore._coreHandlerCount",
+                "rollback_surface": (
+                    "exact bounded pairs snapshot of UTCore._coreHandlers plus "
+                    "_coreHandlerCount and _coreHandlersDirty"
+                ),
+                "unrelated_state": (
+                    "preserve every unrelated numeric, sparse, high-hole, and "
+                    "nonnumeric key/value identity"
+                ),
                 "direct_event_fallback": False,
             },
         )

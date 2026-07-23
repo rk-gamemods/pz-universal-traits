@@ -526,6 +526,9 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
                 "registrar that ignores the supplied key",
                 "duplicate intended rows and duplicate module load",
                 "exact core registry row counts and dispatcher function identity",
+                "dense, sparse, keyed, inconsistent-count, and high-hole registries",
+                "unrelated registry key/value identity and metadata preservation",
+                "registrar mutation followed by false, nil, or throw",
                 "post-mutation setter rollback",
                 "rollback-failure containment and exact setter-call bounds",
             ],
@@ -533,7 +536,14 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
                 "handler_id": "DamageMultHook",
                 "success_state": "exactly one canonical keyed row with the stable dispatcher",
                 "failure_state": "zero rows matching the handler id or dispatcher function",
-                "rollback_surface": "UTCore._coreHandlers plus UTCore._coreHandlerCount",
+                "rollback_surface": (
+                    "exact bounded pairs snapshot of UTCore._coreHandlers plus "
+                    "_coreHandlerCount and _coreHandlersDirty"
+                ),
+                "unrelated_state": (
+                    "preserve every unrelated numeric, sparse, high-hole, and "
+                    "nonnumeric key/value identity"
+                ),
                 "direct_event_fallback": False,
             },
             "preserved_surfaces": [

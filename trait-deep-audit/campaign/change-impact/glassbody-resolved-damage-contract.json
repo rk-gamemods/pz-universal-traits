@@ -48,13 +48,13 @@
     },
     {
       "path": "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "852F50EDB90ECB4CD48DC266C2E0467637B6C620F7688C4E45FB7A7DF644094F",
-      "bytes": 11746
+      "sha256": "CFB332B2FB4514B1D6C0C13C4B00CDE2B842CCE4A09FB1969366D1DA70D4AC94",
+      "bytes": 14073
     },
     {
       "path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "852F50EDB90ECB4CD48DC266C2E0467637B6C620F7688C4E45FB7A7DF644094F",
-      "bytes": 11746
+      "sha256": "CFB332B2FB4514B1D6C0C13C4B00CDE2B842CCE4A09FB1969366D1DA70D4AC94",
+      "bytes": 14073
     },
     {
       "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
@@ -68,8 +68,8 @@
     },
     {
       "path": "UT_CORE/test/run_tests.lua",
-      "sha256": "18785248C83AA0879845018574DD78862BD2CB911DF136295283A850CDA5CD7F",
-      "bytes": 188317
+      "sha256": "D853D1A2A2E53CF7B37F3059831BB7B77C7CF75B0D98DC576C54431DD3E3FA2E",
+      "bytes": 203827
     },
     {
       "path": "UT_CORE/test/UTCoreMocks.lua",
@@ -83,8 +83,8 @@
     },
     {
       "path": "UniversalTraits/test/run_tests.lua",
-      "sha256": "F2552A79464F8CDCE1B9BEA4723CE2C2B16CA9A1B0441FEC1F397F4A33BFE8DB",
-      "bytes": 462370
+      "sha256": "8DD1B177A37961C1DA9AD9E23F127EA7B539B3518528F48A472F3CEB873BC903",
+      "bytes": 462405
     },
     {
       "path": "trait-deep-audit/active/batch/traits/UT_glassbody.md",
@@ -111,6 +111,9 @@
     "registrar that ignores the supplied key",
     "duplicate intended rows and duplicate module load",
     "exact core registry row counts and dispatcher function identity",
+    "dense, sparse, keyed, inconsistent-count, and high-hole registries",
+    "unrelated registry key/value identity and metadata preservation",
+    "registrar mutation followed by false, nil, or throw",
     "post-mutation setter rollback",
     "rollback-failure containment and exact setter-call bounds"
   ],
@@ -118,7 +121,8 @@
     "handler_id": "DamageMultHook",
     "success_state": "exactly one canonical keyed row with the stable dispatcher",
     "failure_state": "zero rows matching the handler id or dispatcher function",
-    "rollback_surface": "UTCore._coreHandlers plus UTCore._coreHandlerCount",
+    "rollback_surface": "exact bounded pairs snapshot of UTCore._coreHandlers plus _coreHandlerCount and _coreHandlersDirty",
+    "unrelated_state": "preserve every unrelated numeric, sparse, high-hole, and nonnumeric key/value identity",
     "direct_event_fallback": false
   },
   "preserved_surfaces": [

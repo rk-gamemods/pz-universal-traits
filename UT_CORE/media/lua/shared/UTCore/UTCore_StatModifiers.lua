@@ -588,6 +588,7 @@ local function getOwnership(vehicle)
     end
     if type(ownership.fields) ~= "table" then ownership.fields = {} end
     if type(ownership.suppressed) ~= "table" then ownership.suppressed = {} end
+    if type(ownership.applyAttempts) ~= "table" then ownership.applyAttempts = {} end
     if type(ownership.restoreAttempts) ~= "table" then ownership.restoreAttempts = {} end
     return vmd, ownership
 end
@@ -792,27 +793,35 @@ local function applyEngineTargets(vehicle, ownership, targets)
         end
     end
     if not needsWrite then return end
+    local attempts = ownership.applyAttempts.engineFields or 0
+    if attempts >= MAX_RESTORE_ATTEMPTS then return end
 
     local _, loudnessInput = loudnessTargetAndInput(values.engineLoudness)
-    local setOk = vehicleCall(vehicle, "setEngineFeature",
+    vehicleCall(vehicle, "setEngineFeature",
         values.engineQuality, loudnessInput, values.enginePower)
+    ownership.applyAttempts.engineFields = attempts + 1
 
     -- A Java bridge failure can occur after a partial grouped write. Read back
-    -- every owned field so retry/restore evidence describes what was observed.
+    -- every owned field. Intended values stay owned, unchanged values remain
+    -- retryable, and only a third value proves observable foreign divergence.
+    local pending = false
     for field in pairs(ENGINE_FIELDS) do
         local evidence = ownership.fields[field]
         if evidence then
             local ok, observed = readVehicleField(vehicle, field)
             if ok then
-                if not setOk and observed == evidence.lastApplied then
+                if observed == values[field] then
+                    evidence.lastApplied = observed
+                elseif observed == evidence.lastApplied then
+                    pending = true
+                else
                     ownership.fields[field] = nil
                     ownership.suppressed[field] = true
-                else
-                    evidence.lastApplied = observed
                 end
             end
         end
     end
+    if not pending then ownership.applyAttempts.engineFields = nil end
 end
 
 --- applyVehicleMod(player, stateKey, mods[, vehicleOverride])
