@@ -48,43 +48,43 @@
     },
     {
       "path": "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "852F50EDB90ECB4CD48DC266C2E0467637B6C620F7688C4E45FB7A7DF644094F",
-      "bytes": 11746
+      "sha256": "CFB332B2FB4514B1D6C0C13C4B00CDE2B842CCE4A09FB1969366D1DA70D4AC94",
+      "bytes": 14073
     },
     {
       "path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "852F50EDB90ECB4CD48DC266C2E0467637B6C620F7688C4E45FB7A7DF644094F",
-      "bytes": 11746
+      "sha256": "CFB332B2FB4514B1D6C0C13C4B00CDE2B842CCE4A09FB1969366D1DA70D4AC94",
+      "bytes": 14073
     },
     {
       "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
-      "sha256": "F3590F0EBC9B613FE24AD7522A6B3E812072F1653B2BB185D040FC7EB3A8459D",
-      "bytes": 37447
+      "sha256": "703DAB02EB09267B8320838615556980D993A40BC9255BCB6A9A1A3E21313016",
+      "bytes": 37131
     },
     {
       "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
-      "sha256": "F3590F0EBC9B613FE24AD7522A6B3E812072F1653B2BB185D040FC7EB3A8459D",
-      "bytes": 37447
+      "sha256": "703DAB02EB09267B8320838615556980D993A40BC9255BCB6A9A1A3E21313016",
+      "bytes": 37131
     },
     {
       "path": "UT_CORE/test/run_tests.lua",
-      "sha256": "18785248C83AA0879845018574DD78862BD2CB911DF136295283A850CDA5CD7F",
-      "bytes": 188317
+      "sha256": "13F6E2CEFA2FCFA464AD1CE0B057415233C2717A2D506643254C2B08B4F26450",
+      "bytes": 202607
     },
     {
       "path": "UT_CORE/test/UTCoreMocks.lua",
-      "sha256": "993EC670C0A3F918F87ECC5691CA6CAC5BB485BE002A7944FD6A2597B5DD348F",
-      "bytes": 22758
+      "sha256": "89DA04A726ACF45C27E448366471A189DF08ED2E0C7AF651F2BA52A4523053B6",
+      "bytes": 22359
     },
     {
       "path": "UT_CORE/test/test_pz_api_surface.lua",
-      "sha256": "FB25DCD76B52338C31BC8F166EFBED6DDA4639FD7B167C06E21CFEE700842107",
-      "bytes": 28019
+      "sha256": "467235B3833BC75F67C1A70567E125961DEAD253680BD577D9C5BF1C9F0E39CE",
+      "bytes": 27372
     },
     {
       "path": "UniversalTraits/test/run_tests.lua",
-      "sha256": "F2552A79464F8CDCE1B9BEA4723CE2C2B16CA9A1B0441FEC1F397F4A33BFE8DB",
-      "bytes": 462370
+      "sha256": "8B6F1CB3DF56D9D5D141D1982A5EB2F0164522C1CDFAFEF96AC1CCEA0E9E4CE3",
+      "bytes": 454469
     },
     {
       "path": "trait-deep-audit/active/batch/traits/UT_glassbody.md",
@@ -111,6 +111,9 @@
     "registrar that ignores the supplied key",
     "duplicate intended rows and duplicate module load",
     "exact core registry row counts and dispatcher function identity",
+    "dense, sparse, keyed, inconsistent-count, and high-hole registries",
+    "unrelated registry key/value identity and metadata preservation",
+    "registrar mutation followed by false, nil, or throw",
     "post-mutation setter rollback",
     "rollback-failure containment and exact setter-call bounds"
   ],
@@ -118,7 +121,8 @@
     "handler_id": "DamageMultHook",
     "success_state": "exactly one canonical keyed row with the stable dispatcher",
     "failure_state": "zero rows matching the handler id or dispatcher function",
-    "rollback_surface": "UTCore._coreHandlers plus UTCore._coreHandlerCount",
+    "rollback_surface": "exact bounded pairs snapshot of UTCore._coreHandlers plus _coreHandlerCount and _coreHandlersDirty",
+    "unrelated_state": "preserve every unrelated numeric, sparse, high-hole, and nonnumeric key/value identity",
     "direct_event_fallback": false
   },
   "preserved_surfaces": [
