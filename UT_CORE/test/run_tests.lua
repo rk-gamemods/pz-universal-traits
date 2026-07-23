@@ -2965,38 +2965,48 @@ test("Vehicle grouped apply retry budgets are independent per trait definition",
         error("bounded grouped apply failure")
     end
     local player = MockPlayer({traitA, traitB}, { vehicle = vehicle, driving = true })
+    local playerTraits = player:getCharacterTraits()
+    local definitionA = CharacterTrait.get(ResourceLocation.of(traitA))
+    local definitionB = CharacterTrait.get(ResourceLocation.of(traitB))
     UTCore.registerVehicleTrait(traitA, stateKey, modsA, 1)
     UTCore.registerVehicleTrait(traitB, stateKey, modsB, 1)
-    local function applyDefinition(traitId, mods, generation)
-        UTCore.applyVehicleMod(player, stateKey, mods, vehicle, generation, traitId)
+    local function selectTrait(selected, unselected)
+        playerTraits:remove(unselected)
+        playerTraits:add(selected)
+    end
+    local function syncSelected(selected, unselected)
+        selectTrait(selected, unselected)
+        UTCore.syncVehicleTrait(player, vehicle)
     end
 
-    applyDefinition(traitA, modsA, 1)
-    applyDefinition(traitA, modsA, 1)
+    syncSelected(definitionA, definitionB)
+    UTCore.syncVehicleTrait(player, vehicle)
     assert_eq(vehicle._setterCalls.engineFeature, 2, "trait A must exhaust exactly its own budget")
 
-    applyDefinition(traitB, modsB, 1)
-    applyDefinition(traitB, modsB, 1)
+    syncSelected(definitionB, definitionA)
+    UTCore.syncVehicleTrait(player, vehicle)
     assert_eq(vehicle._setterCalls.engineFeature, 4, "trait B must receive its own two attempts")
 
     for _ = 1, 5 do
-        applyDefinition(traitA, modsA, 1)
-        applyDefinition(traitB, modsB, 1)
+        syncSelected(definitionA, definitionB)
+        syncSelected(definitionB, definitionA)
     end
     assert_eq(vehicle._setterCalls.engineFeature, 4,
         "alternating unchanged definitions must retain A=2 and B=2 exhausted budgets")
+    syncSelected(definitionA, definitionB)
+    assert_eq(vehicle._setterCalls.engineFeature, 4, "returning to A must leave its budget exhausted")
 
     local reloadedB = { engineQuality = 0.5, engineLoudness = 0.5, enginePower = 2 }
     UTCore.registerVehicleTrait(traitB, stateKey, reloadedB, 1)
-    applyDefinition(traitB, reloadedB, 2)
-    applyDefinition(traitB, reloadedB, 2)
+    syncSelected(definitionB, definitionA)
+    UTCore.syncVehicleTrait(player, vehicle)
     assert_eq(vehicle._setterCalls.engineFeature, 6, "explicit B reload must rearm only B")
     UTCore.registerVehicleTrait(traitB, stateKey, reloadedB, 1)
-    for _ = 1, 5 do applyDefinition(traitB, reloadedB, 2) end
+    for _ = 1, 5 do UTCore.syncVehicleTrait(player, vehicle) end
     assert_eq(vehicle._setterCalls.engineFeature, 6,
         "duplicate registration of B's identical object must not rearm")
 
-    for _ = 1, 5 do applyDefinition(traitA, modsA, 1) end
+    for _ = 1, 5 do syncSelected(definitionA, definitionB) end
     assert_eq(vehicle._setterCalls.engineFeature, 6, "B reload must leave A exhausted")
 
     local changedB = {
@@ -3005,10 +3015,10 @@ test("Vehicle grouped apply retry budgets are independent per trait definition",
         enginePower = 3,
     }
     UTCore.registerVehicleTrait(traitB, stateKey, changedB, 1)
-    applyDefinition(traitB, changedB, 3)
-    applyDefinition(traitB, changedB, 3)
+    syncSelected(definitionB, definitionA)
+    UTCore.syncVehicleTrait(player, vehicle)
     assert_eq(vehicle._setterCalls.engineFeature, 8, "B tuple change must rearm only B")
-    applyDefinition(traitA, modsA, 1)
+    syncSelected(definitionA, definitionB)
     assert_eq(vehicle._setterCalls.engineFeature, 8, "B tuple change must not rearm A")
 end)
 
