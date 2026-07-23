@@ -4487,6 +4487,143 @@ test("packmouse duplicate load retains the old retry handler until cleanup succe
         "repeated successful evaluation must never stack handlers")
 end)
 
+local function withPackMouseEventPatch(add, remove, fn)
+    local event = Events.OnCreatePlayer
+    local originalAdd = event.Add
+    local originalRemove = event.Remove
+    event.Add = function(handler) return add(originalAdd, handler) end
+    event.Remove = function(handler) return remove(originalRemove, handler) end
+
+    local ok, err = pcall(fn)
+    event.Add = originalAdd
+    event.Remove = originalRemove
+    if not ok then error(err) end
+end
+
+local function reloadPackMouse()
+    return pcall(dofile, base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+end
+
+test("packmouse replacement Add throw retains the exact registered old handler", function()
+    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
+    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
+
+    withPackMouseEventPatch(
+        function() error("injected Add throw") end,
+        function(originalRemove, handler) return originalRemove(handler) end,
+        function()
+            local ok, err = reloadPackMouse()
+            assert_true(ok, "Add throw must be contained: " .. tostring(err))
+        end
+    )
+
+    assert_eq(UTPackMouseLifecycle.onCreatePlayer, oldHandler, "old lifecycle identity")
+    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount, "one registered old handler")
+end)
+
+test("packmouse replacement Add false retains the exact registered old handler", function()
+    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
+    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
+
+    withPackMouseEventPatch(
+        function() return false end,
+        function(originalRemove, handler) return originalRemove(handler) end,
+        function()
+            local ok, err = reloadPackMouse()
+            assert_true(ok, "Add false must be contained: " .. tostring(err))
+        end
+    )
+
+    assert_eq(UTPackMouseLifecycle.onCreatePlayer, oldHandler, "old lifecycle identity")
+    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount, "one registered old handler")
+end)
+
+test("packmouse replacement Remove false rolls back the new handler", function()
+    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
+    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
+
+    withPackMouseEventPatch(
+        function(originalAdd, handler) return originalAdd(handler) end,
+        function(originalRemove, handler)
+            if handler == oldHandler then return false end
+            return originalRemove(handler)
+        end,
+        function()
+            local ok, err = reloadPackMouse()
+            assert_true(ok, "Remove false must be contained: " .. tostring(err))
+        end
+    )
+
+    assert_eq(UTPackMouseLifecycle.onCreatePlayer, oldHandler, "old lifecycle identity")
+    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount, "new handler rolled back")
+end)
+
+test("packmouse replacement Remove throw rolls back the new handler", function()
+    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
+    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
+
+    withPackMouseEventPatch(
+        function(originalAdd, handler) return originalAdd(handler) end,
+        function(originalRemove, handler)
+            if handler == oldHandler then error("injected Remove throw") end
+            return originalRemove(handler)
+        end,
+        function()
+            local ok, err = reloadPackMouse()
+            assert_true(ok, "Remove throw must be contained: " .. tostring(err))
+        end
+    )
+
+    assert_eq(UTPackMouseLifecycle.onCreatePlayer, oldHandler, "old lifecycle identity")
+    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount, "new handler rolled back")
+end)
+
+test("packmouse rollback Remove failure commits the known registered replacement", function()
+    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
+    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
+    local removeCalls = 0
+
+    withPackMouseEventPatch(
+        function(originalAdd, handler) return originalAdd(handler) end,
+        function(originalRemove, handler)
+            removeCalls = removeCalls + 1
+            if removeCalls <= 2 then return false end
+            return originalRemove(handler)
+        end,
+        function()
+            local ok, err = reloadPackMouse()
+            assert_true(ok, "rollback Remove failure must be contained: " .. tostring(err))
+        end
+    )
+
+    assert_eq(removeCalls, 3, "old removal must be retried after rollback failure")
+    assert_true(UTPackMouseLifecycle.onCreatePlayer ~= oldHandler, "replacement identity committed")
+    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount, "exactly one replacement handler")
+end)
+
+test("packmouse nil-return Add and Remove operations complete replacement", function()
+    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
+    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
+
+    withPackMouseEventPatch(
+        function(originalAdd, handler)
+            originalAdd(handler)
+            return nil
+        end,
+        function(originalRemove, handler)
+            originalRemove(handler)
+            return nil
+        end,
+        function()
+            local ok, err = reloadPackMouse()
+            assert_true(ok, "nil event operations must succeed: " .. tostring(err))
+        end
+    )
+
+    assert_true(UTPackMouseLifecycle.onCreatePlayer ~= oldHandler, "replacement identity")
+    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount, "one replacement handler")
+end)
+
 test("packmouse deactivation preserves a foreign receiver through shared ownership fence", function()
     local p = fireCreatePlayer(PACKMOUSE_ID)
     assert_eq(p:getMaxWeightBase(), 6, "Pack Mouse active receiver")

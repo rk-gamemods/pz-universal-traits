@@ -132,21 +132,8 @@ local function clearTrackedPlayer()
     return false
 end
 
-local retainedHandler = state.onCreatePlayer
-if retainedHandler then
-    if not retryPendingRollback() or not clearTrackedPlayer() then
-        return
-    end
-
-    local removed = Events.OnCreatePlayer
-        and Events.OnCreatePlayer.Remove
-        and pcall(Events.OnCreatePlayer.Remove, retainedHandler)
-    if not removed then
-        return
-    end
-end
-
 local function onCreatePlayer(_playerIndex, player)
+    if state.onCreatePlayer ~= onCreatePlayer then return end
     if not retryPendingRollback() then return end
 
     if state.player and state.player ~= player then
@@ -176,5 +163,60 @@ local function onCreatePlayer(_playerIndex, player)
     end
 end
 
-state.onCreatePlayer = onCreatePlayer
-Events.OnCreatePlayer.Add(onCreatePlayer)
+local function eventOperationSucceeded(operation, handler)
+    if not operation then return false end
+    local ok, result = pcall(operation, handler)
+    return ok and result ~= false
+end
+
+local event = Events.OnCreatePlayer
+local retainedHandler = state.onCreatePlayer
+local pendingReplacement = state.eventReplacement
+if pendingReplacement then
+    if eventOperationSucceeded(event and event.Remove, pendingReplacement.replacementHandler) then
+        state.eventReplacement = nil
+    elseif eventOperationSucceeded(event and event.Remove, pendingReplacement.retainedHandler) then
+        state.onCreatePlayer = pendingReplacement.replacementHandler
+        state.eventReplacement = nil
+        retainedHandler = state.onCreatePlayer
+    else
+        return
+    end
+end
+
+if retainedHandler then
+    if not retryPendingRollback() or not clearTrackedPlayer() then
+        return
+    end
+
+    if not eventOperationSucceeded(event and event.Add, onCreatePlayer) then
+        eventOperationSucceeded(event and event.Remove, onCreatePlayer)
+        return
+    end
+
+    if eventOperationSucceeded(event and event.Remove, retainedHandler) then
+        state.onCreatePlayer = onCreatePlayer
+        state.eventReplacement = nil
+        return
+    end
+
+    if eventOperationSucceeded(event and event.Remove, onCreatePlayer) then
+        return
+    end
+
+    if eventOperationSucceeded(event and event.Remove, retainedHandler) then
+        state.onCreatePlayer = onCreatePlayer
+        state.eventReplacement = nil
+        return
+    end
+
+    state.eventReplacement = {
+        retainedHandler = retainedHandler,
+        replacementHandler = onCreatePlayer,
+    }
+    return
+end
+
+if eventOperationSucceeded(event and event.Add, onCreatePlayer) then
+    state.onCreatePlayer = onCreatePlayer
+end
