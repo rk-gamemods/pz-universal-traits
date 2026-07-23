@@ -3,10 +3,17 @@
   "trait_id": "UniversalTraits:UT_gordanite",
   "authority": {
     "pre_campaign_master": "a32f251e7cebdc27b533907b6b16c7aa135eb882",
-    "accepted_runtime_commits": [
-      "5b8b28fd2cac6198dadeb3c703f24706967aac9f",
-      "6497d16ddc181cb387d069daa96c94ebcec2d549"
+    "runtime_commit_chain": [
+      {
+        "snapshot": "5b8b28fd2cac6198dadeb3c703f24706967aac9f",
+        "review_disposition": "changes-requested"
+      },
+      {
+        "snapshot": "6497d16ddc181cb387d069daa96c94ebcec2d549",
+        "review_disposition": "accepted"
+      }
     ],
+    "accepted_runtime_commit": "6497d16ddc181cb387d069daa96c94ebcec2d549",
     "pz_snapshot": "SVN revision 964",
     "final_independent_review": {
       "verdict": "ACCEPT",

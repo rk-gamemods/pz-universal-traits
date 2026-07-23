@@ -95,6 +95,43 @@ class GordaniteGeneratorSafetyTests(unittest.TestCase):
         self.assertEqual(cross["state"], "proven-correct")
         self.assertEqual(cross["affected_surfaces"], [])
 
+    def test_rejected_commit_never_appears_in_accepted_fields(self) -> None:
+        self.run_generator()
+        rejected = GENERATOR.INITIAL_RUNTIME_COMMIT
+        accepted = GENERATOR.ACCEPTED_RUNTIME_COMMIT
+        resolution = json.loads((self.campaign / GENERATOR.RESOLUTION).read_bytes())
+        chronology = resolution["review_iterations"]
+        self.assertEqual(
+            [(item["snapshot"], item["disposition"]) for item in chronology],
+            [(rejected, "changes-requested"), (accepted, "accepted")],
+        )
+        self.assertEqual(resolution["authority"]["accepted_runtime_commit"], accepted)
+        self.assertEqual(
+            resolution["authority"]["runtime_commit_chain"],
+            [
+                {"snapshot": rejected, "review_disposition": "changes-requested"},
+                {"snapshot": accepted, "review_disposition": "accepted"},
+            ],
+        )
+
+        def assert_no_rejected_in_accepted_fields(value: object, path: str = "") -> None:
+            if isinstance(value, dict):
+                for key, child in value.items():
+                    child_path = f"{path}.{key}" if path else key
+                    if "accepted" in key.lower():
+                        self.assertNotIn(rejected, json.dumps(child), child_path)
+                    assert_no_rejected_in_accepted_fields(child, child_path)
+            elif isinstance(value, list):
+                for index, child in enumerate(value):
+                    assert_no_rejected_in_accepted_fields(child, f"{path}[{index}]")
+
+        batch = next(
+            row for row in jsonl(self.campaign / "trait_batches" / "batch_04.jsonl")
+            if row["trait_id"] == GENERATOR.TRAIT
+        )
+        assert_no_rejected_in_accepted_fields(batch)
+        assert_no_rejected_in_accepted_fields(resolution)
+
     def test_shared_wrapper_blocker_removes_only_gordanite_owner(self) -> None:
         before = json.loads((self.campaign / "release_blocker_queue.json").read_bytes())
         before_blocker = next(item for item in before["identities"] if item["semantic_identity"] == GENERATOR.SHARED_BLOCKER)

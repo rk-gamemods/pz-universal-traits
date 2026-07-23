@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 171,
-  "total_bytes": 13675568,
+  "total_bytes": 13678157,
   "files": [
     {
       "path": ".gitattributes",
@@ -152,8 +152,8 @@
       "path": "change-impact/gordanite-native-delta-resolution.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
-      "bytes": 5789,
-      "sha256": "7B69BC8C9F9782307EDC3C5958FBEA12086E11BED4DEF1298833A2C249747396"
+      "bytes": 6013,
+      "sha256": "0B6DCBCDEBE9B5C32DDEA8A80E973D6E16986F44B19200B48C05E514265C4B04"
     },
     {
       "path": "change-impact/gourmand-consumption-contract.json",
@@ -349,7 +349,7 @@
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
       "bytes": 2095533,
-      "sha256": "43B54A443168CE6FE904789583444C70293D4734DFE522F8937C8793B9B2CCF0"
+      "sha256": "5224A355EEF07AD31590FE22190E81098ECF7666B112890680A9FDA87BA55435"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
@@ -677,8 +677,8 @@
       "path": "tests/test_regenerate_gordanite.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 8853,
-      "sha256": "96A3159F12756248ABB770AF720EDE700EA10174FABE72E6CAA4E35DA46C57B5"
+      "bytes": 10669,
+      "sha256": "AF28DA4137BBB09256DB0FE7EFF4742FD552F0151CCE87B452D52817D85A3DF2"
     },
     {
       "path": "tests/test_regenerate_gourmand.py",
@@ -957,8 +957,8 @@
       "path": "tools/regenerate_gordanite.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 21917,
-      "sha256": "9E2F69E3A92D5748411391527571E7A430EAC16C7969569BDDE21BC1E30EC1FD"
+      "bytes": 22302,
+      "sha256": "69BD2A3809EB803D3B97E6E20B9A9940FB91CF5F960A1D85F1F392AF0C16B188"
     },
     {
       "path": "tools/regenerate_gourmand.py",
@@ -1174,8 +1174,8 @@
       "path": "trait_batches/batch_04.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 111595,
-      "sha256": "16E28CB45A0BED125D1A00F4B382C95B5D7BF59C7344FBCBCF72814881EC758C"
+      "bytes": 111759,
+      "sha256": "8954D8E8AEE90F826FBD0D7DCCC3E026FF9C8E05BAF2438CEBF6179DE7CE7A93"
     },
     {
       "path": "trait_batches/batch_05.jsonl",

@@ -18,6 +18,8 @@ ROOT = Path(__file__).resolve().parents[3]
 CAMPAIGN = ROOT / "trait-deep-audit" / "campaign"
 HELPER = base.HELPER
 TRAIT = "UniversalTraits:UT_gordanite"
+INITIAL_RUNTIME_COMMIT = "5b8b28fd2cac6198dadeb3c703f24706967aac9f"
+ACCEPTED_RUNTIME_COMMIT = "6497d16ddc181cb387d069daa96c94ebcec2d549"
 RUNTIME_FINDING = "B04-gordanite-RUNTIME"
 CLOSED_FINDINGS = (
     "IR0104-GORDANITE-DOUBLE-CALORIES",
@@ -179,10 +181,11 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
         "The missing source poster is unrelated and remains separate.",
     ]
     row["validation"] = {
-        "accepted_runtime_commits": [
-            "5b8b28fd2cac6198dadeb3c703f24706967aac9f",
-            "6497d16ddc181cb387d069daa96c94ebcec2d549",
+        "runtime_commit_chain": [
+            {"snapshot": INITIAL_RUNTIME_COMMIT, "review_disposition": "changes-requested"},
+            {"snapshot": ACCEPTED_RUNTIME_COMMIT, "review_disposition": "accepted"},
         ],
+        "accepted_runtime_commit": ACCEPTED_RUNTIME_COMMIT,
         "final_independent_review": "ACCEPT at 6497d16d after one rejected chef-identity fallback",
         "focused_suite": "13/13",
         "full_universaltraits_suite": "586/586",
@@ -288,10 +291,11 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
         "trait_id": TRAIT,
         "authority": {
             "pre_campaign_master": "a32f251e7cebdc27b533907b6b16c7aa135eb882",
-            "accepted_runtime_commits": [
-                "5b8b28fd2cac6198dadeb3c703f24706967aac9f",
-                "6497d16ddc181cb387d069daa96c94ebcec2d549",
+            "runtime_commit_chain": [
+                {"snapshot": INITIAL_RUNTIME_COMMIT, "review_disposition": "changes-requested"},
+                {"snapshot": ACCEPTED_RUNTIME_COMMIT, "review_disposition": "accepted"},
             ],
+            "accepted_runtime_commit": ACCEPTED_RUNTIME_COMMIT,
             "pz_snapshot": "SVN revision 964",
             "final_independent_review": {
                 "verdict": "ACCEPT",
