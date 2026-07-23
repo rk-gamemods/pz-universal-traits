@@ -11,7 +11,7 @@ dofile(base .. "../../UniversalTraits/test/UTTestMocks.lua")-- UTCoreMocks.lua
 function MockPlayer(traits, opts)
     local t = traits or {}
     opts = opts or {}
-    local moddata = {}
+    local moddata = opts.moddata or {}
     local maxWeight = 8
     local primaryHandItem = opts.primaryHandItem or nil
     local meleeDelay = opts.meleeDelay or 0

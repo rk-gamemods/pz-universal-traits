@@ -36,6 +36,9 @@ local DEFAULT_CARRY_BASE = 8
 -- A persisted value fence: UTCore owns a capacity only while the receiver
 -- still reports the exact value from UTCore's last successful write.
 local INVENTORY_CAPACITY_APPLIED_KEY = "UT_inventoryCapacityApplied"
+local CARRY_RECEIVER_ACTIVE_KEY = "UT_carryReceiverActive"
+local CARRY_RECEIVER_BASELINE_KEY = "UT_carryReceiverBaseline"
+local CARRY_RECEIVER_LAST_APPLIED_KEY = "UT_carryReceiverLastApplied"
 
 local function isInventoryLimitPatchActive()
     if getActivatedMods == nil then return false end
@@ -143,6 +146,13 @@ local function productBucket(bucket)
     return total
 end
 
+local function callMethod(receiver, methodName, ...)
+    if receiver == nil then return false, nil end
+    local method = receiver[methodName]
+    if type(method) ~= "function" then return false, nil end
+    return pcall(method, receiver, ...)
+end
+
 function UTCore.refreshAggregatedModifierCache(player)
     if not player then return nil end
 
@@ -154,6 +164,8 @@ function UTCore.refreshAggregatedModifierCache(player)
     local transferMult = clamp(productBucket(buckets[TRANSFER_BUCKET]), TRANSFER_MIN_MULT, TRANSFER_MAX_MULT)
     local carryFlat = sumBucket(buckets[CARRY_FLAT_BUCKET])
     local carryStrengthBonus = sumBucket(buckets[CARRY_STRENGTH_BUCKET])
+    local carryActive = hasEntries(buckets[CARRY_FLAT_BUCKET])
+        or hasEntries(buckets[CARRY_STRENGTH_BUCKET])
 
     md["UT_speedMod"] = speedMod
     md["UT_workSpeedMod"] = workMod
@@ -162,10 +174,13 @@ function UTCore.refreshAggregatedModifierCache(player)
     md["UT_carryStrengthBonus"] = carryStrengthBonus
 
     local carryTarget = nil
-    if hasEntries(buckets[CARRY_STRENGTH_BUCKET]) or carryFlat ~= 0 then
+    if carryActive then
         local strength = 0
         if player.getPerkLevel then
-            strength = player:getPerkLevel(Perks.Strength)
+            local strengthOk, currentStrength = callMethod(player, "getPerkLevel", Perks.Strength)
+            if strengthOk and type(currentStrength) == "number" then
+                strength = currentStrength
+            end
         end
 
         local carryBase = hasEntries(buckets[CARRY_STRENGTH_BUCKET]) and (5 + strength) or DEFAULT_CARRY_BASE
@@ -179,7 +194,87 @@ function UTCore.refreshAggregatedModifierCache(player)
         workMod = workMod,
         transferSpeedMult = transferMult,
         carryTargetBase = carryTarget,
+        carryActive = carryActive,
     }
+end
+
+local function clearCarryReceiverOwnership(md)
+    md[CARRY_RECEIVER_BASELINE_KEY] = nil
+    md[CARRY_RECEIVER_LAST_APPLIED_KEY] = nil
+end
+
+local function reconcileCarryReceiver(player, md, summary)
+    local carryActive = summary.carryActive == true
+    local wasActive = md[CARRY_RECEIVER_ACTIVE_KEY] == true
+    local baseline = md[CARRY_RECEIVER_BASELINE_KEY]
+    local lastApplied = md[CARRY_RECEIVER_LAST_APPLIED_KEY]
+
+    if carryActive and not wasActive then
+        local currentOk, current = callMethod(player, "getMaxWeightBase")
+        if not currentOk or type(current) ~= "number" then return end
+
+        -- Persist the transition and ownership fence before the first write.
+        -- If the setter fails, the unchanged receiver still matches the fence
+        -- and a later reconciliation can retry without losing the baseline.
+        md[CARRY_RECEIVER_ACTIVE_KEY] = true
+        md[CARRY_RECEIVER_BASELINE_KEY] = current
+        md[CARRY_RECEIVER_LAST_APPLIED_KEY] = current
+        if current ~= summary.carryTargetBase then
+            local setOk = callMethod(player, "setMaxWeightBase", summary.carryTargetBase)
+            if setOk then
+                md[CARRY_RECEIVER_LAST_APPLIED_KEY] = summary.carryTargetBase
+            end
+        end
+        return
+    end
+
+    if carryActive then
+        -- Missing or malformed current-version evidence cannot prove ownership.
+        -- Preserve it for diagnosis/retry and do not acquire a new baseline.
+        if type(baseline) ~= "number" or type(lastApplied) ~= "number" then return end
+        local currentOk, current = callMethod(player, "getMaxWeightBase")
+        if not currentOk or type(current) ~= "number" then return end
+        if current ~= lastApplied then
+            -- A foreign writer changed the receiver. Clear only UTCore's
+            -- ownership fence, retain the active marker, and do not reacquire
+            -- until every carry source has left.
+            clearCarryReceiverOwnership(md)
+            return
+        end
+        if current ~= summary.carryTargetBase then
+            local setOk = callMethod(player, "setMaxWeightBase", summary.carryTargetBase)
+            if setOk then
+                md[CARRY_RECEIVER_LAST_APPLIED_KEY] = summary.carryTargetBase
+            end
+        end
+        return
+    end
+
+    if not wasActive then return end
+    if type(baseline) ~= "number" or type(lastApplied) ~= "number" then
+        -- An invalidated active period has no owned value to restore.
+        if baseline == nil and lastApplied == nil then
+            md[CARRY_RECEIVER_ACTIVE_KEY] = nil
+        end
+        return
+    end
+
+    local currentOk, current = callMethod(player, "getMaxWeightBase")
+    if not currentOk or type(current) ~= "number" then return end
+    if current ~= lastApplied then
+        clearCarryReceiverOwnership(md)
+        md[CARRY_RECEIVER_ACTIVE_KEY] = nil
+        return
+    end
+
+    local setOk = true
+    if current ~= baseline then
+        setOk = callMethod(player, "setMaxWeightBase", baseline)
+    end
+    if setOk then
+        clearCarryReceiverOwnership(md)
+        md[CARRY_RECEIVER_ACTIVE_KEY] = nil
+    end
 end
 
 function UTCore.reconcileAggregatedModifiers(player)
@@ -187,13 +282,9 @@ function UTCore.reconcileAggregatedModifiers(player)
 
     local summary = UTCore.refreshAggregatedModifierCache(player)
     if not summary then return nil end
-    local carryTarget = summary and summary.carryTargetBase or nil
-    if carryTarget ~= nil and player.getMaxWeightBase and player.setMaxWeightBase then
-        local current = player:getMaxWeightBase()
-        if current ~= carryTarget then
-            player:setMaxWeightBase(carryTarget)
-        end
-    end
+    local mdOk, md = callMethod(player, "getModData")
+    if not mdOk or type(md) ~= "table" then return nil end
+    reconcileCarryReceiver(player, md, summary)
 
     -- Sync inventory container capacity with actual carry ability.
     -- Vanilla B42.17 is safe only up to 100. Higher values require the
@@ -203,17 +294,21 @@ function UTCore.reconcileAggregatedModifiers(player)
         invOk, inv = pcall(player.getInventory, player)
     end
     if invOk and inv and inv.setCapacity and inv.getCapacity then
-        local maxW = player.getMaxWeight and player:getMaxWeight() or 0
-        local base = player.getMaxWeightBase and player:getMaxWeightBase() or 8
-        local wMod = player.getWeightMod and player:getWeightMod() or 1.0
-        local delta = player.getMaxWeightDelta and player:getMaxWeightDelta() or 1.0
+        local maxWOk, maxW = callMethod(player, "getMaxWeight")
+        local baseOk, base = callMethod(player, "getMaxWeightBase")
+        local wModOk, wMod = callMethod(player, "getWeightMod")
+        local deltaOk, delta = callMethod(player, "getMaxWeightDelta")
+        maxW = maxWOk and type(maxW) == "number" and maxW or 0
+        base = baseOk and type(base) == "number" and base or nil
+        wMod = wModOk and type(wMod) == "number" and wMod or 1.0
+        delta = deltaOk and type(delta) == "number" and delta or 1.0
+        if base == nil then return summary end
         local estimated = math.floor(base * wMod * delta)
         local needed = math.max(50, maxW, estimated)
         local targetCap = needed
         if not isInventoryLimitPatchActive() then
             targetCap = math.min(SAFE_INVENTORY_CAPACITY_MAX, needed)
         end
-        local md = player:getModData()
         local ownedCapacity = md[INVENTORY_CAPACITY_APPLIED_KEY]
         local currentOk, currentCap = pcall(inv.getCapacity, inv)
         if currentOk and type(currentCap) == "number" then
