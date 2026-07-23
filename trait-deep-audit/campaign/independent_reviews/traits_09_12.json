@@ -1800,14 +1800,14 @@
       "resolution_record": "change-impact/staunch-bleed-decay-composition.json"
     },
     {
-      "accepted_overall_state": "confirmed-defect",
+      "accepted_overall_state": "runtime-unproven",
       "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:9",
       "cross_finding_ids": [
         "IR0912-FINDING-STATE-001",
         "IR0912-LOCALIZATION-001"
       ],
       "independent_state": "runtime-unproven",
-      "omission_disposition": "new omissions listed",
+      "omission_disposition": "resolved",
       "omissions": [
         {
           "affected_surfaces": [
@@ -1843,18 +1843,38 @@
           "title": "Accepted Strong & Nimble defect contradicts Lua exposure"
         }
       ],
-      "rejected_accepted_finding_ids": [
+      "rejected_accepted_finding_ids": [],
+      "source_batch": "batch_11",
+      "supported_accepted_finding_ids": [
         "B11-STRONGNIMBLE-001"
       ],
-      "source_batch": "batch_11",
-      "supported_accepted_finding_ids": [],
       "trait_id": "UniversalTraits:UT_strongnimble",
       "unresolved_runtime_proof_ids": [
         "RP0912-KAHLUA-001",
         "RP0912-SAVELOAD-001",
         "RP0912-BALANCE-PERF-001",
         "RP0912-LOCALE-001"
-      ]
+      ],
+      "verified_finding_ids": [
+        "B11-STRONGNIMBLE-001"
+      ],
+      "repair_resolution": {
+        "state": "implemented-and-statically-validated",
+        "resolved_finding_ids": [
+          "B11-STRONGNIMBLE-001",
+          "IR11-STRONGNIMBLE-001"
+        ],
+        "open_finding_ids": [],
+        "remaining_runtime_proof": "Current-build Kahlua, live fence/rope outcomes, lifecycle, stacked traits, rendered English, balance, and profiler observation remain unrun. Missing-rope semantics await user decision."
+      },
+      "release_parity": {
+        "source_runtime_sha256": "B49BCCCD0DD8144BB914D0F95DCCBC4F8F5EECC864C1422824E97C97928C2E9E",
+        "release_runtime_sha256": "B49BCCCD0DD8144BB914D0F95DCCBC4F8F5EECC864C1422824E97C97928C2E9E",
+        "source_english_sha256": "25743DE1701634402454757C089348F3733FF9F9BC2E1C8D224DC5B7AA445B89",
+        "release_english_sha256": "25743DE1701634402454757C089348F3733FF9F9BC2E1C8D224DC5B7AA445B89",
+        "state": "proven-correct"
+      },
+      "resolution_record": "change-impact/strongnimble-climb-contract.json"
     },
     {
       "accepted_overall_state": "confirmed-defect",

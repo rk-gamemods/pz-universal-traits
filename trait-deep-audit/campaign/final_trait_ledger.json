@@ -47,7 +47,7 @@
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "29C24133912335231DA8ED2E8462B64D9DBE837A0F553E3988547AEA52347D8D",
     "independent_reviews/traits_05_08.json": "B1CDBE8BBEE77E5C4D9417E0E77E1EF69178E8F34BD4C18B825038266D7E9D53",
-    "independent_reviews/traits_09_12.json": "413A0AC1FF10FE1EB2E38B78A02AFF0D5EC5C92610E84ECB11B2B9C420C76A49",
+    "independent_reviews/traits_09_12.json": "1225AF3B49957940C2F81C8B07833B1B40CC6086A228A8D5B1DEFD03B363AD24",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "4FD54923B0938C3294AB5E9D0C0168A08FDBF353A73FBE83BCE7F5DDF8B911F2",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
@@ -59,9 +59,9 @@
     "trait_batches/batch_08.jsonl": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A",
     "trait_batches/batch_09.jsonl": "7493EABBF27471F551A42E6B750D8927EC80B36404B51ED6E7CBC74349EAFE44",
     "trait_batches/batch_10.jsonl": "33304EC69C6072CE027BFD779AB0E2332EEDE70DC56B6920468F46BC4A2ABE31",
-    "trait_batches/batch_11.jsonl": "96361D7DDD836EA81336A763B7787799DAAF09B8BDBFA4B68729A2F5B0ECAA61",
+    "trait_batches/batch_11.jsonl": "CD79D2E6BC506CBEC2337F4035EC653938EB58B1350A29ED16044A1694C8E65D",
     "trait_batches/batch_12.jsonl": "AE044BC0927A818D38DFB20DF59DADDCDA7C951F4E8082D633DC69CB0FF29BD8",
-    "translation_audit.json": "32431850FED2C9679D5760CC16A9067D20F60844D0AC3C03543407CF25118B0A"
+    "translation_audit.json": "28843AD4660C4E2C478C29DC332468CF0E10B7049DF56154F4006E65928E1E3B"
   },
   "counts": {
     "traits": 198,
@@ -78,15 +78,15 @@
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 59,
+      "confirmed-defect": 58,
       "coverage-gap": 12,
-      "runtime-unproven": 102
+      "runtime-unproven": 103
     },
     "dimension_states": {
-      "proven-correct": 2774,
-      "confirmed-defect": 233,
+      "proven-correct": 2779,
+      "confirmed-defect": 222,
       "coverage-gap": 763,
-      "runtime-unproven": 982
+      "runtime-unproven": 988
     }
   },
   "independent_review_findings": [
@@ -55416,12 +55416,12 @@
     {
       "trait_id": "UniversalTraits:UT_strongnimble",
       "batch": "batch_11",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
           "evidence": [
-            "exact"
+            "The registry, definition, runtime ID, and English keys agree."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -55429,11 +55429,13 @@
           ]
         },
         "definition_parser": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "complete"
+            "The complete source and release definitions are byte-identical and pass the standard-Lua consistency parser."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current-build ScriptManager loading remains unobserved."
+          ],
           "source_dimensions": [
             "definition_parser"
           ]
@@ -55441,7 +55443,7 @@
         "namespace": {
           "state": "proven-correct",
           "evidence": [
-            "consistent"
+            "All owned surfaces use UniversalTraits:UT_strongnimble."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -55451,7 +55453,7 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "cost 5; Nimble +2, Strength +1; no grants/exclusions"
+            "Cost is 5, Nimble is +2, Strength is +1, no grants or exclusions exist, and multiplayer is disabled."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -55459,23 +55461,23 @@
           ]
         },
         "source_intent": {
-          "state": "confirmed-defect",
+          "state": "runtime-unproven",
           "evidence": [
-            "XP boosts plus never falling from fences/ropes"
+            "Pre-campaign master promises fence and rope fall protection. The shared proven subset is stochastic low-fence and intact-rope failure prevention."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "User decision remains required for the forced fall after physical rope removal."
+          ],
           "source_dimensions": [
             "source_intent"
           ]
         },
         "runtime_path": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "active tick dispatcher checks fall/climb state and tries setbFalling(false); optional invented fence events"
+            "The active-only tick handler changes only the exact low-fence fall outcome and resets the intact-rope random-check timer before Java state execution."
           ],
-          "missing_proof": [
-            "A live Kahlua exposure trace for setbFalling was not supplied; the current project contract and absent events establish the defect."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "runtime_path"
           ]
@@ -55483,7 +55485,7 @@
         "numbers": {
           "state": "proven-correct",
           "evidence": [
-            "XP values correct; tick throttle 0"
+            "Nimble +2, Strength +1, cost 5, exact fall outcome, and zeroed rope timer match the accepted static contract."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -55491,9 +55493,9 @@
           ]
         },
         "cadence": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "every player update while active; per-tick is justified for transition detection but is not lightweight"
+            "Every-update cadence is required because IsoPlayer fires OnPlayerUpdate before the climb states execute; work is active-trait-only and constant."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -55503,7 +55505,7 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
-            "none"
+            "Strong and Nimble has no cooldown."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -55513,43 +55515,41 @@
         "reset_save_load": {
           "state": "runtime-unproven",
           "evidence": [
-            "active handler array rebuilds OnCreatePlayer"
+            "The handler uses live animation state and owns no persisted setup flags or modData."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "Current-build new game, save load, death, and repeated world entry remain unobserved."
           ],
           "source_dimensions": [
             "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Java methods exist, but closest contract states no verified public Lua cancellation API"
+            "SVN 964 proves the fence outcome matrix, IsoPlayer update order, both rope random branches, public climb timer methods, and inherited animation-variable interfaces."
           ],
-          "missing_proof": [
-            "A live Kahlua exposure trace for setbFalling was not supplied; the current project contract and absent events establish the defect."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "java_lua"
           ]
         },
         "kahlua": {
-          "state": "confirmed-defect",
+          "state": "runtime-unproven",
           "evidence": [
-            "pcall suppresses failed setter; method-field guard silently skips when not exposed"
+            "The correction uses Kahlua-compatible conditionals and verified public receiver methods without Java method replacement."
           ],
           "missing_proof": [
-            "A live Kahlua exposure trace for setbFalling was not supplied; the current project contract and absent events establish the defect."
+            "Current-build Kahlua execution remains unobserved."
           ],
           "source_dimensions": [
             "kahlua"
           ]
         },
         "events": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "OnFenceClimb and OnClimbFence have zero matches in current PZCodebase"
+            "One central OnPlayerUpdate dispatcher replaces the nonexistent OnFenceClimb and OnClimbFence events."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -55557,11 +55557,13 @@
           ]
         },
         "stacking_interactions": {
-          "state": "confirmed-defect",
+          "state": "runtime-unproven",
           "evidence": [
-            "XP stacks normally; fall prevention independently broken/unproven"
+            "The handler changes only climb outcome or timer state and does not write shared multipliers."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Live interaction with other movement traits remains unobserved."
+          ],
           "source_dimensions": [
             "stacking_interactions"
           ]
@@ -55569,7 +55571,7 @@
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "disabled"
+            "The definition disables the trait in multiplayer and multiplayer support is an explicit product non-goal."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -55579,7 +55581,7 @@
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "EN present"
+            "The exact English display name is Strong and Nimble."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -55587,9 +55589,9 @@
           ]
         },
         "description": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "promises never-fall outcome"
+            "English states both XP boosts and the currently implemented random fence and intact-rope protection."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -55599,41 +55601,43 @@
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "EN only"
+            "The exact English keys exist with source-release parity."
           ],
           "missing_proof": [
-            "A non-EN localization requirement was not supplied."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
             "localization"
           ]
         },
         "balance": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "cost includes an outcome not proven available"
+            "Cost 5 and both XP boosts remain unchanged; the corrected static behavior restores value previously promised but not delivered."
           ],
           "missing_proof": [
-            "A formal balance target was not supplied."
+            "No gameplay telemetry or comparative balance session exists."
           ],
           "source_dimensions": [
             "balance"
           ]
         },
         "performance": {
-          "state": "confirmed-defect",
+          "state": "runtime-unproven",
           "evidence": [
-            "unthrottled action-state string conversion/search plus isFalling checks every active tick"
+            "The active-only handler performs constant work with no scans, extra events, or background tasks."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "No current-build profiler capture exists."
+          ],
           "source_dimensions": [
             "performance"
           ]
         },
         "tests": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "test passes against a mock-provided setter and invented events"
+            "Five focused cases prove red reproduction, exact fence conversion, slot-safe comparison, intact-rope reset, controls, outcome preservation, and trait gating; the full Lua suite passes 512 tests."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -55641,9 +55645,9 @@
           ]
         },
         "mocks": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "setbFalling and both fence events are supplied without current Lua contract support"
+            "Animation-variable mocks distinguish slot access from string comparison and model case-insensitive isVariable plus rope state and timer methods."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -55653,7 +55657,7 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "equal"
+            "Runtime, definition, and English source-release pairs are byte-identical."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -55661,11 +55665,13 @@
           ]
         },
         "packaging": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "complete"
+            "All trait-owned 42.0 runtime, definition, and English counterparts are present and identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Read-only package verification still tracks the separate missing source poster."
+          ],
           "source_dimensions": [
             "packaging"
           ]
@@ -55675,10 +55681,12 @@
         "B11-STRONGNIMBLE-001"
       ],
       "unknowns": [
-        "Live Kahlua exposure of setbFalling was not executed.",
-        "No non-EN requirement."
+        "User decision remains required for a physically removed rope.",
+        "Current-build Kahlua, live fence and rope climbs, lifecycle, stacked traits, rendered English, balance, and profiler observation remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory.",
+        "Multiplayer and backward save migration are explicit non-goals."
       ],
-      "translation_terminal_state": "coverage-gap",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_09_12.json",
         "review_state": "runtime-unproven",
@@ -55689,10 +55697,10 @@
           "IR0912-FINDING-STATE-001",
           "IR0912-LOCALIZATION-001"
         ],
-        "verified_first_pass_finding_ids": [],
-        "rejected_first_pass_finding_ids": [
+        "verified_first_pass_finding_ids": [
           "B11-STRONGNIMBLE-001"
         ],
+        "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [
           "RP0912-KAHLUA-001",
           "RP0912-SAVELOAD-001",

@@ -1,0 +1,105 @@
+{
+  "schema": "ut-strongnimble-climb-resolution-v1",
+  "trait_id": "UniversalTraits:UT_strongnimble",
+  "authority": {
+    "accepted_baseline": "pre-campaign UTMods master",
+    "accepted_contract": "cost 5, Nimble +2, Strength +1, and fence or rope fall protection",
+    "pz_snapshot": "SVN revision 964; Steam BuildID 23504596 is recorded outside VERSION.json"
+  },
+  "accepted_intent": {
+    "cost": 5,
+    "xp_boosts": {
+      "Nimble": 2,
+      "Strength": 1
+    },
+    "proven_runtime_scope": "stochastic low-fence failure and stochastic intact-rope failure",
+    "pending_semantic_decision": "forced fall after physical rope removal",
+    "product_scope": "single-player"
+  },
+  "resolved_findings": [
+    "B11-STRONGNIMBLE-001",
+    "IR11-STRONGNIMBLE-001"
+  ],
+  "engine_evidence": [
+    "PZCodebase/Java/source/zombie/ai/states/ClimbOverFenceState.java:98-128,176-239,270-275",
+    "PZCodebase/Java/source/zombie/ai/states/ClimbSheetRopeState.java:50-101",
+    "PZCodebase/Java/source/zombie/ai/states/ClimbDownSheetRopeState.java:38-92,139-145",
+    "PZCodebase/Java/source/zombie/characters/IsoPlayer.java:2019-2034,2241",
+    "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:12975-13178,17169-17270",
+    "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_strongnimble.lua"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_strongnimble.lua",
+      "sha256": "B49BCCCD0DD8144BB914D0F95DCCBC4F8F5EECC864C1422824E97C97928C2E9E",
+      "bytes": 1132
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_strongnimble.lua",
+      "sha256": "B49BCCCD0DD8144BB914D0F95DCCBC4F8F5EECC864C1422824E97C97928C2E9E",
+      "bytes": 1132
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "25743DE1701634402454757C089348F3733FF9F9BC2E1C8D224DC5B7AA445B89",
+      "bytes": 37485
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "25743DE1701634402454757C089348F3733FF9F9BC2E1C8D224DC5B7AA445B89",
+      "bytes": 37485
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "9D873D9224EF6C9FEEE6CC4A6FAE8BC2742697BEB80BCBDE0CF203A191D95E55",
+      "bytes": 318515
+    },
+    {
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "sha256": "2A28789E8B1EEABE69DBE58A9DB6610FBA003B8A9C3CD29E56BF36F262F5949B",
+      "bytes": 78737
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_strongnimble.md",
+      "sha256": "7E156BC898C0B88FFF34798E85A2A4FC5833A43434873C6C069CC656D12A0702",
+      "bytes": 6269
+    },
+    {
+      "path": "tools/verify_pz_api.py",
+      "sha256": "8417BCA214B92A176C613D98DC96C103049258DDFC3168B4BB36E392EA0CC595",
+      "bytes": 84099
+    },
+    {
+      "path": "tools/tests/test_verify_pz_api_contract.py",
+      "sha256": "C1FE10E4308B3199CE2FB2BFCF89A04633D0900369B1C27D71BFC35B963543B7",
+      "bytes": 26711
+    }
+  ],
+  "regression_cases": [
+    "invalid slot-to-string comparison fails red",
+    "exact low-fence fall becomes success",
+    "all other fence outcomes remain unchanged",
+    "ordinary falling state remains unchanged",
+    "intact-rope timer resets to zero",
+    "off-rope and no-trait controls remain unchanged",
+    "source-release parity"
+  ],
+  "performance_model": "Constant work in one active-only every-update handler; no scans, extra event registrations, or background work.",
+  "runtime_proof": "Unobserved; requires full desktop relaunch, current-build Kahlua, live low-fence and upward/downward rope cases, lifecycle, stacked traits, rendered English, balance, and profiler observation.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment",
+    "changing cost, XP boosts, or trait purpose"
+  ]
+}
