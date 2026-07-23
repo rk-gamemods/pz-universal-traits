@@ -491,11 +491,15 @@ function UTCore.reconcileAggregatedModifiers(player)
 
     local carryFlat = md["UT_carryFlatMod"] or 0
     local carryStrengthBonus = md["UT_carryStrengthBonus"] or 0
+    local carryTarget = nil
     if hasEntries(buckets.carryStrengthAdd) or carryFlat ~= 0 then
         local strength = player:getPerkLevel(Perks.Strength)
         local base = hasEntries(buckets.carryStrengthAdd) and (5 + strength) or 8
-        player:setMaxWeightBase(base + carryStrengthBonus + carryFlat)
+        carryTarget = base + carryStrengthBonus + carryFlat
+        player:setMaxWeightBase(carryTarget)
     end
+    md["UT_carryTargetBase"] = carryTarget
+    return { carryTargetBase = carryTarget }
 end
 
 UTCore.hasTrait = function(player, traitId)
@@ -1659,23 +1663,22 @@ end
 -- nonBagCount: number of non-container worn items
 function MockWornItems(bagCount, nonBagCount)
     local slots = {}
-    for _ = 1, (bagCount or 0) do
-        table.insert(slots, {
-            getItem = function(self)
-                return { IsInventoryContainer = function() return true end }
-            end
-        })
-    end
     for _ = 1, (nonBagCount or 0) do
         table.insert(slots, {
-            getItem = function(self)
-                return { IsInventoryContainer = function() return false end }
-            end
+            IsInventoryContainer = function() return false end,
+        })
+    end
+    for _ = 1, (bagCount or 0) do
+        table.insert(slots, {
+            IsInventoryContainer = function() return true end,
         })
     end
     return {
-        size    = function(self) return #slots end,
-        getItem = function(self, i) return slots[i + 1] end,  -- 0-indexed like Java
+        size = function(self) return #slots end,
+        getItemByIndex = function(self, i) return slots[i + 1] end,
+        getItem = function()
+            error("WornItems:getItem(int) does not exist in Build 42")
+        end,
     }
 end
 

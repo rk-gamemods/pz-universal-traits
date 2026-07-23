@@ -376,7 +376,7 @@
     "UI_UT_physicallyactive": "Physically Active",
     "UI_UT_physicallyactiveDesc": "You have always pushed your body and it pays off. Exercise yields more fitness gains for you than it does for others.",
     "UI_UT_humanhamster": "Human Hamster",
-    "UI_UT_humanhamsterDesc": "You have an overwhelming compulsion to hoard. Every container you pass demands to be checked and filled.",
+    "UI_UT_humanhamsterDesc": "Carry 2 more weight. If your inventory is below 80% full or you are not wearing an inventory container, craving builds each minute and adds 0.02/0.04/0.08 stress per minute after 10/30/60 minutes.",
     "UI_UT_superimmune": "Super Immune",
     "UI_UT_superimmuneDesc": "Your immune system is exceptional. Infections that would lay others low barely register with your body.",
     "UI_UT_indefatigable": "Indefatigable",

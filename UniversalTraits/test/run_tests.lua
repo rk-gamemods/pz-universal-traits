@@ -3290,59 +3290,222 @@ end)
 
 -- ─── UT_humanhamster ──────────────────────────────────────────────────────────
 
-test("humanhamster no stress when craving below 10", function()
-    local inv    = MockInventory(4.0)   -- 4/8 = 50%, needs bag too
-    local player = MockPlayer({ "UniversalTraits:UT_humanhamster" }, {
-        inventory = inv,
-        wornItems = MockWornItems(0),  -- no bag
-    })
-    player:getModData()["UT_hamsterCraving"] = 5  -- craving = 5 (below 10 threshold)
+local HUMAN_HAMSTER_ID = "UniversalTraits:UT_humanhamster"
+
+local function humanHamsterPlayer(weight, wornItems, opts)
+    opts = opts or {}
+    opts.inventory = opts.inventory or MockInventory(weight or 0, opts.inventoryCapacity)
+    opts.wornItems = wornItems
+    return MockPlayer({ HUMAN_HAMSTER_ID }, opts)
+end
+
+local function fireHumanHamsterMinute(player)
     withActivePlayer(player, function()
         Events.EveryOneMinute:fire()
     end)
-    assert_eq(player:getStats():get(CharacterStat.STRESS), 0.0, "no stress at craving < 10")
+end
+
+local function humanHamsterCarryBucket(player)
+    return player:getModData()["UT_modifierBuckets"]["carryFlatAdd"]
+end
+
+test("humanhamster uses zero based WornItems access for all worn item shapes", function()
+    local cases = {
+        { name = "zero items", worn = MockWornItems(0, 0), expectedCraving = 1 },
+        { name = "ordinary item", worn = MockWornItems(0, 1), expectedCraving = 1 },
+        { name = "container", worn = MockWornItems(1, 0), expectedCraving = 0 },
+        { name = "later container", worn = MockWornItems(1, 2), expectedCraving = 0 },
+    }
+
+    for _, case in ipairs(cases) do
+        local player = humanHamsterPlayer(8, case.worn)
+        fireHumanHamsterMinute(player)
+        assert_eq(player:getModData()["UT_hamsterCraving"], case.expectedCraving, case.name)
+    end
 end)
 
-test("humanhamster adds mild stress at craving 10–29", function()
-    local inv    = MockInventory(4.0)
-    local player = MockPlayer({ "UniversalTraits:UT_humanhamster" }, {
-        inventory = inv,
-        wornItems = MockWornItems(0),
-    })
-    player:getModData()["UT_hamsterCraving"] = 9  -- will become 10 after increment
-    withActivePlayer(player, function()
-        Events.EveryOneMinute:fire()
-    end)
-    local stress = player:getStats():get(CharacterStat.STRESS)
-    assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.02, "mild stress (+0.02) at craving 10")
+test("humanhamster contains nil malformed and throwing WornItems errors", function()
+    local malformed = {
+        false,
+        {},
+        { size = function() error("size failed") end },
+        { size = function() return "one" end },
+        { size = function() return 1 end },
+        { size = function() return 1 end, getItemByIndex = function() error("index failed") end },
+        { size = function() return 1 end, getItemByIndex = function() return {} end },
+        {
+            size = function() return 1 end,
+            getItemByIndex = function() return {
+                IsInventoryContainer = function() error("container failed") end,
+            } end,
+        },
+    }
+
+    for index, wornItems in ipairs(malformed) do
+        local player = humanHamsterPlayer(8, wornItems == false and nil or wornItems)
+        fireHumanHamsterMinute(player)
+        assert_eq(player:getModData()["UT_hamsterCraving"], 1, "malformed case " .. index)
+    end
 end)
 
-test("humanhamster adds severe stress at craving 60+", function()
-    local inv    = MockInventory(4.0)
-    local player = MockPlayer({ "UniversalTraits:UT_humanhamster" }, {
-        inventory = inv,
-        wornItems = MockWornItems(0),
-    })
-    player:getModData()["UT_hamsterCraving"] = 59  -- will become 60 after increment
-    withActivePlayer(player, function()
-        Events.EveryOneMinute:fire()
-    end)
-    local stress = player:getStats():get(CharacterStat.STRESS)
-    assert_eq(math.floor(stress * 1000 + 0.5) / 1000, 0.08, "severe stress (+0.08) at craving 60")
+test("humanhamster applies the exact fullness boundary including empty inventory", function()
+    local below = humanHamsterPlayer(7.9, MockWornItems(1, 0))
+    fireHumanHamsterMinute(below)
+    assert_eq(below:getModData()["UT_hamsterCraving"], 1, "79 percent remains deprived")
+
+    local boundary = humanHamsterPlayer(8.0, MockWornItems(1, 0))
+    boundary:getModData()["UT_hamsterCraving"] = 20
+    fireHumanHamsterMinute(boundary)
+    assert_eq(boundary:getModData()["UT_hamsterCraving"], 0, "80 percent is satisfied")
+
+    local empty = humanHamsterPlayer(0, MockWornItems(1, 0), { inventoryCapacity = 0 })
+    fireHumanHamsterMinute(empty)
+    assert_eq(empty:getModData()["UT_hamsterCraving"], 1, "empty zero capacity inventory is deprived")
 end)
 
-test("humanhamster resets craving when 80pct full with backpack", function()
-    local inv    = MockInventory(7.0)   -- 7/8 = 87.5%, >= 80%
-    local player = MockPlayer({ "UniversalTraits:UT_humanhamster" }, {
-        inventory = inv,
-        wornItems = MockWornItems(1),  -- one backpack worn
-    })
-    player:getModData()["UT_hamsterCraving"] = 30
-    withActivePlayer(player, function()
-        Events.EveryOneMinute:fire()
-    end)
-    assert_eq(player:getModData()["UT_hamsterCraving"], 0, "craving resets when satisfied")
-    assert_eq(player:getStats():get(CharacterStat.STRESS), 0.0, "no stress when satisfied")
+test("humanhamster preserves every craving stress tier and cap", function()
+    local cases = {
+        { before = 8, expected = 0.00 },
+        { before = 9, expected = 0.02 },
+        { before = 29, expected = 0.04 },
+        { before = 59, expected = 0.08 },
+    }
+
+    for _, case in ipairs(cases) do
+        local player = humanHamsterPlayer(0, MockWornItems(0, 0), { stress = 0 })
+        player:getModData()["UT_hamsterCraving"] = case.before
+        fireHumanHamsterMinute(player)
+        assert_close(player:getStats():get(CharacterStat.STRESS), case.expected, 0.00001)
+    end
+
+    local capped = humanHamsterPlayer(0, MockWornItems(0, 0), { stress = 0.97 })
+    capped:getModData()["UT_hamsterCraving"] = 59
+    fireHumanHamsterMinute(capped)
+    assert_eq(capped:getStats():get(CharacterStat.STRESS), 1, "stress remains capped at one")
+end)
+
+test("humanhamster carry contribution is plus two and idempotent across reentry", function()
+    local player = humanHamsterPlayer(0, MockWornItems(0, 0))
+    Events.OnCreatePlayer:fire(0, player)
+    Events.OnCreatePlayer:fire(0, player)
+    fireHumanHamsterMinute(player)
+
+    assert_eq(player:getMaxWeightBase(), 10)
+    assert_eq(humanHamsterCarryBucket(player)[HUMAN_HAMSTER_ID], 2)
+end)
+
+test("humanhamster composes with and preserves external carry contributions", function()
+    local player = humanHamsterPlayer(0, MockWornItems(0, 0))
+    UTCore.applyCarryWeight(player, 4, "external_trait")
+    Events.OnCreatePlayer:fire(0, player)
+    assert_eq(player:getMaxWeightBase(), 14)
+
+    player:setMockTrait(HUMAN_HAMSTER_ID, false)
+    fireHumanHamsterMinute(player)
+    assert_eq(player:getMaxWeightBase(), 12)
+    assert_eq(humanHamsterCarryBucket(player)["external_trait"], 4)
+    assert_eq(humanHamsterCarryBucket(player)[HUMAN_HAMSTER_ID], nil)
+end)
+
+test("humanhamster trait removal clears only owned carry and craving then restores", function()
+    local player = humanHamsterPlayer(0, MockWornItems(0, 0), { stress = 0.35 })
+    Events.OnCreatePlayer:fire(0, player)
+    player:getModData()["UT_hamsterCraving"] = 40
+
+    player:setMockTrait(HUMAN_HAMSTER_ID, false)
+    fireHumanHamsterMinute(player)
+    assert_eq(player:getMaxWeightBase(), 8)
+    assert_eq(player:getModData()["UT_hamsterCraving"], nil)
+    assert_eq(player:getStats():get(CharacterStat.STRESS), 0.35, "external stress is untouched")
+
+    player:setMockTrait(HUMAN_HAMSTER_ID, true)
+    Events.OnCreatePlayer:fire(0, player)
+    assert_eq(player:getMaxWeightBase(), 10)
+    assert_eq(humanHamsterCarryBucket(player)[HUMAN_HAMSTER_ID], 2)
+end)
+
+test("humanhamster player replacement tears down the previous player", function()
+    local first = humanHamsterPlayer(0, MockWornItems(0, 0))
+    Events.OnCreatePlayer:fire(0, first)
+    first:getModData()["UT_hamsterCraving"] = 22
+
+    local second = humanHamsterPlayer(0, MockWornItems(0, 0))
+    Events.OnCreatePlayer:fire(0, second)
+    assert_eq(first:getMaxWeightBase(), 8)
+    assert_eq(first:getModData()["UT_hamsterCraving"], nil)
+    assert_eq(second:getMaxWeightBase(), 10)
+end)
+
+test("humanhamster death and inactive teardown clear owned state", function()
+    local dead = humanHamsterPlayer(0, MockWornItems(0, 0))
+    dead.isDead = function() return true end
+    dead:getModData()["UT_hamsterCraving"] = 12
+    Events.OnCreatePlayer:fire(0, dead)
+    assert_eq(humanHamsterCarryBucket(dead)[HUMAN_HAMSTER_ID], nil)
+    assert_eq(dead:getModData()["UT_hamsterCraving"], nil)
+
+    local inactive = humanHamsterPlayer(0, MockWornItems(0, 0))
+    Events.OnCreatePlayer:fire(0, inactive)
+    inactive:getModData()["UT_hamsterCraving"] = 12
+    fireHumanHamsterMinute(nil)
+    assert_eq(inactive:getMaxWeightBase(), 8)
+    assert_eq(inactive:getModData()["UT_hamsterCraving"], nil)
+end)
+
+test("humanhamster save load and duplicate module evaluation keep one owned source", function()
+    local player = humanHamsterPlayer(0, MockWornItems(0, 0))
+    Events.OnCreatePlayer:fire(0, player)
+    local persisted = player:getModData()
+
+    local loaded = humanHamsterPlayer(0, MockWornItems(0, 0), { moddata = persisted })
+    Events.OnCreatePlayer:fire(0, loaded)
+    assert_eq(loaded:getMaxWeightBase(), 10)
+
+    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_humanhamster.lua")
+    Events.OnCreatePlayer:fire(0, loaded)
+    local before = loaded:getModData()["UT_hamsterCraving"] or 0
+    fireHumanHamsterMinute(loaded)
+
+    assert_eq(loaded:getMaxWeightBase(), 10)
+    assert_eq(humanHamsterCarryBucket(loaded)[HUMAN_HAMSTER_ID], 2)
+    assert_eq(loaded:getModData()["UT_hamsterCraving"], before + 1,
+        "duplicate callbacks must not increment craving more than once")
+end)
+
+test("humanhamster identity cost and English copy match the exact contract", function()
+    assert_trait_registered(UTTraitsRegistries.UT_humanhamster, HUMAN_HAMSTER_ID)
+
+    local scriptFile = assert(io.open(base .. "../media/scripts/UT_character_traits.txt", "r"))
+    local scriptText = scriptFile:read("*a")
+    scriptFile:close()
+    local block = scriptText:match(
+        "character_trait_definition%s+UniversalTraits:UT_humanhamster%s*(%b{})")
+    assert_true(block ~= nil, "Human Hamster definition must exist")
+    assert_true(block:match("Cost%s*=%s*-1%s*,") ~= nil, "Human Hamster cost must remain -1")
+
+    local expected = "Carry 2 more weight. If your inventory is below 80% full or you are not wearing an inventory container, craving builds each minute and adds 0.02/0.04/0.08 stress per minute after 10/30/60 minutes."
+    local sourceFile = assert(io.open(base .. "../media/lua/shared/Translate/EN/UI.json", "r"))
+    local sourceText = sourceFile:read("*a")
+    sourceFile:close()
+    assert_eq(sourceText:match('"UI_UT_humanhamster"%s*:%s*"([^"]+)"'), "Human Hamster")
+    assert_eq(sourceText:match('"UI_UT_humanhamsterDesc"%s*:%s*"([^"]+)"'), expected)
+end)
+
+test("humanhamster source and release production files stay byte identical", function()
+    local function readAll(path)
+        local file = assert(io.open(path, "rb"))
+        local content = file:read("*a")
+        file:close()
+        return content
+    end
+
+    local runtimePath = "lua/shared/UniversalTraits/traits/UT_humanhamster.lua"
+    assert_eq(
+        readAll(base .. "../media/" .. runtimePath),
+        readAll(base .. "../release/UniversalTraits/42.0/media/" .. runtimePath))
+    assert_eq(
+        readAll(base .. "../media/lua/shared/Translate/EN/UI.json"),
+        readAll(base .. "../release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json"))
 end)
 
 -- ─── UT_physicallyactive ──────────────────────────────────────────────────────
