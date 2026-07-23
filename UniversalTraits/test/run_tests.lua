@@ -4347,9 +4347,158 @@ test("sorelegs sets UT_speedMod=-0.2 and reduces carry weight on create", functi
     assert_true(p:getMaxWeightBase() < 8, "carry weight should be reduced")
 end)
 
-test("packmouse reduces carry weight by 2 on create", function()
-    local p = fireCreatePlayer("UniversalTraits:UT_packmouse")
+local PACKMOUSE_ID = "UniversalTraits:UT_packmouse"
+
+local function packmouseBucket(player)
+    local buckets = player:getModData()["UT_modifierBuckets"]
+    return buckets and buckets.carryFlatAdd
+end
+
+test("packmouse active apply is exactly keyed minus 2 and idempotent", function()
+    local p = fireCreatePlayer(PACKMOUSE_ID)
     assert_eq(p:getMaxWeightBase(), 6, "expected 8-2=6 carry weight")
+    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], -2, "Pack Mouse must own exactly -2")
+
+    Events.OnCreatePlayer:fire(0, p)
+    assert_eq(p:getMaxWeightBase(), 6, "re-entry must not compound the penalty")
+    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], -2, "re-entry must retain one keyed source")
+end)
+
+test("packmouse composes with unrelated flat and strength carry sources", function()
+    local p = MockPlayer({ PACKMOUSE_ID })
+    UTCore.applyCarryWeight(p, 3, "test:flat")
+    UTCore.applyStrengthCarryWeight(p, 4, "test:strength")
+
+    Events.OnCreatePlayer:fire(0, p)
+
+    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], -2, "Pack Mouse source")
+    assert_eq(packmouseBucket(p)["test:flat"], 3, "unrelated flat source")
+    assert_eq(
+        p:getModData()["UT_modifierBuckets"].carryStrengthAdd["test:strength"],
+        4,
+        "unrelated strength source"
+    )
+    assert_eq(p:getMaxWeightBase(), 10, "5 strength base +4 strength +3 flat -2 Pack Mouse")
+end)
+
+test("packmouse trait loss clears only its source and reconciles owned carry", function()
+    local p = MockPlayer({ PACKMOUSE_ID })
+    UTCore.applyCarryWeight(p, 3, "test:flat")
+    Events.OnCreatePlayer:fire(0, p)
+    assert_eq(p:getMaxWeightBase(), 9, "active composed target")
+
+    p:setMockTrait(PACKMOUSE_ID, false)
+    Events.OnCreatePlayer:fire(0, p)
+
+    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], nil, "Pack Mouse source must be removed")
+    assert_eq(packmouseBucket(p)["test:flat"], 3, "unrelated source must remain")
+    assert_eq(p:getMaxWeightBase(), 11, "only Pack Mouse's -2 should be removed")
+end)
+
+test("packmouse player replacement clears prior player ownership", function()
+    local prior = fireCreatePlayer(PACKMOUSE_ID)
+    local replacement = fireCreatePlayer(PACKMOUSE_ID)
+
+    assert_eq(packmouseBucket(prior)[PACKMOUSE_ID], nil, "prior player source must be cleared")
+    assert_eq(packmouseBucket(replacement)[PACKMOUSE_ID], -2, "replacement source must be active")
+end)
+
+test("packmouse invalid and dead teardown clear tracked ownership safely", function()
+    local p = fireCreatePlayer(PACKMOUSE_ID)
+    local okNil = pcall(function() UTPackMouseLifecycle.onCreatePlayer(0, nil) end)
+    assert_true(okNil, "nil teardown must not raise")
+    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], nil, "nil teardown must clear prior ownership")
+
+    Events.OnCreatePlayer:fire(0, p)
+    p:setDead(true)
+    local okDead = pcall(function() UTPackMouseLifecycle.onCreatePlayer(0, p) end)
+    assert_true(okDead, "dead teardown must not raise")
+    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], nil, "dead teardown must clear ownership")
+
+    local okInvalid = pcall(function() UTPackMouseLifecycle.onCreatePlayer(0, {}) end)
+    assert_true(okInvalid, "invalid bridge receiver must not raise")
+end)
+
+test("packmouse duplicate load keeps one handler and clears stale source", function()
+    local p = fireCreatePlayer(PACKMOUSE_ID)
+    local handlers = Events.OnCreatePlayer.getHandlerCount()
+
+    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+
+    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlers, "reload must replace one handler")
+    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], nil, "reload teardown must clear stale source")
+end)
+
+test("packmouse current version reconstruction reapplies one source", function()
+    local persisted = {
+        UT_modifierBuckets = {
+            speedAdd = {},
+            workAdd = {},
+            transferMult = {},
+            carryFlatAdd = { [PACKMOUSE_ID] = -2 },
+            carryStrengthAdd = {},
+        },
+        UT_carryFlatMod = -2,
+        _maxWeight = 6,
+    }
+    local p = MockPlayer({ PACKMOUSE_ID }, { moddata = persisted })
+
+    Events.OnCreatePlayer:fire(0, p)
+
+    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], -2, "reconstruction must retain one source")
+    assert_eq(p:getMaxWeightBase(), 6, "reconstruction must reconcile exactly once")
+end)
+
+test("packmouse preserves external inventory capacity ownership", function()
+    local p = MockPlayer({ PACKMOUSE_ID })
+    local inventory = {
+        capacity = 77,
+        getCapacity = function(self) return self.capacity end,
+        setCapacity = function(self, value) self.capacity = value end,
+    }
+    p:setInventory(inventory)
+
+    Events.OnCreatePlayer:fire(0, p)
+
+    assert_eq(inventory.capacity, 77, "trait code must not overwrite external capacity")
+end)
+
+test("packmouse bridge failures fail safely", function()
+    local badModData = MockPlayer({ PACKMOUSE_ID })
+    badModData.getModData = function() error("injected getModData failure") end
+    assert_true(
+        pcall(function() UTPackMouseLifecycle.onCreatePlayer(0, badModData) end),
+        "getModData failure must not escape"
+    )
+
+    local badInventory = MockPlayer({ PACKMOUSE_ID })
+    badInventory.getInventory = function() error("injected inventory failure") end
+    assert_true(
+        pcall(function() UTPackMouseLifecycle.onCreatePlayer(0, badInventory) end),
+        "inventory failure must not escape"
+    )
+
+    local badSetter = MockPlayer({ PACKMOUSE_ID })
+    badSetter.setMaxWeightBase = function() error("injected setter failure") end
+    assert_true(
+        pcall(function() UTPackMouseLifecycle.onCreatePlayer(0, badSetter) end),
+        "setter failure must not escape"
+    )
+end)
+
+test("packmouse source and release bytes match", function()
+    local function readAll(path)
+        local handle = assert(io.open(path, "rb"))
+        local content = handle:read("*a")
+        handle:close()
+        return content
+    end
+
+    assert_eq(
+        readAll(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua"),
+        readAll(base .. "../release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_packmouse.lua"),
+        "Pack Mouse source/release parity"
+    )
 end)
 
 -- ─── Group 5: EveryTenMinutes periodic effects ───────────────────────────────
