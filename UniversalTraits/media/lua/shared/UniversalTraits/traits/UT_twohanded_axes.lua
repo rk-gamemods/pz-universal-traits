@@ -5,6 +5,7 @@
 local TRAIT_ID = "UniversalTraits:UT_twohanded_axes"
 local CRIT_BONUS = 10
 local LEGACY_BASE_KEY = "UT_th_axesBaseCrit"
+local NUMERIC_EPSILON = 1e-9
 
 UTCore._twoHandedAxesState = UTCore._twoHandedAxesState or { trackedWeapons = {} }
 local state = UTCore._twoHandedAxesState
@@ -62,6 +63,12 @@ local function setRawCriticalChance(weapon, value)
     end)
 end
 
+local function nearlyEqual(left, right)
+    if left == right then return true end
+    local scale = math.max(1, math.abs(left), math.abs(right))
+    return math.abs(left - right) <= NUMERIC_EPSILON * scale
+end
+
 local function restoreWeapon(weapon)
     local tracked = state.trackedWeapons[weapon]
     if not tracked then return end
@@ -89,9 +96,9 @@ local function boostWeapon(weapon)
     local targetRaw = targetDisplayed / sharpness
     local appliedRawBonus = targetRaw - baseRaw
 
-    if setRawCriticalChance(weapon, targetRaw) then
+    if nearlyEqual(raw, targetRaw) or setRawCriticalChance(weapon, targetRaw) then
         state.trackedWeapons[weapon] = { appliedRawBonus = appliedRawBonus }
-    else
+    elseif not tracked then
         state.trackedWeapons[weapon] = nil
     end
 end

@@ -6684,6 +6684,67 @@ test("twohanded_axes contains every critical-state getter and setter failure", f
         "setter failure must not leave tracked ownership")
 end)
 
+test("twohanded_axes retains ownership across a failed tracked refresh", function()
+    local weapon = {
+        _mockType = "HandWeapon",
+        raw = 10,
+        sharpness = 1,
+        moddata = {},
+        getModData = function(self) return self.moddata end,
+        isTwoHandWeapon = function() return true end,
+        isOfWeaponCategory = function(_, category) return category == WeaponCategory.AXE end,
+        hasSharpness = function() return true end,
+        getSharpness = function(self) return self.sharpness end,
+        setSharpness = function(self, value) self.sharpness = value end,
+        getCriticalChance = function(self) return self.raw * self.sharpness end,
+        setCriticalChance = function(self, value) self.raw = value end,
+        getRawCriticalChance = function(self) return self.raw end,
+    }
+    local setCriticalChance = weapon.setCriticalChance
+    local setterCalls = 0
+    weapon.setCriticalChance = function(self, value)
+        setterCalls = setterCalls + 1
+        setCriticalChance(self, value)
+    end
+    local player = MockPlayer({ TWO_HANDED_AXES_ID }, { primaryHandItem = weapon })
+
+    fireTwoHandedAxes(player, 30)
+    assert_eq(weapon:getCriticalChance(), 20, "initial cadence must apply exactly +10")
+    assert_eq(setterCalls, 1, "initial adoption must write once")
+    local tracked = UTCore._twoHandedAxesState.trackedWeapons[weapon]
+    assert_true(tracked ~= nil, "initial adoption must establish ownership")
+
+    fireTwoHandedAxes(player, 30)
+    assert_eq(setterCalls, 1, "unchanged cadence must not rewrite the same raw target")
+    tracked = UTCore._twoHandedAxesState.trackedWeapons[weapon]
+
+    weapon:setSharpness(2)
+    weapon.setCriticalChance = function()
+        setterCalls = setterCalls + 1
+        error("tracked refresh failure")
+    end
+    fireTwoHandedAxes(player, 30)
+    assert_eq(weapon:getRawCriticalChance(), 20, "failed refresh must leave the prior raw value")
+    assert_eq(UTCore._twoHandedAxesState.trackedWeapons[weapon], tracked,
+        "failed tracked refresh must retain the last known owned delta")
+
+    weapon.setCriticalChance = function(self, value)
+        setterCalls = setterCalls + 1
+        setCriticalChance(self, value)
+    end
+    fireTwoHandedAxes(player, 30)
+    assert_eq(weapon:getCriticalChance(), 30,
+        "recovery must remain exactly +10 over the current displayed baseline")
+    local recoveryCalls = setterCalls
+    fireTwoHandedAxes(player, 90)
+    assert_eq(weapon:getCriticalChance(), 30, "later cadences must not compound the bonus")
+    assert_eq(setterCalls, recoveryCalls, "later unchanged cadences must remain write-free")
+
+    restoreTwoHandedAxesByUnequip(player)
+    assert_eq(weapon:getCriticalChance(), 20,
+        "final restoration must return to the current displayed baseline")
+end)
+
 test("twohanded_axes rejects every invalid sharpness domain", function()
     local invalidSharpness = {
         { name = "nonnumber", value = "invalid" },
