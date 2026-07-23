@@ -1481,6 +1481,31 @@ end)
 --   4. Assert that nextX was scaled correctly (getNextX)
 -- =====================================================================
 
+test("SpeedHook duplicate evaluation before activation keeps one stable dispatcher", function()
+    local handlerCount = Events.OnPlayerMove._handlerCount()
+    local dispatcher = UTSpeedHookLifecycle.dispatcher
+    local implementation = UTSpeedHookLifecycle.implementation
+
+    dofile(base .. "../media/lua/shared/UTCore/UTCore_SpeedHook.lua")
+
+    assert_eq(Events.OnPlayerMove._handlerCount(), handlerCount,
+        "duplicate evaluation must not add another OnPlayerMove callback")
+    assert_eq(UTSpeedHookLifecycle.dispatcher, dispatcher,
+        "dispatcher identity must remain stable")
+    assert_true(UTSpeedHookLifecycle.implementation ~= implementation,
+        "duplicate evaluation must replace the current implementation")
+
+    local player = MockPlayer({})
+    player:getModData()["UT_speedMod"] = 0.5
+    withActivePlayer(player, function()
+        player:moveTo(0, 0)
+        player:setNextX(0.5)
+        Events.OnPlayerMove.fire()
+        assert_close(player:getNextX(), 0.75, 0.000001,
+            "one dispatcher must apply one scaling pass")
+    end)
+end)
+
 -- SpeedHook: positive speedMod amplifies pending delta
 test("SpeedHook positive speedMod amplifies pending delta", function()
     local player = MockPlayer({})
@@ -1607,6 +1632,152 @@ test("SpeedHook scales Y axis delta too", function()
     -- nextY = 0 + 0.5 * 1.5 = 0.75
     assert(math.abs(player:getNextY() - 0.75) < 0.01, "expected nextY ~0.75, got " .. tostring(player:getNextY()))
     _G.getPlayer = function() return nil end
+end)
+
+test("SpeedHook duplicate evaluation after activation replaces behavior without stacking", function()
+    local handlerCount = Events.OnPlayerMove._handlerCount()
+    local dispatcher = UTSpeedHookLifecycle.dispatcher
+
+    local player = MockPlayer({})
+    player:getModData()["UT_speedMod"] = 0.25
+    withActivePlayer(player, function()
+        player:moveTo(2, -1)
+        player:setNextX(2.4)
+        player:setNextY(-1.2)
+        Events.OnPlayerMove.fire()
+        assert_close(player:getNextX(), 2.5, 0.000001, "initial X scaling")
+        assert_close(player:getNextY(), -1.25, 0.000001, "initial Y scaling")
+    end)
+
+    dofile(base .. "../media/lua/shared/UTCore/UTCore_SpeedHook.lua")
+    assert_eq(Events.OnPlayerMove._handlerCount(), handlerCount,
+        "post-activation evaluation must not add another callback")
+    assert_eq(UTSpeedHookLifecycle.dispatcher, dispatcher,
+        "post-activation dispatcher identity must remain stable")
+
+    withActivePlayer(player, function()
+        player:moveTo(2, -1)
+        player:setNextX(2.4)
+        player:setNextY(-1.2)
+        Events.OnPlayerMove.fire()
+        assert_close(player:getNextX(), 2.5, 0.000001,
+            "replacement implementation must scale X exactly once")
+        assert_close(player:getNextY(), -1.25, 0.000001,
+            "replacement implementation must scale Y exactly once")
+    end)
+end)
+
+test("SpeedHook steady-state path does not refresh caches or inspect and print actions", function()
+    local player = MockPlayer({})
+    player:getModData()["UT_speedMod"] = 0.5
+    player.getCharacterActions = function()
+        error("movement path must not inspect actions")
+    end
+
+    local originalRefresh = UTCore.refreshAggregatedModifierCache
+    local originalPrint = _G.print
+    local refreshCount, printCount = 0, 0
+    UTCore.refreshAggregatedModifierCache = function(...)
+        refreshCount = refreshCount + 1
+        return originalRefresh(...)
+    end
+    _G.print = function(...)
+        printCount = printCount + 1
+    end
+
+    local ok, err = pcall(function()
+        withActivePlayer(player, function()
+            player:moveTo(0, 0)
+            player:setNextX(0.5)
+            Events.OnPlayerMove.fire()
+        end)
+    end)
+    UTCore.refreshAggregatedModifierCache = originalRefresh
+    _G.print = originalPrint
+    if not ok then error(err, 0) end
+
+    assert_eq(refreshCount, 0, "movement must use the owner-maintained aggregate cache")
+    assert_eq(printCount, 0, "movement must produce no diagnostic output")
+end)
+
+test("SpeedHook rejects invalid modifiers and non-local players", function()
+    local invalid = { "0.5", 0 / 0, math.huge, -math.huge }
+    for _, modifier in ipairs(invalid) do
+        local player = MockPlayer({})
+        player:getModData()["UT_speedMod"] = modifier
+        withActivePlayer(player, function()
+            player:moveTo(0, 0)
+            player:setNextX(0.5)
+            Events.OnPlayerMove.fire()
+            assert_eq(player:getNextX(), 0.5, "invalid modifier must be a no-op")
+        end)
+    end
+
+    local remotePlayer = MockPlayer({})
+    remotePlayer.isLocalPlayer = function() return false end
+    remotePlayer:getModData()["UT_speedMod"] = 0.5
+    withActivePlayer(remotePlayer, function()
+        remotePlayer:moveTo(0, 0)
+        remotePlayer:setNextX(0.5)
+        Events.OnPlayerMove.fire()
+        assert_eq(remotePlayer:getNextX(), 0.5, "remote player must be a no-op")
+    end)
+end)
+
+test("SpeedHook teleport guard applies independently to either axis", function()
+    local player = MockPlayer({})
+    player:getModData()["UT_speedMod"] = 0.5
+    withActivePlayer(player, function()
+        player:moveTo(1, 2)
+        player:setNextX(1.25)
+        player:setNextY(7.01)
+        Events.OnPlayerMove.fire()
+        assert_eq(player:getNextX(), 1.25, "Y teleport must leave X unchanged")
+        assert_eq(player:getNextY(), 7.01, "Y teleport must remain unchanged")
+    end)
+end)
+
+test("SpeedHook legacy marker requires relaunch without registering or disabling legacy behavior", function()
+    local currentState = UTCore._speedHookLifecycle
+    local currentPublicState = UTSpeedHookLifecycle
+    local handlerCount = Events.OnPlayerMove._handlerCount()
+    local legacyCalls = 0
+    local legacyHandler = function() legacyCalls = legacyCalls + 1 end
+    local legacyState = { onPlayerMove = legacyHandler }
+
+    UTCore._speedHookLifecycle = legacyState
+    UTSpeedHookLifecycle = legacyState
+    local ok, err = pcall(dofile, base .. "../media/lua/shared/UTCore/UTCore_SpeedHook.lua")
+    UTCore._speedHookLifecycle = currentState
+    UTSpeedHookLifecycle = currentPublicState
+    if not ok then error(err, 0) end
+
+    assert_eq(legacyState.implementation, legacyHandler,
+        "legacy implementation pointer must be preserved")
+    assert_eq(legacyState.dispatcher, nil,
+        "unknown legacy registration must not be falsely canonicalized")
+    assert_eq(legacyState.legacyRelaunchRequired, true,
+        "unknown legacy registration must require a full relaunch")
+    assert_eq(legacyState.registration.outcome, "legacy_registration_unknown",
+        "legacy callback cardinality must remain unknown")
+    assert_eq(Events.OnPlayerMove._handlerCount(), handlerCount,
+        "legacy detection must not stack a dispatcher")
+    legacyState.implementation()
+    assert_eq(legacyCalls, 1, "legacy behavior pointer must remain working")
+end)
+
+test("SpeedHook source and release copies are byte-identical", function()
+    local function readBytes(path)
+        local file, openError = io.open(path, "rb")
+        if not file then error(openError, 0) end
+        local content = file:read("*a")
+        file:close()
+        return content
+    end
+
+    local source = readBytes(base .. "../media/lua/shared/UTCore/UTCore_SpeedHook.lua")
+    local release = readBytes(base .. "../release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_SpeedHook.lua")
+    assert_eq(release, source, "source and release SpeedHook bytes must match")
 end)
 
 -- WorkSpeedHook

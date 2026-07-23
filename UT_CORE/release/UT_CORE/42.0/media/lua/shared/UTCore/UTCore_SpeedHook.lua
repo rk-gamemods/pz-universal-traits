@@ -37,6 +37,29 @@
 -- =================================================================
 
 UTCore = UTCore or {}
+UTCore._speedHookLifecycle = UTCore._speedHookLifecycle or {}
+local state = UTCore._speedHookLifecycle
+UTSpeedHookLifecycle = state
+
+if state.legacyRelaunchRequired and not state.dispatcher then
+    return
+end
+
+local legacyHandler = state.onPlayerMove or UTCore._speedHookHandler
+if legacyHandler and not state.dispatcher then
+    state.implementation = legacyHandler
+    state.onPlayerMove = legacyHandler
+    state.legacyRelaunchRequired = true
+    state.reloadRetry = {
+        reason = "legacy anonymous handler requires a fresh process",
+    }
+    state.registration = {
+        attempted = true,
+        outcome = "legacy_registration_unknown",
+        cardinality = "unknown",
+    }
+    return
+end
 
 -- Skip if pending animation delta exceeds this (teleport, map load, fast travel).
 local TELEPORT_GUARD = 5.0
@@ -51,17 +74,18 @@ local function onPlayerMove()
     if not player then return end
     if not player:isLocalPlayer() then return end
 
-    -- Ensure the aggregated modifier cache is current before reading UT_speedMod.
-    if UTCore.refreshAggregatedModifierCache then
-        UTCore.refreshAggregatedModifierCache(player)
-    end
-
     local md = player:getModData()
     local mod = md["UT_speedMod"]
 
-    -- No speed modifier active — nothing to do. This is the common case for
+    -- No valid speed modifier active means there is nothing to do.
     -- characters without speed traits (UT_fast, UT_pacer, UT_gimp, etc.).
-    if not mod or mod == 0 then return end
+    if type(mod) ~= "number"
+        or mod ~= mod
+        or mod == math.huge
+        or mod == -math.huge
+        or mod == 0 then
+        return
+    end
 
     -- Read the pending movement delta that doDeferredMovement() accumulated
     -- into nextX/nextY during this frame's update() phase.
@@ -107,19 +131,52 @@ local function onPlayerMove()
     -- postupdate() will then see the scaled delta and commit it into x normally.
     player:setNextX(x + scaledDx)
     player:setNextY(y + scaledDy)
+end
 
-    -- ACTION-KILL DIAGNOSIS: log if SpeedHook fires while an action is active
-    pcall(function()
-        local actions = player:getCharacterActions()
-        if actions:size() > 0 then
-            print("[UT_ADIAG] SPEEDHOOK_WHILE_ACTION mod=" .. tostring(mod)
-                .. " dx=" .. string.format("%.6f", dx) .. " dy=" .. string.format("%.6f", dy)
-                .. " scaled_dx=" .. string.format("%.6f", scaledDx) .. " scaled_dy=" .. string.format("%.6f", scaledDy)
-                .. " actionCount=" .. actions:size())
+state.implementation = onPlayerMove
+state.onPlayerMove = onPlayerMove
+state.reloadRetry = nil
+
+if not state.dispatcher then
+    state.dispatcher = function(...)
+        local implementation = state.implementation
+        if implementation then
+            return implementation(...)
         end
-    end)
+    end
 end
 
-if Events and Events.OnPlayerMove then
-    Events.OnPlayerMove.Add(onPlayerMove)
+if state.registration and state.registration.attempted then
+    return
 end
+
+local event = Events and Events.OnPlayerMove or nil
+local add = event and event.Add or nil
+if not add then
+    state.registration = {
+        attempted = false,
+        outcome = "not_attempted",
+        reason = "OnPlayerMove.Add unavailable",
+        cardinality = "unknown",
+    }
+    return
+end
+
+local ok, result = pcall(add, state.dispatcher)
+local outcome = "call_completed"
+local registrationError = nil
+if not ok then
+    outcome = "outcome_unknown"
+    registrationError = tostring(result)
+elseif result == false then
+    outcome = "outcome_unknown"
+    registrationError = "explicit false"
+end
+state.registration = {
+    attempted = true,
+    callCompleted = ok,
+    outcome = outcome,
+    returnValue = ok and result or nil,
+    error = registrationError,
+    cardinality = "unknown",
+}
