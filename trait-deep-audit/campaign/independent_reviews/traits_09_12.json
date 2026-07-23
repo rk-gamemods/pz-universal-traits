@@ -1992,7 +1992,7 @@
       ]
     },
     {
-      "accepted_overall_state": "confirmed-defect",
+      "accepted_overall_state": "runtime-unproven",
       "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:16",
       "cross_finding_ids": [
         "IR0912-FINDING-STATE-001",
@@ -2000,7 +2000,7 @@
         "IR0912-PERCENT-001",
         "IR11-BLEED-POOL-001"
       ],
-      "independent_state": "confirmed-defect",
+      "independent_state": "runtime-unproven",
       "omission_disposition": "new omissions listed",
       "omissions": [
         {
@@ -2028,13 +2028,15 @@
           ],
           "confidence": "high",
           "id": "IR11-THICKBLOOD-001",
-          "missing_proof": "No live trace.",
-          "recommended_correction": "Compensate through verified BodyDamage path.",
+          "missing_proof": "Current-build Kahlua and live bleeding remain unobserved.",
+          "recommended_correction": "No further static correction is indicated.",
           "reproduction_or_source_evidence": "Native bleed reduces BodyDamage; compensation writes actor health.",
           "severity": "high",
-          "smallest_regression_test": "Separate pools; assert 0.5x BodyDamage loss.",
-          "state": "confirmed-defect",
-          "title": "Thick Blood offsets wrong bleed health pool"
+          "smallest_regression_test": "Covered by the exact unequal-weight restoration case.",
+          "state": "proven-correct",
+          "title": "Thick Blood offsets wrong bleed health pool",
+          "resolution_state": "implemented-and-statically-validated",
+          "resolution_evidence": "The correction now stays in BodyDamage and inverts each unclamped native ReduceGeneralHealth share using the engine's damage modifiers. Zero-health parts are not healed. Weighted regression assertions fail against both the old actor-health path and uniform AddGeneralHealth."
         }
       ],
       "rejected_accepted_finding_ids": [],
@@ -2048,7 +2050,30 @@
         "RP0912-SAVELOAD-001",
         "RP0912-BALANCE-PERF-001",
         "RP0912-LOCALE-001"
-      ]
+      ],
+      "verified_finding_ids": [
+        "B11-THICKBLOOD-BLEED-STACK-001",
+        "IR11-THICKBLOOD-001"
+      ],
+      "repair_resolution": {
+        "state": "implemented-and-statically-validated",
+        "resolved_finding_ids": [
+          "B11-THICKBLOOD-BLEED-STACK-001",
+          "IR11-THICKBLOOD-001"
+        ],
+        "open_finding_ids": [],
+        "remaining_runtime_proof": "Current-build Kahlua, live wounds, new game, save load, death, rendered English, balance, and profiler observation remain unrun."
+      },
+      "release_parity": {
+        "source_runtime_sha256": "4CBDAEB1CEA2646DE28D8892DD45C517C55D26BEC41AE195B9E4F8F0606F4D20",
+        "release_runtime_sha256": "4CBDAEB1CEA2646DE28D8892DD45C517C55D26BEC41AE195B9E4F8F0606F4D20",
+        "source_core_hook_sha256": "B3FDD80B46E37E1A60C12499E11E757954A72777C3C174BB6CE271FEE803ACB2",
+        "release_core_hook_sha256": "B3FDD80B46E37E1A60C12499E11E757954A72777C3C174BB6CE271FEE803ACB2",
+        "source_core_stat_sha256": "8250F71600411890523C5CA54493EC0EBFC8404784BBC11D5476587289F1ED85",
+        "release_core_stat_sha256": "8250F71600411890523C5CA54493EC0EBFC8404784BBC11D5476587289F1ED85",
+        "state": "proven-correct"
+      },
+      "resolution_record": "change-impact/thickblood-weighted-bleed-damage.json"
     },
     {
       "accepted_overall_state": "proven-correct",

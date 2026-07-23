@@ -47,7 +47,7 @@
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "417C222A68161C10EB07CAEFE38D7D6E5C73E010CCC14431FE732754B34F0DB8",
     "independent_reviews/traits_05_08.json": "B0B92939B0E09B468C555B7434551B4E08D5A3353E63A86A83F415C842DB37E3",
-    "independent_reviews/traits_09_12.json": "E6583566E0614CECBAC92E29BAA5F3143748236745059BD95172260430879108",
+    "independent_reviews/traits_09_12.json": "A271ED28EE9D092CB78DDD2C77703D774EC86FE4720159DC69288A7DC2089F9E",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "7B741591E807E09BDE359BECBB8CF8BCBA18A872A9DD6B022EF105975DA78499",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
@@ -59,9 +59,9 @@
     "trait_batches/batch_08.jsonl": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A",
     "trait_batches/batch_09.jsonl": "7493EABBF27471F551A42E6B750D8927EC80B36404B51ED6E7CBC74349EAFE44",
     "trait_batches/batch_10.jsonl": "33304EC69C6072CE027BFD779AB0E2332EEDE70DC56B6920468F46BC4A2ABE31",
-    "trait_batches/batch_11.jsonl": "1F6AE4E6BFCFE708F0A2913B1499BCBE14ED68AE1EEFD8E758733E164F0036E4",
+    "trait_batches/batch_11.jsonl": "96361D7DDD836EA81336A763B7787799DAAF09B8BDBFA4B68729A2F5B0ECAA61",
     "trait_batches/batch_12.jsonl": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47",
-    "translation_audit.json": "87FD74386B1DE2E170338BBF4DD3BF8CEFA094A1C93377B1A125DDFDE534A60F"
+    "translation_audit.json": "DA6A481C93D55B559D4FDF73B655D70F85C0BAE9974A6BD935F759C862769D58"
   },
   "counts": {
     "traits": 198,
@@ -71,22 +71,22 @@
     "independent_review_findings": 118,
     "independent_review_states": {
       "accepted": 82,
-      "confirmed-defect": 36,
+      "confirmed-defect": 35,
       "coverage-gap": 20,
       "needs-correction": 52,
-      "runtime-unproven": 8
+      "runtime-unproven": 9
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 63,
+      "confirmed-defect": 62,
       "coverage-gap": 12,
-      "runtime-unproven": 98
+      "runtime-unproven": 99
     },
     "dimension_states": {
-      "proven-correct": 2755,
-      "confirmed-defect": 247,
-      "coverage-gap": 769,
-      "runtime-unproven": 981
+      "proven-correct": 2758,
+      "confirmed-defect": 245,
+      "coverage-gap": 767,
+      "runtime-unproven": 982
     }
   },
   "independent_review_findings": [
@@ -2419,7 +2419,7 @@
     },
     {
       "id": "IR11-THICKBLOOD-001",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
       "title": "Thick Blood offsets wrong bleed health pool",
@@ -2443,9 +2443,9 @@
         "tests"
       ],
       "reproduction_evidence": "Native bleed reduces BodyDamage; compensation writes actor health.",
-      "missing_proof": "No live trace.",
-      "recommended_correction": "Compensate through verified BodyDamage path.",
-      "smallest_regression_test": "Separate pools; assert 0.5x BodyDamage loss."
+      "missing_proof": "Current-build Kahlua and live bleeding remain unobserved.",
+      "recommended_correction": "No further static correction is indicated.",
+      "smallest_regression_test": "Covered by the exact unequal-weight restoration case."
     },
     {
       "id": "IR12-WEAKBLEED-DESC-001",
@@ -57421,24 +57421,28 @@
     {
       "trait_id": "UniversalTraits:UT_thickblood",
       "batch": "batch_11",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
           "evidence": [
-            "exact"
+            "The registry, complete definition, runtime key, and exact English keys agree."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "registration"
           ]
         },
         "definition_parser": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "complete"
+            "The complete source and release definitions are byte-identical and parse in the standard-Lua suite."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current-build ScriptManager parsing has not been observed in game."
+          ],
           "source_dimensions": [
             "definition_parser"
           ]
@@ -57446,9 +57450,11 @@
         "namespace": {
           "state": "proven-correct",
           "evidence": [
-            "consistent"
+            "All owned surfaces use UniversalTraits:UT_thickblood."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "namespace"
           ]
@@ -57456,9 +57462,11 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "cost 4; no XP/grants; bidirectional Heavy/Weak Bleeding and Anemic exclusions"
+            "Cost is 4, no XP or grants exist, Heavy Bleeding Wounds, Weak Bleeding Wounds, and Anemic are reciprocal exclusions, and multiplayer is disabled."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cost_xp_grants_exclusions"
           ]
@@ -57466,20 +57474,22 @@
         "source_intent": {
           "state": "proven-correct",
           "evidence": [
-            "1.5x bleedingTime decay plus 0.5x active bleed death rate"
+            "Pre-campaign master defines 1.5x all-wound bleed-time decay and 0.5x active-bleed general-health loss."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_intent"
           ]
         },
         "runtime_path": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "OnNewGame writes shared decay/drain moddata; two core hooks consume them"
+            "OnNewGame stores exact factors; the decay hook composes named factors; the drain hook consumes the native post-damage event and inverts each unclamped BodyDamage share or extends the native distribution."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "none"
           ],
           "source_dimensions": [
             "runtime_path"
@@ -57488,20 +57498,22 @@
         "numbers": {
           "state": "proven-correct",
           "evidence": [
-            "native decay/drain formulas independently matched; 1.5 and 0.5 values match description in isolation"
+            "Factors are exactly 1.5 and 0.5. Native ReduceGeneralHealth divides by part count and damage modifier; the correction uses that inverse for positive-health parts and skips ambiguous zero-health clamps."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "numbers"
           ]
         },
         "cadence": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "decay scans every 10 updates; drain scans every 30; setup only OnNewGame"
+            "Decay applies at the existing bounded ten-update cadence; drain correction runs only after a native BLEEDING damage event."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "none"
           ],
           "source_dimensions": [
             "cadence"
@@ -57510,20 +57522,22 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
+            "Thick Blood has no random trigger or cooldown."
+          ],
+          "missing_proof": [
             "none"
           ],
-          "missing_proof": [],
           "source_dimensions": [
             "cooldown"
           ]
         },
         "reset_save_load": {
-          "state": "confirmed-defect",
+          "state": "runtime-unproven",
           "evidence": [
-            "moddata persists alone, but allowed Staunch uses OnCreatePlayer and overwrites shared decay fields on load"
+            "New-game setup writes persistent modData and named Staunch ownership no longer overwrites the Thick Blood factor."
           ],
           "missing_proof": [
-            "Exact listener order was not runtime-traced; overwrite and non-composition are order-independent."
+            "Current-build new-game, save-load, death, and repeated world entry remain unobserved."
           ],
           "source_dimensions": [
             "reset_save_load"
@@ -57532,9 +57546,11 @@
         "java_lua": {
           "state": "proven-correct",
           "evidence": [
-            "0-based collections and methods match Java"
+            "SVN 964 proves native bleed ordering, event damage, 0-based body-part access, damage modifiers, bounded body-part health methods, and explicit BodyPartType Kahlua exposure."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "java_lua"
           ]
@@ -57542,10 +57558,10 @@
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "compatible"
+            "The implementation uses Kahlua-compatible numeric loops, tables, pcall boundaries, and verified Java receiver and static methods."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "Current-build Kahlua execution is unobserved."
           ],
           "source_dimensions": [
             "kahlua"
@@ -57554,20 +57570,22 @@
         "events": {
           "state": "proven-correct",
           "evidence": [
-            "OnNewGame signature acceptable; unlike Staunch it does not reapply on load"
+            "The native event fires after exact ReduceGeneralHealth application, and reload replaces the prior Lua handler before adding one current handler."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "events"
           ]
         },
         "stacking_interactions": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "script blocks Heavy/Weak/Anemic but allows Staunch; runtime claims stacking that storage cannot express"
+            "Thick Blood remains 1.5x on all wounds and multiplies Staunch's independent 3.0 bandaged factor to 4.5x while bandaged."
           ],
           "missing_proof": [
-            "Exact listener order was not runtime-traced; overwrite and non-composition are order-independent."
+            "none"
           ],
           "source_dimensions": [
             "stacking_interactions"
@@ -57576,9 +57594,11 @@
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "disabled"
+            "The definition disables Thick Blood in multiplayer and multiplayer support is an explicit product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "multiplayer"
           ]
@@ -57586,9 +57606,11 @@
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "EN present"
+            "The exact English display name is Thick Blooded."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "display"
           ]
@@ -57596,9 +57618,11 @@
         "description": {
           "state": "proven-correct",
           "evidence": [
-            "accurate alone; does not disclose failed Staunch interaction"
+            "English separately states 1.5x BleedingTime decay and 50 percent active-bleed death rate."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "description"
           ]
@@ -57606,22 +57630,22 @@
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "EN only"
+            "The exact English keys exist in source and release."
           ],
           "missing_proof": [
-            "A non-EN localization requirement was not supplied."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
             "localization"
           ]
         },
         "balance": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "cost 4 unbenchmarked"
+            "Static behavior remains the pre-campaign cost 4, 1.5 decay factor, and 0.5 active-bleed health-loss factor."
           ],
           "missing_proof": [
-            "A formal balance target was not supplied."
+            "No gameplay telemetry or comparative balance session exists."
           ],
           "source_dimensions": [
             "balance"
@@ -57630,34 +57654,34 @@
         "performance": {
           "state": "runtime-unproven",
           "evidence": [
-            "shared body-part scans at throttled tick cadence"
+            "Each native bleed event performs one validated bounded pass over the fixed body-part list only when the multiplier differs from 1."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "No current-build profiler capture exists."
           ],
           "source_dimensions": [
             "performance"
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "isolated sign-only assertions; no exact values, stacking, hook result, or load lifecycle"
+            "Focused tests cover exact setup factors, weighted inverse math, zero-health non-healing, extra damage, invalid plans, finite domains, Staunch composition, teardown, and parity."
           ],
           "missing_proof": [
-            "A targeted regression covering this exact dimension is missing or incomplete."
+            "none"
           ],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "do not execute native damage order or allowed-trait composition"
+            "Mocks expose the 0-based body-part list, unequal damage modifiers, per-part health and AddHealth, and the exact post-native event payload."
           ],
           "missing_proof": [
-            "A current engine-faithful mock for this exact path is missing or incomplete."
+            "none"
           ],
           "source_dimensions": [
             "mocks"
@@ -57666,19 +57690,23 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "equal"
+            "Thick Blood runtime and changed UT_CORE runtime pairs are byte-identical between source and 42.0 release."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_release_parity"
           ]
         },
         "packaging": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "complete"
+            "All Thick Blood-owned 42.0 runtime, definition, and English counterparts are present and identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Read-only package verification still tracks the separate missing source poster."
+          ],
           "source_dimensions": [
             "packaging"
           ]
@@ -57688,13 +57716,16 @@
         "B11-THICKBLOOD-BLEED-STACK-001"
       ],
       "unknowns": [
-        "Authoritative stacking formula and migration/reset behavior are unspecified.",
-        "No in-game hook trace/non-EN requirement."
+        "Current-build Kahlua, new-game and save-load lifecycle, death, and repeated world entry remain unobserved.",
+        "Live single-wound and simultaneous-wound weighted health behavior remains unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory.",
+        "Multiplayer and backward save migration are explicit non-goals."
       ],
-      "translation_terminal_state": "confirmed-defect",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_09_12.json",
-        "review_state": "confirmed-defect",
+        "review_state": "runtime-unproven",
         "omission_finding_ids": [
           "IR11-THICKBLOOD-001"
         ],
@@ -57705,7 +57736,8 @@
           "IR11-BLEED-POOL-001"
         ],
         "verified_first_pass_finding_ids": [
-          "B11-THICKBLOOD-BLEED-STACK-001"
+          "B11-THICKBLOOD-BLEED-STACK-001",
+          "IR11-THICKBLOOD-001"
         ],
         "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [

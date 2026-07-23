@@ -415,11 +415,32 @@ test("applyBleedRate stores multiplier in moddata", function()
     assert_eq(p:getModData()["UT_bleedMult"], 1.5)
 end)
 
-local function makeBleedDrainEventPlayer(multiplier)
+local function makeBleedDrainEventPlayer(multiplier, modifiers, healths)
     local calls = {}
+    modifiers = modifiers or { 0.5, 2.0 }
+    healths = healths or { 50.0, 50.0 }
+    local parts = {}
+    for index, health in ipairs(healths) do
+        parts[index] = {
+            health = health,
+            getHealth = function(self) return self.health end,
+            AddHealth = function(self, amount)
+                calls[#calls + 1] = {
+                    method = "AddHealth",
+                    index = index - 1,
+                    amount = amount,
+                }
+                self.health = self.health + amount
+            end,
+        }
+    end
+    local bodyParts = {
+        size = function() return #parts end,
+        get = function(_, index) return parts[index + 1] end,
+    }
     local bodyDamage = {
-        AddGeneralHealth = function(_, amount)
-            calls[#calls + 1] = { method = "AddGeneralHealth", amount = amount }
+        getBodyParts = function()
+            return bodyParts
         end,
         ReduceGeneralHealth = function(_, amount)
             calls[#calls + 1] = { method = "ReduceGeneralHealth", amount = amount }
@@ -433,23 +454,62 @@ local function makeBleedDrainEventPlayer(multiplier)
             return bodyDamage
         end,
     }
-    return player, calls
+    BodyPartType._damageModifiers = modifiers
+    return player, calls, parts
 end
 
-test("OnPlayerGetDamage applies exact finite bleed-drain adjustments", function()
-    local cases = {
-        { multiplier = 0.5, method = "AddGeneralHealth", amount = 5.0 },
-        { multiplier = 2.0, method = "ReduceGeneralHealth", amount = 10.0 },
-    }
+test("OnPlayerGetDamage restores exact weighted BodyDamage loss", function()
+    local modifiers = { 0.5, 2.0 }
+    local player, calls, parts = makeBleedDrainEventPlayer(
+        0.5,
+        modifiers,
+        { 70.0, 87.5 }
+    )
+    local before = { parts[1].health, parts[2].health }
 
-    for _, case in ipairs(cases) do
-        local player, calls = makeBleedDrainEventPlayer(case.multiplier)
-        local ok, err = pcall(Events.OnPlayerGetDamage.fire, player, "BLEEDING", 10.0)
-        assert_eq(ok, true, "finite event call must not error: " .. tostring(err))
-        assert_eq(#calls, 1, "finite multiplier must make exactly one health adjustment")
-        assert_eq(calls[1].method, case.method)
-        assert_eq(calls[1].amount, case.amount)
+    local ok, err = pcall(Events.OnPlayerGetDamage.fire, player, "BLEEDING", 10.0)
+    assert_eq(ok, true, "finite event call must not error: " .. tostring(err))
+    assert_eq(#calls, 2, "each native BodyDamage share must be inverted")
+    assert_eq(calls[1].method, "AddHealth")
+    assert_eq(calls[2].method, "AddHealth")
+    assert_close(calls[1].amount, 5.0, 0.0000001, "low-weight part inverse")
+    assert_close(calls[2].amount, 1.25, 0.0000001, "high-weight part inverse")
+
+    local weightedRecovery = 0.0
+    for index, modifier in ipairs(modifiers) do
+        weightedRecovery = weightedRecovery + (parts[index].health - before[index]) * modifier
     end
+    assert_close(weightedRecovery, 5.0, 0.0000001, "0.5x must restore exactly half the native loss")
+end)
+
+test("OnPlayerGetDamage applies exact additional weighted BodyDamage loss", function()
+    local player, calls = makeBleedDrainEventPlayer(2.0)
+    local ok, err = pcall(Events.OnPlayerGetDamage.fire, player, "BLEEDING", 10.0)
+    assert_eq(ok, true, "finite event call must not error: " .. tostring(err))
+    assert_eq(#calls, 1)
+    assert_eq(calls[1].method, "ReduceGeneralHealth")
+    assert_eq(calls[1].amount, 10.0)
+end)
+
+test("OnPlayerGetDamage validates the full inverse plan before healing", function()
+    local player, calls = makeBleedDrainEventPlayer(0.5, { 0.5, 0.0 })
+    local ok, err = pcall(Events.OnPlayerGetDamage.fire, player, "BLEEDING", 10.0)
+    assert_eq(ok, true, "invalid bridge data must not error: " .. tostring(err))
+    assert_eq(#calls, 0, "one invalid body-part modifier must prevent partial healing")
+end)
+
+test("OnPlayerGetDamage never heals an already zero-health body part", function()
+    local player, calls, parts = makeBleedDrainEventPlayer(
+        0.5,
+        { 0.5, 2.0 },
+        { 0.0, 87.5 }
+    )
+    local ok, err = pcall(Events.OnPlayerGetDamage.fire, player, "BLEEDING", 10.0)
+    assert_eq(ok, true, "clamped body-part state must not error: " .. tostring(err))
+    assert_eq(#calls, 1, "only the nonzero body part may be restored")
+    assert_eq(calls[1].index, 1)
+    assert_close(parts[1].health, 0.0, 0.0000001, "unrelated destroyed part must remain destroyed")
+    assert_close(parts[2].health, 88.75, 0.0000001, "unclamped native share remains exact")
 end)
 
 test("OnPlayerGetDamage rejects non-finite damage and invalid multipliers", function()

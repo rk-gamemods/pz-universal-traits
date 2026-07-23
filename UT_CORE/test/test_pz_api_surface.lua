@@ -564,6 +564,10 @@ test("API:Static — BodyPartType.FromString() exists", function()
     assert(type(BodyPartType.FromString) == "function", "FromString must be a function")
 end)
 
+test("API:Static: BodyPartType.getDamageModifyer() exists", function()
+    assert(type(BodyPartType.getDamageModifyer) == "function", "getDamageModifyer must be a function")
+end)
+
 -- ============================================================
 -- CATEGORY F: Event lifecycle (Add/Remove/fire must work)
 -- ============================================================

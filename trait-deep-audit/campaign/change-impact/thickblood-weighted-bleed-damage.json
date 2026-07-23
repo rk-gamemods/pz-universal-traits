@@ -1,0 +1,142 @@
+{
+  "schema": "ut-thickblood-weighted-bleed-damage-v1",
+  "trait_id": "UniversalTraits:UT_thickblood",
+  "authority": {
+    "accepted_baseline": "pre-campaign UTMods master",
+    "accepted_contract": "cost 4, 1.5x all-wound BleedingTime decay, 0.5x active-bleed general-health loss, and 4.5x bandaged composition with Staunch",
+    "pz_snapshot": "SVN revision 964; Steam BuildID 23504596 is recorded outside VERSION.json"
+  },
+  "accepted_intent": {
+    "cost": 4,
+    "bleed_decay_factor": 1.5,
+    "active_bleed_health_loss_factor": 0.5,
+    "staunch_combined_bandaged_factor": 4.5,
+    "runtime_scope": "single-player"
+  },
+  "resolved_findings": [
+    "B11-THICKBLOOD-BLEED-STACK-001",
+    "IR11-THICKBLOOD-001"
+  ],
+  "engine_evidence": [
+    "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyPart.java:163-170,509-519",
+    "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyDamage.java:1040-1072,2465-2479",
+    "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyPartType.java:1-276",
+    "PZCodebase/Java/source/zombie/Lua/LuaManager.java:1755,2677-2685",
+    "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+    "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua",
+    "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua",
+    "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_thickblood.lua"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_thickblood.lua",
+      "sha256": "4CBDAEB1CEA2646DE28D8892DD45C517C55D26BEC41AE195B9E4F8F0606F4D20",
+      "bytes": 678
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_thickblood.lua",
+      "sha256": "4CBDAEB1CEA2646DE28D8892DD45C517C55D26BEC41AE195B9E4F8F0606F4D20",
+      "bytes": 678
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+      "sha256": "B3FDD80B46E37E1A60C12499E11E757954A72777C3C174BB6CE271FEE803ACB2",
+      "bytes": 3649
+    },
+    {
+      "path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_BleedDrainHook.lua",
+      "sha256": "B3FDD80B46E37E1A60C12499E11E757954A72777C3C174BB6CE271FEE803ACB2",
+      "bytes": 3649
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua",
+      "sha256": "718143F879F0442D2FB3F6C99DDD59F087BAF3A7F3E8A52CCFA5E7E736F4A946",
+      "bytes": 5228
+    },
+    {
+      "path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_BleedDecayHook.lua",
+      "sha256": "718143F879F0442D2FB3F6C99DDD59F087BAF3A7F3E8A52CCFA5E7E736F4A946",
+      "bytes": 5228
+    },
+    {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua",
+      "sha256": "8250F71600411890523C5CA54493EC0EBFC8404784BBC11D5476587289F1ED85",
+      "bytes": 22235
+    },
+    {
+      "path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_StatModifiers.lua",
+      "sha256": "8250F71600411890523C5CA54493EC0EBFC8404784BBC11D5476587289F1ED85",
+      "bytes": 22235
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "36CFFAB27EE8C94B365D10342ECDBBE56B9B0CC9492A22EBE50F1C223B0268A4",
+      "bytes": 37463
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "36CFFAB27EE8C94B365D10342ECDBBE56B9B0CC9492A22EBE50F1C223B0268A4",
+      "bytes": 37463
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "sha256": "D32CAF16053E4FCC7FCF1271292E691E66AC2EE63CFAA97D967F62F2CD89080F",
+      "bytes": 77903
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "7A372CF44A0D8C0DF751EA952419BE47986B622B7C7FC6910DA8588140BC0C68",
+      "bytes": 316235
+    },
+    {
+      "path": "UT_CORE/test/UTCoreMocks.lua",
+      "sha256": "241A45BC59A60D015F281524D35F96C565F2D968A48A83855761D3FBCB605FE6",
+      "bytes": 22232
+    },
+    {
+      "path": "UT_CORE/test/run_tests.lua",
+      "sha256": "A2B88F63423BF80491C87D277E52EBBE955CEB00B7ADDBAAF540D95016DE6BB0",
+      "bytes": 108829
+    },
+    {
+      "path": "UT_CORE/test/test_pz_api_surface.lua",
+      "sha256": "111C20E3813C4AAEDB91EC48E6C84704E41F904CBBBDE15DE76EF9292D50684E",
+      "bytes": 27589
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_thickblood.md",
+      "sha256": "217C79EDB121030FBAFF6D970F213D0922AC8F068C515AFF85FE47382197ADBE",
+      "bytes": 4713
+    }
+  ],
+  "regression_cases": [
+    "exact 1.5 and 0.5 setup factors",
+    "exact unequal-weight BodyDamage restoration",
+    "zero-health body parts are never healed",
+    "exact additional damage above factor 1",
+    "full inverse-plan validation before mutation",
+    "invalid and non-finite input rejection",
+    "exact 4.5 bandaged and 1.5 unbandaged Staunch composition",
+    "Staunch teardown preserving Thick Blood",
+    "required Java-Lua bridge surface",
+    "source-release parity"
+  ],
+  "performance_model": "One bounded pass over the fixed body-part list per native BLEEDING event while the multiplier differs from 1; no background scan or new event source.",
+  "runtime_proof": "Unobserved; requires full desktop relaunch, current-build Kahlua, one and several simultaneous unbandaged wounds, new game, save load, death, repeated world entry, rendered English, balance, and profiler observation.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment",
+    "changing Thick Blood cost, exclusions, magnitude, wound scope, or intended Staunch interaction"
+  ]
+}

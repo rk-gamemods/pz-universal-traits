@@ -332,6 +332,13 @@ _G.BodyPartType.UpperArm_L = _G.BodyPartType.UpperArm_L or "UpperArm_L"
 _G.BodyPartType.UpperArm_R = _G.BodyPartType.UpperArm_R or "UpperArm_R"
 _G.BodyPartType.LowerArm_L = _G.BodyPartType.LowerArm_L or "LowerArm_L"
 _G.BodyPartType.LowerArm_R = _G.BodyPartType.LowerArm_R or "LowerArm_R"
+_G.BodyPartType._damageModifiers = {
+    0.1, 0.1, 0.2, 0.2, 0.3, 0.3, 0.35, 0.4, 0.6,
+    0.7, 0.4, 0.3, 0.3, 0.2, 0.2, 0.2, 0.2,
+}
+_G.BodyPartType.getDamageModifyer = function(index)
+    return _G.BodyPartType._damageModifiers[index + 1]
+end
 
 -- ZombRand: always returns 0 in tests (lowest roll — fracture/chance checks always succeed)
 _G.ZombRand = _G.ZombRand or function(n) return 0 end

@@ -2,8 +2,8 @@
 -- Dense, slow-clotting blood. Two effects:
 -- 1. bleedingTime decays 1.5x faster regardless of bandage state (blood clots faster).
 -- 2. Active bleed death rate reduced to 0.5x (bleeds slower, harder to bleed out).
--- Stacks with UT_staunch: while bandaged, decay = 1.5x (thickblood) + 2x extra (staunch) = 4.5x total.
--- Mutually exclusive with heavilybleedingwounds.
+-- Stacks with UT_staunch: 4.5x total while bandaged and 1.5x while unbandaged.
+-- Mutually exclusive with heavilybleedingwounds, weaklybleedingwounds, and anemic.
 
 local TRAIT_ID = "UniversalTraits:UT_thickblood"
 

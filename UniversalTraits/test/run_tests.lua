@@ -706,13 +706,13 @@ test("UT_preparedpack keeps the +3 carry weight bonus", function()
     assert_eq(p:getMaxWeightBase(), 11, "expected base carry weight 11 after Prepared: Pack")
 end)
 
--- UT_thickblood sets UT_bleedDecayMult=1.5 (faster clot) and UT_bleedDrainMult=0.5 (slower death)
-test("UT_thickblood sets UT_bleedDecayMult > 1.0 and UT_bleedDrainMult < 1.0", function()
+-- UT_thickblood sets exact accepted clot and active-bleed health-loss factors.
+test("UT_thickblood sets exact bleed decay and drain multipliers", function()
     local p = fireNewGame("UniversalTraits:UT_thickblood")
     local decay = p:getModData()["UT_bleedDecayMult"]
     local drain = p:getModData()["UT_bleedDrainMult"]
-    assert_true(type(decay) == "number" and decay > 1.0, "expected UT_bleedDecayMult > 1.0, got " .. tostring(decay))
-    assert_true(type(drain) == "number" and drain < 1.0, "expected UT_bleedDrainMult < 1.0, got " .. tostring(drain))
+    assert_eq(decay, 1.5, "accepted all-wound decay factor")
+    assert_eq(drain, 0.5, "accepted active-bleed health-loss factor")
 end)
 
 -- UT_heavilybleedingwounds sets UT_bleedDrainMult=2.0 (faster death rate)

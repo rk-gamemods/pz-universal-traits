@@ -353,16 +353,16 @@ function UTCore.applyBleedDecayMult(player, mult, bandagedOnly, sourceId)
 end
 
 -- Stores "UT_bleedDrainMult" in moddata.
--- UTCore_BleedDrainHook reads this every OnPlayerUpdate tick and offsets
--- player general health to scale the effective death rate from active bleeding.
+-- UTCore_BleedDrainHook reads this after each native BLEEDING damage event and
+-- applies the exact inverse or additional BodyDamage distribution needed to
+-- scale the effective death rate from active bleeding.
 --
 -- mult = 1.0 → no effect
 -- mult = 2.0 → 2x faster death from bleeding (heavilybleedingwounds)
 -- mult = 0.6 → 0.6x death rate, 40% offset added back (weaklybleedingwounds)
 -- mult = 0.5 → 0.5x death rate, 50% offset added back (thickblood)
 --
--- Hook estimates native drain from bleedingTime and part damageScaler each tick.
--- Effect is only active while at least one body part has bleeding() == true.
+-- The event supplies the exact native damage after ReduceGeneralHealth applies.
 function UTCore.applyBleedDrainMult(player, mult)
     player:getModData()["UT_bleedDrainMult"] = mult
 end
