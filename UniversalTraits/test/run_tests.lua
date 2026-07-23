@@ -2550,47 +2550,75 @@ test("noxpsneaky blocks Sneaking and Lightfoot XP through the XP hook", function
     assert_true(xpWasCancelled(player, "Lightfoot", 10), "expected Lightfoot XP to be cancelled")
 end)
 
+local function loadProductionVehicleHelper()
+    local before = {}
+    for key, value in pairs(UTCore) do before[key] = value end
+    local modifierEventsFlag = UTCore._modifierAggregationEventsRegistered
+    UTCore._modifierAggregationEventsRegistered = true
+    dofile(base .. "../../UT_CORE/media/lua/shared/UTCore/UTCore_StatModifiers.lua")
+
+    local vehicleKeys = {
+        "_vehicleTraitDefs",
+        "_vehicleTraitActiveVehicles",
+        "_vehicleTraitTrackedPlayer",
+        "_vehicleTraitEventsRegistered",
+        "applyVehicleMod",
+        "restoreVehicleMod",
+        "registerVehicleTrait",
+        "syncVehicleTrait",
+        "updateVehicleTraitState",
+    }
+    local production = {}
+    for _, key in ipairs(vehicleKeys) do production[key] = UTCore[key] end
+    for key in pairs(UTCore) do UTCore[key] = nil end
+    for key, value in pairs(before) do UTCore[key] = value end
+    for _, key in ipairs(vehicleKeys) do UTCore[key] = production[key] end
+    UTCore._modifierAggregationEventsRegistered = modifierEventsFlag
+end
+
+loadProductionVehicleHelper()
+
 test("driver applies mild vehicle bonuses", function()
     local vehicle = MockVehicle()
-    local player = MockPlayer({ "UniversalTraits:UT_driver" }, { vehicle = vehicle })
-    player:setVehicle(vehicle)
+    local player = MockPlayer({ "UniversalTraits:UT_driver" }, { vehicle = vehicle, driving = true })
     Events.OnEnterVehicle:fire(player)
     assert_eq(vehicle:getMaxSpeed(), 120, "expected +20% max speed")
     assert_eq(vehicle:getBrakingForce(), 12, "expected +20% braking force")
     assert_eq(vehicle:getEnginePower(), 120, "expected +20% engine power")
     assert_eq(vehicle:getEngineLoudness(), 80, "expected 20% quieter engine")
+    assert_eq(vehicle:getEngineQuality(), 100, "driver must not own engine quality")
+    assert_eq(vehicle:getInitialMass(), 1000, "driver must not own initial mass")
 end)
 
 test("expertdriver applies the full vehicle bonus package", function()
-    local vehicle = MockVehicle()
-    local player = MockPlayer({ "UniversalTraits:UT_expertdriver" }, { vehicle = vehicle })
-    player:setVehicle(vehicle)
+    local vehicle = MockVehicle({ initialMass = 1000, cargoMass = 240 })
+    local player = MockPlayer({ "UniversalTraits:UT_expertdriver" }, { vehicle = vehicle, driving = true })
     Events.OnEnterVehicle:fire(player)
     assert_eq(vehicle:getMaxSpeed(), 125, "expected +25% max speed")
     assert_eq(vehicle:getBrakingForce(), 20, "expected 2x braking force")
-    assert_eq(vehicle:getEngineQuality(), 200, "expected 2x engine quality")
+    assert_eq(vehicle:getEngineQuality(), 100, "Java clamps doubled engine quality to 100")
     assert_eq(vehicle:getEngineLoudness(), 25, "expected 75% quieter engine")
     assert_eq(vehicle:getEnginePower(), 300, "expected 3x engine power")
-    assert_eq(vehicle:getMass(), 500, "expected half vehicle mass")
+    assert_eq(vehicle:getInitialMass(), 500, "expected half initial mass")
+    assert_eq(vehicle:getMass(), 740, "cargo remains part of recomputed total mass")
 end)
 
 test("poordriver applies the full vehicle penalty package", function()
-    local vehicle = MockVehicle()
-    local player = MockPlayer({ "UniversalTraits:UT_poordriver" }, { vehicle = vehicle })
-    player:setVehicle(vehicle)
+    local vehicle = MockVehicle({ initialMass = 1000, cargoMass = 240 })
+    local player = MockPlayer({ "UniversalTraits:UT_poordriver" }, { vehicle = vehicle, driving = true })
     Events.OnEnterVehicle:fire(player)
     assert_eq(vehicle:getMaxSpeed(), 75, "expected -25% max speed")
     assert_eq(vehicle:getBrakingForce(), 5, "expected half braking force")
     assert_eq(vehicle:getEngineQuality(), 50, "expected half engine quality")
     assert_eq(vehicle:getEngineLoudness(), 150, "expected 50% louder engine")
     assert_eq(vehicle:getEnginePower(), 66, "expected 34% engine power penalty")
-    assert_true(math.abs(vehicle:getMass() - 1330) < 0.1, "expected +33% vehicle mass")
+    assert_true(math.abs(vehicle:getInitialMass() - 1330) < 0.1, "expected +33% initial mass")
+    assert_true(math.abs(vehicle:getMass() - 1570) < 0.1, "cargo remains part of recomputed total mass")
 end)
 
 test("vehicle traits restore the baseline stats on exit", function()
-    local vehicle = MockVehicle()
-    local player = MockPlayer({ "UniversalTraits:UT_expertdriver" }, { vehicle = vehicle })
-    player:setVehicle(vehicle)
+    local vehicle = MockVehicle({ initialMass = 1000, cargoMass = 240 })
+    local player = MockPlayer({ "UniversalTraits:UT_expertdriver" }, { vehicle = vehicle, driving = true })
     Events.OnEnterVehicle:fire(player)
     player:setVehicle(nil)
     UTCore.updateVehicleTraitState(player)
@@ -2599,7 +2627,174 @@ test("vehicle traits restore the baseline stats on exit", function()
     assert_eq(vehicle:getEngineQuality(), 100, "expected engine quality restored to baseline")
     assert_eq(vehicle:getEngineLoudness(), 100, "expected engine loudness restored to baseline")
     assert_eq(vehicle:getEnginePower(), 100, "expected engine power restored to baseline")
-    assert_eq(vehicle:getMass(), 1000, "expected mass restored to baseline")
+    assert_eq(vehicle:getInitialMass(), 1000, "expected initial mass restored to baseline")
+    assert_eq(vehicle:getMass(), 1240, "expected cargo-aware total mass after restore")
+    assert_eq(vehicle:getModData().UT_vehicleTraitOwnership, nil, "ownership evidence clears after restore")
+end)
+
+test("vehicle loudness bridge rounds to the nearest representable stored integer", function()
+    local vehicle = MockVehicle({ engineLoudness = 101 })
+    local player = MockPlayer({ "UniversalTraits:UT_driver" }, { vehicle = vehicle, driving = true })
+    Events.OnEnterVehicle:fire(player)
+    assert_eq(vehicle:getEngineLoudness(), 81, "101 * 0.8 = 80.8 rounds to stored loudness 81")
+    player:setVehicle(nil)
+    UTCore.updateVehicleTraitState(player)
+    assert_eq(vehicle:getEngineLoudness(), 101, "baseline loudness restores through setter-input units")
+end)
+
+test("vehicle grouped integer bridge truncates quality and power without repeat writes", function()
+    local vehicle = MockVehicle({ engineQuality = 75, engineLoudness = 101, enginePower = 101 })
+    local player = MockPlayer({ "UniversalTraits:UT_poordriver" }, { vehicle = vehicle, driving = true })
+    UTCore.updateVehicleTraitState(player)
+    assert_eq(vehicle:getEngineQuality(), 37, "quality 37.5 truncates at the Java int boundary")
+    assert_eq(vehicle:getEngineLoudness(), 152, "loudness 151.5 rounds to nearest stored integer")
+    assert_eq(vehicle:getEnginePower(), 66, "power 66.66 truncates at the Java int boundary")
+    local calls = vehicle._setterCalls.engineFeature
+    UTCore.updateVehicleTraitState(player)
+    assert_eq(vehicle._setterCalls.engineFeature, calls, "integer readback must be steady-state")
+end)
+
+test("vehicle passenger entry and same-vehicle seat switches reconcile", function()
+    local vehicle = MockVehicle()
+    local player = MockPlayer({ "UniversalTraits:UT_driver" }, { vehicle = vehicle, driving = false })
+    Events.OnEnterVehicle:fire(player)
+    assert_eq(vehicle:getMaxSpeed(), 100, "passenger entry must not mutate")
+    player:setDriving(true)
+    UTCore.updateVehicleTraitState(player)
+    assert_eq(vehicle:getMaxSpeed(), 120, "moving into driver seat applies")
+    player:setDriving(false)
+    UTCore.updateVehicleTraitState(player)
+    assert_eq(vehicle:getMaxSpeed(), 100, "moving back to passenger seat restores")
+end)
+
+test("vehicle same-identity trait changes and priority ties are deterministic", function()
+    local vehicle = MockVehicle()
+    local player = MockPlayer({ "UniversalTraits:UT_driver" }, { vehicle = vehicle, driving = true })
+    UTCore.updateVehicleTraitState(player)
+    assert_eq(vehicle:getMaxSpeed(), 120, "driver applies first")
+    player:setMockTrait("UniversalTraits:UT_driver", false)
+    player:setMockTrait("UniversalTraits:UT_poordriver", true)
+    UTCore.updateVehicleTraitState(player)
+    assert_eq(vehicle:getMaxSpeed(), 75, "same-vehicle membership change selects poor driver")
+    player:setMockTrait("UniversalTraits:UT_expertdriver", true)
+    UTCore.updateVehicleTraitState(player)
+    assert_eq(vehicle:getMaxSpeed(), 125, "equal-priority tie uses lexical trait id, selecting expert")
+    player:setMockTrait("UniversalTraits:UT_expertdriver", false)
+    player:setMockTrait("UniversalTraits:UT_poordriver", false)
+    UTCore.updateVehicleTraitState(player)
+    assert_eq(vehicle:getMaxSpeed(), 100, "removing all vehicle traits restores")
+end)
+
+test("vehicle replacement restores A before applying B", function()
+    local vehicleA = MockVehicle({ maxSpeed = 100 })
+    local vehicleB = MockVehicle({ maxSpeed = 80 })
+    local player = MockPlayer({ "UniversalTraits:UT_driver" }, { vehicle = vehicleA, driving = true })
+    UTCore.updateVehicleTraitState(player)
+    player:setVehicle(vehicleB)
+    UTCore.updateVehicleTraitState(player)
+    assert_eq(vehicleA:getMaxSpeed(), 100, "vehicle A restored")
+    assert_eq(vehicleB:getMaxSpeed(), 96, "vehicle B receives driver multiplier")
+end)
+
+test("vehicle per-field restore preserves foreign changes and grouped neighbors", function()
+    local vehicle = MockVehicle()
+    local player = MockPlayer({ "UniversalTraits:UT_expertdriver" }, { vehicle = vehicle, driving = true })
+    UTCore.updateVehicleTraitState(player)
+    vehicle._maxSpeed = 137
+    vehicle._engineQuality = 73
+    vehicle._initialMass = 777
+    vehicle:updateTotalMass()
+    player:setVehicle(nil)
+    UTCore.updateVehicleTraitState(player)
+    assert_eq(vehicle:getMaxSpeed(), 137, "foreign speed survives")
+    assert_eq(vehicle:getEngineQuality(), 73, "foreign grouped quality survives")
+    assert_eq(vehicle:getEngineLoudness(), 100, "owned grouped loudness restores")
+    assert_eq(vehicle:getEnginePower(), 100, "owned grouped power restores")
+    assert_eq(vehicle:getInitialMass(), 777, "foreign initial mass survives")
+end)
+
+test("vehicle foreign changes are preserved independently for every owned field", function()
+    local cases = {
+        { field = "_maxSpeed", getter = "getMaxSpeed", foreign = 137 },
+        { field = "_brakingForce", getter = "getBrakingForce", foreign = 17 },
+        { field = "_engineQuality", getter = "getEngineQuality", foreign = 73 },
+        { field = "_engineLoudness", getter = "getEngineLoudness", foreign = 61 },
+        { field = "_enginePower", getter = "getEnginePower", foreign = 211 },
+        { field = "_initialMass", getter = "getInitialMass", foreign = 777 },
+    }
+    for _, case in ipairs(cases) do
+        local vehicle = MockVehicle()
+        local player = MockPlayer({ "UniversalTraits:UT_poordriver" }, { vehicle = vehicle, driving = true })
+        UTCore.updateVehicleTraitState(player)
+        vehicle[case.field] = case.foreign
+        player:setVehicle(nil)
+        UTCore.updateVehicleTraitState(player)
+        assert_eq(vehicle[case.getter](vehicle), case.foreign, case.field .. " foreign value survives")
+    end
+end)
+
+test("vehicle save-load ownership and player replacement stay local to the tracked vehicle", function()
+    local vehicle = MockVehicle()
+    local oldPlayer = MockPlayer({ "UniversalTraits:UT_driver" }, { vehicle = vehicle, driving = true })
+    Events.OnCreatePlayer:fire(0, oldPlayer)
+    assert_eq(vehicle:getMaxSpeed(), 120, "save surface has applied evidence")
+    UTCore._vehicleTraitActiveVehicles = {}
+    UTCore._vehicleTraitTrackedPlayer = nil
+    local loadedPlayer = MockPlayer({}, { vehicle = vehicle, driving = true })
+    Events.OnCreatePlayer:fire(0, loadedPlayer)
+    assert_eq(vehicle:getMaxSpeed(), 100, "load reconciliation restores exact owned evidence")
+
+    loadedPlayer:setMockTrait("UniversalTraits:UT_driver", true)
+    UTCore.updateVehicleTraitState(loadedPlayer)
+    local replacement = MockPlayer({}, {})
+    Events.OnCreatePlayer:fire(0, replacement)
+    assert_eq(vehicle:getMaxSpeed(), 100, "OnCreatePlayer replacement restores only tracked vehicle")
+end)
+
+test("vehicle dead player restores and clears tracked state", function()
+    local vehicle = MockVehicle()
+    local player = MockPlayer({ "UniversalTraits:UT_driver" }, { vehicle = vehicle, driving = true })
+    UTCore.updateVehicleTraitState(player)
+    player:setDead(true)
+    UTCore.updateVehicleTraitState(player)
+    assert_eq(vehicle:getMaxSpeed(), 100, "dead player restores vehicle")
+    assert_eq(UTCore._vehicleTraitActiveVehicles[player], nil, "dead player tracking clears")
+    assert_true(pcall(UTCore.updateVehicleTraitState, {}), "invalid player is contained")
+end)
+
+test("vehicle duplicate module evaluation preserves one handler set", function()
+    local beforeCreate = Events.OnCreatePlayer:getHandlerCount()
+    loadProductionVehicleHelper()
+    assert_eq(Events.OnCreatePlayer:getHandlerCount(), beforeCreate, "duplicate load adds no create handler")
+    local matching = 0
+    for _, def in ipairs(UTCore._vehicleTraitDefs) do
+        if def.traitId == "UniversalTraits:UT_driver" then matching = matching + 1 end
+    end
+    assert_eq(matching, 1, "duplicate load preserves one driver definition")
+end)
+
+test("vehicle bridge partial failure is contained and setter calls stay bounded", function()
+    local vehicle = MockVehicle({ engineFeatureThrowAt = "loudness" })
+    local player = MockPlayer({ "UniversalTraits:UT_expertdriver" }, { vehicle = vehicle, driving = true })
+    local ok = pcall(UTCore.updateVehicleTraitState, player)
+    assert_true(ok, "grouped bridge failure must not escape")
+    local firstCalls = vehicle._setterCalls.engineFeature or 0
+    for _ = 1, 20 do UTCore.updateVehicleTraitState(player) end
+    assert_eq(vehicle._setterCalls.engineFeature or 0, firstCalls, "permanent grouped failure is suppressed")
+    player:setVehicle(nil)
+    ok = pcall(UTCore.updateVehicleTraitState, player)
+    assert_true(ok, "partial grouped restore must remain contained")
+end)
+
+test("vehicle steady state performs no repeated writes", function()
+    local vehicle = MockVehicle()
+    local player = MockPlayer({ "UniversalTraits:UT_driver" }, { vehicle = vehicle, driving = true })
+    UTCore.updateVehicleTraitState(player)
+    local speedCalls = vehicle._setterCalls.maxSpeed or 0
+    local engineCalls = vehicle._setterCalls.engineFeature or 0
+    for _ = 1, 20 do UTCore.updateVehicleTraitState(player) end
+    assert_eq(vehicle._setterCalls.maxSpeed or 0, speedCalls, "max-speed writes are edge-triggered")
+    assert_eq(vehicle._setterCalls.engineFeature or 0, engineCalls, "engine writes are edge-triggered")
 end)
 
 test("indefatigable restores endurance after its exhaustion cooldown", function()

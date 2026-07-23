@@ -504,80 +504,287 @@ end
 
 UTCore._vehicleTraitDefs = UTCore._vehicleTraitDefs or {}
 UTCore._vehicleTraitActiveVehicles = UTCore._vehicleTraitActiveVehicles or {}
+UTCore._vehicleTraitTrackedPlayer = UTCore._vehicleTraitTrackedPlayer or nil
 
-local function cacheVehicleBaseline(vehicle)
-    local vmd = vehicle:getModData()
-    if vmd.UT_baseMaxSpeed ~= nil then
-        return vmd
-    end
+local VEHICLE_OWNERSHIP_KEY = "UT_vehicleTraitOwnership"
+local ENGINE_FIELDS = {
+    engineQuality = true,
+    engineLoudness = true,
+    enginePower = true,
+}
+local FIELD_ACCESS = {
+    maxSpeed = { get = "getMaxSpeed", set = "setMaxSpeed" },
+    brakingForce = { get = "getBrakingForce", set = "setBrakingForce" },
+    engineQuality = { get = "getEngineQuality" },
+    engineLoudness = { get = "getEngineLoudness" },
+    enginePower = { get = "getEnginePower" },
+    initialMass = { get = "getInitialMass", set = "setInitialMass" },
+}
 
-    vmd.UT_baseMaxSpeed      = vehicle:getMaxSpeed()
-    vmd.UT_baseBrakingForce  = vehicle:getBrakingForce()
-    vmd.UT_baseEngineQuality = vehicle:getEngineQuality()
-    vmd.UT_baseEngineLoudness = vehicle:getEngineLoudness()
-    vmd.UT_baseEnginePower   = vehicle:getEnginePower()
-    vmd.UT_baseMass          = vehicle:getMass()
-    vmd.UT_baseInitialMass   = vehicle:getInitialMass()
-    return vmd
+local function vehicleCall(receiver, methodName, ...)
+    local method = receiver and receiver[methodName]
+    if type(method) ~= "function" then return false, nil end
+    return pcall(method, receiver, ...)
 end
 
-local function selectVehicleTrait(player)
-    local selected = nil
+local function readVehicleField(vehicle, field)
+    local access = FIELD_ACCESS[field]
+    if not access then return false, nil end
+    return vehicleCall(vehicle, access.get)
+end
 
+local function nearestInteger(value)
+    if value >= 0 then return math.floor(value + 0.5) end
+    return math.ceil(value - 0.5)
+end
+
+local function truncateInteger(value)
+    if value >= 0 then return math.floor(value) end
+    return math.ceil(value)
+end
+
+-- BaseVehicle.setEngineFeature stores (int)(inputLoudness / 2.7).
+-- Target the nearest representable stored integer, with exact .5 ties rounded
+-- away from zero. The midpoint input avoids binary underflow at n * 2.7.
+local function loudnessTargetAndInput(desiredStored)
+    local stored = nearestInteger(desiredStored)
+    return stored, (stored + (stored >= 0 and 0.5 or -0.5)) * 2.7
+end
+
+local function selectedVehicleTrait(player)
+    local selected = nil
     for _, def in ipairs(UTCore._vehicleTraitDefs) do
         if UTCore.hasTrait(player, def.traitId) then
-            if not selected or def.priority > selected.priority then
+            if not selected
+                or def.priority > selected.priority
+                or (def.priority == selected.priority and def.traitId < selected.traitId) then
                 selected = def
             end
         end
     end
-
     return selected
 end
 
---- applyVehicleMod(player, stateKey, mods[, vehicleOverride])
--- Applies vehicle stat multipliers from cached baseline values.
--- Reapplying the same state is a no-op; switching states always recalculates from baseline.
-function UTCore.applyVehicleMod(player, stateKey, mods, vehicleOverride)
-    if not player then return end
+local function getOwnership(vehicle)
+    local ok, vmd = vehicleCall(vehicle, "getModData")
+    if not ok or type(vmd) ~= "table" then return nil, nil end
+    local ownership = vmd[VEHICLE_OWNERSHIP_KEY]
+    if type(ownership) ~= "table" then
+        ownership = { fields = {}, suppressed = {} }
+        vmd[VEHICLE_OWNERSHIP_KEY] = ownership
+    end
+    if type(ownership.fields) ~= "table" then ownership.fields = {} end
+    if type(ownership.suppressed) ~= "table" then ownership.suppressed = {} end
+    return vmd, ownership
+end
 
+local function clearOwnership(vmd)
+    if vmd then vmd[VEHICLE_OWNERSHIP_KEY] = nil end
+end
+
+local function restoreSimpleField(vehicle, ownership, field)
+    local evidence = ownership.fields[field]
+    if type(evidence) ~= "table" then return false end
+    local ok, current = readVehicleField(vehicle, field)
+    local restored = false
+    if ok and current == evidence.lastApplied then
+        local access = FIELD_ACCESS[field]
+        restored = vehicleCall(vehicle, access.set, evidence.baseline)
+    end
+    ownership.fields[field] = nil
+    return restored
+end
+
+local function restoreEngineFields(vehicle, ownership)
+    local values = {}
+    local shouldWrite = false
+    for field in pairs(ENGINE_FIELDS) do
+        local ok, current = readVehicleField(vehicle, field)
+        if ok then values[field] = current end
+        local evidence = ownership.fields[field]
+        if ok and type(evidence) == "table" then
+            if current == evidence.lastApplied then
+                values[field] = evidence.baseline
+                shouldWrite = true
+            end
+            ownership.fields[field] = nil
+        end
+    end
+    if not shouldWrite
+        or values.engineQuality == nil
+        or values.engineLoudness == nil
+        or values.enginePower == nil then
+        return
+    end
+    local _, loudnessInput = loudnessTargetAndInput(values.engineLoudness)
+    vehicleCall(vehicle, "setEngineFeature",
+        values.engineQuality, loudnessInput, values.enginePower)
+end
+
+-- Restores only fields whose current observable value still matches UTCore's
+-- last successful write. Foreign/native changes are preserved.
+function UTCore.restoreVehicleMod(vehicle)
+    if not vehicle then return end
+    local vmd, ownership = getOwnership(vehicle)
+    if not ownership or ownership.stateKey == nil then return end
+
+    restoreSimpleField(vehicle, ownership, "maxSpeed")
+    restoreSimpleField(vehicle, ownership, "brakingForce")
+    restoreEngineFields(vehicle, ownership)
+    local restoredInitialMass = restoreSimpleField(vehicle, ownership, "initialMass")
+    if restoredInitialMass then vehicleCall(vehicle, "updateTotalMass") end
+    clearOwnership(vmd)
+end
+
+local function desiredTargets(ownership, mods)
+    local targets = {}
+    local multipliers = {
+        maxSpeed = mods.maxSpeed,
+        brakingForce = mods.brakingForce,
+        engineQuality = mods.engineQuality,
+        engineLoudness = mods.engineLoudness,
+        enginePower = mods.enginePower,
+        initialMass = mods.mass,
+    }
+    for field, multiplier in pairs(multipliers) do
+        local evidence = ownership.fields[field]
+        if multiplier ~= nil and type(evidence) == "table" then
+            local desired = evidence.baseline * multiplier
+            if field == "engineQuality" then
+                desired = clamp(truncateInteger(desired), 0, 100)
+            elseif field == "engineLoudness" then
+                desired = nearestInteger(desired)
+            elseif field == "enginePower" then
+                desired = truncateInteger(desired)
+            end
+            targets[field] = desired
+        end
+    end
+    return targets
+end
+
+local function acquireFields(vehicle, ownership, mods)
+    local multipliers = {
+        maxSpeed = mods.maxSpeed,
+        brakingForce = mods.brakingForce,
+        engineQuality = mods.engineQuality,
+        engineLoudness = mods.engineLoudness,
+        enginePower = mods.enginePower,
+        initialMass = mods.mass,
+    }
+    for field, multiplier in pairs(multipliers) do
+        if multiplier ~= nil and not ownership.suppressed[field] then
+            local ok, current = readVehicleField(vehicle, field)
+            if ok and type(current) == "number" then
+                ownership.fields[field] = {
+                    baseline = current,
+                    lastApplied = current,
+                }
+            end
+        end
+    end
+end
+
+local function fenceForeignChanges(vehicle, ownership)
+    for field, evidence in pairs(ownership.fields) do
+        local ok, current = readVehicleField(vehicle, field)
+        if not ok or current ~= evidence.lastApplied then
+            ownership.fields[field] = nil
+            ownership.suppressed[field] = true
+        end
+    end
+end
+
+local function applySimpleTargets(vehicle, ownership, targets)
+    local initialMassWritten = false
+    for _, field in ipairs({ "maxSpeed", "brakingForce", "initialMass" }) do
+        local target = targets[field]
+        local evidence = ownership.fields[field]
+        if target ~= nil and evidence and evidence.lastApplied ~= target then
+            local access = FIELD_ACCESS[field]
+            local setOk = vehicleCall(vehicle, access.set, target)
+            local ok, observed = readVehicleField(vehicle, field)
+            if ok then
+                if not setOk and observed == evidence.lastApplied then
+                    ownership.fields[field] = nil
+                    ownership.suppressed[field] = true
+                else
+                    evidence.lastApplied = observed
+                end
+                if setOk and field == "initialMass" and observed == target then
+                    initialMassWritten = true
+                end
+            end
+        end
+    end
+    if initialMassWritten then vehicleCall(vehicle, "updateTotalMass") end
+end
+
+local function applyEngineTargets(vehicle, ownership, targets)
+    local values = {}
+    local needsWrite = false
+    for field in pairs(ENGINE_FIELDS) do
+        local ok, current = readVehicleField(vehicle, field)
+        if not ok then return end
+        values[field] = targets[field] ~= nil and targets[field] or current
+        if targets[field] ~= nil and current ~= targets[field] then
+            needsWrite = true
+        end
+    end
+    if not needsWrite then return end
+
+    local _, loudnessInput = loudnessTargetAndInput(values.engineLoudness)
+    local setOk = vehicleCall(vehicle, "setEngineFeature",
+        values.engineQuality, loudnessInput, values.enginePower)
+
+    -- A Java bridge failure can occur after a partial grouped write. Read back
+    -- every owned field so retry/restore evidence describes what was observed.
+    for field in pairs(ENGINE_FIELDS) do
+        local evidence = ownership.fields[field]
+        if evidence then
+            local ok, observed = readVehicleField(vehicle, field)
+            if ok then
+                if not setOk and observed == evidence.lastApplied then
+                    ownership.fields[field] = nil
+                    ownership.suppressed[field] = true
+                else
+                    evidence.lastApplied = observed
+                end
+            end
+        end
+    end
+end
+
+--- applyVehicleMod(player, stateKey, mods[, vehicleOverride])
+-- Reconciles one selected state against per-field ownership evidence.
+function UTCore.applyVehicleMod(player, stateKey, mods, vehicleOverride)
+    if not player or not player.isDriving or not player:isDriving() then return end
     local vehicle = vehicleOverride or (player.getVehicle and player:getVehicle())
     if not vehicle then return end
 
-    if UTSmoke and UTSmoke.record then
-        UTSmoke.record("vehicle.runtime", stateKey)
+    local vmd, ownership = getOwnership(vehicle)
+    if not ownership then return end
+    if ownership.stateKey ~= nil and ownership.stateKey ~= stateKey then
+        UTCore.restoreVehicleMod(vehicle)
+        vmd, ownership = getOwnership(vehicle)
+        if not ownership then return end
     end
 
-    local vmd = cacheVehicleBaseline(vehicle)
-    if vmd.UT_vehicleTraitState == stateKey then return end
+    if ownership.stateKey == nil then
+        ownership.stateKey = stateKey
+        ownership.fields = {}
+        ownership.suppressed = {}
+        acquireFields(vehicle, ownership, mods)
+        if UTSmoke and UTSmoke.record then
+            UTSmoke.record("vehicle.runtime", stateKey)
+        end
+    else
+        fenceForeignChanges(vehicle, ownership)
+    end
 
-    vehicle:setMaxSpeed(vmd.UT_baseMaxSpeed * (mods.maxSpeed or 1.0))
-    vehicle:setBrakingForce(vmd.UT_baseBrakingForce * (mods.brakingForce or 1.0))
-    vehicle:setEngineFeature(
-        vmd.UT_baseEngineQuality * (mods.engineQuality or 1.0),
-        vmd.UT_baseEngineLoudness * (mods.engineLoudness or 1.0),
-        vmd.UT_baseEnginePower * (mods.enginePower or 1.0)
-    )
-    vehicle:setMass(vmd.UT_baseMass * (mods.mass or 1.0))
-    vehicle:setInitialMass(vmd.UT_baseInitialMass * (mods.mass or 1.0))
-    vehicle:updateTotalMass()
-    vmd.UT_vehicleTraitState = stateKey
-end
-
--- Restores a vehicle to its cached baseline values.
-function UTCore.restoreVehicleMod(vehicle)
-    if not vehicle then return end
-
-    local vmd = vehicle:getModData()
-    if vmd.UT_baseMaxSpeed == nil then return end
-
-    vehicle:setMaxSpeed(vmd.UT_baseMaxSpeed)
-    vehicle:setBrakingForce(vmd.UT_baseBrakingForce)
-    vehicle:setEngineFeature(vmd.UT_baseEngineQuality, vmd.UT_baseEngineLoudness, vmd.UT_baseEnginePower)
-    vehicle:setMass(vmd.UT_baseMass)
-    vehicle:setInitialMass(vmd.UT_baseInitialMass)
-    vehicle:updateTotalMass()
-    vmd.UT_vehicleTraitState = nil
+    local targets = desiredTargets(ownership, mods)
+    applySimpleTargets(vehicle, ownership, targets)
+    applyEngineTargets(vehicle, ownership, targets)
 end
 
 -- Registers a vehicle trait so the shared enter/load/exit listeners can apply it.
@@ -608,13 +815,12 @@ function UTCore.syncVehicleTrait(player, vehicle)
     local targetVehicle = vehicle or (player.getVehicle and player:getVehicle())
     if not targetVehicle then return end
 
-    -- If called without an explicit vehicle (e.g. OnCreatePlayer), check if still driving.
-    if not vehicle and player.isDriving and not player:isDriving() then
+    if not player.isDriving or not player:isDriving() then
         UTCore.restoreVehicleMod(targetVehicle)
         return
     end
 
-    local selected = selectVehicleTrait(player)
+    local selected = selectedVehicleTrait(player)
     if not selected then
         UTCore.restoreVehicleMod(targetVehicle)
         return
@@ -632,11 +838,13 @@ function UTCore.updateVehicleTraitState(player)
 
     local previous = UTCore._vehicleTraitActiveVehicles[player]
     local current = player.getVehicle and player:getVehicle() or nil
-    if previous and previous ~= current then
+    local valid = not player.isDead or not player:isDead()
+    if previous and (previous ~= current or not valid) then
         UTCore.restoreVehicleMod(previous)
         UTCore._vehicleTraitActiveVehicles[player] = nil
     end
-    if current and previous ~= current then
+    if not valid then return end
+    if current then
         UTCore.syncVehicleTrait(player, current)
         UTCore._vehicleTraitActiveVehicles[player] = current
     end
@@ -678,6 +886,13 @@ if not UTCore._vehicleTraitEventsRegistered then
     end
 
     local function onCreatePlayer(_playerIndex, player)
+        local replaced = UTCore._vehicleTraitTrackedPlayer
+        if replaced and replaced ~= player then
+            local replacedVehicle = UTCore._vehicleTraitActiveVehicles[replaced]
+            if replacedVehicle then UTCore.restoreVehicleMod(replacedVehicle) end
+            UTCore._vehicleTraitActiveVehicles[replaced] = nil
+        end
+        UTCore._vehicleTraitTrackedPlayer = player
         UTCore._vehicleTraitActiveVehicles[player] = nil
         UTCore.updateVehicleTraitState(player)
     end

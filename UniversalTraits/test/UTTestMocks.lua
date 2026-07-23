@@ -195,34 +195,59 @@ end
 function MockVehicle(opts)
     opts = opts or {}
     local moddata = opts.moddata or {}
-    return {
+    local initialMass = opts.initialMass or (opts.mass or 1000)
+    local cargoMass = opts.cargoMass or 0
+    local vehicle = {
         _maxSpeed = opts.maxSpeed or 100,
         _brakingForce = opts.brakingForce or 10,
         _engineQuality = opts.engineQuality or 100,
         _engineLoudness = opts.engineLoudness or 100,
         _enginePower = opts.enginePower or 100,
-        _mass = opts.mass or 1000,
-        _initialMass = opts.initialMass or (opts.mass or 1000),
+        _mass = opts.mass or (initialMass + cargoMass),
+        _initialMass = initialMass,
+        _cargoMass = cargoMass,
         _updateTotalMassCalls = 0,
+        _setterCalls = {},
         getModData = function(self) return moddata end,
         getMaxSpeed = function(self) return self._maxSpeed end,
-        setMaxSpeed = function(self, v) self._maxSpeed = v end,
+        setMaxSpeed = function(self, v)
+            self._setterCalls.maxSpeed = (self._setterCalls.maxSpeed or 0) + 1
+            if opts.throwMaxSpeed then error("injected max-speed bridge failure") end
+            self._maxSpeed = v
+        end,
         getBrakingForce = function(self) return self._brakingForce end,
-        setBrakingForce = function(self, v) self._brakingForce = v end,
+        setBrakingForce = function(self, v)
+            self._setterCalls.brakingForce = (self._setterCalls.brakingForce or 0) + 1
+            if opts.throwBrakingForce then error("injected braking bridge failure") end
+            self._brakingForce = v
+        end,
         getEngineQuality = function(self) return self._engineQuality end,
         getEngineLoudness = function(self) return self._engineLoudness end,
         getEnginePower = function(self) return self._enginePower end,
         setEngineFeature = function(self, quality, loudness, power)
-            self._engineQuality = quality
-            self._engineLoudness = loudness
-            self._enginePower = power
+            self._setterCalls.engineFeature = (self._setterCalls.engineFeature or 0) + 1
+            self._engineQuality = math.max(0, math.min(100, math.floor(quality)))
+            if opts.engineFeatureThrowAt == "quality" then error("injected grouped bridge failure") end
+            self._engineLoudness = math.floor(loudness / 2.7)
+            if opts.engineFeatureThrowAt == "loudness" then error("injected grouped bridge failure") end
+            self._enginePower = math.floor(power)
+            if opts.engineFeatureThrowAt == "power" then error("injected grouped bridge failure") end
         end,
         getMass = function(self) return self._mass end,
         setMass = function(self, v) self._mass = v end,
         getInitialMass = function(self) return self._initialMass end,
-        setInitialMass = function(self, v) self._initialMass = v end,
-        updateTotalMass = function(self) self._updateTotalMassCalls = self._updateTotalMassCalls + 1 end,
+        setInitialMass = function(self, v)
+            self._setterCalls.initialMass = (self._setterCalls.initialMass or 0) + 1
+            if opts.throwInitialMass then error("injected initial-mass bridge failure") end
+            self._initialMass = v
+        end,
+        updateTotalMass = function(self)
+            self._setterCalls.updateTotalMass = (self._setterCalls.updateTotalMass or 0) + 1
+            self._updateTotalMassCalls = self._updateTotalMassCalls + 1
+            self._mass = self._initialMass + self._cargoMass
+        end,
     }
+    return vehicle
 end
 
 -- MockPlayer for trait moddata tests
@@ -267,6 +292,7 @@ function MockPlayer(traitList, opts)
         _bumpedChr    = nil,
         _bumpFall     = false,
         _driving      = opts.driving == nil and opts.vehicle ~= nil or opts.driving,
+        _dead         = opts.dead == true,
         _playerNum    = opts.playerNum or 0,
         _vehicle      = opts.vehicle,
         getModData = function(self) return moddata end,
@@ -328,6 +354,9 @@ function MockPlayer(traitList, opts)
         end,
         getPlayerNum = function(self) return self._playerNum end,
         isDriving = function(self) return self._driving end,
+        setDriving = function(self, value) self._driving = value == true end,
+        isDead = function(self) return self._dead == true end,
+        setDead = function(self, value) self._dead = value == true end,
         getVehicle = function(self) return self._vehicle end,
         setVehicle = function(self, vehicle)
             self._vehicle = vehicle
@@ -844,6 +873,22 @@ end
 
 UTCore._periodicHandlers = UTCore._periodicHandlers or {}
 UTCore._vehicleTraitDefs = UTCore._vehicleTraitDefs or {}
+UTCore.registerVehicleTrait = function(traitId, stateKey, mods, priority)
+    for _, def in ipairs(UTCore._vehicleTraitDefs) do
+        if def.traitId == traitId then
+            def.stateKey = stateKey
+            def.mods = mods
+            def.priority = priority or 0
+            return
+        end
+    end
+    UTCore._vehicleTraitDefs[#UTCore._vehicleTraitDefs + 1] = {
+        traitId = traitId,
+        stateKey = stateKey,
+        mods = mods,
+        priority = priority or 0,
+    }
+end
 local function periodicHandlerKey(traitId, interval)
     return traitId .. "::" .. interval
 end
@@ -888,82 +933,6 @@ UTCore.unregisterPeriodicHandler = function(traitId, interval)
             _G.Events[entry.event].Remove(entry.wrapped)
         end
         UTCore._periodicHandlers[key] = nil
-    end
-end
-
-local function _cacheVehicleBaseline(vehicle)
-    local vmd = vehicle:getModData()
-    if vmd.UT_baseMaxSpeed ~= nil then return vmd end
-    vmd.UT_baseMaxSpeed = vehicle:getMaxSpeed()
-    vmd.UT_baseBrakingForce = vehicle:getBrakingForce()
-    vmd.UT_baseEngineQuality = vehicle:getEngineQuality()
-    vmd.UT_baseEngineLoudness = vehicle:getEngineLoudness()
-    vmd.UT_baseEnginePower = vehicle:getEnginePower()
-    vmd.UT_baseMass = vehicle:getMass()
-    vmd.UT_baseInitialMass = vehicle:getInitialMass()
-    return vmd
-end
-
-UTCore.applyVehicleMod = function(player, stateKey, mods)
-    if not player:isDriving() then return end
-    local vehicle = player:getVehicle()
-    if not vehicle then return end
-    local vmd = _cacheVehicleBaseline(vehicle)
-    if vmd.UT_vehicleTraitState == stateKey then return end
-    vehicle:setMaxSpeed(vmd.UT_baseMaxSpeed * (mods.maxSpeed or 1.0))
-    vehicle:setBrakingForce(vmd.UT_baseBrakingForce * (mods.brakingForce or 1.0))
-    vehicle:setEngineFeature(
-        vmd.UT_baseEngineQuality * (mods.engineQuality or 1.0),
-        vmd.UT_baseEngineLoudness * (mods.engineLoudness or 1.0),
-        vmd.UT_baseEnginePower * (mods.enginePower or 1.0)
-    )
-    vehicle:setMass(vmd.UT_baseMass * (mods.mass or 1.0))
-    vehicle:setInitialMass(vmd.UT_baseInitialMass * (mods.mass or 1.0))
-    vehicle:updateTotalMass()
-    vmd.UT_vehicleTraitState = stateKey
-end
-
-UTCore.restoreVehicleMod = function(vehicle)
-    if not vehicle then return end
-    local vmd = vehicle:getModData()
-    if vmd.UT_baseMaxSpeed == nil then return end
-    vehicle:setMaxSpeed(vmd.UT_baseMaxSpeed)
-    vehicle:setBrakingForce(vmd.UT_baseBrakingForce)
-    vehicle:setEngineFeature(vmd.UT_baseEngineQuality, vmd.UT_baseEngineLoudness, vmd.UT_baseEnginePower)
-    vehicle:setMass(vmd.UT_baseMass)
-    vehicle:setInitialMass(vmd.UT_baseInitialMass)
-    vehicle:updateTotalMass()
-    vmd.UT_vehicleTraitState = nil
-end
-
-UTCore.registerVehicleTrait = function(traitId, stateKey, mods, priority)
-    UTCore._vehicleTraitDefs[#UTCore._vehicleTraitDefs + 1] = {
-        traitId = traitId,
-        stateKey = stateKey,
-        mods = mods,
-        priority = priority or 0,
-    }
-end
-
-UTCore.syncVehicleTrait = function(player, vehicle)
-    local targetVehicle = vehicle or (player and player.getVehicle and player:getVehicle())
-    if not player or not targetVehicle then return end
-    if player.isDriving and not player:isDriving() then
-        UTCore.restoreVehicleMod(targetVehicle)
-        return
-    end
-    local selected = nil
-    for _, def in ipairs(UTCore._vehicleTraitDefs) do
-        if UTCore.hasTrait(player, def.traitId) then
-            if not selected or def.priority > selected.priority then
-                selected = def
-            end
-        end
-    end
-    if selected then
-        UTCore.applyVehicleMod(player, selected.stateKey, selected.mods)
-    else
-        UTCore.restoreVehicleMod(targetVehicle)
     end
 end
 
@@ -1552,32 +1521,6 @@ if not _G.Events.EveryHours then
         end,
         fire = function(...) fireHandlers(_G.Events.EveryHours, _everyHoursHandlers, ...) end,
     }
-end
-
-UTCore._vehicleTraitActiveVehicles = UTCore._vehicleTraitActiveVehicles or {}
-UTCore.updateVehicleTraitState = function(player)
-    if not player then return end
-    local previous = UTCore._vehicleTraitActiveVehicles[player]
-    local current = player.getVehicle and player:getVehicle() or nil
-    if previous and previous ~= current then
-        UTCore.restoreVehicleMod(previous)
-        UTCore._vehicleTraitActiveVehicles[player] = nil
-    end
-    if current and previous ~= current then
-        UTCore.syncVehicleTrait(player, current)
-        UTCore._vehicleTraitActiveVehicles[player] = current
-    end
-end
-
-if not UTCore._vehicleTraitEventsRegistered then
-    _G.Events.OnEnterVehicle.Add(function(player)
-        UTCore.updateVehicleTraitState(player)
-    end)
-    _G.Events.OnCreatePlayer.Add(function(_playerIndex, player)
-        UTCore._vehicleTraitActiveVehicles[player] = nil
-        UTCore.updateVehicleTraitState(player)
-    end)
-    UTCore._vehicleTraitEventsRegistered = true
 end
 
 -- ============================================================
