@@ -4487,13 +4487,15 @@ test("packmouse bridge failures fail safely", function()
         "inventory failure must not escape"
     )
     assert_eq(
-        packmouseBucket(badInventory)[PACKMOUSE_ID],
-        -2,
-        "contained inventory failure must leave the successful Pack Mouse source active"
+        badInventory:getModData().UT_modifierBuckets,
+        nil,
+        "snapshot inventory failure must not begin Pack Mouse activation"
     )
+    assert_eq(UTPackMouseLifecycle.player, nil, "snapshot failure must not record successful ownership")
 
     local badSetter = MockPlayer({ PACKMOUSE_ID })
     UTCore.applyCarryWeight(badSetter, 3, "test:foreign")
+    local originalSetter = badSetter.setMaxWeightBase
     badSetter.setMaxWeightBase = function() error("injected setter failure") end
     assert_true(
         pcall(function() UTPackMouseLifecycle.onCreatePlayer(0, badSetter) end),
@@ -4509,6 +4511,12 @@ test("packmouse bridge failures fail safely", function()
         3,
         "setter failure rollback must preserve foreign carry sources"
     )
+    assert_eq(UTPackMouseLifecycle.player, nil, "failed activation must not become successful ownership")
+    assert_eq(UTPackMouseLifecycle.pendingRollback.player, badSetter,
+        "hostile setter rollback must retain retry ownership")
+    badSetter.setMaxWeightBase = originalSetter
+    UTPackMouseLifecycle.onCreatePlayer(0, nil)
+    assert_eq(UTPackMouseLifecycle.pendingRollback, nil, "resolved setter must permit direct rollback retry")
 end)
 
 local function resetPackMouseTracking()
@@ -4571,6 +4579,15 @@ end)
 test("packmouse reconciliation mutation then throw restores absent source", function()
     resetPackMouseTracking()
     local p = MockPlayer({ PACKMOUSE_ID })
+    local inventory = {
+        capacity = 50,
+        getCapacity = function(self) return self.capacity end,
+        setCapacity = function(self, value) self.capacity = value end,
+    }
+    p:setInventory(inventory)
+    p:setMaxWeightBase(13)
+    inventory:setCapacity(71)
+    p:getModData().UT_inventoryCapacityApplied = false
     local originalReconcile = UTCore.reconcileAggregatedModifiers
 
     withPatchedPackMouseCore({
@@ -4586,6 +4603,9 @@ test("packmouse reconciliation mutation then throw restores absent source", func
     end)
 
     assert_eq(p:getModData().UT_modifierBuckets, nil, "reconciliation failure must restore absent buckets")
+    assert_eq(p:getModData().UT_inventoryCapacityApplied, false, "capacity ownership fence must be exact")
+    assert_eq(p:getMaxWeightBase(), 13, "reconciliation failure must restore maxWeightBase")
+    assert_eq(inventory:getCapacity(), 71, "reconciliation failure must restore inventory capacity")
     assert_eq(UTPackMouseLifecycle.player, nil, "failed reconciliation must not record ownership")
 end)
 
@@ -4617,6 +4637,133 @@ test("packmouse failure restores preexisting source and every foreign source", f
     assert_eq(buckets.carryFlatAdd["test:foreign-flat"], 3, "foreign flat source")
     assert_eq(buckets.carryStrengthAdd["test:foreign-strength"], 4, "foreign strength source")
     assert_eq(UTPackMouseLifecycle.player, nil, "failed transaction must not record ownership")
+end)
+
+test("packmouse restores exact empty and nonempty bucket layouts and aggregate caches", function()
+    resetPackMouseTracking()
+    local p = MockPlayer({ PACKMOUSE_ID })
+    local inventory = {
+        capacity = 50,
+        getCapacity = function(self) return self.capacity end,
+        setCapacity = function(self, value) self.capacity = value end,
+    }
+    p:setInventory(inventory)
+    local modData = p:getModData()
+    modData.UT_modifierBuckets = {
+        speedAdd = {},
+        workAdd = { ["test:work"] = 0.25 },
+        transferMult = {},
+        carryFlatAdd = { ["test:foreign-flat"] = 3 },
+        carryStrengthAdd = { ["test:foreign-strength"] = 4 },
+        customEmpty = {},
+    }
+    modData.UT_modifierBucketsVersion = 9
+    modData.UT_speedMod = 0.125
+    modData.UT_workSpeedMod = 0.25
+    modData.UT_transferSpeedMult = 1.5
+    modData.UT_carryFlatMod = 3
+    modData.UT_carryStrengthBonus = 4
+    modData.UT_carryTargetBase = 17
+    modData.UT_inventoryCapacityApplied = "foreign-owner"
+    p:setMaxWeightBase(17)
+    p:getInventory():setCapacity(83)
+    local originalReconcile = UTCore.reconcileAggregatedModifiers
+
+    withPatchedPackMouseCore({
+        reconcileAggregatedModifiers = function(player)
+            originalReconcile(player)
+            error("injected completed reconciliation")
+        end,
+    }, function()
+        UTPackMouseLifecycle.onCreatePlayer(0, p)
+    end)
+
+    local buckets = modData.UT_modifierBuckets
+    assert_eq(buckets.carryFlatAdd[PACKMOUSE_ID], nil, "absent Pack Mouse source must remain absent")
+    assert_eq(buckets.carryFlatAdd["test:foreign-flat"], 3, "foreign flat source must remain exact")
+    assert_eq(buckets.carryStrengthAdd["test:foreign-strength"], 4, "foreign strength source must remain exact")
+    assert_eq(buckets.workAdd["test:work"], 0.25, "nonempty foreign bucket must remain exact")
+    assert_eq(next(buckets.speedAdd), nil, "empty speed bucket shape must remain")
+    assert_eq(next(buckets.transferMult), nil, "empty transfer bucket shape must remain")
+    assert_eq(next(buckets.customEmpty), nil, "unrecognized empty bucket shape must remain")
+    assert_eq(modData.UT_modifierBucketsVersion, 9, "bucket version cache")
+    assert_eq(modData.UT_speedMod, 0.125, "speed aggregate cache")
+    assert_eq(modData.UT_workSpeedMod, 0.25, "work aggregate cache")
+    assert_eq(modData.UT_transferSpeedMult, 1.5, "transfer aggregate cache")
+    assert_eq(modData.UT_carryFlatMod, 3, "flat aggregate cache")
+    assert_eq(modData.UT_carryStrengthBonus, 4, "strength aggregate cache")
+    assert_eq(modData.UT_carryTargetBase, 17, "carry target cache")
+    assert_eq(modData.UT_inventoryCapacityApplied, "foreign-owner", "capacity ownership fence")
+    assert_eq(p:getMaxWeightBase(), 17, "receiver maxWeightBase")
+    assert_eq(p:getInventory():getCapacity(), 83, "receiver inventory capacity")
+    assert_eq(UTPackMouseLifecycle.player, nil, "failed transaction cannot become successful ownership")
+end)
+
+test("packmouse hostile rollback retains retry evidence and never leaves untracked minus 2", function()
+    resetPackMouseTracking()
+    local backing = {}
+    local hostile = false
+    local modData = setmetatable({}, {
+        __index = backing,
+        __newindex = function(_, key, value)
+            if hostile and key == "UT_modifierBuckets" then
+                error("hostile bucket rollback write")
+            end
+            backing[key] = value
+        end,
+    })
+    local p = MockPlayer({ PACKMOUSE_ID }, { moddata = modData })
+    local inventory = {
+        capacity = 50,
+        getCapacity = function(self) return self.capacity end,
+        setCapacity = function(self, value) self.capacity = value end,
+    }
+    p:setInventory(inventory)
+    local originalApply = UTCore.applyCarryWeight
+    local originalReconcile = UTCore.reconcileAggregatedModifiers
+    local applyCalls, reconcileCalls = 0, 0
+
+    withPatchedPackMouseCore({
+        applyCarryWeight = function(player, value, sourceId)
+            applyCalls = applyCalls + 1
+            return originalApply(player, value, sourceId)
+        end,
+        reconcileAggregatedModifiers = function(player)
+            reconcileCalls = reconcileCalls + 1
+            originalReconcile(player)
+            hostile = true
+            error("injected reconciliation failure before hostile rollback")
+        end,
+    }, function()
+        assert_true(
+            pcall(function() UTPackMouseLifecycle.onCreatePlayer(0, p) end),
+            "hostile rollback must be contained with explicit retained evidence"
+        )
+    end)
+
+    assert_eq(applyCalls, 1, "rollback must never call applyCarryWeight")
+    assert_eq(reconcileCalls, 1, "rollback must never call reconcileAggregatedModifiers")
+    assert_eq(UTPackMouseLifecycle.player, nil, "failed activation must not report successful ownership")
+    assert_eq(UTPackMouseLifecycle.pendingRollback.player, p, "failed rollback must retain exact player")
+    assert_true(#UTPackMouseLifecycle.pendingRollback.errors > 0, "failed rollback must retain error evidence")
+    assert_eq(backing.UT_modifierBuckets.carryFlatAdd[PACKMOUSE_ID], -2,
+        "hostile residual source must remain explicitly retry-owned")
+
+    hostile = false
+    p:setMockTrait(PACKMOUSE_ID, false)
+    UTPackMouseLifecycle.onCreatePlayer(0, p)
+    assert_eq(backing.UT_modifierBuckets, nil, "retry must restore originally absent bucket layout")
+    assert_eq(UTPackMouseLifecycle.pendingRollback, nil, "successful direct retry must clear evidence")
+    assert_eq(UTPackMouseLifecycle.player, nil, "inactive retry must not create successful ownership")
+
+    p:setMockTrait(PACKMOUSE_ID, true)
+    Events.OnCreatePlayer:fire(0, p)
+    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], -2, "later activation must install one exact source")
+    p:setMockTrait(PACKMOUSE_ID, false)
+    Events.OnCreatePlayer:fire(0, p)
+    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], nil, "repeated deactivation must remove the exact source")
+    Events.OnCreatePlayer:fire(0, p)
+    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], nil, "repeated inactive event must stay idempotent")
 end)
 
 test("packmouse source and release bytes match", function()
