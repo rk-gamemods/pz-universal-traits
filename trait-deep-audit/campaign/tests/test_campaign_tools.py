@@ -900,6 +900,37 @@ class WoodSplitterRegeneratorTests(unittest.TestCase):
             [row for row in recurring_after["findings"] if row["id"] != WOOD_MODULE.PATTERN_ID],
         )
 
+    def test_alias_map_is_generator_owned_and_contains_only_current_contract(self) -> None:
+        plan = WOOD_MODULE.build_plan()
+        relative = "change-impact/woodsplitter-axeman-alias.json"
+        self.assertIn(relative, WOOD_MODULE.OUTPUTS)
+        artifact = json.loads(plan.planned[relative])
+        self.assertEqual(artifact["semantic_contract"]["definition"], {
+            "cost": 4,
+            "xp_boost": "Axe=1",
+            "granted_trait": "Axeman",
+            "mutually_exclusive_trait": "Axeman",
+        })
+        self.assertEqual(artifact["semantic_contract"]["production_behavior"]["runtime_events"], [])
+        self.assertEqual(artifact["semantic_contract"]["production_behavior"]["runtime_handlers"], [])
+        self.assertEqual(artifact["semantic_contract"]["production_behavior"]["runtime_state"], [])
+        self.assertEqual(artifact["status"]["static_source_contract"], "proven")
+        self.assertEqual(artifact["status"]["runtime_gameplay"], "not-performed")
+        rendered = plan.planned[relative].decode("utf-8")
+        for stale in (
+            "0.95",
+            "1.0 versus 0.8",
+            "UT_woodsplitterGrantedAxeman",
+            "OnNewGame",
+            "OnCreatePlayer",
+            "OnPlayerUpdate",
+            "cost 3",
+            "pine-tree key-ring",
+            "deferred",
+            "source_hash_handoff",
+        ):
+            self.assertNotIn(stale, rendered)
+
     def test_lf_is_fixed_point_and_crlf_queue_link_repairs_once_then_reaches_fixed_point(self) -> None:
         for ending in (b"\n", b"\r\n"):
             with self.subTest(ending=ending), tempfile.TemporaryDirectory() as directory:

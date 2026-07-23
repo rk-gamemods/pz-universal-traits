@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 174,
-  "total_bytes": 13742417,
+  "total_bytes": 13728220,
   "files": [
     {
       "path": ".gitattributes",
@@ -334,8 +334,8 @@
       "path": "change-impact/woodsplitter-axeman-alias.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
-      "bytes": 23802,
-      "sha256": "0DE2EF979D19C3AAB7E87C30727F51A868D4510671B90EE63030C930EB1F1817"
+      "bytes": 3340,
+      "sha256": "0EE11E64802DBC473914A6C6409FFE69997027B8243071AE61E9E3F117479429"
     },
     {
       "path": "change-impact/woodsplitter-axeman-balance.json",
@@ -600,8 +600,8 @@
       "path": "tests/test_campaign_tools.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 84298,
-      "sha256": "64012B09568D55392DC63E401830B21714A83099C439A716F152A6D204EFB7F1"
+      "bytes": 85731,
+      "sha256": "9F6C8A5EF82F87E54F25C0515AC8AA81D4BE439871B636D0FC4E9DEEAC451F88"
     },
     {
       "path": "tests/test_regenerate_albino.py",
@@ -1153,8 +1153,8 @@
       "path": "tools/regenerate_woodsplitter.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 37781,
-      "sha256": "BC67A1887EB17161D3E8936B9FF046464848389F65D0F84AE7C2BF5C83780A25"
+      "bytes": 42613,
+      "sha256": "55C7811DBAAFFEE4E804A04246DBDB07D6190E1D38AA648625BEB40EAC2B5FE2"
     },
     {
       "path": "tools/run_campaign_tests.py",

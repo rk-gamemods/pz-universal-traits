@@ -44,6 +44,7 @@ OUTPUTS = (
     "translation_audit.json",
     "independent_reviews/traits_09_12.json",
     "source_inventory.json",
+    "change-impact/woodsplitter-axeman-alias.json",
     "change-impact/woodsplitter-axeman-alias-resolution.json",
     "change-impact/woodsplitter-axeman-balance.json",
     "final_trait_ledger.json",
@@ -320,6 +321,108 @@ def _update_source_records(plan: Plan) -> dict[str, Any]:
 
 
 def _update_change_impact(plan: Plan) -> None:
+    relative = "change-impact/woodsplitter-axeman-alias.json"
+    plan.write_json(
+        relative,
+        {
+            "schema_version": "2.0",
+            "map_id": "woodsplitter-axeman-alias",
+            "status": {
+                "implementation": "present",
+                "static_source_contract": "proven",
+                "runtime_gameplay": "not-performed",
+                "deployment": "not-authorized",
+            },
+            "scope": {
+                "trait_id": TRAIT,
+                "display_name": "Wood Splitter",
+                "vanilla_alias": "base:axeman",
+            },
+            "semantic_contract": {
+                "definition": {
+                    "cost": 4,
+                    "xp_boost": "Axe=1",
+                    "granted_trait": "Axeman",
+                    "mutually_exclusive_trait": "Axeman",
+                },
+                "production_behavior": {
+                    "mechanism": "declarative character-trait definition only",
+                    "runtime_events": [],
+                    "runtime_handlers": [],
+                    "runtime_state": [],
+                    "tree_damage": (
+                        "IsoTree.WeaponHit gates Axeman and WeaponCategory.AXE together "
+                        "before multiplying tree damage by 1.5."
+                    ),
+                    "axe_attack_speed": (
+                        "IsoGameCharacter.calculateCombatSpeed gates WeaponCategory.AXE "
+                        "and consumes getChopTreeSpeed; this proves only a qualitative "
+                        "faster-axe-attacks contract."
+                    ),
+                    "hand_weapon_speed_mod": (
+                        "HandWeapon.getSpeedMod(IsoGameCharacter) has no production caller "
+                        "in the current Java source and is excluded from supported semantics."
+                    ),
+                    "profession_interaction": (
+                        "The actual Lumberjack definition grants base:axeman. The closest "
+                        "CharacterCreationProfession consumer adds a granted trait before "
+                        "applying its mutual exclusions, so profession/direct Axeman excludes "
+                        "Wood Splitter at selection while Wood Splitter retains its intentional grant."
+                    ),
+                },
+                "english_copy": DESC,
+            },
+            "static_evidence": [
+                {
+                    "source": "PZCodebase/Java/source/zombie/iso/objects/IsoTree.java",
+                    "contract": "WeaponHit contains the Axeman plus Axe-category guard and 1.5 multiplication.",
+                },
+                {
+                    "source": "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java",
+                    "contract": (
+                        "calculateCombatSpeed contains Axe-category gating and getChopTreeSpeed consumption; "
+                        "getChopTreeSpeed is not used as an exact final-ratio proof."
+                    ),
+                },
+                {
+                    "source": "PZCodebase/Java/source/zombie/inventory/types/HandWeapon.java",
+                    "contract": (
+                        "The IsoGameCharacter overload is defined once and has no production caller; "
+                        "zero-argument definitions and calls are unrelated."
+                    ),
+                },
+                {
+                    "source": "PZCodebase/Media/media/scripts/generated/characters/character_professions.txt",
+                    "contract": "The actual base:lumberjack block grants base:axeman.",
+                },
+                {
+                    "source": "PZCodebase/Lua/client/OptionScreens/CharacterCreationProfession.lua",
+                    "contract": (
+                        "CharacterCreationProfession:addTrait adds granted traits before applying "
+                        "their mutual exclusions."
+                    ),
+                },
+            ],
+            "validation": {
+                "static_source_contract": [
+                    "UniversalTraits/test/run_tests.lua",
+                    "trait-deep-audit/campaign/tests/test_campaign_tools.py",
+                ],
+                "runtime_not_performed": [
+                    "in-game character creation",
+                    "profession switching",
+                    "save/reload",
+                    "rendered English copy",
+                    "observed gameplay timing and tree damage",
+                ],
+            },
+            "parity": {
+                "english_source_release": "required-byte-identical",
+                "definition_source_release": "required-byte-identical",
+            },
+        },
+    )
+
     relative = "change-impact/woodsplitter-axeman-alias-resolution.json"
     artifact = plan.json(relative)
     artifact = _replace_owned_text(

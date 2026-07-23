@@ -9065,22 +9065,54 @@ test("woodsplitter anchors current vanilla Axeman production contracts", functio
         f:close()
         return source
     end
+    local function balancedJavaMethod(source, signature)
+        local signatureStart = assert(source:find(signature, 1, true), "missing production method " .. signature)
+        local open = assert(source:find("{", signatureStart, true), "missing method body for " .. signature)
+        local depth = 0
+        for index = open, #source do
+            local byte = source:byte(index)
+            if byte == 123 then
+                depth = depth + 1
+            elseif byte == 125 then
+                depth = depth - 1
+                if depth == 0 then
+                    return source:sub(signatureStart, index)
+                end
+            end
+        end
+        error("unbalanced production method " .. signature)
+    end
     local tree = read("Java/source/zombie/iso/objects/IsoTree.java")
-    assert_true(tree:find("hasTrait(CharacterTrait.AXEMAN)", 1, true) ~= nil, "tree checks Axeman")
-    assert_true(tree:find("dmg *= 1.5F", 1, true) ~= nil, "tree damage is multiplied by 1.5")
+    local weaponHit = balancedJavaMethod(tree, "public void WeaponHit(IsoGameCharacter owner, HandWeapon weapon)")
+    local treeGuard = assert(weaponHit:find(
+        "owner.hasTrait(CharacterTrait.AXEMAN) && weapon.isOfWeaponCategory(WeaponCategory.AXE)", 1, true))
+    local treeMultiplier = assert(weaponHit:find("dmg *= 1.5F;", treeGuard, true))
+    assert_true(treeGuard < treeMultiplier,
+        "IsoTree.WeaponHit must gate the 1.5 multiplication on Axeman and Axe category in one method body")
     local character = read("Java/source/zombie/characters/IsoGameCharacter.java")
-    assert_true(character:find("CharacterTrait.AXEMAN) ? 1.0F : 0.8F", 1, true) ~= nil,
-        "Axeman speed branch is 1.0 versus 0.8")
-    local axeCategory = assert(character:find("weapon.isOfWeaponCategory(WeaponCategory.AXE)", 1, true))
-    local combatUse = assert(character:find("combatSpeed *= this.getChopTreeSpeed();", axeCategory, true))
-    assert_true(axeCategory < combatUse, "general axe calculateCombatSpeed consumes the Axeman speed branch")
+    local combatSpeed = balancedJavaMethod(character, "public float calculateCombatSpeed()")
+    local axeCategory = assert(combatSpeed:find(
+        "weapon != null && weapon.isOfWeaponCategory(WeaponCategory.AXE)", 1, true))
+    local combatUse = assert(combatSpeed:find("combatSpeed *= this.getChopTreeSpeed();", axeCategory, true))
+    assert_true(axeCategory < combatUse,
+        "calculateCombatSpeed must gate getChopTreeSpeed consumption on Axe category in one method body")
+    local chopSpeed = balancedJavaMethod(character, "public float getChopTreeSpeed()")
+    assert_true(chopSpeed:find("CharacterTrait.AXEMAN", 1, true) ~= nil,
+        "the consumed getChopTreeSpeed method must inspect Axeman")
     local professions = read("Media/media/scripts/generated/characters/character_professions.txt")
     local lumberjack = professions:match("character_profession_definition%s+base:lumberjack%s*(%b{})")
     assert_true(lumberjack ~= nil, "current Lumberjack profession definition exists")
     assert_true(lumberjack:find("GrantedTraits%s*=%s*base:axeman"), "Lumberjack grants base:axeman")
-    local spawn = read("Lua/shared/Items/SpawnItems.lua")
-    assert_true(spawn:find("[CharacterTrait.AXEMAN] = { ItemKey.Container.KEY_RING_PINE_TREE", 1, true) ~= nil,
-        "Axeman is eligible for the pine-tree key ring")
+    local creation = read("Lua/client/OptionScreens/CharacterCreationProfession.lua")
+    local addTrait = creation:match(
+        "function CharacterCreationProfession:addTrait%(trait%)(.-)\nfunction CharacterCreationProfession:doTestForMutuallyExclusiveTraits")
+    assert_true(addTrait ~= nil, "closest CharacterCreation granted-trait consumer exists")
+    local addGrant = assert(addTrait:find(
+        "self.listboxTraitSelected:addUniqueItem(freeCharacterTraitDefinition:getLabel()", 1, true))
+    local applyExclusion = assert(addTrait:find(
+        "self:doTestForMutuallyExclusiveTraits(freeCharacterTraitDefinition, false)", addGrant, true))
+    assert_true(addGrant < applyExclusion,
+        "the real CharacterCreation consumer adds Lumberjack/Wood Splitter grants before applying exclusions")
 end)
 
 test("woodsplitter rejects an unconsumed HandWeapon speed claim", function()
@@ -9090,19 +9122,21 @@ test("woodsplitter rejects an unconsumed HandWeapon speed claim", function()
     local matches = pipe:read("*a")
     local ok, _, code = pipe:close()
     assert_true(ok or code == 0, "current PZCodebase getSpeedMod source scan must succeed")
-    local handWeaponDefinitions, handWeaponConsumers = 0, {}
+    local handWeaponDefinitions, oneArgumentProductionCalls = 0, {}
     for line in matches:gmatch("[^\r\n]+") do
         if line:find("HandWeapon.java", 1, true)
                 and line:find("public float getSpeedMod(IsoGameCharacter chr)", 1, true) then
             handWeaponDefinitions = handWeaponDefinitions + 1
-        elseif not line:find("public float getSpeedMod()", 1, true)
-                and not line:find("this.getSpeedMod()", 1, true) then
-            handWeaponConsumers[#handWeaponConsumers + 1] = line
+        else
+            local invocation = line:match("[%.:]getSpeedMod%(([^)]*)%)")
+            if invocation and invocation:match("%S") then
+                oneArgumentProductionCalls[#oneArgumentProductionCalls + 1] = line
+            end
         end
     end
     assert_eq(handWeaponDefinitions, 1, "current HandWeapon getSpeedMod definition must remain inspectable")
-    assert_eq(#handWeaponConsumers, 0,
-        "HandWeapon.getSpeedMod must remain unconsumed unless copy and evidence are reviewed")
+    assert_eq(#oneArgumentProductionCalls, 0,
+        "HandWeapon.getSpeedMod(IsoGameCharacter) must have no production caller; zero-argument overloads are unrelated")
 end)
 
 dofile(base .. "test_scrounger_runtime.lua").run(test, assert_eq, assert_true, base)
