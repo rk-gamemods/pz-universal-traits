@@ -20,8 +20,21 @@
   "engine_evidence": [
     "PZCodebase/Java/source/zombie/characters/IsoPlayer.java:2241",
     "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6768-6791,9737",
-    "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyDamage.java:1060-1073,2419,2465-2478"
+    "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyDamage.java:1060-1073,2419,2465-2478",
+    "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6768-6773 (weapon damage events precede cancellation and avoidance)",
+    "PZCodebase/Java/source/zombie/ai/states/AttackState.java:237 (zombie damage has no matching resolved-damage event)",
+    "PZCodebase/Java/source/zombie/ai/sadisticAIDirector/SleepingEvent.java:510-533 (direct body-part damage has no matching damage event)",
+    "PZCodebase/Java/source/zombie/CombatManager.java:1276 (direct ReduceHealth has no matching damage event)",
+    "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:9552-9555 (direct health reduction has no matching damage event)",
+    "PZCodebase/Java/source/zombie/vehicles/BaseVehicle.java:9782-9833 (crash event reports input before per-part clamp equivalence can be established)"
   ],
+  "source_signal_audit": {
+    "OnPlayerGetDamage": "Incomplete and not uniformly resolved: it is pre-cancellation for WEAPONHIT, absent from zombie, sleep, and direct body-part producers, and some vehicle/general-health values are requested inputs rather than verified aggregate loss.",
+    "OnWeaponHitCharacter": "Pre-resolution and pre-cancellation; cannot represent resolved loss.",
+    "body_part_calls": "AddDamage, ReduceHealth, DamageFromWeapon, zombie damage, vehicle damage, and direct SetHealth paths have no single complete post-resolution Lua producer.",
+    "aggregate_health": "Post-resolution net state is available, but same-update healing can cancel or hide incoming loss.",
+    "conclusion": "No complete non-double-counting source-faithful signal was found. GB-R3 remains requires-user-decision; no approximation or intent narrowing was implemented."
+  },
   "files": [
     {
       "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_glassbody.lua",
@@ -35,13 +48,13 @@
     },
     {
       "path": "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "160C133FC444F8AE12A42DEFF8F0B3461ED0F37A911EF432FE03AD9FF2AEFB96",
-      "bytes": 5594
+      "sha256": "90D640940B4F264CA349E6D300FB8297314DDDCA428CF6C6F16BA88755604EC5",
+      "bytes": 8365
     },
     {
       "path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "160C133FC444F8AE12A42DEFF8F0B3461ED0F37A911EF432FE03AD9FF2AEFB96",
-      "bytes": 5594
+      "sha256": "90D640940B4F264CA349E6D300FB8297314DDDCA428CF6C6F16BA88755604EC5",
+      "bytes": 8365
     },
     {
       "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
@@ -55,23 +68,23 @@
     },
     {
       "path": "UT_CORE/test/run_tests.lua",
-      "sha256": "DEFB5E03648CE730E5B27B273072655871CB96E41A26BFE06DA515668729DD3F",
-      "bytes": 167754
+      "sha256": "9B40402B1860EAC2A4CC507C3A53065C7208EF7A120311ABBEF3F46382D5E5A3",
+      "bytes": 173674
     },
     {
       "path": "UT_CORE/test/UTCoreMocks.lua",
-      "sha256": "FAEC8333B3C3E5C4EBACF1791A56B2C87E0CF4607A1F04F9D87B4B0BD1D82778",
-      "bytes": 22311
+      "sha256": "993EC670C0A3F918F87ECC5691CA6CAC5BB485BE002A7944FD6A2597B5DD348F",
+      "bytes": 22758
     },
     {
       "path": "UT_CORE/test/test_pz_api_surface.lua",
-      "sha256": "3949F47F73350776F1BB06D0E63359AE211F388F606CE3E3EC462C402A803333",
-      "bytes": 27810
+      "sha256": "FB25DCD76B52338C31BC8F166EFBED6DDA4639FD7B167C06E21CFEE700842107",
+      "bytes": 28019
     },
     {
       "path": "UniversalTraits/test/run_tests.lua",
-      "sha256": "046474AD0AA7DB61B5C594840DDD05375CE7B3E3CFD1C8EFF0CC6589D359D034",
-      "bytes": 445472
+      "sha256": "553347950739269EE40B9BBBA712AE02DA0EBE06EA190B1F3847B67315892D5B",
+      "bytes": 456295
     },
     {
       "path": "trait-deep-audit/active/batch/traits/UT_glassbody.md",
@@ -81,7 +94,7 @@
   ],
   "regression_cases": [
     "exact 1.5 trait marker",
-    "resolved all-source health loss",
+    "observed aggregate health loss",
     "no recursive multiplication",
     "multiplier at one",
     "healing baseline reset",
@@ -90,7 +103,8 @@
     "same-process hook reload",
     "depleted-body-part weighted distribution",
     "activation and trait reset",
-    "malformed and throwing bridge rollback"
+    "all read-bridge failures and post-mutation setter rollback",
+    "rollback-failure containment and exact setter-call bounds"
   ],
   "preserved_surfaces": [
     "trait cost",
@@ -100,7 +114,12 @@
     "registration and English copy"
   ],
   "performance_model": "No new handler is added. The existing central dispatch performs one marker lookup for inactive players, one aggregate-health getter per active Glass Body update, and a bounded body-part distribution only after resolved loss.",
-  "runtime_proof": "Unobserved; requires full Exit to Desktop, current-build multi-source damage observation, current-version save/load, rendered English, and profiler capture.",
+  "runtime_proof": "Blocked for the all-incoming-loss claim: current Build 42 has no complete non-double-counting post-resolution damage signal, and aggregate same-update healing can hide damage. Full Exit to Desktop, current-version save/load, rendered English, and profiler capture also remain unobserved.",
+  "open_policy_question": {
+    "id": "GB-R3",
+    "status": "requires-user-decision",
+    "question": "How should Glass Body preserve all resolved incoming body-health loss when Build 42 exposes no complete source-faithful resolved-damage signal?"
+  },
   "non_goals": [
     "multiplayer",
     "backward save migration",

@@ -575,6 +575,11 @@ test("API:Static: BodyPartType.getDamageModifyer() exists", function()
     assert(type(BodyPartType.getDamageModifyer) == "function", "getDamageModifyer must be a function")
 end)
 
+test("API:Static: BodyPartType.ToIndex() exists", function()
+    assert(type(BodyPartType.ToIndex) == "function", "ToIndex must be a function")
+    assert_eq(BodyPartType.ToIndex(BodyPartType.Hand_L), 0)
+end)
+
 -- ============================================================
 -- CATEGORY F: Event lifecycle (Add/Remove/fire must work)
 -- ============================================================

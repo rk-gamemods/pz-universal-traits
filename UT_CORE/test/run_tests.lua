@@ -3092,6 +3092,7 @@ local function makeDamageMultPlayer(multiplier, initialHealth, partHealths, modi
     for index, initialPartHealth in ipairs(partHealths) do
         local partHealth = initialPartHealth
         parts[index] = {
+            getType = function() return index - 1 end,
             getHealth = function() return partHealth end,
             SetHealth = function(_, value)
                 setCalls[#setCalls + 1] = { index = index, value = value }
@@ -3153,10 +3154,10 @@ local function makeDamageMultPlayer(multiplier, initialHealth, partHealths, modi
     }
 end
 
-test("DamageMultHook applies +50 percent to resolved all-source health loss", function()
+test("DamageMultHook applies +50 percent to an observed aggregate health loss", function()
     local p, health = makeDamageMultPlayer(1.5, 100, { 100, 100 }, { 0.25, 0.75 })
     Events.OnPlayerUpdate.fire(p) -- establish the baseline
-    -- Any engine source resolves 20 aggregate loss into the body-part state.
+    -- The aggregate observer sees 20 net loss in the body-part state.
     health.setResolvedHealth(80, { 20, 100 })
     Events.OnPlayerUpdate.fire(p)
     assert_close(health.overallAppliedLoss(), 10, 0.0001, "expected 50 percent extra damage")
@@ -3286,6 +3287,105 @@ test("DamageMultHook ignores zero loss, malformed bridges, and throwing setters"
     health.restore()
 end)
 
+test("DamageMultHook contains every throwing or malformed read bridge", function()
+    local cases = {
+        { "getModData", function(p) p.getModData = function() error("getModData") end end, true },
+        { "getBodyDamage", function(p) p.getBodyDamage = function() error("getBodyDamage") end end, true },
+        { "getOverallBodyHealth", function(_, h) h.bodyDamage.getOverallBodyHealth = function() error("overall") end end },
+        { "getBodyParts", function(_, h) h.bodyDamage.getBodyParts = function() error("parts") end end },
+        { "list size", function(_, h) h.bodyParts.size = function() error("size") end end },
+        { "list get", function(_, h) h.bodyParts.get = function() error("get") end end },
+        { "part getHealth", function(_, h) h.parts[1].getHealth = function() error("health") end end },
+        { "part getType", function(_, h) h.parts[1].getType = function() error("type") end end },
+        { "type index", function()
+            BodyPartType.ToIndex = function() error("index") end
+        end },
+        { "damage weight", function()
+            BodyPartType.getDamageModifyer = function() error("weight") end
+        end },
+    }
+
+    for _, case in ipairs(cases) do
+        local savedToIndex = BodyPartType.ToIndex
+        local savedWeight = BodyPartType.getDamageModifyer
+        local p, health = makeDamageMultPlayer(1.5, 100)
+        if not case[3] then UTCore._damageMultUpdateHandler(p) end
+        case[2](p, health)
+        health.setResolvedHealth(80)
+        local ok = pcall(UTCore._damageMultUpdateHandler, p)
+        assert(ok, case[1] .. " failure must not escape")
+        assert_eq(#health.setCalls(), 0, case[1] .. " failure must not write")
+        BodyPartType.ToIndex = savedToIndex
+        BodyPartType.getDamageModifyer = savedWeight
+        health.restore()
+    end
+end)
+
+test("DamageMultHook rolls back the setter that mutates then throws", function()
+    local p, health = makeDamageMultPlayer(1.5, 100, { 1, 100 }, { 0.05, 0.95 })
+    Events.OnPlayerUpdate.fire(p)
+    health.setResolvedHealth(80, { 1, 84.1578947368 })
+
+    local firstCalls = 0
+    local secondCalls = 0
+    local firstSet = health.parts[1].SetHealth
+    health.parts[1].SetHealth = function(self, value)
+        firstCalls = firstCalls + 1
+        firstSet(self, value)
+    end
+    local secondSet = health.parts[2].SetHealth
+    health.parts[2].SetHealth = function(self, value)
+        secondCalls = secondCalls + 1
+        secondSet(self, value)
+        if secondCalls == 1 then error("post-mutation failure") end
+    end
+
+    local ok = pcall(Events.OnPlayerUpdate.fire, p)
+    assert(ok, "post-mutation setter failure must not escape")
+    assert_close(health.partHealth(1), 1, 0.0001, "prior entry must roll back")
+    assert_close(health.partHealth(2), 84.1578947368, 0.0001, "throwing entry must also roll back")
+    assert_eq(firstCalls, 2, "first setter must apply once and roll back once")
+    assert_eq(secondCalls, 2, "throwing setter must apply once and roll back once")
+    health.restore()
+end)
+
+test("DamageMultHook contains rollback failure and rebases from actual weighted state", function()
+    local p, health = makeDamageMultPlayer(1.5, 100, { 1, 100 }, { 0.05, 0.95 })
+    Events.OnPlayerUpdate.fire(p)
+    health.setResolvedHealth(80, { 1, 84.1578947368 })
+
+    local firstCalls = 0
+    local secondCalls = 0
+    local firstSet = health.parts[1].SetHealth
+    health.parts[1].SetHealth = function(self, value)
+        firstCalls = firstCalls + 1
+        firstSet(self, value)
+    end
+    local secondSet = health.parts[2].SetHealth
+    health.parts[2].SetHealth = function(self, value)
+        secondCalls = secondCalls + 1
+        if secondCalls == 1 then
+            secondSet(self, value)
+            error("post-mutation failure")
+        end
+        error("rollback failure")
+    end
+
+    local ok = pcall(Events.OnPlayerUpdate.fire, p)
+    assert(ok, "rollback failure must not escape")
+    assert_close(health.partHealth(1), 1, 0.0001, "successful rollback must restore prior entry")
+    assert_close(health.partHealth(2), 73.6842105263, 0.0001,
+        "failed rollback leaves only the contained write")
+    assert_eq(firstCalls, 2, "first setter call bound")
+    assert_eq(secondCalls, 2, "throwing setter call bound")
+
+    health.flushOverallHealth()
+    Events.OnPlayerUpdate.fire(p)
+    assert_eq(firstCalls, 2, "rebased state must not recursively write the first part")
+    assert_eq(secondCalls, 2, "rebased state must not recursively amplify the partial write")
+    health.restore()
+end)
+
 test("DamageMultHook reload replaces behavior without adding a dispatcher", function()
     local coreCount = UTCore.getCoreHandlerCount()
     local weaponCount = Events.OnWeaponHitCharacter._handlerCount()
@@ -3293,6 +3393,31 @@ test("DamageMultHook reload replaces behavior without adding a dispatcher", func
     assert_eq(UTCore.getCoreHandlerCount(), coreCount, "expected one stored core dispatcher")
     assert_eq(Events.OnWeaponHitCharacter._handlerCount(), weaponCount,
         "expected no damage-multiplier weapon listener after reload")
+end)
+
+test("DamageMultHook reload contains throwing event Add and Remove bridges", function()
+    local savedRegister = UTCore.registerCoreHandler
+    local savedWeaponRemove = Events.OnWeaponHitCharacter.Remove
+    local savedUpdateRemove = Events.OnPlayerUpdate.Remove
+    local savedUpdateAdd = Events.OnPlayerUpdate.Add
+
+    UTCore._damageMultWeaponHitHandler = function() end
+    UTCore._damageMultDirectHandler = function() end
+    Events.OnWeaponHitCharacter.Remove = function() error("weapon remove") end
+    Events.OnPlayerUpdate.Remove = function() error("update remove") end
+    local okRemove = pcall(dofile, base .. "../media/lua/shared/UTCore/UTCore_DamageMultHook.lua")
+    assert(okRemove, "throwing event Remove bridges must not escape")
+
+    Events.OnWeaponHitCharacter.Remove = savedWeaponRemove
+    Events.OnPlayerUpdate.Remove = savedUpdateRemove
+    UTCore.registerCoreHandler = nil
+    Events.OnPlayerUpdate.Add = function() error("update add") end
+    local okAdd = pcall(dofile, base .. "../media/lua/shared/UTCore/UTCore_DamageMultHook.lua")
+    assert(okAdd, "throwing event Add bridge must not escape")
+
+    UTCore.registerCoreHandler = savedRegister
+    Events.OnPlayerUpdate.Add = savedUpdateAdd
+    dofile(base .. "../media/lua/shared/UTCore/UTCore_DamageMultHook.lua")
 end)
 
 -- ===== FractureHook tests =====

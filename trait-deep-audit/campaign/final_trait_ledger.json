@@ -45,14 +45,14 @@
     }
   },
   "source_artifact_sha256": {
-    "independent_reviews/traits_01_04.json": "AB339DB02DC862D4BDB824AA493D23370E872EC8A48DBA06F5D9658B705F6D98",
+    "independent_reviews/traits_01_04.json": "95BFD63B996797073CA5774FB8D2064717B86D06A1401077C2A138FD29F352E7",
     "independent_reviews/traits_05_08.json": "440B5A395270AD3EEACC783B53B113518B5180D00ACBE2373D94C66EA603D31C",
     "independent_reviews/traits_09_12.json": "C13D6E432C4AD272ED0C2510CBB8C527FEF3394CEC13AEA6AF2D9C0FB21B118E",
     "source_inventory.json": "01FC9DA5EAA5353D106D852734D8B31B20DB750069908B03879DE3C6127B2919",
     "trait_batches/batch_01.jsonl": "4FD54923B0938C3294AB5E9D0C0168A08FDBF353A73FBE83BCE7F5DDF8B911F2",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
     "trait_batches/batch_03.jsonl": "DE80C7E88D64E27AEDFA1248A855290E9892605D7A1800D9933BFFFBD8271DA9",
-    "trait_batches/batch_04.jsonl": "DEE665D724F18B015C818714F7B8784400CC2EB3B3963341D9EEE18C9E109DF1",
+    "trait_batches/batch_04.jsonl": "6258F1AD9935517A54B6E2AB8E490F9C0E317F4F2ED4E395C4C8A8DCFBD69F2E",
     "trait_batches/batch_05.jsonl": "3B947F6228AB251E6E17074CF88F62A636D3EDFA01474F1E2DE2CC30ED42433D",
     "trait_batches/batch_06.jsonl": "32B529C5117E409EBFC41BF178BB94BFDD8301716D6187AC4950CF983A32CAAB",
     "trait_batches/batch_07.jsonl": "1A554765021A167458955E851DBDA4197520CB1CBFAFB724E68C9806696B6B43",
@@ -83,10 +83,10 @@
       "runtime-unproven": 110
     },
     "dimension_states": {
-      "proven-correct": 2817,
+      "proven-correct": 2815,
       "confirmed-defect": 185,
       "coverage-gap": 745,
-      "runtime-unproven": 1005
+      "runtime-unproven": 1007
     }
   },
   "independent_review_findings": [
@@ -792,7 +792,7 @@
     },
     {
       "id": "IR0104-GLASSBODY-PREDAMAGE-TIMING",
-      "state": "proven-correct",
+      "state": "runtime-unproven",
       "severity": "high",
       "confidence": "high",
       "title": "Glass Body reads health before the current weapon damage is applied",
@@ -806,9 +806,9 @@
         "damage"
       ],
       "reproduction_evidence": "Even with corrected callback parameters, OnWeaponHitCharacter fires before processHitDamage/hitConsequences. Current health is unchanged, so the hook returns or misattributes an earlier between-tick loss; falls do not emit this weapon event.",
-      "missing_proof": "Current-build in-game Kahlua observation remains unrun.",
-      "recommended_correction": "No further static correction is indicated.",
-      "smallest_regression_test": "Covered by resolved-loss, recursion, healing, lethal-cap, player-replacement, and reload tests."
+      "missing_proof": "User direction is required because no complete source-faithful engine bridge can preserve all resolved incoming body-health loss without narrowing intent.",
+      "recommended_correction": "Do not approximate, narrow copy, or compose incomplete events. Preserve the safe aggregate implementation only as an isolated correction pending user direction.",
+      "smallest_regression_test": "After a user-approved policy exists, add a producer-faithful same-update damage-plus-healing test for that policy."
     },
     {
       "id": "IR0104-GORDANITE-DOUBLE-CALORIES",
@@ -2647,7 +2647,7 @@
     },
     {
       "id": "XTF0104-PREDAMAGE-WEAPON-EVENT",
-      "state": "proven-correct",
+      "state": "runtime-unproven",
       "severity": "high",
       "confidence": "high",
       "title": "Glass Body leaves the pre-damage event; Brittle eligibility remains separately governed",
@@ -2664,10 +2664,10 @@
         "tests",
         "mocks"
       ],
-      "reproduction_evidence": "Glass Body now observes resolved all-source body-health deltas and has no weapon-event listener. Brittle retains its accepted pre-resolution trigger, with cancelled-contact policy isolated under IR0104-BRITTLE-PREDAMAGE-ELIGIBILITY.",
+      "reproduction_evidence": "Glass Body has no weapon-event listener and safely observes aggregate body-health deltas, but same-update healing can hide damage. Brittle retains its accepted pre-resolution trigger, with cancelled-contact policy isolated under IR0104-BRITTLE-PREDAMAGE-ELIGIBILITY.",
       "missing_proof": "Current-build Glass Body observation and the separate Brittle policy decision remain open.",
-      "recommended_correction": "No shared correction remains. Preserve the separate Brittle policy question.",
-      "smallest_regression_test": "Glass Body resolved-loss tests and Brittle producer-order tests cover the separated paths."
+      "recommended_correction": "Preserve both explicit policy questions; do not treat either pre-resolution events or aggregate net health as complete resolved-loss evidence.",
+      "smallest_regression_test": "Glass Body aggregate-loss safety tests and Brittle producer-order tests cover only their proven separated paths."
     },
     {
       "id": "XTF0104-SOURCE-RELEASE-DRIFT",
@@ -20812,12 +20812,12 @@
           ]
         },
         "runtime_path": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "OnNewGame writes UT_damageMult=1.5. The existing central update dispatch compares resolved overall body health, distributes the extra 50 percent across body parts by their current weighted health capacity, and stores the expected aggregate so its own adjustment is not multiplied again."
+            "OnNewGame writes UT_damageMult=1.5. The central update dispatch safely compares aggregate overall body health, distributes observed extra loss across body parts by current weighted capacity, and rebases from verified readback after partial writes."
           ],
           "missing_proof": [
-            "none"
+            "Aggregate same-update loss can be hidden by same-update healing. Current Build 42 exposes no complete post-resolution per-source signal, so the all-incoming-loss promise remains a user decision rather than a proven runtime contract."
           ],
           "source_dimensions": [
             "runtime_path"
@@ -20944,12 +20944,12 @@
           ]
         },
         "description": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "The English all-incoming-damage and +50 percent claims match the accepted resolved body-health multiplier."
+            "The English copy preserves master-authorized all-incoming-damage and +50 percent intent without narrowing it."
           ],
           "missing_proof": [
-            "none"
+            "The aggregate observer cannot prove that promise when same-update healing cancels damage; changing the copy or mechanic requires user direction."
           ],
           "source_dimensions": [
             "description"
@@ -20994,7 +20994,7 @@
         "tests": {
           "state": "proven-correct",
           "evidence": [
-            "Resolved all-source loss, weighted exactness with depleted parts, finite clamps, near-death and overkill, recursion prevention, activation/reset, healing, malformed or throwing bridges, player replacement, and same-process reload are regression-protected."
+            "Observed aggregate loss, weighted exactness with depleted parts, finite clamps, near-death and overkill, recursion prevention, activation/reset, hostile read bridges, post-mutation setter throws, rollback failure containment with exact call bounds, player replacement, and same-process reload are regression-protected. Tests do not overclaim same-update damage hidden by healing."
           ],
           "missing_proof": [
             "none"
@@ -21064,7 +21064,8 @@
         "unresolved_runtime_proofs": [
           "Current-build Kahlua execution, full relaunch, and current-version save/load remain unobserved.",
           "Rendered English, balance telemetry, and profiler capture remain unobserved.",
-          "Only English UI localization exists in the closed-world source inventory."
+          "Only English UI localization exists in the closed-world source inventory.",
+          "GB-R3 requires user direction because aggregate net health cannot prove all incoming loss when healing occurs in the same update."
         ]
       }
     },

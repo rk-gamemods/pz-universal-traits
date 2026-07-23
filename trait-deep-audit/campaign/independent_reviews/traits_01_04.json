@@ -10867,15 +10867,15 @@
         },
         {
           "id": "exact_runtime_path_through_ut_core_or_script_only_behavior",
-          "state": "proven-correct",
-          "evidence": "Pre-campaign master, More Traits lineage, current source, SVN 964 API/order evidence, and focused regression tests prove this static contract.",
-          "missing_proof": ""
+          "state": "runtime-unproven",
+          "evidence": "The aggregate observer and hostile bridge containment are statically proven for observable net loss.",
+          "missing_proof": "Same-update healing can hide incoming loss, and Build 42 exposes no complete post-resolution per-source signal."
         },
         {
           "id": "numerical_behavior",
-          "state": "proven-correct",
-          "evidence": "Pre-campaign master, More Traits lineage, current source, SVN 964 API/order evidence, and focused regression tests prove this static contract.",
-          "missing_proof": ""
+          "state": "runtime-unproven",
+          "evidence": "The aggregate observer and hostile bridge containment are statically proven for observable net loss.",
+          "missing_proof": "Same-update healing can hide incoming loss, and Build 42 exposes no complete post-resolution per-source signal."
         },
         {
           "id": "cadence",
@@ -10909,9 +10909,9 @@
         },
         {
           "id": "event_lifecycle",
-          "state": "proven-correct",
-          "evidence": "Pre-campaign master, More Traits lineage, current source, SVN 964 API/order evidence, and focused regression tests prove this static contract.",
-          "missing_proof": ""
+          "state": "runtime-unproven",
+          "evidence": "The aggregate observer and hostile bridge containment are statically proven for observable net loss.",
+          "missing_proof": "Same-update healing can hide incoming loss, and Build 42 exposes no complete post-resolution per-source signal."
         },
         {
           "id": "stacking_and_cross_trait_interactions",
@@ -10987,7 +10987,7 @@
       "omissions": [
         {
           "id": "IR0104-GLASSBODY-PREDAMAGE-TIMING",
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "severity": "high",
           "confidence": "high",
           "title": "Glass Body reads health before the current weapon damage is applied",
@@ -11001,17 +11001,18 @@
             "damage"
           ],
           "reproduction_evidence": "Even with corrected callback parameters, OnWeaponHitCharacter fires before processHitDamage/hitConsequences. Current health is unchanged, so the hook returns or misattributes an earlier between-tick loss; falls do not emit this weapon event.",
-          "missing_proof": "Current-build in-game Kahlua observation remains unrun.",
-          "recommended_correction": "No further static correction is indicated.",
-          "smallest_regression_test": "Covered by resolved-loss, recursion, healing, lethal-cap, player-replacement, and reload tests.",
-          "resolution_state": "implemented-and-statically-validated",
-          "resolution_evidence": "The hook no longer consumes the pre-resolution weapon event. It observes resolved aggregate body-health loss in the existing central update dispatch and applies the configured extra once."
+          "missing_proof": "User direction is required because no complete source-faithful engine bridge can preserve all resolved incoming body-health loss without narrowing intent.",
+          "recommended_correction": "Do not approximate, narrow copy, or compose incomplete events. Preserve the safe aggregate implementation only as an isolated correction pending user direction.",
+          "smallest_regression_test": "After a user-approved policy exists, add a producer-faithful same-update damage-plus-healing test for that policy.",
+          "resolution_state": "requires-user-decision",
+          "resolution_evidence": "The hook no longer consumes the pre-resolution weapon event. Current Build 42 producer review found OnPlayerGetDamage incomplete and pre-resolution for weapon hits, while aggregate overall health can hide same-update loss behind healing. No complete non-double-counting resolved-damage signal was found."
         }
       ],
       "unresolved_proof": [
         "Current-build Kahlua execution, full relaunch, and current-version save/load remain unobserved.",
         "Rendered English, balance telemetry, and profiler capture remain unobserved.",
-        "Only English UI localization exists in the closed-world source inventory."
+        "Only English UI localization exists in the closed-world source inventory.",
+        "GB-R3 requires user direction because aggregate net health cannot prove all incoming loss when healing occurs in the same update."
       ],
       "explicit_non_goals": [
         "multiplayer",
@@ -11021,8 +11022,8 @@
       "release_parity": {
         "trait_runtime": "F72B0DC0D21AF27755E576E142F50FF834A82BA38742BC64FCA32EE2BFBC1AC5",
         "trait_release": "F72B0DC0D21AF27755E576E142F50FF834A82BA38742BC64FCA32EE2BFBC1AC5",
-        "hook_runtime": "160C133FC444F8AE12A42DEFF8F0B3461ED0F37A911EF432FE03AD9FF2AEFB96",
-        "hook_release": "160C133FC444F8AE12A42DEFF8F0B3461ED0F37A911EF432FE03AD9FF2AEFB96",
+        "hook_runtime": "90D640940B4F264CA349E6D300FB8297314DDDCA428CF6C6F16BA88755604EC5",
+        "hook_release": "90D640940B4F264CA349E6D300FB8297314DDDCA428CF6C6F16BA88755604EC5",
         "state": "proven-correct"
       },
       "resolution_record": "change-impact/glassbody-resolved-damage-contract.json"
@@ -12519,7 +12520,7 @@
     },
     {
       "id": "XTF0104-PREDAMAGE-WEAPON-EVENT",
-      "state": "proven-correct",
+      "state": "runtime-unproven",
       "severity": "high",
       "confidence": "high",
       "title": "Glass Body leaves the pre-damage event; Brittle eligibility remains separately governed",
@@ -12536,12 +12537,12 @@
         "tests",
         "mocks"
       ],
-      "reproduction_evidence": "Glass Body now observes resolved all-source body-health deltas and has no weapon-event listener. Brittle retains its accepted pre-resolution trigger, with cancelled-contact policy isolated under IR0104-BRITTLE-PREDAMAGE-ELIGIBILITY.",
+      "reproduction_evidence": "Glass Body has no weapon-event listener and safely observes aggregate body-health deltas, but same-update healing can hide damage. Brittle retains its accepted pre-resolution trigger, with cancelled-contact policy isolated under IR0104-BRITTLE-PREDAMAGE-ELIGIBILITY.",
       "missing_proof": "Current-build Glass Body observation and the separate Brittle policy decision remain open.",
-      "recommended_correction": "No shared correction remains. Preserve the separate Brittle policy question.",
-      "smallest_regression_test": "Glass Body resolved-loss tests and Brittle producer-order tests cover the separated paths.",
-      "resolution_state": "implemented-and-statically-validated",
-      "resolution_evidence": "The shared cross-trait defect was decomposed into a corrected Glass Body path and an explicit Brittle policy question."
+      "recommended_correction": "Preserve both explicit policy questions; do not treat either pre-resolution events or aggregate net health as complete resolved-loss evidence.",
+      "smallest_regression_test": "Glass Body aggregate-loss safety tests and Brittle producer-order tests cover only their proven separated paths.",
+      "resolution_state": "requires-user-decision",
+      "resolution_evidence": "The shared paths are separated, but Glass Body still lacks a complete resolved-damage producer and Brittle retains its explicit contact-policy question."
     },
     {
       "id": "XTF0104-SOURCE-RELEASE-DRIFT",

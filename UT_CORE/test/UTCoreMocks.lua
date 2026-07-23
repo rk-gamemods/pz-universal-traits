@@ -336,6 +336,17 @@ _G.BodyPartType._damageModifiers = {
     0.1, 0.1, 0.2, 0.2, 0.3, 0.3, 0.35, 0.4, 0.6,
     0.7, 0.4, 0.3, 0.3, 0.2, 0.2, 0.2, 0.2,
 }
+_G.BodyPartType.ToIndex = function(partType)
+    if type(partType) == "number" then return partType end
+    local known = {
+        Hand_L = 0, Hand_R = 1, ForeArm_L = 2, ForeArm_R = 3,
+        UpperArm_L = 4, UpperArm_R = 5, Torso_Upper = 6,
+        Torso_Lower = 7, Head = 8, Neck = 9, Groin = 10,
+        UpperLeg_L = 11, UpperLeg_R = 12, LowerLeg_L = 13,
+        LowerLeg_R = 14, Foot_L = 15, Foot_R = 16,
+    }
+    return known[partType]
+end
 _G.BodyPartType.getDamageModifyer = function(index)
     return _G.BodyPartType._damageModifiers[index + 1]
 end

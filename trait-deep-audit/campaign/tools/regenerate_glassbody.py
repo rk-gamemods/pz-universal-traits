@@ -90,8 +90,9 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
         "Pre-campaign master is the accepted authority: cost -10 and all incoming resolved body-health loss multiplied by 1.5. More Traits confirms all-source lineage; its extra scratches and fractures were not restored.",
     )
     dimensions["exact_runtime_path_through_UT_CORE_or_script_only_behavior"] = _dimension(
-        "proven",
-        "OnNewGame writes UT_damageMult=1.5. The existing central update dispatch compares resolved overall body health, distributes the extra 50 percent across body parts by their current weighted health capacity, and stores the expected aggregate so its own adjustment is not multiplied again.",
+        "runtime-unproven",
+        "OnNewGame writes UT_damageMult=1.5. The central update dispatch safely compares aggregate overall body health, distributes observed extra loss across body parts by current weighted capacity, and rebases from verified readback after partial writes.",
+        "Aggregate same-update loss can be hidden by same-update healing. Current Build 42 exposes no complete post-resolution per-source signal, so the all-incoming-loss promise remains a user decision rather than a proven runtime contract.",
     )
     dimensions["numerical_behavior"] = _dimension(
         "proven",
@@ -132,8 +133,9 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
     )
     dimensions["display_name"] = _dimension("proven", "The exact English display name is Glass Body.")
     dimensions["description_accuracy"] = _dimension(
-        "proven",
-        "The English all-incoming-damage and +50 percent claims match the accepted resolved body-health multiplier.",
+        "runtime-unproven",
+        "The English copy preserves master-authorized all-incoming-damage and +50 percent intent without narrowing it.",
+        "The aggregate observer cannot prove that promise when same-update healing cancels damage; changing the copy or mechanic requires user direction.",
     )
     dimensions["localization_coverage_including_absent_locales"] = _dimension(
         "coverage-gap",
@@ -152,7 +154,7 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
     )
     dimensions["tests"] = _dimension(
         "proven",
-        "Resolved all-source loss, weighted exactness with depleted parts, finite clamps, near-death and overkill, recursion prevention, activation/reset, healing, malformed or throwing bridges, player replacement, and same-process reload are regression-protected.",
+        "Observed aggregate loss, weighted exactness with depleted parts, finite clamps, near-death and overkill, recursion prevention, activation/reset, hostile read bridges, post-mutation setter throws, rollback failure containment with exact call bounds, player replacement, and same-process reload are regression-protected. Tests do not overclaim same-update damage hidden by healing.",
     )
     dimensions["mocks"] = _dimension(
         "proven",
@@ -209,7 +211,7 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
     finding = _exactly_one(row["findings"], "id", FINDING, relative)
     finding["resolution_state"] = "proven-correct"
     finding["resolution_evidence"] = (
-        "The intermediate signature correction was superseded by a resolved body-health delta path that does not consume OnWeaponHitCharacter and covers all damage sources promised by pre-campaign master."
+        "The invalid pre-resolution weapon listener was removed. The replacement safely observes aggregate body-health deltas, but it cannot distinguish damage hidden by healing in the same update and therefore does not prove the complete master-authorized scope."
     )
     finding["remaining_runtime_proof"] = (
         "Current-build Kahlua execution after a full relaunch and current-version save/load remain unobserved."
@@ -304,35 +306,46 @@ def _plan_trait_review(root: Path, campaign: Path, plan: dict[str, bytes]) -> No
             evidence="Static source and regression evidence is complete for the implemented contract.",
             missing_proof="Current-build in-game observation remains required.",
         )
+    for dimension_id in (
+        "exact_runtime_path_through_ut_core_or_script_only_behavior",
+        "numerical_behavior",
+        "event_lifecycle",
+    ):
+        _checked_dimension(row, dimension_id).update(
+            state="runtime-unproven",
+            evidence="The aggregate observer and hostile bridge containment are statically proven for observable net loss.",
+            missing_proof="Same-update healing can hide incoming loss, and Build 42 exposes no complete post-resolution per-source signal.",
+        )
     omission = _exactly_one(row["omissions"], "id", OMISSION, relative)
     omission.update(
-        state="proven-correct",
-        resolution_state="implemented-and-statically-validated",
+        state="runtime-unproven",
+        resolution_state="requires-user-decision",
         resolution_evidence=(
-            "The hook no longer consumes the pre-resolution weapon event. It observes resolved aggregate body-health loss in the existing central update dispatch and applies the configured extra once."
+            "The hook no longer consumes the pre-resolution weapon event. Current Build 42 producer review found OnPlayerGetDamage incomplete and pre-resolution for weapon hits, while aggregate overall health can hide same-update loss behind healing. No complete non-double-counting resolved-damage signal was found."
         ),
-        missing_proof="Current-build in-game Kahlua observation remains unrun.",
-        recommended_correction="No further static correction is indicated.",
-        smallest_regression_test="Covered by resolved-loss, recursion, healing, lethal-cap, player-replacement, and reload tests.",
+        missing_proof="User direction is required because no complete source-faithful engine bridge can preserve all resolved incoming body-health loss without narrowing intent.",
+        recommended_correction="Do not approximate, narrow copy, or compose incomplete events. Preserve the safe aggregate implementation only as an isolated correction pending user direction.",
+        smallest_regression_test="After a user-approved policy exists, add a producer-faithful same-update damage-plus-healing test for that policy.",
     )
     cross = _exactly_one(artifact["cross_trait_findings"], "id", CROSS_FINDING, relative)
     cross.update(
-        state="proven-correct",
+        state="runtime-unproven",
         title="Glass Body leaves the pre-damage event; Brittle eligibility remains separately governed",
         reproduction_evidence=(
-            "Glass Body now observes resolved all-source body-health deltas and has no weapon-event listener. Brittle retains its accepted pre-resolution trigger, with cancelled-contact policy isolated under IR0104-BRITTLE-PREDAMAGE-ELIGIBILITY."
+            "Glass Body has no weapon-event listener and safely observes aggregate body-health deltas, but same-update healing can hide damage. Brittle retains its accepted pre-resolution trigger, with cancelled-contact policy isolated under IR0104-BRITTLE-PREDAMAGE-ELIGIBILITY."
         ),
         missing_proof="Current-build Glass Body observation and the separate Brittle policy decision remain open.",
-        recommended_correction="No shared correction remains. Preserve the separate Brittle policy question.",
-        smallest_regression_test="Glass Body resolved-loss tests and Brittle producer-order tests cover the separated paths.",
-        resolution_state="implemented-and-statically-validated",
-        resolution_evidence="The shared cross-trait defect was decomposed into a corrected Glass Body path and an explicit Brittle policy question.",
+        recommended_correction="Preserve both explicit policy questions; do not treat either pre-resolution events or aggregate net health as complete resolved-loss evidence.",
+        smallest_regression_test="Glass Body aggregate-loss safety tests and Brittle producer-order tests cover only their proven separated paths.",
+        resolution_state="requires-user-decision",
+        resolution_evidence="The shared paths are separated, but Glass Body still lacks a complete resolved-damage producer and Brittle retains its explicit contact-policy question.",
     )
     row["review_state"] = "accepted"
     row["unresolved_proof"] = [
         "Current-build Kahlua execution, full relaunch, and current-version save/load remain unobserved.",
         "Rendered English, balance telemetry, and profiler capture remain unobserved.",
         "Only English UI localization exists in the closed-world source inventory.",
+        "GB-R3 requires user direction because aggregate net health cannot prove all incoming loss when healing occurs in the same update.",
     ]
     row["explicit_non_goals"] = ["multiplayer", "backward save migration", "deployment"]
     row["release_parity"] = {
@@ -376,7 +389,7 @@ def _plan_integration_review(root: Path, campaign: Path, plan: dict[str, bytes])
         bytes=source["bytes"],
         release_sha256=release["sha256"].lower(),
         release_parity="exact",
-        source_role="resolved all-source body-health damage multiplier",
+        source_role="safe aggregate body-health loss multiplier pending complete-source policy",
         overall_state="runtime-unproven",
     )
     for name in (
@@ -400,15 +413,20 @@ def _plan_integration_review(root: Path, campaign: Path, plan: dict[str, bytes])
         classification="runtime-unproven",
         evidence="The hook reuses the existing central dispatch and adds one aggregate-health getter only for an active multiplier; no profiler capture exists.",
     )
+    for name in ("event_producer_consumer_contracts", "numerical_behavior"):
+        entry["dimensions"][name].update(
+            classification="runtime-unproven",
+            evidence="Aggregate-loss behavior is covered, but same-update healing can hide incoming loss and no complete resolved producer exists.",
+        )
     for finding_id in INTEGRATION_FINDINGS:
         finding = _find_integration_finding(artifact, finding_id, relative)
         finding.update(
-            state="proven-correct",
-            resolution_state="implemented-and-statically-validated",
+            state="runtime-unproven",
+            resolution_state="requires-user-decision",
             resolution_evidence=(
-                "The hook no longer consumes OnWeaponHitCharacter. Resolved overall body-health deltas drive one bounded extra reduction, with delayed aggregate recalculation modeled in regression tests."
+                "The hook no longer consumes OnWeaponHitCharacter. Aggregate overall body-health deltas drive one bounded extra reduction with hostile bridge and delayed recalculation coverage, but same-update healing remains indistinguishable."
             ),
-            missing_proof="Current-build in-game Kahlua observation remains unrun.",
+            missing_proof="No complete source-faithful resolved-damage signal exists in the inspected Build 42 producer surface; user direction remains required.",
         )
     plan[relative] = _json_bytes(artifact)
 
@@ -451,7 +469,28 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
                 "PZCodebase/Java/source/zombie/characters/IsoPlayer.java:2241",
                 "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6768-6791,9737",
                 "PZCodebase/Java/source/zombie/characters/BodyDamage/BodyDamage.java:1060-1073,2419,2465-2478",
+                "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6768-6773 (weapon damage events precede cancellation and avoidance)",
+                "PZCodebase/Java/source/zombie/ai/states/AttackState.java:237 (zombie damage has no matching resolved-damage event)",
+                "PZCodebase/Java/source/zombie/ai/sadisticAIDirector/SleepingEvent.java:510-533 (direct body-part damage has no matching damage event)",
+                "PZCodebase/Java/source/zombie/CombatManager.java:1276 (direct ReduceHealth has no matching damage event)",
+                "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:9552-9555 (direct health reduction has no matching damage event)",
+                "PZCodebase/Java/source/zombie/vehicles/BaseVehicle.java:9782-9833 (crash event reports input before per-part clamp equivalence can be established)",
             ],
+            "source_signal_audit": {
+                "OnPlayerGetDamage": (
+                    "Incomplete and not uniformly resolved: it is pre-cancellation for WEAPONHIT, absent from zombie, sleep, and direct body-part producers, and some vehicle/general-health values are requested inputs rather than verified aggregate loss."
+                ),
+                "OnWeaponHitCharacter": "Pre-resolution and pre-cancellation; cannot represent resolved loss.",
+                "body_part_calls": (
+                    "AddDamage, ReduceHealth, DamageFromWeapon, zombie damage, vehicle damage, and direct SetHealth paths have no single complete post-resolution Lua producer."
+                ),
+                "aggregate_health": (
+                    "Post-resolution net state is available, but same-update healing can cancel or hide incoming loss."
+                ),
+                "conclusion": (
+                    "No complete non-double-counting source-faithful signal was found. GB-R3 remains requires-user-decision; no approximation or intent narrowing was implemented."
+                ),
+            },
             "files": [
                 _metadata(root, source)
                 for source in (
@@ -470,7 +509,7 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
             ],
             "regression_cases": [
                 "exact 1.5 trait marker",
-                "resolved all-source health loss",
+                "observed aggregate health loss",
                 "no recursive multiplication",
                 "multiplier at one",
                 "healing baseline reset",
@@ -479,7 +518,8 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
                 "same-process hook reload",
                 "depleted-body-part weighted distribution",
                 "activation and trait reset",
-                "malformed and throwing bridge rollback",
+                "all read-bridge failures and post-mutation setter rollback",
+                "rollback-failure containment and exact setter-call bounds",
             ],
             "preserved_surfaces": [
                 "trait cost",
@@ -492,8 +532,13 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
                 "No new handler is added. The existing central dispatch performs one marker lookup for inactive players, one aggregate-health getter per active Glass Body update, and a bounded body-part distribution only after resolved loss."
             ),
             "runtime_proof": (
-                "Unobserved; requires full Exit to Desktop, current-build multi-source damage observation, current-version save/load, rendered English, and profiler capture."
+                "Blocked for the all-incoming-loss claim: current Build 42 has no complete non-double-counting post-resolution damage signal, and aggregate same-update healing can hide damage. Full Exit to Desktop, current-version save/load, rendered English, and profiler capture also remain unobserved."
             ),
+            "open_policy_question": {
+                "id": "GB-R3",
+                "status": "requires-user-decision",
+                "question": "How should Glass Body preserve all resolved incoming body-health loss when Build 42 exposes no complete source-faithful resolved-damage signal?",
+            },
             "non_goals": ["multiplayer", "backward save migration", "deployment"],
         }
     )

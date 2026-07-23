@@ -95,10 +95,10 @@
     },
     {
       "path": "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "160c133fc444f8ae12a42deff8f0b3461ed0f37a911ef432fe03ad9ff2aefb96",
-      "bytes": 5594,
+      "sha256": "90d640940b4f264ca349e6d300fb8297314dddca428cf6c6f16ba88755604ec5",
+      "bytes": 8365,
       "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "release_sha256": "160c133fc444f8ae12a42deff8f0b3461ed0f37a911ef432fe03ad9ff2aefb96",
+      "release_sha256": "90d640940b4f264ca349e6d300fb8297314dddca428cf6c6f16ba88755604ec5",
       "release_parity": "exact"
     },
     {
@@ -802,12 +802,12 @@
     },
     {
       "path": "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "160c133fc444f8ae12a42deff8f0b3461ed0f37a911ef432fe03ad9ff2aefb96",
-      "bytes": 5594,
+      "sha256": "90d640940b4f264ca349e6d300fb8297314dddca428cf6c6f16ba88755604ec5",
+      "bytes": 8365,
       "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "release_sha256": "160c133fc444f8ae12a42deff8f0b3461ed0f37a911ef432fe03ad9ff2aefb96",
+      "release_sha256": "90d640940b4f264ca349e6d300fb8297314dddca428cf6c6f16ba88755604ec5",
       "release_parity": "exact",
-      "source_role": "resolved all-source body-health damage multiplier",
+      "source_role": "safe aggregate body-health loss multiplier pending complete-source policy",
       "overall_state": "runtime-unproven",
       "linked_finding_ids": [
         "IC-OM-001",
@@ -826,8 +826,8 @@
           ]
         },
         "event_producer_consumer_contracts": {
-          "classification": "proven-correct",
-          "evidence": "Current hook, SVN 964 update/body-health evidence, and focused regression tests prove this static contract.",
+          "classification": "runtime-unproven",
+          "evidence": "Aggregate-loss behavior is covered, but same-update healing can hide incoming loss and no complete resolved producer exists.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-RPF-001",
@@ -862,8 +862,8 @@
           ]
         },
         "numerical_behavior": {
-          "classification": "proven-correct",
-          "evidence": "Current hook, SVN 964 update/body-health evidence, and focused regression tests prove this static contract.",
+          "classification": "runtime-unproven",
+          "evidence": "Aggregate-loss behavior is covered, but same-update healing can hide incoming loss and no complete resolved producer exists.",
           "linked_finding_ids": [
             "IC-VPF-001",
             "IC-RPF-001",
@@ -3436,7 +3436,7 @@
   "rejected_prior_findings": [
     {
       "id": "IC-RPF-001",
-      "state": "proven-correct",
+      "state": "runtime-unproven",
       "severity": "high",
       "confidence": "high",
       "title": "F-CORE-001's proposed argument-order correction is insufficient for DamageMultHook",
@@ -3455,15 +3455,15 @@
         "UniversalTraits:UT_glassbody"
       ],
       "reproduction_or_source_evidence": "The producer fires before processHitDamage. Even with target bound correctly, current health has not fallen, so curHealth >= prevHealth and the hook returns.",
-      "missing_proof": "Current-build in-game Kahlua observation remains unrun.",
+      "missing_proof": "No complete source-faithful resolved-damage signal exists in the inspected Build 42 producer surface; user direction remains required.",
       "recommended_correction": "Retain the signature fix but defer measurement until after native damage, carrying a bounded pending-hit record.",
       "smallest_regression_test": "With correct event order, fire pre-damage event, apply native loss, run the deferred hook, and assert exactly multiplier-adjusted total loss.",
       "prior_ids": [
         "F-CORE-001"
       ],
       "disposition": "partially_rejected_and_refined",
-      "resolution_state": "implemented-and-statically-validated",
-      "resolution_evidence": "The hook no longer consumes OnWeaponHitCharacter. Resolved overall body-health deltas drive one bounded extra reduction, with delayed aggregate recalculation modeled in regression tests."
+      "resolution_state": "requires-user-decision",
+      "resolution_evidence": "The hook no longer consumes OnWeaponHitCharacter. Aggregate overall body-health deltas drive one bounded extra reduction with hostile bridge and delayed recalculation coverage, but same-update healing remains indistinguishable."
     },
     {
       "id": "IC-RPF-002",
@@ -3502,7 +3502,7 @@
   "omissions": [
     {
       "id": "IC-OM-001",
-      "state": "proven-correct",
+      "state": "runtime-unproven",
       "severity": "high",
       "confidence": "high",
       "title": "Damage multiplier observes health before native weapon damage",
@@ -3520,11 +3520,11 @@
         "UniversalTraits:UT_glassbody"
       ],
       "reproduction_or_source_evidence": "OnWeaponHitCharacter precedes processHitDamage; current handler requires curHealth < prevHealth during that callback.",
-      "missing_proof": "Current-build in-game Kahlua observation remains unrun.",
+      "missing_proof": "No complete source-faithful resolved-damage signal exists in the inspected Build 42 producer surface; user direction remains required.",
       "recommended_correction": "Capture a pending hit at the producer and reconcile after native damage on the next verified update.",
       "smallest_regression_test": "Start at 100 health, fire the event before native 10 damage, then reconcile once and assert the configured total loss.",
-      "resolution_state": "implemented-and-statically-validated",
-      "resolution_evidence": "The hook no longer consumes OnWeaponHitCharacter. Resolved overall body-health deltas drive one bounded extra reduction, with delayed aggregate recalculation modeled in regression tests."
+      "resolution_state": "requires-user-decision",
+      "resolution_evidence": "The hook no longer consumes OnWeaponHitCharacter. Aggregate overall body-health deltas drive one bounded extra reduction with hostile bridge and delayed recalculation coverage, but same-update healing remains indistinguishable."
     },
     {
       "id": "IC-OM-002",

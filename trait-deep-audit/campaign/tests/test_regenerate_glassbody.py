@@ -78,6 +78,10 @@ class GlassBodyGeneratorSafetyTests(unittest.TestCase):
     def test_plan_owns_only_the_declared_outputs(self) -> None:
         self.assertEqual(set(GENERATOR.build_plan(self.root, self.campaign)), set(GENERATOR.OWNED_OUTPUTS))
 
+    def test_default_root_is_the_utmods_worktree(self) -> None:
+        self.assertEqual(GENERATOR.ROOT, CAMPAIGN.parents[1])
+        self.assertEqual(GENERATOR.CAMPAIGN, CAMPAIGN)
+
     def test_non_target_records_remain_unchanged(self) -> None:
         batch_path = self.campaign / "trait_batches" / "batch_04.jsonl"
         review_path = self.campaign / "independent_reviews" / "traits_01_04.json"
@@ -153,8 +157,10 @@ class GlassBodyGeneratorSafetyTests(unittest.TestCase):
         trait = next(row for row in review["per_trait_review"] if row["trait_id"] == GENERATOR.TRAIT)
         omission = next(row for row in trait["omissions"] if row["id"] == GENERATOR.OMISSION)
         cross = next(row for row in review["cross_trait_findings"] if row["id"] == GENERATOR.CROSS_FINDING)
-        self.assertEqual(omission["state"], "proven-correct")
-        self.assertEqual(cross["state"], "proven-correct")
+        self.assertEqual(omission["state"], "runtime-unproven")
+        self.assertEqual(omission["resolution_state"], "requires-user-decision")
+        self.assertEqual(cross["state"], "runtime-unproven")
+        self.assertEqual(cross["resolution_state"], "requires-user-decision")
         blockers = json.loads((self.campaign / "release_blocker_queue.json").read_bytes())["identities"]
         self.assertNotIn(
             GENERATOR.BLOCKER_IDENTITY,
@@ -166,7 +172,16 @@ class GlassBodyGeneratorSafetyTests(unittest.TestCase):
         ]
         self.assertEqual(
             {row["dimension"] for row in queue},
-            {"reset_save_load", "kahlua", "localization", "balance", "performance", "packaging"},
+            {
+                "runtime_path",
+                "reset_save_load",
+                "kahlua",
+                "description",
+                "localization",
+                "balance",
+                "performance",
+                "packaging",
+            },
         )
         self.assertNotIn("confirmed-defect", {row["state"] for row in queue})
 
