@@ -112,6 +112,51 @@ class SundayRunnerGeneratorSafetyTests(unittest.TestCase):
                     GENERATOR.build_plan(self.root, self.campaign)
                 self.assertEqual(files(self.campaign), before)
 
+    def test_empty_or_missing_sunday_batch_input_is_rejected_without_writes(self) -> None:
+        for content in ("", json.dumps({"trait_id": "UniversalTraits:UT_not_sundayrunner"}) + "\n"):
+            with self.subTest(content=content):
+                self.tearDown()
+                self.setUp()
+                batch = self.campaign / "trait_batches" / "batch_11.jsonl"
+                batch.write_text(content, encoding="utf-8", newline="\n")
+                before = files(self.campaign)
+                with self.assertRaisesRegex(ValueError, "expected one trait_id"):
+                    GENERATOR.build_plan(self.root, self.campaign)
+                self.assertEqual(files(self.campaign), before)
+
+    def test_malformed_json_and_jsonl_inputs_are_rejected_without_writes(self) -> None:
+        for relative in (
+            "trait_batches/batch_11.jsonl",
+            "independent_reviews/traits_09_12.json",
+        ):
+            with self.subTest(relative=relative):
+                self.tearDown()
+                self.setUp()
+                path = self.campaign / relative
+                path.write_text("{not-json\n", encoding="utf-8", newline="\n")
+                before = files(self.campaign)
+                with self.assertRaises(json.JSONDecodeError):
+                    GENERATOR.build_plan(self.root, self.campaign)
+                self.assertEqual(files(self.campaign), before)
+
+    def test_source_fingerprint_failure_is_rejected_without_writes(self) -> None:
+        original = GENERATOR._input_metadata_lf
+
+        def reject_wrong_fingerprint(root: Path, relative: str) -> dict[str, object]:
+            metadata = original(root, relative)
+            if relative == GENERATOR.RUNTIME:
+                raise ValueError("source fingerprint mismatch")
+            return metadata
+
+        before = files(self.campaign)
+        GENERATOR._input_metadata_lf = reject_wrong_fingerprint
+        try:
+            with self.assertRaisesRegex(ValueError, "source fingerprint mismatch"):
+                GENERATOR.build_plan(self.root, self.campaign)
+        finally:
+            GENERATOR._input_metadata_lf = original
+        self.assertEqual(files(self.campaign), before)
+
     def test_fixed_point_retains_runtime_gaps(self) -> None:
         self.run_generator()
         self.assertEqual(self.run_generator(), [])
