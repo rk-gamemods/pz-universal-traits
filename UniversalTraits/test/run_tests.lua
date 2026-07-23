@@ -4222,7 +4222,7 @@ test("paramedic accelerates only the exact medical Type set", function()
     local p = MockPlayer({ "UniversalTraits:UT_paramedic" })
     local types = {
         "ISMedicalCheckAction", "ISApplyBandage", "ISCleanBurn",
-        "ISApplyComfrey", "ISApplyGarlic", "ISApplyPlantain", "ISDisinfect",
+        "ISComfreyCataplasm", "ISGarlicCataplasm", "ISPlantainCataplasm", "ISDisinfect",
         "ISRemoveBullet", "ISRemoveGlass", "ISSplint", "ISStitch",
     }
     for _, actionType in ipairs(types) do
@@ -4232,6 +4232,10 @@ test("paramedic accelerates only the exact medical Type set", function()
     end
     assert_eq(UTCore.applyWorkDuration({ character = p, Type = "ISCleanWound" }, 120), 120)
     assert_eq(UTCore.applyWorkDuration({ character = p, Type = "ISReadABook" }, 120), 120)
+    for _, inventedType in ipairs({ "ISApplyComfrey", "ISApplyGarlic", "ISApplyPlantain" }) do
+        assert_eq(UTCore.applyWorkDuration({ character = p, Type = inventedType }, 120), 120,
+            inventedType .. " must not be accepted by the medical allowlist")
+    end
 end)
 
 test("pitcrew accelerates only the exact mechanics Type set", function()

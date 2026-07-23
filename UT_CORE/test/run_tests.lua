@@ -1160,7 +1160,7 @@ test("WorkSpeedHook applies Paramedic independently to all eleven medical action
     local p = MockPlayer({"UniversalTraits:UT_paramedic"})
     local actionTypes = {
         "ISMedicalCheckAction", "ISApplyBandage", "ISCleanBurn",
-        "ISApplyComfrey", "ISApplyGarlic", "ISApplyPlantain", "ISDisinfect",
+        "ISComfreyCataplasm", "ISGarlicCataplasm", "ISPlantainCataplasm", "ISDisinfect",
         "ISRemoveBullet", "ISRemoveGlass", "ISSplint", "ISStitch",
     }
     for _, actionType in ipairs(actionTypes) do
@@ -1180,7 +1180,11 @@ test("WorkSpeedHook preserves non-target actions and non-Paramedic players", fun
     local ordinary = MockPlayer({})
     assert_eq(UTCore.applyWorkDuration(MockTimedAction(paramedic, "ISCleanWound", 120), 120), 120)
     assert_eq(UTCore.applyWorkDuration(MockTimedAction(paramedic, "ISReadABook", 120), 120), 120)
-    assert_eq(UTCore.applyWorkDuration(MockTimedAction(ordinary, "ISApplyComfrey", 120), 120), 120)
+    for _, inventedType in ipairs({ "ISApplyComfrey", "ISApplyGarlic", "ISApplyPlantain" }) do
+        assert_eq(UTCore.applyWorkDuration(MockTimedAction(paramedic, inventedType, 120), 120), 120,
+            inventedType .. " must not be accepted by the medical allowlist")
+    end
+    assert_eq(UTCore.applyWorkDuration(MockTimedAction(ordinary, "ISComfreyCataplasm", 120), 120), 120)
 end)
 
 test("WorkSpeedHook patches constructor-only medical actions once", function()
