@@ -7,35 +7,35 @@
   "counts": {
     "dimension_records": 4752,
     "dimension_states": {
-      "confirmed-defect": 243,
+      "confirmed-defect": 233,
       "coverage-gap": 763,
-      "proven-correct": 2769,
-      "runtime-unproven": 977
+      "proven-correct": 2774,
+      "runtime-unproven": 982
     },
     "finding_records": 283,
     "finding_states": {
-      "confirmed-defect": 220,
+      "confirmed-defect": 219,
       "coverage-gap": 5,
-      "proven-correct": 51,
+      "proven-correct": 52,
       "runtime-unproven": 7
     },
-    "open_queue_records": 2215,
+    "open_queue_records": 2209,
     "queue_stages": {
       "inventory-contract": 156,
-      "packaging": 104,
-      "player-facing": 545,
-      "product-semantics": 250,
-      "runtime-contract": 814,
-      "validation": 346
+      "packaging": 105,
+      "player-facing": 544,
+      "product-semantics": 247,
+      "runtime-contract": 812,
+      "validation": 345
     },
     "queue_states": {
-      "confirmed-defect": 463,
+      "confirmed-defect": 452,
       "coverage-gap": 768,
-      "runtime-unproven": 984
+      "runtime-unproven": 989
     },
     "queue_subject_types": {
-      "finding": 232,
-      "trait-dimension": 1983
+      "finding": 231,
+      "trait-dimension": 1978
     },
     "traits": 198
   },

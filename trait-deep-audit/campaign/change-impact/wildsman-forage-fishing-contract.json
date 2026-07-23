@@ -1,0 +1,92 @@
+{
+  "schema": "ut-wildsman-forage-fishing-resolution-v1",
+  "trait_id": "UniversalTraits:UT_wildsman",
+  "authority": {
+    "accepted_baseline": "pre-campaign UTMods master",
+    "accepted_contract": "cost 4, Plant Scavenging and Fishing +1, 30 percent more forage yield, and caught fish 50 percent larger with corresponding weight, hunger, and nutrition",
+    "pz_snapshot": "SVN revision 964; Steam BuildID 23504596 is recorded outside VERSION.json"
+  },
+  "accepted_intent": {
+    "cost": 4,
+    "forage_expected_multiplier": 1.3,
+    "caught_fish_multiplier": 1.5,
+    "runtime_scope": "single-player"
+  },
+  "resolved_findings": [
+    "B12-WILDSMAN-001"
+  ],
+  "engine_evidence": [
+    "PZCodebase/Lua/client/Foraging/ISBaseIcon.lua:440-478",
+    "PZCodebase/Lua/client/Foraging/ISForageIcon.lua:122-183",
+    "PZCodebase/Lua/shared/Fishing/Fish.lua:138-229",
+    "PZCodebase/Java/source/zombie/inventory/InventoryItem.java:4483-4485",
+    "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_wildsman.lua"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_wildsman.lua",
+      "sha256": "34501CBB86621970E565F7C52CBE2BFF865F8D28284B43EFF345384F6C1500FA",
+      "bytes": 3138
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_wildsman.lua",
+      "sha256": "34501CBB86621970E565F7C52CBE2BFF865F8D28284B43EFF345384F6C1500FA",
+      "bytes": 3138
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "53E2E543B577E80991428DADBFB4052D545C87648812617B22142A4F8E04CD7B",
+      "bytes": 37469
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "53E2E543B577E80991428DADBFB4052D545C87648812617B22142A4F8E04CD7B",
+      "bytes": 37469
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "D91D38630781393DE4F708341F0B8A0F2975FD70793F8C7263437B70E6B9FB99",
+      "bytes": 317563
+    },
+    {
+      "path": "UniversalTraits/test/test_wildsman_runtime.lua",
+      "sha256": "75F1A64E1261C82FC5A5056046AABC438824734EA4A9D9D6944245302480CE1F",
+      "bytes": 8753
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_wildsman.md",
+      "sha256": "B7686FEA5A0ED138003860D71C3F2212C93B462B375D008DA0B77BF20A20918F",
+      "bytes": 5423
+    }
+  ],
+  "regression_cases": [
+    "reload-safe installer and wrappers",
+    "base-one 30 percent boundary",
+    "base-four 20 percent remainder",
+    "base-ten exact 13 count",
+    "no-trait controls",
+    "fish without getWorldScale",
+    "all 1.5 fish fields",
+    "original item identity",
+    "same-item deduplication",
+    "source-release parity"
+  ],
+  "performance_model": "Constant work inside existing forage-count and fish-construction calls only; no polling, scans, or background work.",
+  "runtime_proof": "Unobserved; requires full desktop relaunch, current-build Kahlua, representative live forage counts, caught-fish pickup and consumption, lifecycle, stacked traits, rendered English, balance, and profiler observation.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment",
+    "changing cost, XP boosts, multipliers, or trait purpose"
+  ]
+}

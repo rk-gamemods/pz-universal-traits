@@ -47,7 +47,7 @@
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "29C24133912335231DA8ED2E8462B64D9DBE837A0F553E3988547AEA52347D8D",
     "independent_reviews/traits_05_08.json": "B1CDBE8BBEE77E5C4D9417E0E77E1EF69178E8F34BD4C18B825038266D7E9D53",
-    "independent_reviews/traits_09_12.json": "9DF50D6489EE80C99BC6302D5F73A3D43EE13DEFA421E605E932D85CD3ECEC11",
+    "independent_reviews/traits_09_12.json": "413A0AC1FF10FE1EB2E38B78A02AFF0D5EC5C92610E84ECB11B2B9C420C76A49",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "4FD54923B0938C3294AB5E9D0C0168A08FDBF353A73FBE83BCE7F5DDF8B911F2",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
@@ -60,8 +60,8 @@
     "trait_batches/batch_09.jsonl": "7493EABBF27471F551A42E6B750D8927EC80B36404B51ED6E7CBC74349EAFE44",
     "trait_batches/batch_10.jsonl": "33304EC69C6072CE027BFD779AB0E2332EEDE70DC56B6920468F46BC4A2ABE31",
     "trait_batches/batch_11.jsonl": "96361D7DDD836EA81336A763B7787799DAAF09B8BDBFA4B68729A2F5B0ECAA61",
-    "trait_batches/batch_12.jsonl": "C510CBE58A2283058C425CF86EC3E9C814B9C732CCD45092DC243984E282A00F",
-    "translation_audit.json": "C80D3677A8FBDECBF4D23102CA851D05DE24125CD7FCCD4BFD71F72253461182"
+    "trait_batches/batch_12.jsonl": "AE044BC0927A818D38DFB20DF59DADDCDA7C951F4E8082D633DC69CB0FF29BD8",
+    "translation_audit.json": "32431850FED2C9679D5760CC16A9067D20F60844D0AC3C03543407CF25118B0A"
   },
   "counts": {
     "traits": 198,
@@ -71,22 +71,22 @@
     "independent_review_findings": 118,
     "independent_review_states": {
       "accepted": 83,
-      "confirmed-defect": 34,
+      "confirmed-defect": 33,
       "coverage-gap": 20,
       "needs-correction": 51,
-      "runtime-unproven": 10
+      "runtime-unproven": 11
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 60,
+      "confirmed-defect": 59,
       "coverage-gap": 12,
-      "runtime-unproven": 101
+      "runtime-unproven": 102
     },
     "dimension_states": {
-      "proven-correct": 2769,
-      "confirmed-defect": 243,
+      "proven-correct": 2774,
+      "confirmed-defect": 233,
       "coverage-gap": 763,
-      "runtime-unproven": 977
+      "runtime-unproven": 982
     }
   },
   "independent_review_findings": [
@@ -61750,12 +61750,12 @@
     {
       "trait_id": "UniversalTraits:UT_wildsman",
       "batch": "batch_12",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
           "evidence": [
-            "exact registration at line 95"
+            "The registry, definition, runtime ID, and English keys agree."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61763,11 +61763,13 @@
           ]
         },
         "definition_parser": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "complete block at 710-719"
+            "The complete source and release definitions are byte-identical and pass the standard-Lua consistency parser."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current-build ScriptManager loading remains unobserved."
+          ],
           "source_dimensions": [
             "definition_parser"
           ]
@@ -61775,7 +61777,7 @@
         "namespace": {
           "state": "proven-correct",
           "evidence": [
-            "exact ID consistent"
+            "All owned surfaces use UniversalTraits:UT_wildsman."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61785,7 +61787,7 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "cost 4; PlantScavenging/Fishing +1; no grants/exclusions; perks exist"
+            "Cost is 4, Plant Scavenging and Fishing are +1, no grants or exclusions exist, and multiplayer is disabled."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61793,9 +61795,9 @@
           ]
         },
         "source_intent": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "description promises +30% forage yield and 50% larger fish; current flags have no consumers and fish event is absent"
+            "Pre-campaign master fixes the outcome at 30 percent more forage yield and caught fish that are 50 percent larger with corresponding hunger benefit."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61803,9 +61805,9 @@
           ]
         },
         "runtime_path": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "OnNewGame writes two unused flags; guarded OnFishCaught registration is false in current engine"
+            "The live trait check decorates vanilla forage item-count generation and the exact Fishing.Fish:createFish result without dead flags or fabricated events."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61813,9 +61815,9 @@
           ]
         },
         "numbers": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "1.3 and 1.5 values are stored but do not reach forage/fish creation; shared food hook could consume a fish marker that is never set"
+            "The forage expectation is exactly 1.3 through whole-count plus fractional percentage, and every caught-fish size, weight, hunger, and nutrition field is multiplied once by 1.5."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61823,9 +61825,9 @@
           ]
         },
         "cadence": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "nonexistent OnFishCaught means fish handler never runs"
+            "Work runs only inside vanilla forage count generation and fish construction; one OnGameStart retry handles class load order."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61835,7 +61837,7 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
-            "no cooldown"
+            "Wildsman has no cooldown."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61843,19 +61845,21 @@
           ]
         },
         "reset_save_load": {
-          "state": "confirmed-defect",
+          "state": "runtime-unproven",
           "evidence": [
-            "unused flags persist in modData; no OnCreatePlayer reapplication or consumer exists"
+            "Behavior uses live trait checks and no persisted setup flags, so it does not depend on one-time save state."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current-build new game, save load, death, and repeated world entry remain unobserved."
+          ],
           "source_dimensions": [
             "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "current LuaEventManager has OnFishingActionMPUpdate but no OnFishCaught"
+            "SVN 964 proves ISBaseIcon.initItemCount, ISForageIcon call order, getItemList count consumption, Fish.createFish fields, InventoryItem.setWorldScale, and the absence of InventoryItem.getWorldScale."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61865,19 +61869,19 @@
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "runtime and shared hook compile"
+            "The correction uses Kahlua-compatible tables, numeric arithmetic, method wrappers, and verified receiver methods."
           ],
           "missing_proof": [
-            "No supported Kahlua fishing callback was exercised."
+            "Current-build Kahlua execution remains unobserved."
           ],
           "source_dimensions": [
             "kahlua"
           ]
         },
         "events": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "OnFishCaught has zero current PZ declaration/trigger sites; test mock fabricates it"
+            "One sentinel-protected OnGameStart installer replaces the nonexistent OnFishCaught path; method ownership guards prevent duplicate wrapping."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61885,12 +61889,12 @@
           ]
         },
         "stacking_interactions": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "shared food multiplier chooses max of gourmand and wildsman marker rather than multiplying"
+            "Wildsman changes the produced item count and caught fish instance without writing shared multiplier state."
           ],
           "missing_proof": [
-            "No intended stacking contract or real fish consumption test was supplied."
+            "Live order with other forage and food traits remains unobserved."
           ],
           "source_dimensions": [
             "stacking_interactions"
@@ -61899,7 +61903,7 @@
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "DisabledInMultiplayer=true"
+            "The definition disables Wildsman in multiplayer and multiplayer support is an explicit product non-goal."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61909,7 +61913,7 @@
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "UI resolves to Wildsman"
+            "The exact English display name is Wildsman."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61917,9 +61921,9 @@
           ]
         },
         "description": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "only +1/+1 XP boosts work; both advertised runtime bonuses are unreachable"
+            "English states both +1 skills, 30 percent more forage yield, and 50 percent more caught-fish weight and nutrition."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61927,41 +61931,45 @@
           ]
         },
         "localization": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "EN pair present; other locales absent"
+            "The exact English keys exist with source-release parity."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "No non-English UniversalTraits locale exists."
+          ],
           "source_dimensions": [
             "localization"
           ]
         },
         "balance": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "cost 4 prices two working +1 boosts plus dead bonuses"
+            "Cost 4 and the exact 1.3 and 1.5 effects remain unchanged from the accepted contract."
           ],
           "missing_proof": [
-            "No balance benchmark separates working and nonworking effects."
+            "No gameplay telemetry or comparative balance session exists."
           ],
           "source_dimensions": [
             "balance"
           ]
         },
         "performance": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "dead guarded event and two one-time writes impose negligible work"
+            "Both wrappers add constant work only to existing forage-count or fish-construction calls, with no polling or scans."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "No current-build profiler capture exists."
+          ],
           "source_dimensions": [
             "performance"
           ]
         },
         "tests": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "test fires fabricated Events.OnFishCaught and only checks marker, not forage yield or consumed fish result"
+            "Four focused cases prove red reproduction, reload safety, exact integer and fractional yield boundaries, control behavior, current fish API shape, every 1.5 result, identity, and deduplication."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61969,9 +61977,9 @@
           ]
         },
         "mocks": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "UTTestMocks.lua:1509 creates an event absent from current PZ"
+            "The focused fish deliberately omits getWorldScale and the forage fixture invokes the exact vanilla item-count boundary."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61981,7 +61989,7 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "trait/shared hook/definition/UI match release"
+            "Runtime, definition, and English source-release pairs are byte-identical."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -61989,11 +61997,13 @@
           ]
         },
         "packaging": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "runtime and shared hook are packaged"
+            "All Wildsman-owned 42.0 runtime, definition, and English counterparts are present and identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Read-only package verification still tracks the separate missing source poster."
+          ],
           "source_dimensions": [
             "packaging"
           ]
@@ -62003,13 +62013,16 @@
         "B12-WILDSMAN-001"
       ],
       "unknowns": [
-        "A supported current fishing result hook was not selected within audit-only scope.",
-        "No in-game foraging/fishing run was supplied."
+        "Current-build Kahlua, live forage, live fishing pickup and consumption, new game, save load, death, and repeated world entry remain unobserved.",
+        "Live stacking order with other forage and food traits remains unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory.",
+        "Multiplayer and backward save migration are explicit non-goals."
       ],
-      "translation_terminal_state": "confirmed-defect",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_09_12.json",
-        "review_state": "confirmed-defect",
+        "review_state": "runtime-unproven",
         "omission_finding_ids": [],
         "cross_finding_ids": [
           "IR0912-FINDING-STATE-001",
