@@ -504,6 +504,7 @@ test("script trait definitions resolve cleanly and preserve UT_MET coverage", fu
         UT_MET.WeaponTree,
         UT_MET.Prowess,
         UT_MET.Driving,
+        UT_MET.BleedRate,
     }
 
     for _, group in ipairs(grouped_traits) do
@@ -715,11 +716,11 @@ test("UT_thickblood sets exact bleed decay and drain multipliers", function()
     assert_eq(drain, 0.5, "accepted active-bleed health-loss factor")
 end)
 
--- UT_heavilybleedingwounds sets UT_bleedDrainMult=2.0 (faster death rate)
-test("UT_heavilybleedingwounds sets UT_bleedDrainMult > 1.0", function()
+-- UT_heavilybleedingwounds sets the accepted exact active-bleed multiplier.
+test("UT_heavilybleedingwounds sets exact UT_bleedDrainMult", function()
     local p = fireNewGame("UniversalTraits:UT_heavilybleedingwounds")
     local v = p:getModData()["UT_bleedDrainMult"]
-    assert_true(type(v) == "number" and v > 1.0, "expected UT_bleedDrainMult > 1.0, got " .. tostring(v))
+    assert_eq(v, 2.0, "accepted active-bleed health-loss factor")
 end)
 
 test("UT_photographicmemory sets global XP, read speed, and reading mood keys", function()

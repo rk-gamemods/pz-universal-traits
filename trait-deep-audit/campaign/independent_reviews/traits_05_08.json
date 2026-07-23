@@ -886,9 +886,25 @@
       "release_parity": {
         "source_runtime_sha256": "7FEA90958E554067620C15E9C426D946F8A99F748A4AB5A804D6D26FA71661C3",
         "release_runtime_sha256": "7FEA90958E554067620C15E9C426D946F8A99F748A4AB5A804D6D26FA71661C3",
+        "source_met_sha256": "3C8208CFDD4F5A403EFE7829CB0D317ECA5261A7304D86A789E38FD14F049A92",
+        "release_met_sha256": "3C8208CFDD4F5A403EFE7829CB0D317ECA5261A7304D86A789E38FD14F049A92",
         "state": "proven-correct"
       },
-      "omissions": []
+      "omissions": [],
+      "accepted_overall_state": "runtime-unproven",
+      "independent_state": "runtime-unproven",
+      "supported_accepted_finding_ids": [
+        "B05-HEAVYBLEED-001"
+      ],
+      "repair_resolution": {
+        "state": "implemented-and-statically-validated",
+        "resolved_finding_ids": [
+          "B05-HEAVYBLEED-001"
+        ],
+        "open_finding_ids": [],
+        "remaining_runtime_proof": "Current-build Kahlua, live wounds, new game, save load, death, rendered English, balance, and profiler observation remain unrun."
+      },
+      "resolution_record": "change-impact/heavilybleedingwounds-met-resolution.json"
     },
     {
       "trait_id": "UniversalTraits:UT_heavyswing",

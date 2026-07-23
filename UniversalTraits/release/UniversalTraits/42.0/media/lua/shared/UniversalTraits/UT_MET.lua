@@ -60,9 +60,10 @@ UT_MET.SleepQuality = {
 	"UniversalTraits:UT_quickrest",
 }
 
--- Bleed rate pair (mutually exclusive: both write UT_bleedDrainMult)
+-- Bleed rate group (mutually exclusive: all write UT_bleedDrainMult)
 UT_MET.BleedRate = {
 	"UniversalTraits:UT_thickblood",
+	"UniversalTraits:UT_heavilybleedingwounds",
 	"UniversalTraits:UT_weaklybleedingwounds",
 }
 
@@ -104,4 +105,3 @@ function UT_MET.getGroupFor(traitId)
 
 	return nil
 end
-

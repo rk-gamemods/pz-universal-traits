@@ -46,14 +46,14 @@
   },
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "417C222A68161C10EB07CAEFE38D7D6E5C73E010CCC14431FE732754B34F0DB8",
-    "independent_reviews/traits_05_08.json": "B0B92939B0E09B468C555B7434551B4E08D5A3353E63A86A83F415C842DB37E3",
+    "independent_reviews/traits_05_08.json": "B1CDBE8BBEE77E5C4D9417E0E77E1EF69178E8F34BD4C18B825038266D7E9D53",
     "independent_reviews/traits_09_12.json": "A271ED28EE9D092CB78DDD2C77703D774EC86FE4720159DC69288A7DC2089F9E",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "7B741591E807E09BDE359BECBB8CF8BCBA18A872A9DD6B022EF105975DA78499",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
     "trait_batches/batch_03.jsonl": "DE80C7E88D64E27AEDFA1248A855290E9892605D7A1800D9933BFFFBD8271DA9",
     "trait_batches/batch_04.jsonl": "7BE87A0648404822CC35EE0904E3E4CC43391B4F955363D61BE1E3B8FEC6DA6E",
-    "trait_batches/batch_05.jsonl": "6F550AD8CF0BD3BA4E827AD9D5F39F2149C50B4D8A990816451C8E86F58DE5AE",
+    "trait_batches/batch_05.jsonl": "BA60BE0BC7B63050926D20FF18FDA9C43CD9CEE84F5540E3200E7D9227F7A9D5",
     "trait_batches/batch_06.jsonl": "32B529C5117E409EBFC41BF178BB94BFDD8301716D6187AC4950CF983A32CAAB",
     "trait_batches/batch_07.jsonl": "0483F4C2595D692E19FD6F60DE04E5D633C7942497A2669CF1B48459C0AFA771",
     "trait_batches/batch_08.jsonl": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A",
@@ -61,7 +61,7 @@
     "trait_batches/batch_10.jsonl": "33304EC69C6072CE027BFD779AB0E2332EEDE70DC56B6920468F46BC4A2ABE31",
     "trait_batches/batch_11.jsonl": "96361D7DDD836EA81336A763B7787799DAAF09B8BDBFA4B68729A2F5B0ECAA61",
     "trait_batches/batch_12.jsonl": "B86A88A561C238912739B5AE246AD3CFB6E038D36998E608D92E35B067476F47",
-    "translation_audit.json": "DA6A481C93D55B559D4FDF73B655D70F85C0BAE9974A6BD935F759C862769D58"
+    "translation_audit.json": "872ECE9D71872C8D1BB5CD8AC3C29BB99D3F9EEC7D475B4468D0F3C3B4A47473"
   },
   "counts": {
     "traits": 198,
@@ -78,15 +78,15 @@
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 62,
+      "confirmed-defect": 61,
       "coverage-gap": 12,
-      "runtime-unproven": 99
+      "runtime-unproven": 100
     },
     "dimension_states": {
       "proven-correct": 2758,
       "confirmed-defect": 245,
-      "coverage-gap": 767,
-      "runtime-unproven": 982
+      "coverage-gap": 765,
+      "runtime-unproven": 984
     }
   },
   "independent_review_findings": [
@@ -24077,12 +24077,12 @@
     {
       "trait_id": "UniversalTraits:UT_heavilybleedingwounds",
       "batch": "batch_05",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
           "evidence": [
-            "CharacterTrait.register exact ID UniversalTraits:UT_heavilybleedingwounds."
+            "The registry, complete definition, runtime key, and exact English keys agree."
           ],
           "missing_proof": [
             "none"
@@ -24092,21 +24092,21 @@
           ]
         },
         "definition_parser": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "Complete closed-world parser inventory reports one unique definition; inspected block Cost=-4."
+            "The complete source and release definitions are byte-identical and parse in the standard-Lua consistency suite."
           ],
           "missing_proof": [
-            "none"
+            "Current-build ScriptManager parsing has not been observed in game."
           ],
           "source_dimensions": [
-            "complete_script_parser"
+            "definition_parser"
           ]
         },
         "namespace": {
           "state": "proven-correct",
           "evidence": [
-            "Registration, CharacterTrait field, and runtime TRAIT_ID use UniversalTraits:UT_heavilybleedingwounds."
+            "All owned surfaces use UniversalTraits:UT_heavilybleedingwounds."
           ],
           "missing_proof": [
             "none"
@@ -24118,7 +24118,7 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "Cost=-4; XP=none; exclusions=thickblood;weaklybleedingwounds."
+            "Cost is -4, no XP or grants exist, Heavy Bleeding Wounds reciprocally excludes Thick Blood and Weakly Bleeding Wounds, and multiplayer is disabled."
           ],
           "missing_proof": [
             "none"
@@ -24130,7 +24130,7 @@
         "source_intent": {
           "state": "proven-correct",
           "evidence": [
-            "Source/comment and shipped behavior reviewed: UT_bleedDrainMult=2.0."
+            "Pre-campaign master defines exactly twice the normal active-bleed general-health loss without changing bandaged wound healing."
           ],
           "missing_proof": [
             "none"
@@ -24142,31 +24142,31 @@
         "runtime_path": {
           "state": "proven-correct",
           "evidence": [
-            "Per-trait runtime traced: UT_bleedDrainMult=2.0."
+            "OnNewGame stores factor 2.0; the shared hook receives the native post-damage BLEEDING event and applies one additional identical BodyDamage distribution."
           ],
           "missing_proof": [
             "none"
           ],
           "source_dimensions": [
-            "runtime_ut_core_path"
+            "runtime_path"
           ]
         },
         "numbers": {
           "state": "proven-correct",
           "evidence": [
-            "UT_bleedDrainMult=2.0"
+            "The stored factor is exactly 2.0 and the hook adds damage times abs(1 - 2.0), producing two native-equivalent distributions before terminal clamping."
           ],
           "missing_proof": [
             "none"
           ],
           "source_dimensions": [
-            "numerical_behavior"
+            "numbers"
           ]
         },
         "cadence": {
           "state": "proven-correct",
           "evidence": [
-            "OnNewGame"
+            "Setup runs on new game and the effect runs only after native BLEEDING damage events, with no polling loop."
           ],
           "missing_proof": [
             "none"
@@ -24178,7 +24178,7 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
-            "No explicit cooldown beyond stated event cadence."
+            "Heavy Bleeding Wounds has no random trigger or cooldown."
           ],
           "missing_proof": [
             "none"
@@ -24188,24 +24188,24 @@
           ]
         },
         "reset_save_load": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "modData/tick state inspected; persistent modData survives save-load where used."
+            "The exact factor is stored in player modData and the event hook reads it for every bleed event."
           ],
           "missing_proof": [
-            "No save/load or character-removal runtime test; trait removal cleanup not proven."
+            "Current-build new-game, save-load, death, and repeated world entry remain unobserved."
           ],
           "source_dimensions": [
             "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Current PZ symbols checked for non-obvious calls; Java collections treated zero-based."
+            "SVN 964 proves native bleed damage calls ReduceGeneralHealth before OnPlayerGetDamage and the shared factor-greater-than-one path invokes the same exposed BodyDamage method."
           ],
           "missing_proof": [
-            "No live Kahlua bridge execution."
+            "none"
           ],
           "source_dimensions": [
             "java_lua"
@@ -24214,10 +24214,10 @@
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "Lua is syntactically exercised by standard-Lua tests where loaded."
+            "The trait and shared hook use Kahlua-compatible tables, arithmetic, guards, and directly verified Java receiver methods."
           ],
           "missing_proof": [
-            "No in-game Kahlua run."
+            "Current-build Kahlua execution is unobserved."
           ],
           "source_dimensions": [
             "kahlua"
@@ -24226,19 +24226,19 @@
         "events": {
           "state": "proven-correct",
           "evidence": [
-            "Handlers register at module load on OnNewGame; no explicit removal observed."
+            "The normal module-load path registers setup once; the shared post-damage hook removes its prior closure before registering the current handler."
           ],
           "missing_proof": [
-            "No repeated require/reload or player-switch runtime proof."
+            "none"
           ],
           "source_dimensions": [
-            "event_lifecycle"
+            "events"
           ]
         },
         "stacking_interactions": {
           "state": "proven-correct",
           "evidence": [
-            "Script exclusions=thickblood;weaklybleedingwounds; shared UT_MET reviewed where applicable."
+            "All three bleed-rate traits are reciprocal script exclusions and now resolve through the same three-member UT_MET.BleedRate reference group."
           ],
           "missing_proof": [
             "none"
@@ -24250,7 +24250,7 @@
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "DisabledInMultiplayer=true in the complete definition."
+            "The definition disables this trait in multiplayer and multiplayer support is an explicit product non-goal."
           ],
           "missing_proof": [
             "none"
@@ -24262,19 +24262,19 @@
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "EN key UI_UT_heavilybleedingwounds exists and resolves to a nonempty display name."
+            "The exact English display name is Heavily Bleeding Wounds."
           ],
           "missing_proof": [
             "none"
           ],
           "source_dimensions": [
-            "display_name"
+            "display"
           ]
         },
         "description": {
           "state": "proven-correct",
           "evidence": [
-            "EN description compared independently with script/runtime: UT_bleedDrainMult=2.0."
+            "English states 200 percent of normal active-bleed loss and does not claim faster bandaged wound healing."
           ],
           "missing_proof": [
             "none"
@@ -24286,58 +24286,58 @@
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "Inventory reports EN as the only locale."
+            "The exact English keys exist in source and release."
           ],
           "missing_proof": [
-            "No non-EN locale exists to validate."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
-            "localization_absent_locales"
+            "localization"
           ]
         },
         "balance": {
           "state": "runtime-unproven",
           "evidence": [
-            "Cost -4 compared qualitatively with UT_bleedDrainMult=2.0."
+            "Static behavior remains the pre-campaign cost -4 and exact 2.0 active-bleed factor."
           ],
           "missing_proof": [
-            "No gameplay telemetry, controlled balance trial, or cohort data."
+            "No gameplay telemetry or comparative balance session exists."
           ],
           "source_dimensions": [
             "balance"
           ]
         },
         "performance": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "Cadence reviewed (OnNewGame); tick handlers are throttled where stated."
+            "The factor-greater-than-one path performs one bounded BodyDamage call only after a native BLEEDING event."
           ],
           "missing_proof": [
-            "No profiler capture in an actual game session."
+            "No current-build profiler capture exists."
           ],
           "source_dimensions": [
             "performance"
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Assigned references and focused assertions in UniversalTraits/test/run_tests.lua inspected; registration inventory coverage exists."
+            "Focused tests prove the exact 2.0 setup factor and make every member of the three-trait bleed group require every reciprocal definition edge."
           ],
           "missing_proof": [
-            "Standard-Lua mocks do not prove Kahlua/engine integration or every boundary/reset path."
+            "none"
           ],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "UTCoreMocks boundaries inspected through directly reached tests."
+            "The trait mock preserves exact modData storage, while shared UT_CORE tests reproduce the post-native event and additional BodyDamage call."
           ],
           "missing_proof": [
-            "Mocks can diverge from current Java overloads; humanhamster demonstrates this risk."
+            "none"
           ],
           "source_dimensions": [
             "mocks"
@@ -24346,7 +24346,7 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "Per-trait source and release Lua hashes are equal."
+            "Runtime, UT_MET, definition, and English pairs are byte-identical between source and the 42.0 release."
           ],
           "missing_proof": [
             "none"
@@ -24356,12 +24356,12 @@
           ]
         },
         "packaging": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "42.0 release placement checked for assigned per-trait file when present; script-only traits require only shared registries/script/translation package surfaces."
+            "All trait-owned 42.0 runtime, metadata, definition, and English counterparts are present and identical."
           ],
           "missing_proof": [
-            "none"
+            "Read-only package verification still tracks the separate missing source poster."
           ],
           "source_dimensions": [
             "packaging"
@@ -24372,11 +24372,13 @@
         "B05-HEAVYBLEED-001"
       ],
       "unknowns": [
-        "No matching Build 42.19 in-game/Kahlua execution, save-load cycle, multiplayer execution, or profiler trace.",
-        "No non-English locale coverage.",
-        "No empirical balance telemetry."
+        "Current-build Kahlua, new-game and save-load lifecycle, death, and repeated world entry remain unobserved.",
+        "Live single-wound and simultaneous-wound terminal-clamp behavior remains unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory.",
+        "Multiplayer and backward save migration are explicit non-goals."
       ],
-      "translation_terminal_state": "confirmed-defect",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_05_08.json",
         "review_state": "accepted",
