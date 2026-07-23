@@ -40,8 +40,8 @@
     "trait_batches/batch_12.jsonl",
     "translation_audit.json"
   ],
-  "file_count": 156,
-  "total_bytes": 13519411,
+  "file_count": 159,
+  "total_bytes": 13568136,
   "files": [
     {
       "path": ".gitattributes",
@@ -237,7 +237,7 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 4283,
-      "sha256": "DCF7FFB207532247B7406DC9F8C8F1DF0B030271230614928624862A60ADE4BD"
+      "sha256": "04AC9C62D5777E83AE12644488236A899F844A2B0CDD2BF1B7D1671CA2ACED6C"
     },
     {
       "path": "change-impact/superimmune-infection-channel-resolution.json",
@@ -251,7 +251,7 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 4005,
-      "sha256": "CC9671739229154FC4B21B1D022EA364EB6DEC98D0FAD6A225A93F723FF2ACD7"
+      "sha256": "5754EA46CBE854F821CB055D7E536C09B034D68DE726DD5E89F86DA43B7635D6"
     },
     {
       "path": "change-impact/thickblood-weighted-bleed-damage.json",
@@ -259,6 +259,13 @@
       "byte_semantics": "utf-8-lf",
       "bytes": 5979,
       "sha256": "5857A332DC0ADA7901AC8F2F0781F4F54D6A551B68DB3978443F2F94F454E1A4"
+    },
+    {
+      "path": "change-impact/twohanded-axes-critical-chance-ownership.json",
+      "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 6936,
+      "sha256": "B682138BE4732BF3B40A6915CF9FF4FDF08E35E6AEEC9529E322AC4F788645D8"
     },
     {
       "path": "change-impact/unwavering-copy-resolution.json",
@@ -306,22 +313,22 @@
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2270038,
-      "sha256": "878C09BA24705FEFD041D88AF4C04434C945CA36A1B6C0ABD078FDF6F860CFFF"
+      "bytes": 2271645,
+      "sha256": "A5CF5EA3D6CF37703281E93E429834891CA27D8B2D506204806B92522060165A"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2097323,
-      "sha256": "B2977D147325ED4EF44BF483EBD2555EB54E7F991AA70DF721F10722330501C3"
+      "bytes": 2099560,
+      "sha256": "4B0ED448F7507550591BDFD9FE56F598AC8F4A114652B0EB1F2B3FB29FC1D096"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1291407,
-      "sha256": "6FFBFB35C18A9BE4B6EE77ACF6946347E07F1CE530B81CC82E9C97BF52120F99"
+      "bytes": 1293220,
+      "sha256": "5044D164A3378EF2EF087BAD04D7D3578EC1EA73B109EFBD0BC5640DE338CF99"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
@@ -355,8 +362,8 @@
       "path": "independent_reviews/traits_09_12.json",
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
-      "bytes": 125863,
-      "sha256": "E53E0A1223BEDCB823178E33213FA98549B35ECD3E25ADCC8434DDFCF4FE232D"
+      "bytes": 127026,
+      "sha256": "A5322FD2CE42AA99B66AEF17BC4A915B1E924852503C59FFC2E6944197B2102E"
     },
     {
       "path": "independent_reviews/ut_core_integration.json",
@@ -377,21 +384,21 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 2939,
-      "sha256": "CD1C59E5AF80CEB04E2E12A0058784FCCCBD12A4B69A1D0D55B9A050BBBD9DAE"
+      "sha256": "74B19B13DF6BE8E4197FB5E5F421EAD6A092D273FD0427F2C3E8A1A049750792"
     },
     {
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2075898,
-      "sha256": "8FA78D1C4581C189489C04056A3DAB33D61F0C648E5515C6E8EA85DD46C2630A"
+      "bytes": 2072950,
+      "sha256": "F350BA896063278583FADF515A8702F5490F9DF59F8E30D5018F9C49C97D9109"
     },
     {
       "path": "remediation_summary.json",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1210,
-      "sha256": "CA6CB5292D5DD47663908ACE06D075E77C8F7EF3F5D6AD373EEC9AEB47E23CA1"
+      "bytes": 1211,
+      "sha256": "2E9AB9F4E13A8A7BE72F7BAE0D4B5F7E6E5747E3BD3D091CFCEFC6C1D488A581"
     },
     {
       "path": "runtime-traces/utcore-wave-01.jsonl",
@@ -719,8 +726,8 @@
       "path": "tests/test_regenerate_sundayrunner.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 8151,
-      "sha256": "94901FF170BF93D42E4D637739BB0A024DEBCF85EE316A4B7862E7C7167B4B51"
+      "bytes": 10350,
+      "sha256": "25FF66BB2D528BF4AB0CAFB701B37E633D612135CE22A19A98A497FB80FC5C6F"
     },
     {
       "path": "tests/test_regenerate_superimmune.py",
@@ -742,6 +749,13 @@
       "byte_semantics": "utf-8-lf",
       "bytes": 7100,
       "sha256": "F7E4EA19D2BF2F883FE986E3447022CCCA0E35E95493C7D7DB7DC4D0097222F4"
+    },
+    {
+      "path": "tests/test_regenerate_twohanded_axes.py",
+      "kind": "regression-test",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 11422,
+      "sha256": "CF69C851D59D13DFB803DC470368CE690452BA0814D58147AD51BFEF2B98FC40"
     },
     {
       "path": "tests/test_regenerate_weaklybleedingwounds.py",
@@ -1003,6 +1017,13 @@
       "sha256": "B7C1928F9CE4A47F01D944C3D99D60DF98DA6E6B1D8599AA683294307F4D9930"
     },
     {
+      "path": "tools/regenerate_twohanded_axes.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 21762,
+      "sha256": "8C39445B8E62E833017302F5FBA81493C5E2869DCBEE0A685D0239E6B563DAAC"
+    },
+    {
       "path": "tools/regenerate_unwavering.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
@@ -1125,15 +1146,15 @@
       "path": "trait_batches/batch_12.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 87232,
-      "sha256": "AE044BC0927A818D38DFB20DF59DADDCDA7C951F4E8082D633DC69CB0FF29BD8"
+      "bytes": 89724,
+      "sha256": "3578367CB91C26719B23781AED4347327F5121A33FBBA47CE36891DC42DCEC9C"
     },
     {
       "path": "translation_audit.json",
       "kind": "translation-audit",
       "byte_semantics": "utf-8-lf",
-      "bytes": 495840,
-      "sha256": "93D24ADCE27AE2603E973B258A6251EB53D0A3B01F7A2E681A0E0C9931939591"
+      "bytes": 495881,
+      "sha256": "5145413A9EFA28CF2807C2321EDEDB0A872E20BBB0454EE328C829E1541184B7"
     }
   ]
 }

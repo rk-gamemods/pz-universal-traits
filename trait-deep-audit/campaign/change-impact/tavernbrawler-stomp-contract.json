@@ -94,8 +94,8 @@
     },
     {
       "path": "UniversalTraits/test/run_tests.lua",
-      "sha256": "95502EE5AAC863D25B5BF90F777FCC230073007696F05D0F1840381626703465",
-      "bytes": 345908
+      "sha256": "0310B318C9A6A04FBB38674B563C7DA247A987BCF5CC194E0DF7C14ECDF3B50F",
+      "bytes": 368801
     },
     {
       "path": "UniversalTraits/test/UTTestMocks.lua",

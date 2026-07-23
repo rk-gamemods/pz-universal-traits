@@ -1,0 +1,184 @@
+{
+  "schema": "ut-twohanded-axes-critical-chance-ownership-v1",
+  "trait_id": "UniversalTraits:UT_twohanded_axes",
+  "authority": {
+    "campaign_parent": "6a2d55787650297d0b385e1138389f0e97f8ed10",
+    "accepted_implementation_chain": [
+      "bb866066",
+      "fbec784",
+      "c3746c1",
+      "6a2d55787650297d0b385e1138389f0e97f8ed10"
+    ],
+    "final_independent_review": {
+      "verdict": "ACCEPT",
+      "focused_cases": 16,
+      "blocking_findings": 0
+    }
+  },
+  "review_iterations": [
+    {
+      "snapshot": "bb866066",
+      "disposition": "changes-requested",
+      "finding": "Java-Lua bridge and critical-state errors required containment.",
+      "resolved_by": "fbec784"
+    },
+    {
+      "snapshot": "fbec784",
+      "disposition": "changes-requested",
+      "finding": "A failed tracked refresh could discard exact-object ownership.",
+      "resolved_by": "c3746c1"
+    },
+    {
+      "snapshot": "c3746c1",
+      "disposition": "proof-requested",
+      "finding": "Scale-relative tolerance and no-rewrite idempotence required explicit regression proof.",
+      "resolved_by": "6a2d55787650297d0b385e1138389f0e97f8ed10"
+    },
+    {
+      "snapshot": "6a2d55787650297d0b385e1138389f0e97f8ed10",
+      "disposition": "accepted",
+      "finding": "No blocking finding; 16 focused cases passed.",
+      "resolved_by": null
+    }
+  ],
+  "accepted_intent": {
+    "cost": 4,
+    "xp_boosts": {
+      "Axe": 2
+    },
+    "grants": [],
+    "multiplayer": false,
+    "eligible_owner": "current tick-dispatch owner with UniversalTraits:UT_twohanded_axes",
+    "eligible_weapon": "exact HandWeapon object in either hand, Axe category, two-handed",
+    "effect": "exactly +10 displayed critical-chance points capped at 100",
+    "non_effects": [
+      "nonowners",
+      "ineligible weapons",
+      "unrelated modData",
+      "external critical-chance writes",
+      "other exact weapon objects"
+    ],
+    "english": "+2 to Axe. Two-handed axe attacks have +10 percent critical hit chance."
+  },
+  "formula": {
+    "sharpness_free": "displayed equals raw; effective sharpness is 1",
+    "sharpness_bearing": "baseRaw=(displayed/currentSharpness)-ownedAppliedRawBonus",
+    "target_displayed": "min(100, baseRaw * currentSharpness + 10)",
+    "target_raw": "targetDisplayed / currentSharpness",
+    "tracked_contribution": "targetRaw - baseRaw",
+    "invalid_domains": "skip nonfinite displayed/raw/sharpness and nonpositive sharpness without losing existing ownership"
+  },
+  "lifecycle": {
+    "ownership": "transient Lua table keyed by exact weapon object",
+    "restoration": "subtract only the tracked raw contribution from the current raw value",
+    "teardown": [
+      "unequip",
+      "hand swap",
+      "trait loss",
+      "death",
+      "inactive handler",
+      "reload replacement"
+    ],
+    "external_composition": "current external raw writes and sharpness changes are preserved",
+    "cross_owner": "tracked objects restore before a different owner can retain the contribution",
+    "legacy_retirement": "remove only UT_th_axesBaseCrit from encountered weapon modData",
+    "persistent_moddata_written": false
+  },
+  "resolved_findings": [
+    "B12-TWOHANDED-AXES-001"
+  ],
+  "related_repaired_pattern_history": {
+    "finding_ids": [
+      "IR0104-AXES-CRIT-MUTATION"
+    ],
+    "scope": "The accepted Two-Handed Axe path avoids the absolute cached-base mutation pattern. IR0104 remains independently open for the separate UT_axes trait and is not closed by this milestone."
+  },
+  "focused_regression_cases": [
+    "exact +10 displayed points and idempotence",
+    "scale-relative rewrite tolerance",
+    "category and handedness boundaries",
+    "zero sharpness and general API failures",
+    "every critical-state getter and setter failure",
+    "ownership across failed tracked refresh",
+    "every invalid sharpness domain",
+    "cap 100 and sharpness conversion",
+    "hand deduplication, swaps, and transfers",
+    "trait loss, death, and inactive teardown",
+    "external raw writes and sharpness changes",
+    "selective UT_th_axesBaseCrit retirement",
+    "duplicate-load restore and one handler",
+    "cross-owner isolation and setter-failure drain",
+    "setter-failure reload without retry or duplication",
+    "contract and source-release parity"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_axes.lua",
+      "sha256": "0ADDB4396A87435AA786E42FF1265F9CA84A92CF544D5FD93329956E13FA9732",
+      "bytes": 4405
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_twohanded_axes.lua",
+      "sha256": "0ADDB4396A87435AA786E42FF1265F9CA84A92CF544D5FD93329956E13FA9732",
+      "bytes": 4405
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "850D680158E8C8E154D551D54A04DEAD40648076853AD8FEF1973D4046A3B35F",
+      "bytes": 37049
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "850D680158E8C8E154D551D54A04DEAD40648076853AD8FEF1973D4046A3B35F",
+      "bytes": 37049
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/media/registries.lua",
+      "sha256": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+      "bytes": 23864
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/registries.lua",
+      "sha256": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+      "bytes": 23864
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "0310B318C9A6A04FBB38674B563C7DA247A987BCF5CC194E0DF7C14ECDF3B50F",
+      "bytes": 368801
+    },
+    {
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "sha256": "72641DDCEE3B92AFA1DCD688529AC4338D9293DEB10430DBF6C2C03A4B2BBC00",
+      "bytes": 82589
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_twohanded_axes.md",
+      "sha256": "62CF6048FD6B5EC5249457A93C3372E2FAA5E5F85A79714F9F5ADAE1E4140B1A",
+      "bytes": 5006
+    }
+  ],
+  "retained_runtime_proof": [
+    "current-build Kahlua and Java-Lua bridge observation",
+    "full desktop relaunch and current-version save-load",
+    "cross-owner live transfer",
+    "profiler and cadence observation"
+  ],
+  "runtime_proof": "Unobserved; static and standard-Lua evidence do not establish current-version live gameplay.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment",
+    "rebalance"
+  ]
+}

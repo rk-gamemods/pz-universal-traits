@@ -47,7 +47,7 @@
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "29C24133912335231DA8ED2E8462B64D9DBE837A0F553E3988547AEA52347D8D",
     "independent_reviews/traits_05_08.json": "B1CDBE8BBEE77E5C4D9417E0E77E1EF69178E8F34BD4C18B825038266D7E9D53",
-    "independent_reviews/traits_09_12.json": "E53E0A1223BEDCB823178E33213FA98549B35ECD3E25ADCC8434DDFCF4FE232D",
+    "independent_reviews/traits_09_12.json": "A5322FD2CE42AA99B66AEF17BC4A915B1E924852503C59FFC2E6944197B2102E",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "4FD54923B0938C3294AB5E9D0C0168A08FDBF353A73FBE83BCE7F5DDF8B911F2",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
@@ -60,8 +60,8 @@
     "trait_batches/batch_09.jsonl": "7493EABBF27471F551A42E6B750D8927EC80B36404B51ED6E7CBC74349EAFE44",
     "trait_batches/batch_10.jsonl": "33304EC69C6072CE027BFD779AB0E2332EEDE70DC56B6920468F46BC4A2ABE31",
     "trait_batches/batch_11.jsonl": "D1617D3F6DE1E81879EB3FA2B81F7DA1058630E103CF1DFD2D907B026311D959",
-    "trait_batches/batch_12.jsonl": "AE044BC0927A818D38DFB20DF59DADDCDA7C951F4E8082D633DC69CB0FF29BD8",
-    "translation_audit.json": "93D24ADCE27AE2603E973B258A6251EB53D0A3B01F7A2E681A0E0C9931939591"
+    "trait_batches/batch_12.jsonl": "3578367CB91C26719B23781AED4347327F5121A33FBBA47CE36891DC42DCEC9C",
+    "translation_audit.json": "5145413A9EFA28CF2807C2321EDEDB0A872E20BBB0454EE328C829E1541184B7"
   },
   "counts": {
     "traits": 198,
@@ -71,22 +71,22 @@
     "independent_review_findings": 118,
     "independent_review_states": {
       "accepted": 84,
-      "confirmed-defect": 30,
+      "confirmed-defect": 29,
       "coverage-gap": 20,
       "needs-correction": 51,
-      "runtime-unproven": 13
+      "runtime-unproven": 14
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 55,
+      "confirmed-defect": 54,
       "coverage-gap": 12,
-      "runtime-unproven": 106
+      "runtime-unproven": 107
     },
     "dimension_states": {
-      "proven-correct": 2798,
-      "confirmed-defect": 204,
-      "coverage-gap": 758,
-      "runtime-unproven": 992
+      "proven-correct": 2800,
+      "confirmed-defect": 201,
+      "coverage-gap": 755,
+      "runtime-unproven": 996
     }
   },
   "independent_review_findings": [
@@ -59226,7 +59226,7 @@
     {
       "trait_id": "UniversalTraits:UT_twohanded_axes",
       "batch": "batch_12",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
@@ -59241,9 +59241,11 @@
         "definition_parser": {
           "state": "proven-correct",
           "evidence": [
-            "complete block at 487-497"
+            "Cost 4, Axe +2, no grants, multiplayer disabled, and complete reciprocal WeaponTree exclusions are unchanged."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "definition_parser"
           ]
@@ -59261,9 +59263,11 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "cost 4; Axe +2; complete bidirectional WeaponTree exclusions"
+            "Cost 4; Axe +2; no grants; existing reciprocal WeaponTree exclusions and single-player scope are preserved."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cost_xp_grants_exclusions"
           ]
@@ -59271,19 +59275,23 @@
         "source_intent": {
           "state": "proven-correct",
           "evidence": [
-            "description and predicate target two-handed axes +10 crit"
+            "Accepted intent is exactly +10 displayed critical-chance points, capped at 100, for an eligible owner using an eligible two-handed Axe."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_intent"
           ]
         },
         "runtime_path": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "tick handler mutates HandWeapon.criticalChance and caches a base but has no restoration path"
+            "Every 30 owned tick dispatches, exact primary/secondary weapon objects are classified, stale objects restored, and eligible objects refreshed with transient exact-object ownership."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "runtime_path"
           ]
@@ -59291,19 +59299,23 @@
         "numbers": {
           "state": "proven-correct",
           "evidence": [
-            "target=min(100,cached base+10)"
+            "targetDisplayed=min(100,baseRaw*sharpness+10); targetRaw=targetDisplayed/sharpness; non-sharp weapons use sharpness 1."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "numbers"
           ]
         },
         "cadence": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "primary and secondary weapons checked every 30 player-update frames"
+            "Static registration specifies one vehicle-aware owned tick handler throttled to 30 dispatches."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Live current-build cadence and callback production remain unobserved."
+          ],
           "source_dimensions": [
             "cadence"
           ]
@@ -59311,29 +59323,35 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
-            "dispatch throttle=30; no cooldown state"
+            "No cooldown or timestamp state exists."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cooldown"
           ]
         },
         "reset_save_load": {
-          "state": "confirmed-defect",
+          "state": "runtime-unproven",
           "evidence": [
-            "weapon modData base persists while current crit is never restored on unequip, trait loss, transfer, or handler inactivity"
+            "Unequip, trait loss, death, inactive teardown, and reload replacement restore tracked contributions in focused proof; no persistent modData is created."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Full desktop relaunch and current-version save-load remain unobserved."
+          ],
           "source_dimensions": [
             "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "isTwoHandWeapon, isOfWeaponCategory, get/setCriticalChance exist; WeaponCategory.AXE is used"
+            "Current static source supports the HandWeapon, Axe-category, handedness, sharpness, critical-chance, and tick-dispatch surfaces used."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Live current-build Java-Lua bridge receivers, return domains, and errors remain unobserved."
+          ],
           "source_dimensions": [
             "java_lua"
           ]
@@ -59341,10 +59359,10 @@
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "file/helper compile and Java signatures exist"
+            "The accepted source uses Kahlua-compatible Lua shapes and contains bridge calls with pcall."
           ],
           "missing_proof": [
-            "No Kahlua run proved Java method-type guards and pcall behavior on a real HandWeapon."
+            "Live current-build Kahlua execution remains unobserved."
           ],
           "source_dimensions": [
             "kahlua"
@@ -59353,19 +59371,23 @@
         "events": {
           "state": "proven-correct",
           "evidence": [
-            "real OnPlayerUpdate routed by tick dispatcher"
+            "The handler is registered once by exact trait id with throttle 30, vehicle awareness, teardown, and reload-time unregister."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "events"
           ]
         },
         "stacking_interactions": {
-          "state": "confirmed-defect",
+          "state": "runtime-unproven",
           "evidence": [
-            "cached base causes later external crit changes to be overwritten; boosted weapon can outlive the active trait"
+            "Focused proof preserves external raw writes and sharpness changes, isolates owners, deduplicates hands, and restores swaps and transfers."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Live cross-owner weapon transfer remains unobserved."
+          ],
           "source_dimensions": [
             "stacking_interactions"
           ]
@@ -59373,9 +59395,11 @@
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "DisabledInMultiplayer=true"
+            "DisabledInMultiplayer is true and multiplayer support is an explicit product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "multiplayer"
           ]
@@ -59383,9 +59407,11 @@
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "UI resolves to Two-Handed Axe"
+            "Exact English display name remains Two-Handed Axe."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "display"
           ]
@@ -59393,9 +59419,11 @@
         "description": {
           "state": "proven-correct",
           "evidence": [
-            "text matches +2 Axe and intended +10 crit"
+            "English preserves +2 Axe and the accepted +10 two-handed Axe critical-chance claim."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "description"
           ]
@@ -59403,20 +59431,22 @@
         "localization": {
           "state": "proven-correct",
           "evidence": [
-            "EN pair present; other locales absent"
+            "The complete supported English key pair exists with source-release parity; no other UniversalTraits locale is in scope."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "localization"
           ]
         },
         "balance": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "cost 4 and +10 crit are source truth"
+            "Accepted cost 4, Axe +2, and bounded +10 displayed points are unchanged; this milestone performs no rebalance."
           ],
           "missing_proof": [
-            "No formal balance benchmark was supplied."
+            "none"
           ],
           "source_dimensions": [
             "balance"
@@ -59425,34 +59455,34 @@
         "performance": {
           "state": "runtime-unproven",
           "evidence": [
-            "two weapon checks every 30 frames"
+            "The bounded path checks at most two hand objects per throttled dispatch and tracks only exact objects currently owned by the handler."
           ],
           "missing_proof": [
-            "No in-game profiler sample was run."
+            "No current-build profiler or cadence observation exists."
           ],
           "source_dimensions": [
             "performance"
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "one mock test proves +10 on a matching axe"
+            "Sixteen focused standard-Lua cases cover formula, cap, domains, failures, refresh ownership, external composition, exact-object lifecycle, legacy retirement, isolation, idempotence, and parity."
           ],
           "missing_proof": [
-            "No regression covers cap 100, nonmatching axes, external mutation, trait removal, unequip, transfer, or restoration."
+            "none"
           ],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "MockWeapon mirrors called methods but not engine item persistence/synchronization"
+            "Focused doubles expose sharpness-scaled critical state, injected getter/setter failures, exact object identity, modData, hands, lifecycle, and handler counts."
           ],
           "missing_proof": [
-            "A real HandWeapon lifecycle test is missing."
+            "none"
           ],
           "source_dimensions": [
             "mocks"
@@ -59461,9 +59491,11 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "assigned source/release surfaces match"
+            "Runtime, UI, definition, registry, tests, mocks, and audit are fingerprinted; packaged runtime, UI, definition, and registry counterparts are byte-identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_release_parity"
           ]
@@ -59471,9 +59503,11 @@
         "packaging": {
           "state": "proven-correct",
           "evidence": [
-            "runtime and UTCore helper are packaged"
+            "All Two-Handed Axe-owned 42.0 runtime, UI, definition, and registry counterparts are present and identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "packaging"
           ]
@@ -59483,12 +59517,15 @@
         "B12-TWOHANDED-AXES-001"
       ],
       "unknowns": [
-        "No real HandWeapon save/sync run was supplied."
+        "Live current-build Kahlua execution and Java-Lua bridge behavior remain unobserved.",
+        "Full desktop relaunch and current-version save-load remain unobserved.",
+        "Live cross-owner weapon transfer remains unobserved.",
+        "Live tick cadence and profiler behavior remain unobserved."
       ],
-      "translation_terminal_state": "confirmed-defect",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_09_12.json",
-        "review_state": "confirmed-defect",
+        "review_state": "runtime-unproven",
         "omission_finding_ids": [],
         "cross_finding_ids": [
           "IR0912-FINDING-STATE-001",
@@ -59502,8 +59539,7 @@
         "unresolved_runtime_proofs": [
           "RP0912-KAHLUA-001",
           "RP0912-SAVELOAD-001",
-          "RP0912-BALANCE-PERF-001",
-          "RP0912-LOCALE-001"
+          "RP0912-BALANCE-PERF-001"
         ]
       }
     },
