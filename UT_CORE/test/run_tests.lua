@@ -2700,7 +2700,7 @@ end)
 test("Vehicle trait registration applies modifiers on vehicle enter", function()
     UTCore._vehicleTraitDefs = {}
     local vehicle = MockVehicle()
-    local player = MockPlayer({"UniversalTraits:UT_testdriver"}, { vehicle = vehicle })
+    local player = MockPlayer({"UniversalTraits:UT_testdriver"}, { vehicle = vehicle, driving = true })
     UTCore.registerVehicleTrait("UniversalTraits:UT_testdriver", "UT_testdriverState", {
         maxSpeed = 1.5,
         brakingForce = 0.5,
@@ -2713,10 +2713,25 @@ test("Vehicle trait registration applies modifiers on vehicle enter", function()
     assert_eq(vehicle:getBrakingForce(), 5, "expected braking force multiplier on enter")
 end)
 
+test("Vehicle trait registration does not mutate for a passenger", function()
+    UTCore._vehicleTraitDefs = {}
+    local vehicle = MockVehicle()
+    local player = MockPlayer({"UniversalTraits:UT_testdriver"}, { vehicle = vehicle, driving = false })
+    UTCore.registerVehicleTrait("UniversalTraits:UT_testdriver", "UT_testdriverState", {
+        maxSpeed = 1.5,
+        brakingForce = 0.5,
+    }, 1)
+
+    Events.OnEnterVehicle.fire(player)
+
+    assert_eq(vehicle:getMaxSpeed(), 100, "passenger entry must preserve max speed")
+    assert_eq(vehicle:getBrakingForce(), 10, "passenger entry must preserve braking force")
+end)
+
 test("Vehicle trait helpers restore the baseline on vehicle exit", function()
     UTCore._vehicleTraitDefs = {}
     local vehicle = MockVehicle()
-    local player = MockPlayer({"UniversalTraits:UT_testdriver"}, { vehicle = vehicle })
+    local player = MockPlayer({"UniversalTraits:UT_testdriver"}, { vehicle = vehicle, driving = true })
     UTCore.registerVehicleTrait("UniversalTraits:UT_testdriver", "UT_testdriverState", {
         maxSpeed = 1.5,
         brakingForce = 0.5,
@@ -2726,6 +2741,10 @@ test("Vehicle trait helpers restore the baseline on vehicle exit", function()
 
     player:setVehicle(vehicle)
     Events.OnEnterVehicle.fire(player)
+    assert_eq(vehicle:getMaxSpeed(), 150, "driver entry must apply max speed before restore")
+    assert_eq(vehicle:getBrakingForce(), 5, "driver entry must apply braking before restore")
+    assert_eq(vehicle:getEnginePower(), 200, "driver entry must apply engine power before restore")
+    assert_eq(vehicle:getMass(), 750, "driver entry must apply initial mass before restore")
     player:setVehicle(nil)
     UTCore.updateVehicleTraitState(player)
 

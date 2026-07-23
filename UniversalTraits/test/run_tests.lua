@@ -2786,6 +2786,58 @@ test("vehicle bridge partial failure is contained and setter calls stay bounded"
     assert_true(ok, "partial grouped restore must remain contained")
 end)
 
+test("vehicle grouped restore retains partial-failure evidence for bounded reconciliation", function()
+    local vehicle = MockVehicle({ engineQuality = 50, engineLoudness = 100, enginePower = 100 })
+    local player = MockPlayer({ "UniversalTraits:UT_expertdriver" }, { vehicle = vehicle, driving = true })
+    UTCore.updateVehicleTraitState(player)
+    assert_eq(vehicle:getEngineQuality(), 100, "Expert apply reaches quality 100")
+    assert_eq(vehicle:getEngineLoudness(), 25, "Expert apply reaches loudness 25")
+    assert_eq(vehicle:getEnginePower(), 300, "Expert apply reaches power 300")
+
+    vehicle._maxSpeed = 137
+    vehicle._brakingForce = 17
+    vehicle._engineFeatureThrowAt = "loudness"
+    vehicle._engineFeatureThrowRemaining = 1
+    player:setVehicle(nil)
+    UTCore.updateVehicleTraitState(player)
+
+    assert_eq(vehicle:getEngineQuality(), 50, "first restore mutates quality before the throw")
+    assert_eq(vehicle:getEngineLoudness(), 100, "first restore mutates loudness before the throw")
+    assert_eq(vehicle:getEnginePower(), 300, "power remains owned after the throw")
+    local ownership = vehicle:getModData().UT_vehicleTraitOwnership
+    assert_true(ownership ~= nil, "unresolved owned power keeps the vehicle record")
+    assert_eq(ownership.fields.engineQuality, nil, "restored quality evidence clears")
+    assert_eq(ownership.fields.engineLoudness, nil, "restored loudness evidence clears")
+    assert_true(ownership.fields.enginePower ~= nil, "still-owned power evidence remains")
+    assert_eq(vehicle:getMaxSpeed(), 137, "foreign speed survives partial restore")
+    assert_eq(vehicle:getBrakingForce(), 17, "foreign braking survives partial restore")
+
+    local callsAfterFailure = vehicle._setterCalls.engineFeature
+    UTCore.updateVehicleTraitState(player)
+    assert_eq(vehicle:getEnginePower(), 100, "later bounded reconciliation restores power")
+    assert_eq(vehicle:getModData().UT_vehicleTraitOwnership, nil, "ownership clears after complete restore")
+    assert_eq(vehicle._setterCalls.engineFeature, callsAfterFailure + 1, "one later grouped retry is sufficient")
+    UTCore.updateVehicleTraitState(player)
+    assert_eq(vehicle._setterCalls.engineFeature, callsAfterFailure + 1, "completed restore does not loop setters")
+end)
+
+test("vehicle grouped restore stops retrying a permanent failing setter", function()
+    local vehicle = MockVehicle({ engineQuality = 50 })
+    local player = MockPlayer({ "UniversalTraits:UT_expertdriver" }, { vehicle = vehicle, driving = true })
+    UTCore.updateVehicleTraitState(player)
+    vehicle._engineFeatureThrowAt = "quality"
+    vehicle._engineFeatureThrowRemaining = math.huge
+    player:setVehicle(nil)
+
+    UTCore.updateVehicleTraitState(player)
+    UTCore.updateVehicleTraitState(player)
+    local boundedCalls = vehicle._setterCalls.engineFeature
+    for _ = 1, 20 do UTCore.updateVehicleTraitState(player) end
+
+    assert_eq(vehicle._setterCalls.engineFeature, boundedCalls, "permanent restore failure has a bounded retry budget")
+    assert_true(vehicle:getModData().UT_vehicleTraitOwnership ~= nil, "unresolved fields retain ownership evidence")
+end)
+
 test("vehicle steady state performs no repeated writes", function()
     local vehicle = MockVehicle()
     local player = MockPlayer({ "UniversalTraits:UT_driver" }, { vehicle = vehicle, driving = true })

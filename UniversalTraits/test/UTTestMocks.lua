@@ -208,6 +208,8 @@ function MockVehicle(opts)
         _cargoMass = cargoMass,
         _updateTotalMassCalls = 0,
         _setterCalls = {},
+        _engineFeatureThrowAt = opts.engineFeatureThrowAt,
+        _engineFeatureThrowRemaining = opts.engineFeatureThrowAt and math.huge or 0,
         getModData = function(self) return moddata end,
         getMaxSpeed = function(self) return self._maxSpeed end,
         setMaxSpeed = function(self, v)
@@ -227,11 +229,20 @@ function MockVehicle(opts)
         setEngineFeature = function(self, quality, loudness, power)
             self._setterCalls.engineFeature = (self._setterCalls.engineFeature or 0) + 1
             self._engineQuality = math.max(0, math.min(100, math.floor(quality)))
-            if opts.engineFeatureThrowAt == "quality" then error("injected grouped bridge failure") end
+            if self._engineFeatureThrowAt == "quality" and self._engineFeatureThrowRemaining > 0 then
+                self._engineFeatureThrowRemaining = self._engineFeatureThrowRemaining - 1
+                error("injected grouped bridge failure")
+            end
             self._engineLoudness = math.floor(loudness / 2.7)
-            if opts.engineFeatureThrowAt == "loudness" then error("injected grouped bridge failure") end
+            if self._engineFeatureThrowAt == "loudness" and self._engineFeatureThrowRemaining > 0 then
+                self._engineFeatureThrowRemaining = self._engineFeatureThrowRemaining - 1
+                error("injected grouped bridge failure")
+            end
             self._enginePower = math.floor(power)
-            if opts.engineFeatureThrowAt == "power" then error("injected grouped bridge failure") end
+            if self._engineFeatureThrowAt == "power" and self._engineFeatureThrowRemaining > 0 then
+                self._engineFeatureThrowRemaining = self._engineFeatureThrowRemaining - 1
+                error("injected grouped bridge failure")
+            end
         end,
         getMass = function(self) return self._mass end,
         setMass = function(self, v) self._mass = v end,

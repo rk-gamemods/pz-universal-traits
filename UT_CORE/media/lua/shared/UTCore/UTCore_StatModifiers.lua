@@ -507,6 +507,7 @@ UTCore._vehicleTraitActiveVehicles = UTCore._vehicleTraitActiveVehicles or {}
 UTCore._vehicleTraitTrackedPlayer = UTCore._vehicleTraitTrackedPlayer or nil
 
 local VEHICLE_OWNERSHIP_KEY = "UT_vehicleTraitOwnership"
+local MAX_RESTORE_ATTEMPTS = 2
 local ENGINE_FIELDS = {
     engineQuality = true,
     engineLoudness = true,
@@ -575,6 +576,7 @@ local function getOwnership(vehicle)
     end
     if type(ownership.fields) ~= "table" then ownership.fields = {} end
     if type(ownership.suppressed) ~= "table" then ownership.suppressed = {} end
+    if type(ownership.restoreAttempts) ~= "table" then ownership.restoreAttempts = {} end
     return vmd, ownership
 end
 
@@ -586,13 +588,31 @@ local function restoreSimpleField(vehicle, ownership, field)
     local evidence = ownership.fields[field]
     if type(evidence) ~= "table" then return false end
     local ok, current = readVehicleField(vehicle, field)
-    local restored = false
-    if ok and current == evidence.lastApplied then
-        local access = FIELD_ACCESS[field]
-        restored = vehicleCall(vehicle, access.set, evidence.baseline)
+    if not ok then return false end
+    if current == evidence.baseline then
+        ownership.fields[field] = nil
+        ownership.restoreAttempts[field] = nil
+        return true
     end
-    ownership.fields[field] = nil
-    return restored
+    if current ~= evidence.lastApplied then
+        ownership.fields[field] = nil
+        ownership.restoreAttempts[field] = nil
+        return false
+    end
+
+    local attempts = ownership.restoreAttempts[field] or 0
+    if attempts >= MAX_RESTORE_ATTEMPTS then return false end
+    local access = FIELD_ACCESS[field]
+    vehicleCall(vehicle, access.set, evidence.baseline)
+    ownership.restoreAttempts[field] = attempts + 1
+
+    local readOk, observed = readVehicleField(vehicle, field)
+    if readOk and (observed == evidence.baseline or observed ~= evidence.lastApplied) then
+        ownership.fields[field] = nil
+        ownership.restoreAttempts[field] = nil
+        return observed == evidence.baseline
+    end
+    return false
 end
 
 local function restoreEngineFields(vehicle, ownership)
@@ -603,11 +623,14 @@ local function restoreEngineFields(vehicle, ownership)
         if ok then values[field] = current end
         local evidence = ownership.fields[field]
         if ok and type(evidence) == "table" then
-            if current == evidence.lastApplied then
+            if current == evidence.baseline then
+                ownership.fields[field] = nil
+            elseif current == evidence.lastApplied then
                 values[field] = evidence.baseline
                 shouldWrite = true
+            else
+                ownership.fields[field] = nil
             end
-            ownership.fields[field] = nil
         end
     end
     if not shouldWrite
@@ -616,24 +639,49 @@ local function restoreEngineFields(vehicle, ownership)
         or values.enginePower == nil then
         return
     end
+    local attempts = ownership.restoreAttempts.engineFields or 0
+    if attempts >= MAX_RESTORE_ATTEMPTS then return end
     local _, loudnessInput = loudnessTargetAndInput(values.engineLoudness)
     vehicleCall(vehicle, "setEngineFeature",
         values.engineQuality, loudnessInput, values.enginePower)
+    ownership.restoreAttempts.engineFields = attempts + 1
+
+    -- The grouped setter may mutate one or two fields before throwing. Only
+    -- discard evidence after protected readback proves that field restored or
+    -- no longer equals UTCore's last applied value.
+    for field in pairs(ENGINE_FIELDS) do
+        local evidence = ownership.fields[field]
+        if type(evidence) == "table" then
+            local ok, observed = readVehicleField(vehicle, field)
+            if ok and (observed == evidence.baseline or observed ~= evidence.lastApplied) then
+                ownership.fields[field] = nil
+            end
+        end
+    end
+end
+
+local function hasOwnedFields(ownership)
+    for _, evidence in pairs(ownership.fields) do
+        if type(evidence) == "table" then return true end
+    end
+    return false
 end
 
 -- Restores only fields whose current observable value still matches UTCore's
 -- last successful write. Foreign/native changes are preserved.
 function UTCore.restoreVehicleMod(vehicle)
-    if not vehicle then return end
+    if not vehicle then return true end
     local vmd, ownership = getOwnership(vehicle)
-    if not ownership or ownership.stateKey == nil then return end
+    if not ownership or ownership.stateKey == nil then return true end
 
     restoreSimpleField(vehicle, ownership, "maxSpeed")
     restoreSimpleField(vehicle, ownership, "brakingForce")
     restoreEngineFields(vehicle, ownership)
     local restoredInitialMass = restoreSimpleField(vehicle, ownership, "initialMass")
     if restoredInitialMass then vehicleCall(vehicle, "updateTotalMass") end
+    if hasOwnedFields(ownership) then return false end
     clearOwnership(vmd)
+    return true
 end
 
 local function desiredTargets(ownership, mods)
@@ -765,7 +813,7 @@ function UTCore.applyVehicleMod(player, stateKey, mods, vehicleOverride)
     local vmd, ownership = getOwnership(vehicle)
     if not ownership then return end
     if ownership.stateKey ~= nil and ownership.stateKey ~= stateKey then
-        UTCore.restoreVehicleMod(vehicle)
+        if not UTCore.restoreVehicleMod(vehicle) then return end
         vmd, ownership = getOwnership(vehicle)
         if not ownership then return end
     end
@@ -840,8 +888,11 @@ function UTCore.updateVehicleTraitState(player)
     local current = player.getVehicle and player:getVehicle() or nil
     local valid = not player.isDead or not player:isDead()
     if previous and (previous ~= current or not valid) then
-        UTCore.restoreVehicleMod(previous)
-        UTCore._vehicleTraitActiveVehicles[player] = nil
+        if UTCore.restoreVehicleMod(previous) then
+            UTCore._vehicleTraitActiveVehicles[player] = nil
+        else
+            return
+        end
     end
     if not valid then return end
     if current then
