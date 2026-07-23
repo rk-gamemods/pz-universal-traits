@@ -44,7 +44,7 @@
     "UI_UT_blunttwirl": "Blunt Twirl",
     "UI_UT_blunttwirlDesc": "+1 to Small Blunt and Blunt.",
     "UI_UT_tavernbrawler": "Tavern Brawler",
-    "UI_UT_tavernbrawlerDesc": "+1 to Small Blunt. Stomping downed zombies deals significantly more damage.",
+    "UI_UT_tavernbrawlerDesc": "+1 to Small Blunt. Stomping a downed zombie kills it instantly.",
     "UI_UT_grunt": "Grunt",
     "UI_UT_gruntDesc": "Raw power and aggression drive your fighting style. +1 to Carpentry, Short Blunt, Masonry, and Blacksmith.",
     "UI_UT_actionhero": "Action Hero",

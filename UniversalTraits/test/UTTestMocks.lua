@@ -249,6 +249,7 @@ function MockPlayer(traitList, opts)
     }
     local player = {
         _bumpFallDown = false,
+        _shoveStompAnim = opts.shoveStompAnim == true,
         _said         = nil,
         _shouted      = false,
         _sprinting    = false,
@@ -284,6 +285,8 @@ function MockPlayer(traitList, opts)
                 remove = function(_, ct) if ct and ct._id then traits[ct._id] = nil end end,
             }
         end,
+        isShoveStompAnim = function(self) return self._shoveStompAnim end,
+        setShoveStompAnim = function(self, value) self._shoveStompAnim = value == true end,
         _mockType = "IsoPlayer",
         getStats      = function(self)
             if opts.nilStats or opts.noStats then return nil end
@@ -958,6 +961,7 @@ function MockZombie(opts)
     local _z = opts.z or 0
     local _dead = opts.dead or false
     local _attackedBy = opts.attackedBy
+    local killCalls = {}
     return {
         _mockType           = "IsoZombie",
         isAlwaysKnockedDown = function(self) return false end,
@@ -971,6 +975,11 @@ function MockZombie(opts)
         setDead             = function(self, v) _dead = v end,
         getHealth           = function(self) return _health end,
         setHealth           = function(self, v) _health = v end,
+        Kill                = function(self, attacker)
+            _dead = true
+            table.insert(killCalls, attacker)
+        end,
+        getKillCalls        = function(self) return killCalls end,
         getKnockDownCalls   = function(self) return knockDownCalls end,
         getX                = function(self) return _x end,
         getY                = function(self) return _y end,
@@ -1848,7 +1857,22 @@ if not _G.Events.OnHitZombie then
     local _handlers = {}
     _G.Events.OnHitZombie = {
         Add  = function(fn) table.insert(_handlers, fn) end,
-        fire = function(...) fireHandlers(_G.Events.OnHitZombie, _handlers, ...) end,
+        Remove = function(fn)
+            for i = #_handlers, 1, -1 do
+                if _handlers[i] == fn then table.remove(_handlers, i) end
+            end
+        end,
+        getHandlerCount = function() return #_handlers end,
+        fire = function(...)
+            local args = { ... }
+            local count = select("#", ...)
+            if args[1] == _G.Events.OnHitZombie then
+                table.remove(args, 1)
+                count = count - 1
+            end
+            assert(count == 4, "OnHitZombie expects exactly (zombie, attacker, bodyPart, weapon)")
+            fireHandlers(_G.Events.OnHitZombie, _handlers, args[1], args[2], args[3], args[4])
+        end,
     }
 end
 

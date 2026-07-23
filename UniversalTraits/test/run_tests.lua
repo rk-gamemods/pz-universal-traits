@@ -6510,24 +6510,143 @@ test("trackman ignores non-trap items", function()
     assert_eq(item:getCondition(), 3, "trackman should NOT touch non-trap items")
 end)
 
--- ─── tavernbrawler: stomp bonus damage ─────────────────────────────────────────
-test("tavernbrawler deals 30 bonus damage to downed zombie", function()
+-- ─── tavernbrawler: true-stomp instant kill ─────────────────────────────────────
+local TAVERN_BRAWLER_ID = "UniversalTraits:UT_tavernbrawler"
+
+local function makeTavernBrawlerPlayer(opts)
+    opts = opts or {}
+    local traits = opts.hasTrait == false and {} or { TAVERN_BRAWLER_ID }
+    return MockPlayer(traits, {
+        playerNum = opts.playerNum,
+        shoveStompAnim = opts.shoveStompAnim == true,
+    })
+end
+
+local function fireTavernHit(zombie, player, bodyPart, weapon)
+    Events.OnHitZombie:fire(zombie, player, bodyPart, weapon)
+end
+
+test("tavernbrawler OnHitZombie mock forwards exact engine argument order", function()
     local zombie = MockZombie({ health = 100 })
-    zombie._knockedDown = true
-    zombie.isKnockedDown = function(self) return true end
-    local p = MockPlayer({ "UniversalTraits:UT_tavernbrawler" })
-    local weapon = MockWeapon("Boots")
-    _G.getSpecificPlayer = function(i) return i == 0 and p or nil end
-    Events.OnHitZombie:fire(zombie, p, weapon, 10)
-    assert_eq(zombie:getHealth(), 70, "tavernbrawler should deal 30 extra HP to downed zombie")
+    local player = makeTavernBrawlerPlayer({ shoveStompAnim = false })
+    local bodyPart = { _mockType = "BodyPartType", name = "Head" }
+    local weapon = MockWeapon("HandAxe")
+    local received
+    local function probe(zombieArg, attackerArg, bodyPartArg, weaponArg, ...)
+        received = {
+            count = 4 + select("#", ...),
+            zombieArg,
+            attackerArg,
+            bodyPartArg,
+            weaponArg,
+        }
+    end
+
+    Events.OnHitZombie.Add(probe)
+    fireTavernHit(zombie, player, bodyPart, weapon)
+    Events.OnHitZombie.Remove(probe)
+
+    assert_eq(received.count, 4, "OnHitZombie must forward exactly four arguments")
+    assert_eq(received[1], zombie, "first argument must be zombie")
+    assert_eq(received[2], player, "second argument must be attacker")
+    assert_eq(received[3], bodyPart, "third argument must be bodyPart")
+    assert_eq(received[4], weapon, "fourth argument must be weapon")
 end)
 
-test("tavernbrawler does NOT fire on standing zombie", function()
+test("tavernbrawler true stomp subtracts 30 exactly once and credits lethal kill", function()
     local zombie = MockZombie({ health = 100 })
-    local p = MockPlayer({ "UniversalTraits:UT_tavernbrawler" })
+    local p = makeTavernBrawlerPlayer({ shoveStompAnim = true })
+    local bodyPart = { _mockType = "BodyPartType", name = "Head" }
+    local weapon = MockWeapon("BareHands")
     _G.getSpecificPlayer = function(i) return i == 0 and p or nil end
-    Events.OnHitZombie:fire(zombie, p, MockWeapon("Boots"), 10)
-    assert_eq(zombie:getHealth(), 100, "tavernbrawler should NOT fire on standing zombie")
+    fireTavernHit(zombie, p, bodyPart, weapon)
+    assert_eq(zombie:getHealth(), 70, "true stomp must subtract exactly 30 direct health")
+    assert_eq(#zombie:getKillCalls(), 0, "nonlethal synthetic health must not call Kill")
+    assert_eq(bodyPart.name, "Head", "bodyPart must remain unchanged")
+    assert_eq(weapon:getType(), "BareHands", "weapon must remain unchanged")
+end)
+
+test("tavernbrawler lethal true stomp calls Kill once with attacker credit", function()
+    local zombie = MockZombie({ health = 3.8 })
+    local p = makeTavernBrawlerPlayer({ shoveStompAnim = true })
+    _G.getSpecificPlayer = function(i) return i == 0 and p or nil end
+    fireTavernHit(zombie, p, { name = "Torso_Upper" }, MockWeapon("BareHands"))
+    assert_eq(zombie:getHealth(), -26.2, "30 direct health must remain pre-vanilla and guaranteed lethal")
+    assert_eq(#zombie:getKillCalls(), 1, "lethal stomp must call Kill exactly once")
+    assert_eq(zombie:getKillCalls()[1], p, "Kill must credit the attacker")
+end)
+
+test("tavernbrawler armed prone hit receives no trait damage", function()
+    local zombie = MockZombie({ health = 100 })
+    zombie:knockDown(false)
+    local p = makeTavernBrawlerPlayer({ shoveStompAnim = false })
+    _G.getSpecificPlayer = function(i) return i == 0 and p or nil end
+    fireTavernHit(zombie, p, { name = "Head" }, MockWeapon("HandAxe"))
+    assert_eq(zombie:getHealth(), 100, "armed prone hit must not receive stomp damage")
+    assert_eq(zombie:isKnockedDown(), true, "target prone state must remain unchanged")
+end)
+
+test("tavernbrawler ordinary unarmed prone hit receives no trait damage", function()
+    local zombie = MockZombie({ health = 100 })
+    zombie:knockDown(false)
+    local p = makeTavernBrawlerPlayer({ shoveStompAnim = false })
+    _G.getSpecificPlayer = function(i) return i == 0 and p or nil end
+    fireTavernHit(zombie, p, { name = "Head" }, MockWeapon("BareHands"))
+    assert_eq(zombie:getHealth(), 100, "ordinary unarmed prone hit must not receive stomp damage")
+end)
+
+test("tavernbrawler standing hit receives no trait damage", function()
+    local zombie = MockZombie({ health = 100 })
+    local p = makeTavernBrawlerPlayer({ shoveStompAnim = false })
+    _G.getSpecificPlayer = function(i) return i == 0 and p or nil end
+    fireTavernHit(zombie, p, { name = "Torso_Upper" }, MockWeapon("HandAxe"))
+    assert_eq(zombie:getHealth(), 100, "standing hit must not receive stomp damage")
+end)
+
+test("tavernbrawler absent trait receives no trait damage", function()
+    local zombie = MockZombie({ health = 100 })
+    local p = makeTavernBrawlerPlayer({ hasTrait = false, shoveStompAnim = true })
+    _G.getSpecificPlayer = function(i) return i == 0 and p or nil end
+    fireTavernHit(zombie, p, { name = "Head" }, MockWeapon("BareHands"))
+    assert_eq(zombie:getHealth(), 100, "player without trait must not receive stomp bonus")
+end)
+
+test("tavernbrawler wrong local player receives no trait damage", function()
+    local zombie = MockZombie({ health = 100 })
+    local localPlayer = makeTavernBrawlerPlayer({ shoveStompAnim = true })
+    local attacker = makeTavernBrawlerPlayer({ playerNum = 1, shoveStompAnim = true })
+    _G.getSpecificPlayer = function(i) return i == 0 and localPlayer or nil end
+    fireTavernHit(zombie, attacker, { name = "Head" }, MockWeapon("BareHands"))
+    assert_eq(zombie:getHealth(), 100, "non-local attacker must not receive stomp bonus")
+end)
+
+test("tavernbrawler missing player receives no trait damage", function()
+    local zombie = MockZombie({ health = 100 })
+    _G.getSpecificPlayer = function() return nil end
+    fireTavernHit(zombie, nil, { name = "Head" }, MockWeapon("BareHands"))
+    assert_eq(zombie:getHealth(), 100, "missing attacker must be ignored")
+end)
+
+test("tavernbrawler trait removal is observed immediately", function()
+    local zombie = MockZombie({ health = 100 })
+    local p = makeTavernBrawlerPlayer({ shoveStompAnim = true })
+    local trait = CharacterTrait.get(ResourceLocation.of(TAVERN_BRAWLER_ID))
+    p:getCharacterTraits():remove(trait)
+    _G.getSpecificPlayer = function(i) return i == 0 and p or nil end
+    fireTavernHit(zombie, p, { name = "Head" }, MockWeapon("BareHands"))
+    assert_eq(zombie:getHealth(), 100, "removed trait must stop applying immediately")
+end)
+
+test("tavernbrawler duplicate module evaluation leaves exactly one handler", function()
+    local before = Events.OnHitZombie.getHandlerCount()
+    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_tavernbrawler.lua")
+    assert_eq(Events.OnHitZombie.getHandlerCount(), before, "reload must replace, not stack, the owned handler")
+
+    local zombie = MockZombie({ health = 100 })
+    local p = makeTavernBrawlerPlayer({ shoveStompAnim = true })
+    _G.getSpecificPlayer = function(i) return i == 0 and p or nil end
+    fireTavernHit(zombie, p, { name = "Head" }, MockWeapon("BareHands"))
+    assert_eq(zombie:getHealth(), 70, "reload-safe handler must apply exactly once")
 end)
 
 test("woodsplitter inherits exact vanilla Axeman formulas", function()
