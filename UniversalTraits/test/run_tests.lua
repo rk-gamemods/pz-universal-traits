@@ -6644,6 +6644,130 @@ test("fitted removes run speed penalty on clothing", function()
     assert_eq(shirt:getCombatSpeedModifier(), 1.0, "fitted should set combat speed modifier to 1.0")
 end)
 
+local function fittedPlayer(items, inventoryItems)
+    local worn = MockWornItemsFull(items or {})
+    local inv = MockInventoryFull(inventoryItems or items or {})
+    local player = MockPlayer({ "UniversalTraits:UT_fitted" }, { wornItems = worn, inventory = inv })
+    UTCore.rebuildActiveHandlers(player)
+    return player, worn, inv
+end
+
+local function fireFittedTick(player)
+    for _ = 1, 30 do Events.OnPlayerUpdate:fire(player) end
+end
+
+test("fitted applies to exactly one worn item and preserves neutral or beneficial speed", function()
+    local item = MockClothingItem("Shirt", {
+        actualWeight = 2.0, runSpeedModifier = 1.0, combatSpeedModifier = 1.2,
+    })
+    local player = fittedPlayer({ item })
+    fireFittedTick(player)
+    assert_eq(item:getActualWeight(), 1.0, "one worn item must qualify")
+    assert_eq(item:getRunSpeedModifier(), 1.0, "neutral run modifier must remain neutral")
+    assert_eq(item:getCombatSpeedModifier(), 1.2, "beneficial combat modifier must be preserved")
+end)
+
+test("fitted restores tracked items with zero or one current worn items", function()
+    local first = MockClothingItem("Shirt", { actualWeight = 2.0 })
+    local second = MockClothingItem("Pants", { actualWeight = 4.0 })
+    local player, worn = fittedPlayer({ first, second })
+    fireFittedTick(player)
+    worn:setItems({})
+    fireFittedTick(player)
+    assert_eq(first:getActualWeight(), 2.0, "zero worn items must restore first item")
+    assert_eq(second:getActualWeight(), 4.0, "zero worn items must restore second item")
+end)
+
+test("fitted restores an unequipped tracked item", function()
+    local item = MockClothingItem("Shirt", { actualWeight = 2.0 })
+    local player, worn = fittedPlayer({ item })
+    fireFittedTick(player)
+    worn:setItems({})
+    fireFittedTick(player)
+    assert_eq(item:getActualWeight(), 2.0, "unequipped item must restore")
+end)
+
+test("fitted teardown restores on trait removal", function()
+    local item = MockClothingItem("Shirt", { actualWeight = 2.0 })
+    local player = fittedPlayer({ item })
+    fireFittedTick(player)
+    player:setMockTrait("UniversalTraits:UT_fitted", false)
+    UTCore.rebuildActiveHandlers(player)
+    assert_eq(item:getActualWeight(), 2.0, "trait removal must restore")
+end)
+
+test("fitted teardown restores on death and invalid player", function()
+    local deadItem = MockClothingItem("Shirt", { actualWeight = 2.0 })
+    local deadPlayer = fittedPlayer({ deadItem })
+    fireFittedTick(deadPlayer)
+    deadPlayer:setDead(true)
+    Events.OnPlayerUpdate:fire(deadPlayer)
+    assert_eq(deadItem:getActualWeight(), 2.0, "death must restore")
+
+    local invalidItem = MockClothingItem("Pants", { actualWeight = 4.0 })
+    local invalidPlayer = fittedPlayer({ invalidItem })
+    fireFittedTick(invalidPlayer)
+    Events.OnPlayerUpdate:fire(nil)
+    assert_eq(invalidItem:getActualWeight(), 4.0, "invalid player must restore")
+end)
+
+test("fitted restores a transferred or dropped tracked item by identity", function()
+    local item = MockClothingItem("Shirt", { actualWeight = 2.0 })
+    local player, worn, inventory = fittedPlayer({ item }, { item })
+    fireFittedTick(player)
+    worn:setItems({})
+    inventory:Remove(item)
+    fireFittedTick(player)
+    assert_eq(item:getActualWeight(), 2.0, "restoration must not depend on original inventory")
+end)
+
+test("fitted reconciles persistent ownership metadata with reconstructed runtime fields", function()
+    local md = {
+        UT_fitted_owner = true,
+        UT_fitted_baseWeight = 2.0,
+        UT_fitted_lastWeight = 1.0,
+        UT_fitted_baseRunMod = 0.8,
+        UT_fitted_lastRunMod = 1.0,
+        UT_fitted_baseCombatMod = 0.9,
+        UT_fitted_lastCombatMod = 1.0,
+    }
+    local item = MockClothingItem("Shirt", {
+        moddata = md, actualWeight = 2.0, runSpeedModifier = 0.8, combatSpeedModifier = 0.9,
+    })
+    local player = fittedPlayer({ item })
+    fireFittedTick(player)
+    assert_eq(item:getActualWeight(), 1.0, "reconstructed weight must be reapplied")
+    assert_eq(item:getRunSpeedModifier(), 1.0, "reconstructed run penalty must be neutralized")
+    assert_eq(item:getCombatSpeedModifier(), 1.0, "reconstructed combat penalty must be neutralized")
+end)
+
+test("fitted duplicate module evaluation leaves one handler and one application", function()
+    local before = UTCore.getTickHandlerCount()
+    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_fitted.lua")
+    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_fitted.lua")
+    assert_eq(UTCore.getTickHandlerCount(), before, "reload must replace rather than duplicate handler")
+    local item = MockClothingItem("Shirt", { actualWeight = 2.0 })
+    local player = fittedPlayer({ item })
+    fireFittedTick(player)
+    assert_eq(item._setWeightCalls, 1, "duplicate evaluation must still apply once")
+end)
+
+test("fitted teardown preserves later external field changes", function()
+    local item = MockClothingItem("Shirt", {
+        actualWeight = 2.0, runSpeedModifier = 0.8, combatSpeedModifier = 0.9,
+    })
+    local player = fittedPlayer({ item })
+    fireFittedTick(player)
+    item:setActualWeight(0.75)
+    item:setRunSpeedModifier(1.15)
+    item:setCombatSpeedModifier(0.95)
+    player:setMockTrait("UniversalTraits:UT_fitted", false)
+    UTCore.rebuildActiveHandlers(player)
+    assert_eq(item:getActualWeight(), 0.75, "external weight change must not be overwritten")
+    assert_eq(item:getRunSpeedModifier(), 1.15, "external run change must not be overwritten")
+    assert_eq(item:getCombatSpeedModifier(), 0.95, "external combat change must not be overwritten")
+end)
+
 -- ─── gourmand: food stat modification ──────────────────────────────────────────
 test("gourmand boosts hunger relief by 50%", function()
     local food = MockFoodItemFull("Steak", { hungChange = -20, unhappyChange = -10, boredomChange = -8, category = "Food" })

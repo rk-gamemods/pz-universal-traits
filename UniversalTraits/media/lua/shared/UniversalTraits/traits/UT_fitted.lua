@@ -1,84 +1,163 @@
 -- UT_fitted.lua
--- Fitted trait: per-worn-item 50% weight reduction and removal of run/combat speed penalties.
--- Fires every 30 OnPlayerUpdate ticks.
--- Restores original values when an item is unequipped.
--- ModData keys use UT_fitted_ prefix to avoid collisions with other mods.
+-- Fitted trait: each worn clothing item weighs 50% of its captured base weight.
+-- Run and combat speed penalties below 1.0 are neutralized while preserving
+-- neutral or beneficial modifiers. Fires every 30 OnPlayerUpdate ticks.
 
-local TRAIT_ID   = "UniversalTraits:UT_fitted"
+local TRAIT_ID = "UniversalTraits:UT_fitted"
+local trackedItems = {}
+local trackedCount = 0
 
-local function onTick(player, tick)
+local fields = {
+    {
+        base = "UT_fitted_baseWeight",
+        last = "UT_fitted_lastWeight",
+        owned = "UT_fitted_ownsWeight",
+        get = function(item) return item:getActualWeight() end,
+        set = function(item, value) item:setActualWeight(value) end,
+        fitted = function(base) return base * 0.5 end,
+    },
+    {
+        base = "UT_fitted_baseRunMod",
+        last = "UT_fitted_lastRunMod",
+        owned = "UT_fitted_ownsRunMod",
+        get = function(item) return item:getRunSpeedModifier() end,
+        set = function(item, value) item:setRunSpeedModifier(value) end,
+        fitted = function(base) if base < 1.0 then return 1.0 end return base end,
+    },
+    {
+        base = "UT_fitted_baseCombatMod",
+        last = "UT_fitted_lastCombatMod",
+        owned = "UT_fitted_ownsCombatMod",
+        get = function(item) return item:getCombatSpeedModifier() end,
+        set = function(item, value) item:setCombatSpeedModifier(value) end,
+        fitted = function(base) if base < 1.0 then return 1.0 end return base end,
+    },
+}
 
-    -- Dispatch guarantees hasTrait is true; state is always "Fitted"
-    local state      = "Fitted"
-    local wornItems  = player:getWornItems()
-    local inventory  = player:getInventory()
+local function clearOwnership(md)
+    md.UT_fitted_owner = nil
+    md.UT_fitted_state = nil
+    md.UT_fitted_origWeight = nil
+    md.UT_fitted_origRunMod = nil
+    md.UT_fitted_origCombatMod = nil
+    for i = 1, #fields do
+        local field = fields[i]
+        md[field.base] = nil
+        md[field.last] = nil
+        md[field.owned] = nil
+    end
+end
 
-    if wornItems == nil or wornItems:size() <= 1 then return end
-
-    -- Pass 1: restore unequipped clothing that was previously modified.
-    local items = inventory:getItems()
-    local itemCount = items:size()
-    for i = 0, itemCount - 1 do
-        local item = items:get(i)
-        if item:IsClothing() then
-            local md = item:getModData()
-            if md.UT_fitted_state ~= nil
-                and md.UT_fitted_state ~= "Normal"
-                and wornItems:contains(item) == false
-            then
-                item:setRunSpeedModifier(md.UT_fitted_origRunMod)
-                item:setCombatSpeedModifier(md.UT_fitted_origCombatMod)
-                item:setActualWeight(md.UT_fitted_origWeight)
-                md.UT_fitted_state = "Normal"
+local function restoreItem(item)
+    local md = item:getModData()
+    if md.UT_fitted_owner == true then
+        for i = 1, #fields do
+            local field = fields[i]
+            if md[field.owned] == true then
+                local current = field.get(item)
+                local last = md[field.last]
+                local base = md[field.base]
+                if current == last and base ~= nil and current ~= base then
+                    field.set(item, base)
+                end
             end
         end
     end
+    clearOwnership(md)
+end
 
-    -- Pass 2: apply or revert Fitted effects on worn clothing.
-    for i = wornItems:size() - 1, 0, -1 do
-        local item = wornItems:getItemByIndex(i)
-        if item:IsClothing() then
-            local md = item:getModData()
+local function restoreAll()
+    for i = trackedCount, 1, -1 do
+        restoreItem(trackedItems[i])
+        trackedItems[i] = nil
+    end
+    trackedCount = 0
+end
 
-            -- First time we see this item: record original values.
-            if md.UT_fitted_state == nil then
-                md.UT_fitted_state        = "Normal"
-                md.UT_fitted_origRunMod   = item:getRunSpeedModifier()
-                md.UT_fitted_origCombatMod = item:getCombatSpeedModifier()
-                md.UT_fitted_origWeight   = item:getActualWeight()
-            end
+local function findTracked(item)
+    for i = 1, trackedCount do
+        if trackedItems[i] == item then return i end
+    end
+    return nil
+end
 
-            -- Only act when state needs to change.
-            if state ~= md.UT_fitted_state then
-                if md.UT_fitted_origRunMod ~= nil and md.UT_fitted_origRunMod < 1 then
-                    if state == "Fitted" then
-                        item:setRunSpeedModifier(1.0)
-                    else
-                        item:setRunSpeedModifier(md.UT_fitted_origRunMod)
-                    end
-                end
+local function captureFresh(item, md)
+    clearOwnership(md)
+    md.UT_fitted_owner = true
+    for i = 1, #fields do
+        local field = fields[i]
+        local base = field.get(item)
+        local fitted = field.fitted(base)
+        md[field.base] = base
+        md[field.last] = fitted
+        md[field.owned] = true
+        if fitted ~= base then field.set(item, fitted) end
+    end
+end
 
-                if md.UT_fitted_origCombatMod ~= nil and md.UT_fitted_origCombatMod < 1 then
-                    if state == "Fitted" then
-                        item:setCombatSpeedModifier(1.0)
-                    else
-                        item:setCombatSpeedModifier(md.UT_fitted_origCombatMod)
-                    end
-                end
+local function reconcileItem(item)
+    local md = item:getModData()
+    if md.UT_fitted_owner ~= true then
+        captureFresh(item, md)
+        return
+    end
 
-                if md.UT_fitted_origWeight ~= nil then
-                    if state == "Fitted" then
-                        item:setActualWeight(md.UT_fitted_origWeight * 0.5)
-                    else
-                        item:setActualWeight(md.UT_fitted_origWeight)
-                    end
-                end
+    local recognized = false
+    for i = 1, #fields do
+        if md[fields[i].owned] ~= nil then recognized = true break end
+    end
+    if not recognized then
+        captureFresh(item, md)
+        return
+    end
 
-                md.UT_fitted_state = state
-                player:setWornItems(wornItems)
+    for i = 1, #fields do
+        local field = fields[i]
+        if md[field.owned] == true then
+            local current = field.get(item)
+            local base = md[field.base]
+            local last = md[field.last]
+            if current == base and current ~= last then
+                field.set(item, last)
+            elseif current ~= last then
+                -- Another system changed the field after Fitted wrote it.
+                -- Its numerical composition is unknown, so preserve it.
+                md[field.owned] = false
             end
         end
     end
 end
 
-UTCore.registerTickHandler(TRAIT_ID, onTick, { throttle = 30, heavy = true })
+local function onTick(player, _tick)
+    local wornItems = player:getWornItems()
+
+    for i = trackedCount, 1, -1 do
+        local item = trackedItems[i]
+        if wornItems == nil or wornItems:contains(item) == false then
+            restoreItem(item)
+            table.remove(trackedItems, i)
+            trackedCount = trackedCount - 1
+        end
+    end
+
+    if wornItems == nil then return end
+    for i = 0, wornItems:size() - 1 do
+        local item = wornItems:getItemByIndex(i)
+        if item ~= nil and item:IsClothing() then
+            if findTracked(item) == nil then
+                trackedCount = trackedCount + 1
+                trackedItems[trackedCount] = item
+            end
+            reconcileItem(item)
+        end
+    end
+end
+
+if UTCore.unregisterTickHandler then
+    UTCore.unregisterTickHandler(TRAIT_ID, "reload")
+end
+UTCore.registerTickHandler(TRAIT_ID, onTick, {
+    throttle = 30,
+    heavy = true,
+    teardown = restoreAll,
+})

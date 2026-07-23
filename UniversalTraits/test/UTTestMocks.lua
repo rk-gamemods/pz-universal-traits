@@ -330,7 +330,12 @@ function MockPlayer(traitList, opts)
         getSecondaryHandItem = function(self) return secondaryHandItem end,
         setSecondaryHandItem = function(self, item) secondaryHandItem = item end,
         getWornItems         = function(self) return wornItems end,
+        setWornItems         = function(self, value) wornItems = value end,
         getInventory         = function(self) return inventory end,
+        setInventory         = function(self, value) inventory = value end,
+        setMockTrait         = function(self, id, value)
+            if value then traits[id] = true else traits[id] = nil end
+        end,
         getCurrentSquare     = function(self) return square end,
         removeFromHands      = function(self, _item)
             primaryHandItem   = nil
@@ -405,6 +410,7 @@ function MockPlayer(traitList, opts)
         runningTime = opts.runningTime or 1.0,
         _dead = opts.dead or false,
         isDead = function(self) return self._dead end,
+        setDead = function(self, value) self._dead = value == true end,
         _performingHostileAnimation = opts.performingHostileAnimation or false,
         isPerformingHostileAnimation = function(self) return self._performingHostileAnimation end,
         -- Health (IsoLivingCharacter): used by UT_evasive dodge mechanic
@@ -1093,6 +1099,13 @@ if not _G.Events.OnPlayerUpdate then
             -- Fire legacy handlers
             for _, fn in ipairs(_updateHandlers) do
                 fn(player)
+            end
+            if not player and UTCore and UTCore.teardownActiveTickHandlers then
+                UTCore.teardownActiveTickHandlers("invalid-player")
+            elseif player and player.isDead and player:isDead()
+                and UTCore and UTCore.teardownActiveTickHandlers
+            then
+                UTCore.teardownActiveTickHandlers("invalid-player")
             end
             -- Fire the production-style active snapshot in append order.
             if player and UTCore and UTCore._tickHandlers and UTCore.buildMockTickContext then
@@ -1904,23 +1917,30 @@ end
 function MockClothingItem(typeName, opts)
     opts = opts or {}
     local _moddata        = opts.moddata or {}
-    local _runSpeedMod    = opts.runSpeedModifier or 0.8
-    local _combatSpeedMod = opts.combatSpeedModifier or 0.9
-    local _weight         = opts.actualWeight or 2.0
-    return {
+    local _runSpeedMod    = opts.runSpeedModifier
+    local _combatSpeedMod = opts.combatSpeedModifier
+    local _weight         = opts.actualWeight
+    if _runSpeedMod == nil then _runSpeedMod = 0.8 end
+    if _combatSpeedMod == nil then _combatSpeedMod = 0.9 end
+    if _weight == nil then _weight = 2.0 end
+    local item = {
         _mockType            = "InventoryItem",
         _type                = typeName or "Shirt",
+        _setRunCalls          = 0,
+        _setCombatCalls       = 0,
+        _setWeightCalls       = 0,
         getType              = function(self) return self._type end,
         getFullType          = function(self) return self._type end,
         IsClothing           = function(self) return true end,
         getModData           = function(self) return _moddata end,
         getRunSpeedModifier  = function(self) return _runSpeedMod end,
-        setRunSpeedModifier  = function(self, v) _runSpeedMod = v end,
+        setRunSpeedModifier  = function(self, v) _runSpeedMod = v; self._setRunCalls = self._setRunCalls + 1 end,
         getCombatSpeedModifier = function(self) return _combatSpeedMod end,
-        setCombatSpeedModifier = function(self, v) _combatSpeedMod = v end,
+        setCombatSpeedModifier = function(self, v) _combatSpeedMod = v; self._setCombatCalls = self._setCombatCalls + 1 end,
         getActualWeight      = function(self) return _weight end,
-        setActualWeight      = function(self, v) _weight = v end,
+        setActualWeight      = function(self, v) _weight = v; self._setWeightCalls = self._setWeightCalls + 1 end,
     }
+    return item
 end
 
 -- MockFoodItemFull: food item with full stat accessors for UT_gourmand tests
@@ -1978,6 +1998,8 @@ function MockWornItemsFull(items)
             end
             return false
         end,
+        setItems = function(self, newItems) items = newItems or {} end,
+        _items = function() return items end,
     }
 end
 
