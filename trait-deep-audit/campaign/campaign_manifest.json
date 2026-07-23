@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 171,
-  "total_bytes": 13684766,
+  "total_bytes": 13697065,
   "files": [
     {
       "path": ".gitattributes",
@@ -292,8 +292,8 @@
       "path": "change-impact/twohanded-axes-critical-chance-ownership.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
-      "bytes": 6936,
-      "sha256": "B682138BE4732BF3B40A6915CF9FF4FDF08E35E6AEEC9529E322AC4F788645D8"
+      "bytes": 8303,
+      "sha256": "3312A39D10B1783204F4ED0FE0ED6DBA03AE642F542D30115E0B75C2813A2012"
     },
     {
       "path": "change-impact/unwavering-copy-resolution.json",
@@ -341,22 +341,22 @@
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2269618,
-      "sha256": "C2AF7B0F226F5B2EC9840DFFE140D980E21956F4CA121DF326E9D6901DBD2F83"
+      "bytes": 2270245,
+      "sha256": "6F49295B82D3883E617FE448E21F646847164D5A313BCAAD3F1D7695E1F9C214"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2095533,
-      "sha256": "B2C9C5EB334F9624A941AD8268693DD9AE4DBF37789A8B43E19598DEFBE82566"
+      "bytes": 2096509,
+      "sha256": "D59F6A76CF78434626447BC74BD8F576E5C27230C5F7BB108533B3762A925307"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1290722,
-      "sha256": "92D7DC2C7904BD71C7F4739F68A25DD15182B00CA6A53E184EE38B7126188A3C"
+      "bytes": 1291680,
+      "sha256": "009FDCCCA9731AB9BC5B30ABD7AEF97A76A261DE52D5BC3F24230E394F9D299E"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
@@ -390,8 +390,8 @@
       "path": "independent_reviews/traits_09_12.json",
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
-      "bytes": 127026,
-      "sha256": "8F79E90310CA2B0E7C409C1D6930D7B8A88CF30B2266D4D235CEBD3A0BCB9482"
+      "bytes": 128127,
+      "sha256": "0D373AD505C8246237B05EB8FD9F981C763F4A6ABB3F1DF80337FE6AF43047F2"
     },
     {
       "path": "independent_reviews/ut_core_integration.json",
@@ -412,14 +412,14 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 2861,
-      "sha256": "34A81FD07666D6FFE678B1D7C21B49CD2D688AFD7E531AB8E76AAE5551F1B322"
+      "sha256": "9E6C5A2269DC390340A50850D40A9BFAA206F57B191F33745987ED0D0B4B5F9C"
     },
     {
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2043519,
-      "sha256": "71518D5BBF82EEDD15A4BA3CB49C6B6007373DEDAE57B67BB4F8D4F784870964"
+      "bytes": 2043778,
+      "sha256": "A6D71305175FBF9026D258380E2F25B62748ACE794106E5A86D90017D070AD60"
     },
     {
       "path": "remediation_summary.json",
@@ -810,8 +810,8 @@
       "path": "tests/test_regenerate_twohanded_axes.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 11422,
-      "sha256": "CF69C851D59D13DFB803DC470368CE690452BA0814D58147AD51BFEF2B98FC40"
+      "bytes": 13487,
+      "sha256": "00E1DDFD57D3EFD2405C301464552FF0B26EB79DA863DEAA743EB88EEC269209"
     },
     {
       "path": "tests/test_regenerate_weaklybleedingwounds.py",
@@ -1104,8 +1104,8 @@
       "path": "tools/regenerate_twohanded_axes.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 21762,
-      "sha256": "8C39445B8E62E833017302F5FBA81493C5E2869DCBEE0A685D0239E6B563DAAC"
+      "bytes": 25750,
+      "sha256": "E4A783B36B5F1A0A5383ECD72061E554A163AF413075853D09C4C573DC61FF13"
     },
     {
       "path": "tools/regenerate_unwavering.py",
@@ -1230,8 +1230,8 @@
       "path": "trait_batches/batch_12.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 89724,
-      "sha256": "3578367CB91C26719B23781AED4347327F5121A33FBBA47CE36891DC42DCEC9C"
+      "bytes": 90682,
+      "sha256": "AD66AE06FB18C88A6FF3C7AAF9EBF0699B8C803CAE1B0DF471FDBEC765A2FF26"
     },
     {
       "path": "translation_audit.json",

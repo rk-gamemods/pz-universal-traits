@@ -2252,7 +2252,7 @@
         "IR0912-PERCENT-001"
       ],
       "independent_state": "runtime-unproven",
-      "omission_disposition": "no Two-Handed Axe-specific omission remains after exact-object lifecycle, bridge containment, failed-refresh ownership, tolerance, and idempotence proof",
+      "omission_disposition": "Critical-chance stale findings remain resolved, while the hidden shared melee-delay effect and restoration-failure ownership policy remain explicitly open.",
       "omissions": [],
       "rejected_accepted_finding_ids": [],
       "source_batch": "batch_12",
@@ -2269,16 +2269,32 @@
       "release_parity": {
         "runtime_source": "0ADDB4396A87435AA786E42FF1265F9CA84A92CF544D5FD93329956E13FA9732",
         "runtime_release": "0ADDB4396A87435AA786E42FF1265F9CA84A92CF544D5FD93329956E13FA9732",
-        "ui_source": "850D680158E8C8E154D551D54A04DEAD40648076853AD8FEF1973D4046A3B35F",
-        "ui_release": "850D680158E8C8E154D551D54A04DEAD40648076853AD8FEF1973D4046A3B35F",
+        "ui_source": "58C5DE47626CB2E39F87586EA96367B18D53C662F14B7B0F3D9295BCC9FC746F",
+        "ui_release": "58C5DE47626CB2E39F87586EA96367B18D53C662F14B7B0F3D9295BCC9FC746F",
         "definition_source": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
         "definition_release": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
         "registry_source": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
         "registry_release": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
-        "tests": "0310B318C9A6A04FBB38674B563C7DA247A987BCF5CC194E0DF7C14ECDF3B50F",
-        "mocks": "72641DDCEE3B92AFA1DCD688529AC4338D9293DEB10430DBF6C2C03A4B2BBC00",
+        "melee_delay_hook_source": "800EA118FF6108EC480F5F56ED5A3CB3024D50F274CFEF7AB6BC4AA70665EBEE",
+        "melee_delay_hook_release": "800EA118FF6108EC480F5F56ED5A3CB3024D50F274CFEF7AB6BC4AA70665EBEE",
+        "melee_delay_tests": "5A8CA66C33DFD0B63E19BF848A882443E5EDDC3AB23E6A849E5F899E54B49AE2",
+        "tests": "171CB838FF380AB42BF327F08FDD256A47859B5B9A7366CFDB6BB051419BEC89",
+        "mocks": "82DA5436E39918C94A39117D6D07066AA49A6440A652E6AF9F4F62D37F85E78E",
         "state": "proven-correct"
-      }
+      },
+      "decision_pending": [
+        {
+          "topic": "hidden-melee-delay",
+          "current_behavior": "The shared hook grants a 50 percent melee-delay reduction only for two-handed Axes.",
+          "history": "Master applied the same hidden delay reduction broadly to all Axes.",
+          "required_decision": "Keep and document the narrowed effect, remove it from this trait, or explicitly restore the broad master behavior."
+        },
+        {
+          "topic": "restoration-failure-ownership",
+          "current_behavior": "A restoration read or write failure can drain transient ownership and potentially strand an owned critical bonus.",
+          "required_decision": "Choose retryable ownership retention or explicitly accept the current failure policy."
+        }
+      ]
     },
     {
       "accepted_overall_state": "confirmed-defect",

@@ -58,7 +58,9 @@
       "external critical-chance writes",
       "other exact weapon objects"
     ],
-    "english": "+2 to Axe. Two-handed axe attacks have +10 percent critical hit chance."
+    "english": "+2 to Axe. Two-handed axe attacks have +10 percent critical hit chance.",
+    "critical_chance_scope": "exactly +10 displayed points before vanilla modifiers and the 10-90 final clamp",
+    "melee_delay_effect": "user-decision-pending; current shared hook halves delay for two-handed Axes while master applied it to all Axes"
   },
   "formula": {
     "sharpness_free": "displayed equals raw; effective sharpness is 1",
@@ -82,7 +84,8 @@
     "external_composition": "current external raw writes and sharpness changes are preserved",
     "cross_owner": "tracked objects restore before a different owner can retain the contribution",
     "legacy_retirement": "remove only UT_th_axesBaseCrit from encountered weapon modData",
-    "persistent_moddata_written": false
+    "persistent_moddata_written": false,
+    "restoration_failure_policy": "runtime-unproven and user-decision-pending because failed restoration can drain transient ownership"
   },
   "resolved_findings": [
     "B12-TWOHANDED-AXES-001"
@@ -124,13 +127,13 @@
     },
     {
       "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
-      "sha256": "850D680158E8C8E154D551D54A04DEAD40648076853AD8FEF1973D4046A3B35F",
-      "bytes": 37049
+      "sha256": "58C5DE47626CB2E39F87586EA96367B18D53C662F14B7B0F3D9295BCC9FC746F",
+      "bytes": 37141
     },
     {
       "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
-      "sha256": "850D680158E8C8E154D551D54A04DEAD40648076853AD8FEF1973D4046A3B35F",
-      "bytes": 37049
+      "sha256": "58C5DE47626CB2E39F87586EA96367B18D53C662F14B7B0F3D9295BCC9FC746F",
+      "bytes": 37141
     },
     {
       "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
@@ -153,14 +156,29 @@
       "bytes": 23864
     },
     {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua",
+      "sha256": "800EA118FF6108EC480F5F56ED5A3CB3024D50F274CFEF7AB6BC4AA70665EBEE",
+      "bytes": 7973
+    },
+    {
+      "path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua",
+      "sha256": "800EA118FF6108EC480F5F56ED5A3CB3024D50F274CFEF7AB6BC4AA70665EBEE",
+      "bytes": 7973
+    },
+    {
+      "path": "UT_CORE/test/run_tests.lua",
+      "sha256": "5A8CA66C33DFD0B63E19BF848A882443E5EDDC3AB23E6A849E5F899E54B49AE2",
+      "bytes": 112664
+    },
+    {
       "path": "UniversalTraits/test/run_tests.lua",
-      "sha256": "0310B318C9A6A04FBB38674B563C7DA247A987BCF5CC194E0DF7C14ECDF3B50F",
-      "bytes": 368801
+      "sha256": "171CB838FF380AB42BF327F08FDD256A47859B5B9A7366CFDB6BB051419BEC89",
+      "bytes": 393129
     },
     {
       "path": "UniversalTraits/test/UTTestMocks.lua",
-      "sha256": "72641DDCEE3B92AFA1DCD688529AC4338D9293DEB10430DBF6C2C03A4B2BBC00",
-      "bytes": 82589
+      "sha256": "82DA5436E39918C94A39117D6D07066AA49A6440A652E6AF9F4F62D37F85E78E",
+      "bytes": 83345
     },
     {
       "path": "trait-deep-audit/active/batch/traits/UT_twohanded_axes.md",
@@ -172,7 +190,13 @@
     "current-build Kahlua and Java-Lua bridge observation",
     "full desktop relaunch and current-version save-load",
     "cross-owner live transfer",
-    "profiler and cadence observation"
+    "profiler and cadence observation",
+    "shared melee-delay behavior in live gameplay",
+    "restoration recovery after a live bridge failure"
+  ],
+  "decision_pending": [
+    "Keep and document the current 50 percent two-handed Axe melee-delay reduction, remove it, or explicitly restore master's broad all-Axe behavior.",
+    "Retain ownership for retry after restoration failure or explicitly accept possible stranded critical bonus state."
   ],
   "runtime_proof": "Unobserved; static and standard-Lua evidence do not establish current-version live gameplay.",
   "non_goals": [

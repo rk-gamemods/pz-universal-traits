@@ -50,6 +50,9 @@ class TwoHandedAxesGeneratorSafetyTests(unittest.TestCase):
         required = {
             GENERATOR.RUNTIME,
             GENERATOR.RELEASE,
+            GENERATOR.HOOK,
+            GENERATOR.HOOK_RELEASE,
+            GENERATOR.HOOK_TESTS,
             GENERATOR.SOURCE_UI,
             GENERATOR.RELEASE_UI,
             GENERATOR.SOURCE_DEFINITION,
@@ -83,6 +86,28 @@ class TwoHandedAxesGeneratorSafetyTests(unittest.TestCase):
         before = {name: getattr(GENERATOR.base, name) for name in names}
         self.assertEqual(set(GENERATOR.build_plan(self.root, self.campaign)), set(GENERATOR.OWNED_OUTPUTS))
         self.assertEqual({name: getattr(GENERATOR.base, name) for name in names}, before)
+
+    def test_reviewed_recurring_projection_is_bound_and_restored(self) -> None:
+        original = GENERATOR.remediation.build_report
+        reviewed = json.loads(
+            (self.campaign / "recurring_pattern_findings.json").read_text(encoding="utf-8")
+        )
+        with GENERATOR._reviewed_recurring_findings(self.campaign):
+            self.assertEqual(GENERATOR.remediation.build_report(), reviewed)
+        self.assertIs(GENERATOR.remediation.build_report, original)
+
+        with self.assertRaisesRegex(RuntimeError, "injected projection failure"):
+            with GENERATOR._reviewed_recurring_findings(self.campaign):
+                raise RuntimeError("injected projection failure")
+        self.assertIs(GENERATOR.remediation.build_report, original)
+
+        with self.assertRaisesRegex(ValueError, "malformed"):
+            (self.campaign / "recurring_pattern_findings.json").write_text(
+                json.dumps({"findings": {}}), encoding="utf-8"
+            )
+            with GENERATOR._reviewed_recurring_findings(self.campaign):
+                self.fail("malformed recurring findings must not be accepted")
+        self.assertIs(GENERATOR.remediation.build_report, original)
 
     def test_committed_outputs_are_cold_first_pass_fixed_point(self) -> None:
         plan = GENERATOR.build_plan(self.root, self.campaign)
@@ -211,11 +236,23 @@ class TwoHandedAxesGeneratorSafetyTests(unittest.TestCase):
                 "Full desktop relaunch and current-version save-load remain unobserved.",
                 "Live cross-owner weapon transfer remains unobserved.",
                 "Live tick cadence and profiler behavior remain unobserved.",
+                "The undocumented 50 percent two-handed Axe melee-delay reduction is user-decision-pending; master applied the delay reduction broadly to all Axes.",
+                "A restoration failure can drain transient ownership and potentially strand a critical bonus; retry or bridge-restoration policy remains user-decision-pending and runtime-unproven.",
             ],
         )
         resolution = json.loads((self.campaign / GENERATOR.RESOLUTION).read_bytes())
         self.assertEqual(resolution["authority"]["final_independent_review"]["focused_cases"], 16)
         self.assertEqual(resolution["resolved_findings"], list(GENERATOR.FINDINGS))
+        self.assertEqual(
+            {
+                item["path"]
+                for item in resolution["files"]
+                if item["path"]
+                in {GENERATOR.HOOK, GENERATOR.HOOK_RELEASE, GENERATOR.HOOK_TESTS}
+            },
+            {GENERATOR.HOOK, GENERATOR.HOOK_RELEASE, GENERATOR.HOOK_TESTS},
+        )
+        self.assertEqual(len(resolution["decision_pending"]), 2)
         self.assertIn(
             "remains independently open for the separate UT_axes trait",
             resolution["related_repaired_pattern_history"]["scope"],

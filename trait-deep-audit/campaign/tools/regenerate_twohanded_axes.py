@@ -11,6 +11,7 @@ from typing import Any, Iterator
 
 import regenerate_owlperson as transaction
 import regenerate_martial as base
+import build_remediation_queue as remediation
 from campaign_cli import no_arg_command
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -22,6 +23,9 @@ RELATED_HISTORY = ("IR0104-AXES-CRIT-MUTATION",)
 DESCRIPTION = "+2 to Axe. Two-handed axe attacks have +10 percent critical hit chance."
 RUNTIME = "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_twohanded_axes.lua"
 RELEASE = "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_twohanded_axes.lua"
+HOOK = "UT_CORE/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua"
+HOOK_RELEASE = "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua"
+HOOK_TESTS = "UT_CORE/test/run_tests.lua"
 SOURCE_UI = "UniversalTraits/media/lua/shared/Translate/EN/UI.json"
 RELEASE_UI = "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json"
 SOURCE_DEFINITION = "UniversalTraits/media/scripts/UT_character_traits.txt"
@@ -117,8 +121,8 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
         ),
         "stacking_interactions": _dimension(
             "runtime-unproven",
-            "Focused proof preserves external raw writes and sharpness changes, isolates owners, deduplicates hands, and restores swaps and transfers.",
-            "Live cross-owner weapon transfer remains unobserved.",
+            "Focused critical-chance proof preserves external raw writes and sharpness changes, isolates owners, deduplicates hands, and restores swaps and transfers. The shared melee-delay hook also applies an undocumented 50 percent delay reduction to two-handed Axes.",
+            "Live cross-owner weapon transfer remains unobserved. Whether the narrowed hidden delay effect should be kept, removed, or restored to master's broad all-Axe behavior requires a user decision.",
         ),
         "multiplayer": _dimension(
             "not-applicable",
@@ -127,7 +131,7 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
         "display": _dimension("proven-correct", "Exact English display name remains Two-Handed Axe."),
         "description": _dimension(
             "proven-correct",
-            "English preserves +2 Axe and the accepted +10 two-handed Axe critical-chance claim.",
+            "English is fingerprinted exactly as the accepted +2 Axe and +10 critical-chance claim. The separately recorded hidden melee-delay effect remains user-decision-pending and is not silently treated as accepted English semantics.",
         ),
         "localization": _dimension(
             "proven-correct",
@@ -135,7 +139,7 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
         ),
         "balance": _dimension(
             "proven-correct",
-            "Accepted cost 4, Axe +2, and bounded +10 displayed points are unchanged; this milestone performs no rebalance.",
+            "Accepted cost 4, Axe +2, and bounded +10 displayed points are unchanged; this milestone performs no rebalance. The hidden 50 percent melee-delay effect is recorded separately as user-decision-pending.",
         ),
         "performance": _dimension(
             "runtime-unproven",
@@ -144,7 +148,7 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
         ),
         "tests": _dimension(
             "proven-correct",
-            "Sixteen focused standard-Lua cases cover formula, cap, domains, failures, refresh ownership, external composition, exact-object lifecycle, legacy retirement, isolation, idempotence, and parity.",
+            "Sixteen focused standard-Lua critical-chance cases cover formula, cap, domains, failures, refresh ownership, external composition, exact-object lifecycle, legacy retirement, isolation, idempotence, and parity. UTCore focused tests cover the shared melee-delay mapping.",
         ),
         "mocks": _dimension(
             "proven-correct",
@@ -152,11 +156,11 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
         ),
         "source_release_parity": _dimension(
             "proven-correct",
-            "Runtime, UI, definition, registry, tests, mocks, and audit are fingerprinted; packaged runtime, UI, definition, and registry counterparts are byte-identical.",
+            "Trait runtime, shared melee-delay hook, UI, definition, registry, focused tests, mocks, and audit are fingerprinted; packaged runtime, hook, UI, definition, and registry counterparts are byte-identical.",
         ),
         "packaging": _dimension(
             "proven-correct",
-            "All Two-Handed Axe-owned 42.0 runtime, UI, definition, and registry counterparts are present and identical.",
+            "All reviewed Two-Handed Axe runtime, shared-hook, UI, definition, and registry 42.0 counterparts are present and identical.",
         ),
     }
     if tuple(dimensions) != HELPER.CANONICAL_DIMENSIONS:
@@ -182,6 +186,8 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
         "Full desktop relaunch and current-version save-load remain unobserved.",
         "Live cross-owner weapon transfer remains unobserved.",
         "Live tick cadence and profiler behavior remain unobserved.",
+        "The undocumented 50 percent two-handed Axe melee-delay reduction is user-decision-pending; master applied the delay reduction broadly to all Axes.",
+        "A restoration failure can drain transient ownership and potentially strand a critical bonus; retry or bridge-restoration policy remains user-decision-pending and runtime-unproven.",
     ]
     row["validation"] = {
         "accepted_implementation_chain": [
@@ -220,6 +226,9 @@ def _plan_inventory(root: Path, campaign: Path, plan: dict[str, bytes]) -> None:
         RELEASE_DEFINITION,
         SOURCE_REGISTRY,
         RELEASE_REGISTRY,
+        HOOK,
+        HOOK_RELEASE,
+        HOOK_TESTS,
         MOCKS,
         TESTS,
         ACTIVE_AUDIT,
@@ -239,9 +248,22 @@ def _plan_review(root: Path, campaign: Path, plan: dict[str, bytes]) -> None:
         rejected_accepted_finding_ids=[],
         omissions=[],
         omission_disposition=(
-            "no Two-Handed Axe-specific omission remains after exact-object lifecycle, "
-            "bridge containment, failed-refresh ownership, tolerance, and idempotence proof"
+            "Critical-chance stale findings remain resolved, while the hidden shared melee-delay effect "
+            "and restoration-failure ownership policy remain explicitly open."
         ),
+        decision_pending=[
+            {
+                "topic": "hidden-melee-delay",
+                "current_behavior": "The shared hook grants a 50 percent melee-delay reduction only for two-handed Axes.",
+                "history": "Master applied the same hidden delay reduction broadly to all Axes.",
+                "required_decision": "Keep and document the narrowed effect, remove it from this trait, or explicitly restore the broad master behavior.",
+            },
+            {
+                "topic": "restoration-failure-ownership",
+                "current_behavior": "A restoration read or write failure can drain transient ownership and potentially strand an owned critical bonus.",
+                "required_decision": "Choose retryable ownership retention or explicitly accept the current failure policy.",
+            },
+        ],
         unresolved_runtime_proof_ids=[
             "RP0912-KAHLUA-001",
             "RP0912-SAVELOAD-001",
@@ -258,6 +280,9 @@ def _plan_review(root: Path, campaign: Path, plan: dict[str, bytes]) -> None:
         "definition_release": _input_metadata_lf(root, RELEASE_DEFINITION)["sha256"],
         "registry_source": _input_metadata_lf(root, SOURCE_REGISTRY)["sha256"],
         "registry_release": _input_metadata_lf(root, RELEASE_REGISTRY)["sha256"],
+        "melee_delay_hook_source": _input_metadata_lf(root, HOOK)["sha256"],
+        "melee_delay_hook_release": _input_metadata_lf(root, HOOK_RELEASE)["sha256"],
+        "melee_delay_tests": _input_metadata_lf(root, HOOK_TESTS)["sha256"],
         "tests": _input_metadata_lf(root, TESTS)["sha256"],
         "mocks": _input_metadata_lf(root, MOCKS)["sha256"],
         "state": "proven-correct",
@@ -275,6 +300,9 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
         RELEASE_DEFINITION,
         SOURCE_REGISTRY,
         RELEASE_REGISTRY,
+        HOOK,
+        HOOK_RELEASE,
+        HOOK_TESTS,
         TESTS,
         MOCKS,
         ACTIVE_AUDIT,
@@ -339,6 +367,8 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
                     "other exact weapon objects",
                 ],
                 "english": DESCRIPTION,
+                "critical_chance_scope": "exactly +10 displayed points before vanilla modifiers and the 10-90 final clamp",
+                "melee_delay_effect": "user-decision-pending; current shared hook halves delay for two-handed Axes while master applied it to all Axes",
             },
             "formula": {
                 "sharpness_free": "displayed equals raw; effective sharpness is 1",
@@ -363,6 +393,7 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
                 "cross_owner": "tracked objects restore before a different owner can retain the contribution",
                 "legacy_retirement": "remove only UT_th_axesBaseCrit from encountered weapon modData",
                 "persistent_moddata_written": False,
+                "restoration_failure_policy": "runtime-unproven and user-decision-pending because failed restoration can drain transient ownership",
             },
             "resolved_findings": list(FINDINGS),
             "related_repaired_pattern_history": {
@@ -396,11 +427,33 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
                 "full desktop relaunch and current-version save-load",
                 "cross-owner live transfer",
                 "profiler and cadence observation",
+                "shared melee-delay behavior in live gameplay",
+                "restoration recovery after a live bridge failure",
+            ],
+            "decision_pending": [
+                "Keep and document the current 50 percent two-handed Axe melee-delay reduction, remove it, or explicitly restore master's broad all-Axe behavior.",
+                "Retain ownership for retry after restoration failure or explicitly accept possible stranded critical bonus state.",
             ],
             "runtime_proof": "Unobserved; static and standard-Lua evidence do not establish current-version live gameplay.",
             "non_goals": ["multiplayer", "backward save migration", "deployment", "rebalance"],
         }
     )
+
+
+@contextmanager
+def _reviewed_recurring_findings(campaign: Path) -> Iterator[None]:
+    """Keep derived projections bound to the reviewed campaign artifact."""
+    path = campaign / "recurring_pattern_findings.json"
+    artifact = json.loads(path.read_text(encoding="utf-8"))
+    findings = artifact.get("findings")
+    if not isinstance(findings, list):
+        raise ValueError("recurring pattern findings artifact is malformed")
+    original = remediation.build_report
+    try:
+        remediation.build_report = lambda: artifact
+        yield
+    finally:
+        remediation.build_report = original
 
 
 @contextmanager
@@ -439,7 +492,7 @@ def _configured_base() -> Iterator[None]:
 
 
 def build_plan(root: Path = ROOT, campaign: Path = CAMPAIGN) -> dict[str, bytes]:
-    with _configured_base():
+    with _reviewed_recurring_findings(campaign), _configured_base():
         plan = base.build_plan(root, campaign)
     if set(plan) != set(OWNED_OUTPUTS):
         raise RuntimeError("Two-Handed Axe output plan escaped its ownership set")

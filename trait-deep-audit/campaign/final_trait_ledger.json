@@ -47,7 +47,7 @@
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "C8314A582A7F0AF549FD45EC289FAA62BB616A8679E098B20A9043817BF22984",
     "independent_reviews/traits_05_08.json": "D255A15AFCA8FC010573892EEA19FDC404F30F3066879C1939B702BEF5B2A474",
-    "independent_reviews/traits_09_12.json": "8F79E90310CA2B0E7C409C1D6930D7B8A88CF30B2266D4D235CEBD3A0BCB9482",
+    "independent_reviews/traits_09_12.json": "0D373AD505C8246237B05EB8FD9F981C763F4A6ABB3F1DF80337FE6AF43047F2",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "4FD54923B0938C3294AB5E9D0C0168A08FDBF353A73FBE83BCE7F5DDF8B911F2",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
@@ -60,7 +60,7 @@
     "trait_batches/batch_09.jsonl": "7493EABBF27471F551A42E6B750D8927EC80B36404B51ED6E7CBC74349EAFE44",
     "trait_batches/batch_10.jsonl": "33304EC69C6072CE027BFD779AB0E2332EEDE70DC56B6920468F46BC4A2ABE31",
     "trait_batches/batch_11.jsonl": "D1617D3F6DE1E81879EB3FA2B81F7DA1058630E103CF1DFD2D907B026311D959",
-    "trait_batches/batch_12.jsonl": "3578367CB91C26719B23781AED4347327F5121A33FBBA47CE36891DC42DCEC9C",
+    "trait_batches/batch_12.jsonl": "AD66AE06FB18C88A6FF3C7AAF9EBF0699B8C803CAE1B0DF471FDBEC765A2FF26",
     "translation_audit.json": "910237369FCAFE9CD126A1CF3D9D995A2C483D016F853632BEA6CF4B2D4B480E"
   },
   "counts": {
@@ -59384,10 +59384,10 @@
         "stacking_interactions": {
           "state": "runtime-unproven",
           "evidence": [
-            "Focused proof preserves external raw writes and sharpness changes, isolates owners, deduplicates hands, and restores swaps and transfers."
+            "Focused critical-chance proof preserves external raw writes and sharpness changes, isolates owners, deduplicates hands, and restores swaps and transfers. The shared melee-delay hook also applies an undocumented 50 percent delay reduction to two-handed Axes."
           ],
           "missing_proof": [
-            "Live cross-owner weapon transfer remains unobserved."
+            "Live cross-owner weapon transfer remains unobserved. Whether the narrowed hidden delay effect should be kept, removed, or restored to master's broad all-Axe behavior requires a user decision."
           ],
           "source_dimensions": [
             "stacking_interactions"
@@ -59420,7 +59420,7 @@
         "description": {
           "state": "proven-correct",
           "evidence": [
-            "English preserves +2 Axe and the accepted +10 two-handed Axe critical-chance claim."
+            "English is fingerprinted exactly as the accepted +2 Axe and +10 critical-chance claim. The separately recorded hidden melee-delay effect remains user-decision-pending and is not silently treated as accepted English semantics."
           ],
           "missing_proof": [
             "none"
@@ -59444,7 +59444,7 @@
         "balance": {
           "state": "proven-correct",
           "evidence": [
-            "Accepted cost 4, Axe +2, and bounded +10 displayed points are unchanged; this milestone performs no rebalance."
+            "Accepted cost 4, Axe +2, and bounded +10 displayed points are unchanged; this milestone performs no rebalance. The hidden 50 percent melee-delay effect is recorded separately as user-decision-pending."
           ],
           "missing_proof": [
             "none"
@@ -59468,7 +59468,7 @@
         "tests": {
           "state": "proven-correct",
           "evidence": [
-            "Sixteen focused standard-Lua cases cover formula, cap, domains, failures, refresh ownership, external composition, exact-object lifecycle, legacy retirement, isolation, idempotence, and parity."
+            "Sixteen focused standard-Lua critical-chance cases cover formula, cap, domains, failures, refresh ownership, external composition, exact-object lifecycle, legacy retirement, isolation, idempotence, and parity. UTCore focused tests cover the shared melee-delay mapping."
           ],
           "missing_proof": [
             "none"
@@ -59492,7 +59492,7 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "Runtime, UI, definition, registry, tests, mocks, and audit are fingerprinted; packaged runtime, UI, definition, and registry counterparts are byte-identical."
+            "Trait runtime, shared melee-delay hook, UI, definition, registry, focused tests, mocks, and audit are fingerprinted; packaged runtime, hook, UI, definition, and registry counterparts are byte-identical."
           ],
           "missing_proof": [
             "none"
@@ -59504,7 +59504,7 @@
         "packaging": {
           "state": "proven-correct",
           "evidence": [
-            "All Two-Handed Axe-owned 42.0 runtime, UI, definition, and registry counterparts are present and identical."
+            "All reviewed Two-Handed Axe runtime, shared-hook, UI, definition, and registry 42.0 counterparts are present and identical."
           ],
           "missing_proof": [
             "none"
@@ -59521,7 +59521,9 @@
         "Live current-build Kahlua execution and Java-Lua bridge behavior remain unobserved.",
         "Full desktop relaunch and current-version save-load remain unobserved.",
         "Live cross-owner weapon transfer remains unobserved.",
-        "Live tick cadence and profiler behavior remain unobserved."
+        "Live tick cadence and profiler behavior remain unobserved.",
+        "The undocumented 50 percent two-handed Axe melee-delay reduction is user-decision-pending; master applied the delay reduction broadly to all Axes.",
+        "A restoration failure can drain transient ownership and potentially strand a critical bonus; retry or bridge-restoration policy remains user-decision-pending and runtime-unproven."
       ],
       "translation_terminal_state": "runtime-unproven",
       "independent_review": {
