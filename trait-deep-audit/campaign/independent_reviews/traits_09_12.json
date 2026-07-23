@@ -1735,14 +1735,14 @@
       ]
     },
     {
-      "accepted_overall_state": "confirmed-defect",
+      "accepted_overall_state": "runtime-unproven",
       "accepted_record_anchor": "trait-deep-audit/campaign/trait_batches/batch_11.jsonl:7",
       "cross_finding_ids": [
         "IR0912-FINDING-STATE-001",
         "IR0912-LOCALIZATION-001"
       ],
-      "independent_state": "confirmed-defect",
-      "omission_disposition": "none beyond referenced cross-trait findings",
+      "independent_state": "accepted",
+      "omission_disposition": "no Squirrel-specific omission remains; exact cross-trait proof gaps are retained",
       "omissions": [],
       "rejected_accepted_finding_ids": [],
       "source_batch": "batch_11",
@@ -1756,7 +1756,21 @@
         "RP0912-SAVELOAD-001",
         "RP0912-BALANCE-PERF-001",
         "RP0912-LOCALE-001"
-      ]
+      ],
+      "resolution_record": "change-impact/squirrel-fatigue-contract.json",
+      "release_parity": {
+        "runtime_source": "91F57B5D982B7F3169CF33FD05373329DE4CCE0A564A4AEAD48C5A7D0630B1F1",
+        "runtime_release": "91F57B5D982B7F3169CF33FD05373329DE4CCE0A564A4AEAD48C5A7D0630B1F1",
+        "ui_source": "6A8224FECD28E6CFE131194F0F40109B3CACC678267CE9014D800F1D016AC34F",
+        "ui_release": "6A8224FECD28E6CFE131194F0F40109B3CACC678267CE9014D800F1D016AC34F",
+        "definition_source": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+        "definition_release": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+        "registry_source": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+        "registry_release": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+        "tests": "83C18586CBE5F83379BCAC67A51DF561DBB7461D6EB00C959085D0495F74FD74",
+        "mocks": "771CE603A29542BBB385116BE409A1FF43C724A92974CCF29DB93842981327CE",
+        "state": "proven-correct"
+      }
     },
     {
       "accepted_overall_state": "runtime-unproven",

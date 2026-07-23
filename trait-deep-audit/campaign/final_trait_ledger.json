@@ -47,7 +47,7 @@
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "29C24133912335231DA8ED2E8462B64D9DBE837A0F553E3988547AEA52347D8D",
     "independent_reviews/traits_05_08.json": "B1CDBE8BBEE77E5C4D9417E0E77E1EF69178E8F34BD4C18B825038266D7E9D53",
-    "independent_reviews/traits_09_12.json": "1225AF3B49957940C2F81C8B07833B1B40CC6086A228A8D5B1DEFD03B363AD24",
+    "independent_reviews/traits_09_12.json": "7C6ABCD6EEE794C48BA3351970FAC2F4B3400A2B4B5E589E8D090975EE6F616A",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "4FD54923B0938C3294AB5E9D0C0168A08FDBF353A73FBE83BCE7F5DDF8B911F2",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
@@ -59,9 +59,9 @@
     "trait_batches/batch_08.jsonl": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A",
     "trait_batches/batch_09.jsonl": "7493EABBF27471F551A42E6B750D8927EC80B36404B51ED6E7CBC74349EAFE44",
     "trait_batches/batch_10.jsonl": "33304EC69C6072CE027BFD779AB0E2332EEDE70DC56B6920468F46BC4A2ABE31",
-    "trait_batches/batch_11.jsonl": "CD79D2E6BC506CBEC2337F4035EC653938EB58B1350A29ED16044A1694C8E65D",
+    "trait_batches/batch_11.jsonl": "1D10ED624347B085CAE1B173764BB5DA7540AC6151917D01B25ECC679E2CD513",
     "trait_batches/batch_12.jsonl": "AE044BC0927A818D38DFB20DF59DADDCDA7C951F4E8082D633DC69CB0FF29BD8",
-    "translation_audit.json": "28843AD4660C4E2C478C29DC332468CF0E10B7049DF56154F4006E65928E1E3B"
+    "translation_audit.json": "ADE71F5FD70A78760414DC264D30F453CC934004A3493257B369C48BD9866142"
   },
   "counts": {
     "traits": 198,
@@ -70,23 +70,23 @@
     "independent_reviewed_traits": 198,
     "independent_review_findings": 118,
     "independent_review_states": {
-      "accepted": 83,
-      "confirmed-defect": 33,
+      "accepted": 84,
+      "confirmed-defect": 32,
       "coverage-gap": 20,
       "needs-correction": 51,
       "runtime-unproven": 11
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 58,
+      "confirmed-defect": 57,
       "coverage-gap": 12,
-      "runtime-unproven": 103
+      "runtime-unproven": 104
     },
     "dimension_states": {
-      "proven-correct": 2779,
-      "confirmed-defect": 222,
-      "coverage-gap": 763,
-      "runtime-unproven": 988
+      "proven-correct": 2785,
+      "confirmed-defect": 216,
+      "coverage-gap": 761,
+      "runtime-unproven": 990
     }
   },
   "independent_review_findings": [
@@ -54799,7 +54799,7 @@
     {
       "trait_id": "UniversalTraits:UT_squirrel",
       "batch": "batch_11",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
@@ -54812,11 +54812,13 @@
           ]
         },
         "definition_parser": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "complete recognized block"
+            "Source and release definitions are byte-identical and pass the static consistency suite."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current-build ScriptManager parsing remains unobserved in game."
+          ],
           "source_dimensions": [
             "definition_parser"
           ]
@@ -54834,50 +54836,58 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "cost 2; no XP/grants; bidirectional Pack Mouse/Top Heavy/Sloth exclusions"
+            "Cost is 2; no XP boosts or grants; Pack Mouse, Top Heavy, and Sloth are bidirectionally excluded; multiplayer is disabled."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cost_xp_grants_exclusions"
           ]
         },
         "source_intent": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "SomewhatTraits-derived running/sprinting fatigue reduction"
+            "Upstream and the original UT port identify Squirrel as running/sprinting fatigue relief; pre-campaign translation regeneration introduced the unrelated carry copy."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_intent"
           ]
         },
         "runtime_path": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "shared trait Lua -> registerPeriodicHandler -> EveryOneMinute -> Stats.remove(FATIGUE)"
+            "EveryOneMinute resolves the active player, gates trait ownership and running/sprinting, then removes FATIGUE."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "runtime_path"
           ]
         },
         "numbers": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "0.0015 multiplied by current GameTime multiplier per minute event"
+            "Each qualifying event removes the fixed constant 0.0015 with the native zero floor and no GameTime multiplier."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "numbers"
           ]
         },
         "cadence": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "EveryOneMinute is already elapsed-game-minute based; multiplier adds a second time-scale dependency"
+            "One constant sample per EveryOneMinute event; focused tests prove multiplier invariance."
           ],
           "missing_proof": [
-            "No in-game fast-forward trace was supplied; the double-scaling follows from the current event and multiplier sources."
+            "none"
           ],
           "source_dimensions": [
             "cadence"
@@ -54886,9 +54896,11 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
+            "No cooldown beyond the minute cadence."
+          ],
+          "missing_proof": [
             "none"
           ],
-          "missing_proof": [],
           "source_dimensions": [
             "cooldown"
           ]
@@ -54896,10 +54908,10 @@
         "reset_save_load": {
           "state": "runtime-unproven",
           "evidence": [
-            "file-load registration is idempotent for trait/event; no persistent state"
+            "The path owns no persistent state and reload registration is statically idempotent."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "Repeated world entry and current-version save/load remain unobserved."
           ],
           "source_dimensions": [
             "reset_save_load"
@@ -54908,9 +54920,11 @@
         "java_lua": {
           "state": "proven-correct",
           "evidence": [
-            "Stats.remove(CharacterStat,float) exists and clamps through Stats.set"
+            "SVN 964 anchors EveryOneMinute production and Stats.remove(CharacterStat.FATIGUE, float), including bounded Stats.set behavior."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "java_lua"
           ]
@@ -54918,10 +54932,10 @@
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "syntax is compatible; engine-only behavior remains unrun"
+            "The source uses compatible Lua shapes and verified receivers."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "Current-build Kahlua execution remains unobserved."
           ],
           "source_dimensions": [
             "kahlua"
@@ -54930,19 +54944,23 @@
         "events": {
           "state": "proven-correct",
           "evidence": [
-            "EveryOneMinute has no args; UTCore resolves getPlayer correctly"
+            "The shared periodic wrapper samples getPlayer once per EveryOneMinute firing and replaces the same trait/event handler on reload."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "events"
           ]
         },
         "stacking_interactions": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "script exclusions do not relate to the actual fatigue effect; other fatigue reducers can stack"
+            "Bidirectional Pack Mouse, Top Heavy, and Sloth exclusions match the accepted UT contract; no shared item or global mutation occurs."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "stacking_interactions"
           ]
@@ -54950,9 +54968,11 @@
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "disabled"
+            "DisabledInMultiplayer is true and multiplayer support is a product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "multiplayer"
           ]
@@ -54960,19 +54980,23 @@
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "Squirrel resolves"
+            "The exact English display name is Squirrel."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "display"
           ]
         },
         "description": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "claims carry-weight/overload behavior absent from definition and runtime"
+            "English names the exact trigger, fixed 0.0015 per-minute fatigue removal, and idle/walking non-benefit without claiming carry behavior."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "description"
           ]
@@ -54980,22 +55004,22 @@
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "EN only"
+            "Exact English keys exist with source/release parity."
           ],
           "missing_proof": [
-            "A non-EN localization requirement was not supplied."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
             "localization"
           ]
         },
         "balance": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "cost cannot be assessed against the undisclosed actual benefit"
+            "The accepted static contract is a cost-2 conditional 0.0015 fatigue refund."
           ],
           "missing_proof": [
-            "A formal balance target was not supplied."
+            "No gameplay balance telemetry exists."
           ],
           "source_dimensions": [
             "balance"
@@ -55004,34 +55028,34 @@
         "performance": {
           "state": "runtime-unproven",
           "evidence": [
-            "one cheap minute handler"
+            "The minute handler performs constant-time guards and one bounded stat removal."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "No current-build profiler capture exists."
           ],
           "source_dimensions": [
             "performance"
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "running/idle branches pass but do not test UI contract or time multiplier invariance"
+            "Focused tests cover running, sprinting, idle, walking, no trait, exact amount, multiplier invariance, zero clamp, reload replacement, exclusions, description, and parity."
           ],
           "missing_proof": [
-            "A targeted regression covering this exact dimension is missing or incomplete."
+            "none"
           ],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "GameTime multiplier is hard-coded 1.0, hiding cadence scaling"
+            "Controllable movement, fatigue, multiplier, event, trait, definition, translation, and parity fixtures exercise the exact path."
           ],
           "missing_proof": [
-            "A current engine-faithful mock for this exact path is missing or incomplete."
+            "none"
           ],
           "source_dimensions": [
             "mocks"
@@ -55040,19 +55064,23 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "assigned source/release surfaces equal"
+            "Runtime, UI, definition, registries, tests, and mocks are fingerprinted; all packaged source/release pairs are byte-identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_release_parity"
           ]
         },
         "packaging": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "runtime present both copies"
+            "Squirrel-owned 42.0 runtime, UI, definition, and registry counterparts are present and identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "The existing UniversalTraits source poster issue remains separately open."
+          ],
           "source_dimensions": [
             "packaging"
           ]
@@ -55063,13 +55091,15 @@
         "B11-SQUIRREL-002"
       ],
       "unknowns": [
-        "Exact upstream SWSquirrel balance intent and in-game fast-forward trace are unavailable.",
-        "No non-EN requirement."
+        "Current-build Kahlua/gameplay, live minute and fast-forward behavior, repeated world entry, and save/load remain unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists; the package source poster issue remains open.",
+        "Upstream timer, day-length, and sleep-trait rules are intentionally outside the accepted UT contract."
       ],
-      "translation_terminal_state": "coverage-gap",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_09_12.json",
-        "review_state": "confirmed-defect",
+        "review_state": "accepted",
         "omission_finding_ids": [],
         "cross_finding_ids": [
           "IR0912-FINDING-STATE-001",

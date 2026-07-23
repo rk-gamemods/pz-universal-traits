@@ -1,143 +1,64 @@
 # UT_squirrel
 
-## Trait Summary
+## Accepted contract
 
-- UT trait id: `UniversalTraits:UT_squirrel`
-- Source mod: SomewhatTraits (`SomewhatTraitsCore` runtime + `SomewhatTraits` definition)
-- Source trait id: `SWTraits:SWSquirrel` (`SWSquirrel`)
-- Current cost: 2
-- Scripted: yes
-- Owner: agent
-- Status: complete
+- Trait: `UniversalTraits:UT_squirrel`, display name `Squirrel`, cost 2.
+- Intent: slow fatigue accumulation while running or sprinting. Squirrel is not a carry trait.
+- Runtime: `EveryOneMinute` samples the active player. A qualifying owner receives exactly `0.0015` fatigue removal. Walking, idling, and a player without the trait receive no benefit.
+- The amount is constant per event and does not use `GameTime` multiplier, day length, timers, or sleep-trait modifiers.
+- No XP boosts or grants. Multiplayer is disabled.
+- Bidirectional exclusions: `UT_packmouse`, `UT_topheavy`, and `UT_sloth`.
 
-## Source Evidence
+## Provenance
 
-- Source files reviewed:
-  - `research/installed-mods/SomewhatTraits/mods/SomewhatTraitsCore/42.15/media/lua/server/SWTraitsCore_server.lua` (lines 225-236) — current B42 runtime
-  - `research/installed-mods/SomewhatTraits/mods/SomewhatTraits/42.15/media/registries.lua` (line 25) — current B42 registration list and cost continuity
-  - `research/installed-mods/SomewhatTraits/mods/SomewhatTraits/42.15/media/lua/shared/Translate/EN/UI.json` (lines 30-31) — current B42 name and description text
-  - `research/installed-mods/SomewhatTraits/mods/SomewhatTraits/42.15/media/lua/shared/SWTraits_MET.lua` (lines 70-73) — source runtime mutual exclusion
-  - `research/installed-mods/SomewhatTraits/mods/SomewhatTraits/media/lua/shared/NPCs/SWSomewhatTraits_MainCreationMethods.lua` (lines 89-117) — legacy addTrait cost and mutual exclusion
-  - `research/installed-mods/SomewhatTraits/mods/SomewhatTraitsCore/media/lua/client/SWSomewhatTraitsCore.lua` (legacy `SWSquirrel()` implementation) — older runtime naming continuity
-- Source trigger path:
-  - `Events.OnTick.Add(SWSquirrel)` in source runtime.
-  - Handler gates on active player, trait possession, and `running or sprinting` before applying the effect.
-- Source behavior:
-  - Source description: `"Slows down fatigue gain when running or sprinting."`
-  - Source runtime removes fatigue by `dayLengthMultiplier * 0.0015` while running or sprinting.
-  - Source halves that benefit if the player has vanilla `Needs Less Sleep` or `Needs More Sleep`.
-  - Source cost is `2`.
-  - Source made `SWSquirrel` mutually exclusive with `SWSloth`.
+The fatigue identity exists in the inspected SomewhatTraits evidence and the original UT port. Pre-campaign bulk translation regeneration introduced the unrelated hoarding and carry-weight description. The accepted UT contract retains the honest fatigue identity but does not import upstream tick cadence, day-length scaling, or sleep-trait rules.
 
-## Current UT Evidence
+## Exact current evidence
 
-### Structure
+- Source and release runtime are byte-identical: `UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_squirrel.lua`.
+- Source and release definition blocks are byte-identical and specify cost 2, no XP/grants, multiplayer disabled, and the three accepted exclusions.
+- The reverse definition blocks for Pack Mouse, Top Heavy, and Sloth each include Squirrel.
+- Source and release registries are byte-identical and register `UniversalTraits:UT_squirrel`.
+- Source and release English UI are byte-identical. The current description states the running/sprinting trigger, fixed `0.0015` per-minute fatigue removal, and no walking/idle benefit.
+- No Squirrel path changes carry weight, inventory capacity, overload thresholds, or items.
 
-- Registered in registries.lua: yes — `UTTraitsRegistries.UT_squirrel = CharacterTrait.register("UniversalTraits:UT_squirrel")`.
-- Defined in UT_character_traits.txt: yes —
-  ```
-  character_trait_definition UniversalTraits:UT_squirrel
-  {
-      IsProfessionTrait = false,
-      DisabledInMultiplayer = true,
-      CharacterTrait = UniversalTraits:UT_squirrel,
-      Cost = 2,
-      UIName = UI_UT_squirrel,
-      UIDescription = UI_UT_squirrelDesc,
-      MutuallyExclusiveTraits = UniversalTraits:UT_packmouse;UniversalTraits:UT_topheavy,
-  }
-  ```
-- Translation strings present: yes —
-  - `UI_UT_squirrel = "Squirrel"`
-  - `UI_UT_squirrelDesc = "You hoard everything you find, even when it weighs you down. Carry weight is increased but so is the tendency to overload."`
-- Exclusions/grants correct: **no** — current exclusions are `UT_packmouse` and `UT_topheavy`, but the source exclusion was `SWSloth`; UT currently omits `UT_sloth` entirely.
-- Runtime Lua file exists: yes — `UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_squirrel.lua`
-- UT_MET reference coverage: **no** — `UniversalTraits/media/lua/shared/UniversalTraits/UT_MET.lua` contains no `UT_squirrel` / `UT_sloth` pairing, so the Lua-side reference table also drifts from the source relationship.
+## Runtime and engine trace
 
-### Runtime Trace
+`UT_squirrel.lua` registers one shared periodic handler for `EveryOneMinute`. The wrapper resolves `getPlayer()`, then the handler checks trait ownership and `isRunning() or isSprinting()`. It calls `stats:remove(CharacterStat.FATIGUE, 0.0015)` exactly once when qualified.
 
-- Files reviewed:
-  - `UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_squirrel.lua` (entire file)
-  - `UT_CORE/media/lua/shared/UTCore/UTCore_Events.lua` — periodic wrapper
-  - `UT_CORE/media/lua/shared/UTCore/UTCore_API.lua` — `UTCore.hasTrait`
-- Event registrations:
-  - `UTCore.registerPeriodicHandler(TRAIT_ID, "EveryOneMinute", handler)`
-  - Effective PZ event path: `Events.EveryOneMinute`
-- UT_CORE hooks used:
-  - `UTCore.hasTrait(player, TRAIT_ID)` — nil-safe trait check via `player:getTraits():contains(traitId)`.
-  - `UTCore.registerPeriodicHandler(...)` — stores a trait+event wrapper and resolves `getPlayer()` at fire time.
-- Runtime chain (plain language):
-  1. On file load, the trait registers a periodic handler for `EveryOneMinute`.
-  2. Each minute, UTCore resolves the active player and calls `handler(player)`.
-  3. Guard 1: if the player lacks `UniversalTraits:UT_squirrel`, exit.
-  4. Guard 2: if the player is neither running nor sprinting, exit.
-  5. Otherwise, get player stats and call `stats:remove(CharacterStat.FATIGUE, GameTime.getInstance():getMultiplier() * 0.0015)`.
-- Actual behavior (exact values):
-  - **Trigger:** only while actively running or sprinting at the event tick.
-  - **Cadence:** once per in-game minute in UT, versus every tick in source.
-  - **Effect value:** removes fatigue by `GameTime.getInstance():getMultiplier() * 0.0015` per minute tick.
-  - **Missing source rule:** UT does not halve the benefit for `Needs Less Sleep` / `Needs More Sleep`.
-  - **No carry-weight mechanic exists.** UT does not change `MaxWeightBase`, inventory capacity, or overload thresholds.
+SVN revision 964 anchors the live event and stat contract used by the implementation: the minute event is produced without handler arguments, `Stats.remove(CharacterStat,float)` delegates through bounded stat mutation, and `CharacterStat.FATIGUE` is the selected stat. This static trace does not prove current-build Kahlua or gameplay execution.
 
-## Description Integrity
+## Regression proof
 
-- Display name check: `Squirrel` matches source intent.
-- Description check: current UT text is unrelated to the implemented mechanic.
-- Missing or misleading details:
-  1. **Wrong mechanic:** the current description claims a hoarding/carry-weight effect, but runtime only reduces fatigue while running or sprinting.
-  2. **Missing real trigger:** the active condition (`running or sprinting`) is omitted.
-  3. **Missing real benefit:** the fatigue reduction is not mentioned at all.
-  4. **Source drift hidden:** source text was short but accurate; UT replaced it with text that appears copied from a different inventory-themed trait concept.
+The focused standard-Lua coverage in `UniversalTraits/test/run_tests.lua` proves:
 
-## Balance Review
+- exact `0.0015` removal for running and sprinting;
+- idle and walking rejection;
+- no-trait rejection;
+- equal removal across configured game multipliers;
+- native lower-bound clamp;
+- reload replaces the registered trait/event handler without duplicate effects;
+- exact English description and absence of carry claims;
+- cost, no XP/grants, multiplayer flag, and all forward and reverse exclusions;
+- source/release parity for runtime, UI, definitions, and registries.
 
-- Upside: conditional fatigue reduction while running or sprinting.
-- Downside: none; this is a positive trait costing 2 points.
-- Uptime: moderate for players who run/sprint often, low for cautious walkers.
-- Peer comparison:
-  - Direct opposite/source partner is `UT_sloth`, which helps when walking or idle. Source treated them as mutually exclusive complements.
-  - Compared with source, UT is mechanically weaker because it fires only every in-game minute instead of every tick and omits the sleep-trait interaction.
-- Stack or exclusion notes:
-  - Missing `UT_sloth` exclusion allows players to take both movement-fatigue reducers together, which the source explicitly prevented.
-  - Current exclusions with `UT_packmouse` and `UT_topheavy` do not match the runtime behavior and look unjustified from available evidence.
-- Cost verdict: **questionable**. Cost `2` may still be acceptable for a modest active fatigue benefit, but UT currently underdelivers versus source while also advertising the wrong upside.
+`UTTestMocks.lua` supplies controllable movement, fatigue, multiplier, trait, and event fixtures. These are off-game standard-Lua tests, not current-version Kahlua proof.
 
-## Regression Proof
+## Finding dispositions
 
-- Existing test: registration/inventory only — `UniversalTraits/test/run_tests.lua` includes `"UniversalTraits:UT_squirrel"` in the expected trait ID sweep.
-- What it proves: only that the trait ID is present in the registry/script integrity set.
-- Missing proof:
-  - No test that `EveryOneMinute` removes fatigue while running.
-  - No test that sprinting also qualifies.
-  - No test that walking/idle does nothing.
-  - No test for no-trait guard.
-  - No test documenting the current cadence simplification versus source.
-- Minimum next test if needed:
-  ```lua
-  dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_squirrel.lua")
+- `B11-SQUIRREL-001`: proven corrected by accepted commit `e4ed870d28bafadd30ae6e18559e7e6308aaefb8`. English now documents the actual fatigue effect and makes no carry claim.
+- `B11-SQUIRREL-002`: proven corrected by the same commit. The runtime uses a constant per-minute amount, and focused tests prove multiplier invariance.
+- Independent review: both accepted findings are supported and reconciled. No Squirrel-specific omission remains. Cross-trait Kahlua, save/load, balance/performance, and locale proof IDs remain open.
 
-  test("UT_squirrel reduces fatigue while running", function()
-      local stats = { removed = 0, remove = function(self, stat, amount)
-          assert_eq(stat, CharacterStat.FATIGUE)
-          self.removed = self.removed + amount
-      end }
-      local p = MockPlayer({ "UniversalTraits:UT_squirrel" }, { stats = stats })
-      p:setRunning(true)
-      withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-      assert_true(stats.removed > 0, "expected fatigue reduction while running")
-  end)
-  ```
-  Add companion tests for sprinting, no-trait, and idle guards.
+## Remaining proof and gaps
 
-## Final Verdict
+- Current-build Kahlua execution and gameplay are unobserved.
+- Live minute cadence and fast-forward behavior are unobserved.
+- Repeated world entry, lifecycle behavior, and current-version save/load are unobserved.
+- Rendered English is unobserved.
+- Balance telemetry and profiler capture are absent.
+- No non-English UniversalTraits locale exists.
+- The existing UniversalTraits source poster issue remains a packaging gap.
+- Multiplayer, backward save migration, deployment, and upstream timing/day-length/sleep rules are explicit non-goals.
 
-- Source origin: **proven**
-- UT implementation: **drifted** — broad running-fatigue concept remains, but cadence is much weaker, the sleep-trait interaction is dropped, and both script-side and UT_MET mutual exclusion coverage no longer match source.
-- Description: **misleading** — current text describes a nonexistent carry/hoarding mechanic.
-- Balance: **questionable**
-- Regression proof: **missing**
-- Action needed: **code fix**
-- Open gaps:
-  - Source-style `UT_sloth` mutual exclusion is still missing in both `UT_character_traits.txt` and `UT_MET.lua`, while unrelated `UT_packmouse` / `UT_topheavy` exclusions remain in place.
-  - Source sleep-trait halving for `Needs Less Sleep` / `Needs More Sleep` is not implemented in UT, so the runtime behavior is still materially weaker than the source.
-  - The shipped UT description still documents a nonexistent carry-weight mechanic, and no runtime tests cover the actual running/sprinting fatigue reduction path.
+Overall state: `runtime-unproven`.

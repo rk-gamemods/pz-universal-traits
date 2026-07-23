@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "remediation_queue_sha256": "b5a24710548b37f82c3d701c290d7d1807b7ddac95da8d7f53e13008378888cc",
+  "remediation_queue_sha256": "fecd804823d15c690417c45327074cbcd399823139d9b995dadb5bd06aeeb592",
   "category_label": "release-blocker",
   "classification_scope_statement": "Only the queue rows listed by these reviewed semantic identities are classified as release-blocker; all other rows remain unclassified in the exhaustive ledger.",
   "identities": [

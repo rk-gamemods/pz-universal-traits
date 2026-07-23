@@ -1,0 +1,110 @@
+{
+  "schema": "ut-squirrel-fatigue-contract-v1",
+  "trait_id": "UniversalTraits:UT_squirrel",
+  "authority": {
+    "accepted_behavior_commit": "e4ed870d28bafadd30ae6e18559e7e6308aaefb8",
+    "campaign_runner_correction": "c0cc3bb763fa072a3a245b949550c22020d4316b",
+    "pz_snapshot": "SVN revision 964"
+  },
+  "accepted_intent": {
+    "cost": 2,
+    "trigger": "running or sprinting at EveryOneMinute sample",
+    "fatigue_removal": 0.0015,
+    "game_time_multiplier": false,
+    "xp_boosts": [],
+    "grants": [],
+    "exclusions": [
+      "UniversalTraits:UT_packmouse",
+      "UniversalTraits:UT_topheavy",
+      "UniversalTraits:UT_sloth"
+    ],
+    "multiplayer": false
+  },
+  "provenance": {
+    "fatigue_identity": "present in upstream evidence and the original UT port",
+    "carry_mismatch": "introduced by pre-campaign bulk translation regeneration",
+    "excluded_upstream_rules": [
+      "tick cadence",
+      "day-length multiplier",
+      "sleep-trait modifiers"
+    ]
+  },
+  "resolved_findings": [
+    "B11-SQUIRREL-001",
+    "B11-SQUIRREL-002"
+  ],
+  "retained_runtime_proof": [
+    "current-build Kahlua/gameplay",
+    "live minute and fast-forward behavior",
+    "repeated world entry and current-version save/load",
+    "rendered English",
+    "balance telemetry",
+    "profiler capture",
+    "non-English localization",
+    "source poster issue"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_squirrel.lua",
+      "sha256": "91F57B5D982B7F3169CF33FD05373329DE4CCE0A564A4AEAD48C5A7D0630B1F1",
+      "bytes": 533
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_squirrel.lua",
+      "sha256": "91F57B5D982B7F3169CF33FD05373329DE4CCE0A564A4AEAD48C5A7D0630B1F1",
+      "bytes": 533
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "6A8224FECD28E6CFE131194F0F40109B3CACC678267CE9014D800F1D016AC34F",
+      "bytes": 37421
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "6A8224FECD28E6CFE131194F0F40109B3CACC678267CE9014D800F1D016AC34F",
+      "bytes": 37421
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/media/registries.lua",
+      "sha256": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+      "bytes": 23864
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/registries.lua",
+      "sha256": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+      "bytes": 23864
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "83C18586CBE5F83379BCAC67A51DF561DBB7461D6EB00C959085D0495F74FD74",
+      "bytes": 321868
+    },
+    {
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "sha256": "771CE603A29542BBB385116BE409A1FF43C724A92974CCF29DB93842981327CE",
+      "bytes": 79432
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_squirrel.md",
+      "sha256": "96276448E9A9773D06477AB5256243CCFBE0383741C5F747560EA09313F8286E",
+      "bytes": 4333
+    }
+  ],
+  "runtime_proof": "Unobserved; static evidence does not establish current-version gameplay execution.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment",
+    "upstream timing/day-length/sleep rules"
+  ]
+}
