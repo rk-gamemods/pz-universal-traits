@@ -611,13 +611,15 @@
       ],
       "confidence": "high",
       "id": "IR11-BLEED-POOL-001",
-      "missing_proof": "No live trace; pool separation is source-proven.",
-      "recommended_correction": "Use verified BodyDamage path/event.",
+      "missing_proof": "Current-build Kahlua and live bleeding remain unobserved.",
+      "recommended_correction": "No further static correction is indicated.",
       "reproduction_or_source_evidence": "Distinct pools mean player:setHealth does not reduce native BodyDamage loss.",
       "severity": "high",
-      "smallest_regression_test": "Model distinct pools; assert 0.5x/0.6x loss.",
-      "state": "confirmed-defect",
-      "title": "BleedDrainHook compensates actor health while native bleed damages BodyDamage health"
+      "smallest_regression_test": "Covered by the focused weighted BodyDamage and English contract tests.",
+      "state": "proven-correct",
+      "title": "BleedDrainHook compensates actor health while native bleed damages BodyDamage health",
+      "resolution_state": "implemented-and-statically-validated",
+      "resolution_evidence": "The shared hook now corrects BodyDamage directly, exactly inverts each unclamped native share, and never uses actor health. Unequal-modifier tests fail against the old pool path."
     }
   ],
   "per_trait_review": [
@@ -2332,8 +2334,8 @@
         "IR0912-PERCENT-001",
         "IR11-BLEED-POOL-001"
       ],
-      "independent_state": "confirmed-defect",
-      "omission_disposition": "new omissions listed",
+      "independent_state": "runtime-unproven",
+      "omission_disposition": "resolved",
       "omissions": [
         {
           "affected_surfaces": [
@@ -2356,13 +2358,15 @@
           ],
           "confidence": "high",
           "id": "IR12-WEAKBLEED-DESC-001",
-          "missing_proof": "No live display/bleed run.",
-          "recommended_correction": "Remove implication or implement wound decay.",
+          "missing_proof": "Current-build Kahlua and live bleeding remain unobserved.",
+          "recommended_correction": "No further static correction is indicated.",
           "reproduction_or_source_evidence": "EN implies sealing; source explicitly says no wound-healing effect.",
           "severity": "medium",
-          "smallest_regression_test": "Assert bleedingTime unchanged.",
-          "state": "confirmed-defect",
-          "title": "Description implies faster sealing though healing is unchanged"
+          "smallest_regression_test": "Covered by the focused weighted BodyDamage and English contract tests.",
+          "state": "proven-correct",
+          "title": "Description implies faster sealing though healing is unchanged",
+          "resolution_state": "implemented-and-statically-validated",
+          "resolution_evidence": "English now states 60 percent active-bleed general-health loss and explicitly says clotting speed is unchanged."
         },
         {
           "affected_surfaces": [
@@ -2386,13 +2390,15 @@
           ],
           "confidence": "high",
           "id": "IR12-WEAKBLEED-POOL-002",
-          "missing_proof": "No live trace.",
-          "recommended_correction": "Use verified BodyDamage path.",
+          "missing_proof": "Current-build Kahlua and live bleeding remain unobserved.",
+          "recommended_correction": "No further static correction is indicated.",
           "reproduction_or_source_evidence": "0.6x compensation writes actor health while bleed damages BodyDamage.",
           "severity": "high",
-          "smallest_regression_test": "Separate pools; assert 0.6x loss.",
-          "state": "confirmed-defect",
-          "title": "Weakly Bleeding Wounds offsets wrong health pool"
+          "smallest_regression_test": "Covered by the focused weighted BodyDamage and English contract tests.",
+          "state": "proven-correct",
+          "title": "Weakly Bleeding Wounds offsets wrong health pool",
+          "resolution_state": "implemented-and-statically-validated",
+          "resolution_evidence": "The factor-below-one path now restores exact BodyDamage shares with native modifiers and skips ambiguous zero-health clamps."
         }
       ],
       "rejected_accepted_finding_ids": [],
@@ -2404,7 +2410,32 @@
         "RP0912-SAVELOAD-001",
         "RP0912-BALANCE-PERF-001",
         "RP0912-LOCALE-001"
-      ]
+      ],
+      "verified_finding_ids": [
+        "IR12-WEAKBLEED-DESC-001",
+        "IR12-WEAKBLEED-POOL-002",
+        "IR11-BLEED-POOL-001"
+      ],
+      "repair_resolution": {
+        "state": "implemented-and-statically-validated",
+        "resolved_finding_ids": [
+          "IR12-WEAKBLEED-DESC-001",
+          "IR12-WEAKBLEED-POOL-002",
+          "IR11-BLEED-POOL-001"
+        ],
+        "open_finding_ids": [],
+        "remaining_runtime_proof": "Current-build Kahlua, live wounds, new game, save load, death, rendered English, balance, and profiler observation remain unrun."
+      },
+      "release_parity": {
+        "source_runtime_sha256": "A2C8FA28CC8A1E256F2B885A3898A36D0161E336F5ED9B1A1C804B7228A4E7FE",
+        "release_runtime_sha256": "A2C8FA28CC8A1E256F2B885A3898A36D0161E336F5ED9B1A1C804B7228A4E7FE",
+        "source_english_sha256": "53E2E543B577E80991428DADBFB4052D545C87648812617B22142A4F8E04CD7B",
+        "release_english_sha256": "53E2E543B577E80991428DADBFB4052D545C87648812617B22142A4F8E04CD7B",
+        "source_core_hook_sha256": "B3FDD80B46E37E1A60C12499E11E757954A72777C3C174BB6CE271FEE803ACB2",
+        "release_core_hook_sha256": "B3FDD80B46E37E1A60C12499E11E757954A72777C3C174BB6CE271FEE803ACB2",
+        "state": "proven-correct"
+      },
+      "resolution_record": "change-impact/weaklybleedingwounds-bodydamage-resolution.json"
     },
     {
       "accepted_overall_state": "runtime-unproven",

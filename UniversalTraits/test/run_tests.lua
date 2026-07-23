@@ -3931,6 +3931,26 @@ test("weaklybleedingwounds sets UT_bleedDrainMult=0.6 on new game", function()
     assert_eq(p:getModData()["UT_bleedDrainMult"], 0.6, "UT_bleedDrainMult")
 end)
 
+test("weaklybleedingwounds English and source-release copies state the exact contract", function()
+    local function readAll(path)
+        local file = assert(io.open(path, "rb"))
+        local content = file:read("*a")
+        file:close()
+        return content
+    end
+
+    local sourceRuntime = readAll(base .. "../media/lua/shared/UniversalTraits/traits/UT_weaklybleedingwounds.lua")
+    local releaseRuntime = readAll(base .. "../release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_weaklybleedingwounds.lua")
+    local sourceUi = readAll(base .. "../media/lua/shared/Translate/EN/UI.json")
+    local releaseUi = readAll(base .. "../release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json")
+    local expected = "Active bleeding drains your health at 60 percent of the normal rate. Wound clotting speed is unchanged."
+
+    assert_eq(sourceRuntime, releaseRuntime, "weaklybleedingwounds runtime parity")
+    assert_eq(sourceUi, releaseUi, "weaklybleedingwounds English parity")
+    assert_true(sourceUi:find(expected, 1, true) ~= nil,
+        "weaklybleedingwounds English must state the exact active-bleed and clotting contract")
+end)
+
 test("deprived calls stripSpawnItems on new game", function()
     local p = fireNewGame("UniversalTraits:UT_deprived")
     assert_eq(p:getModData()["_stripCalled"], true, "expected _stripCalled=true from stripSpawnItems")

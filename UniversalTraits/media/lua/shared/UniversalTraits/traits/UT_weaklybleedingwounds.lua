@@ -1,8 +1,10 @@
 -- UT_weaklybleedingwounds.lua
 -- Wounds bleed with less force than normal.
--- Active bleed death rate 0.6x — roughly 40% more time before bleeding out.
--- No effect on wound healing speed once bandaged.
--- Mutually exclusive with heavilybleedingwounds.
+-- Active bleeding causes 0.6x the normal general-health loss.
+-- This gives about 66.7 percent more time before bleeding out when bleeding
+-- is the only health-loss source.
+-- No effect on wound clotting speed or bandaged wound healing.
+-- Mutually exclusive with thickblood and heavilybleedingwounds.
 
 local TRAIT_ID = "UniversalTraits:UT_weaklybleedingwounds"
 

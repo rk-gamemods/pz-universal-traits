@@ -232,7 +232,7 @@
     "UI_UT_heavilybleedingwounds": "Heavily Bleeding Wounds",
     "UI_UT_heavilybleedingwoundsDesc": "Even minor cuts refuse to close. Bleed rate is increased to 200 percent of normal - wounds bleed twice as fast.",
     "UI_UT_weaklybleedingwounds": "Weakly Bleeding Wounds",
-    "UI_UT_weaklybleedingwoundsDesc": "Your wounds seal up almost before you notice them. Bleed rate is reduced to 60 percent of normal.",
+    "UI_UT_weaklybleedingwoundsDesc": "Active bleeding drains your health at 60 percent of the normal rate. Wound clotting speed is unchanged.",
     "UI_UT_restfulsleeper": "Restful Sleeper",
     "UI_UT_restfulsleeperDesc": "You drop into a deep sleep the moment your head hits the pillow. Sleep quality is increased by +50 percent, allowing faster fatigue recovery from rest.",
     "UI_UT_quickrest": "Quick Rest",
