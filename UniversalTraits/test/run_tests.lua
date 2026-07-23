@@ -4500,7 +4500,13 @@ local function withIsolatedPackMouseLifecycle(event, fn)
 end
 
 test("packmouse legacy pre-dispatcher state is preserved without event mutation", function()
-    local legacyHandler = function() end
+    local legacyState
+    local legacyHandler
+    legacyHandler = function(_playerIndex, player)
+        if legacyState.onCreatePlayer ~= legacyHandler then return end
+        UTCore.applyCarryWeight(player, -2, PACKMOUSE_ID)
+        UTCore.reconcileAggregatedModifiers(player)
+    end
     local eventCalls = 0
     local event = {
         Add = function() eventCalls = eventCalls + 1 end,
@@ -4508,16 +4514,33 @@ test("packmouse legacy pre-dispatcher state is preserved without event mutation"
     }
 
     withIsolatedPackMouseLifecycle(event, function()
-        UTCore._packMouseLifecycle = { onCreatePlayer = legacyHandler }
-        UTPackMouseLifecycle = UTCore._packMouseLifecycle
+        legacyState = { onCreatePlayer = legacyHandler }
+        UTCore._packMouseLifecycle = legacyState
+        UTPackMouseLifecycle = legacyState
         dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
         assert_eq(UTPackMouseLifecycle.implementation, legacyHandler, "legacy pointer must be preserved")
+        assert_eq(UTPackMouseLifecycle.onCreatePlayer, legacyHandler, "legacy compatibility pointer")
+        assert_eq(UTPackMouseLifecycle.legacyRelaunchRequired, true, "legacy state must be terminal")
         assert_eq(UTPackMouseLifecycle.dispatcher, nil, "legacy state cannot prove a dispatcher exists")
         assert_eq(UTPackMouseLifecycle.registration.outcome, "legacy_registration_unknown",
             "legacy registration evidence must remain honest")
         assert_true(UTPackMouseLifecycle.reloadRetry.reason:find("fresh process", 1, true) ~= nil,
             "legacy state must require a fresh process")
-        assert_eq(eventCalls, 0, "legacy migration must not guess with Add or Remove")
+
+        dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+        dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+        assert_eq(UTPackMouseLifecycle.implementation, legacyHandler,
+            "terminal legacy reloads must preserve implementation identity")
+        assert_eq(UTPackMouseLifecycle.onCreatePlayer, legacyHandler,
+            "terminal legacy reloads must preserve callback identity")
+        assert_eq(eventCalls, 0, "legacy evaluations must not guess with Add or Remove")
+
+        local p = MockPlayer({ PACKMOUSE_ID })
+        legacyHandler(0, p)
+        assert_eq(packmouseBucket(p)[PACKMOUSE_ID], -2,
+            "engine-held legacy callback must retain the exact keyed penalty")
+        assert_eq(p:getMaxWeightBase(), 6,
+            "engine-held legacy callback must remain functional after repeated evaluation")
     end)
 end)
 

@@ -7,8 +7,13 @@ UTCore._packMouseLifecycle = UTCore._packMouseLifecycle or {}
 local state = UTCore._packMouseLifecycle
 UTPackMouseLifecycle = state
 
+if state.legacyRelaunchRequired and not state.dispatcher then
+    return
+end
+
 if state.onCreatePlayer and not state.implementation then
     state.implementation = state.onCreatePlayer
+    state.legacyRelaunchRequired = true
     state.reloadRetry = {
         reason = "legacy handler state requires a fresh process",
     }
