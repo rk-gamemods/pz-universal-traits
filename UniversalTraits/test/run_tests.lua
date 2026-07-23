@@ -6713,12 +6713,17 @@ end)
 
 test("fitted restores a transferred or dropped tracked item by identity", function()
     local item = MockClothingItem("Shirt", { actualWeight = 2.0 })
+    local recipientItem = MockClothingItem("RecipientCoat", { actualWeight = 6.0 })
+    local recipientInventory = MockInventoryFull({ recipientItem })
     local player, worn, inventory = fittedPlayer({ item }, { item })
     fireFittedTick(player)
     worn:setItems({})
     inventory:Remove(item)
+    recipientInventory:AddItem(item)
     fireFittedTick(player)
     assert_eq(item:getActualWeight(), 2.0, "restoration must not depend on original inventory")
+    assert_eq(recipientInventory._items[2], item, "transferred item must remain in recipient inventory")
+    assert_eq(recipientItem:getActualWeight(), 6.0, "recipient state must remain untouched")
 end)
 
 test("fitted reconciles persistent ownership metadata with reconstructed runtime fields", function()
@@ -6726,10 +6731,13 @@ test("fitted reconciles persistent ownership metadata with reconstructed runtime
         UT_fitted_owner = true,
         UT_fitted_baseWeight = 2.0,
         UT_fitted_lastWeight = 1.0,
+        UT_fitted_ownsWeight = true,
         UT_fitted_baseRunMod = 0.8,
         UT_fitted_lastRunMod = 1.0,
+        UT_fitted_ownsRunMod = true,
         UT_fitted_baseCombatMod = 0.9,
         UT_fitted_lastCombatMod = 1.0,
+        UT_fitted_ownsCombatMod = true,
     }
     local item = MockClothingItem("Shirt", {
         moddata = md, actualWeight = 2.0, runSpeedModifier = 0.8, combatSpeedModifier = 0.9,
@@ -6761,11 +6769,86 @@ test("fitted teardown preserves later external field changes", function()
     item:setActualWeight(0.75)
     item:setRunSpeedModifier(1.15)
     item:setCombatSpeedModifier(0.95)
+    fireFittedTick(player)
+    local md = item:getModData()
+    assert_eq(md.UT_fitted_ownsWeight, false, "reconciliation must relinquish external weight")
+    assert_eq(md.UT_fitted_ownsRunMod, false, "reconciliation must relinquish external run modifier")
+    assert_eq(md.UT_fitted_ownsCombatMod, false, "reconciliation must relinquish external combat modifier")
     player:setMockTrait("UniversalTraits:UT_fitted", false)
     UTCore.rebuildActiveHandlers(player)
     assert_eq(item:getActualWeight(), 0.75, "external weight change must not be overwritten")
     assert_eq(item:getRunSpeedModifier(), 1.15, "external run change must not be overwritten")
     assert_eq(item:getCombatSpeedModifier(), 0.95, "external combat change must not be overwritten")
+end)
+
+test("fitted restores and releases an item that becomes non-clothing while worn", function()
+    local item = MockClothingItem("Convertible", {
+        actualWeight = 2.0, runSpeedModifier = 0.8, combatSpeedModifier = 0.9,
+    })
+    local player = fittedPlayer({ item })
+    fireFittedTick(player)
+    item:setMockIsClothing(false)
+    fireFittedTick(player)
+    assert_eq(item:getActualWeight(), 2.0, "eligibility loss must restore weight")
+    assert_eq(item:getRunSpeedModifier(), 0.8, "eligibility loss must restore run modifier")
+    assert_eq(item:getCombatSpeedModifier(), 0.9, "eligibility loss must restore combat modifier")
+    local md = item:getModData()
+    assert_eq(md.UT_fitted_owner, nil, "eligibility loss must clear root ownership")
+    assert_eq(md.UT_fitted_ownsWeight, nil, "eligibility loss must clear field ownership")
+
+    local weightCalls = item._setWeightCalls
+    local runCalls = item._setRunCalls
+    local combatCalls = item._setCombatCalls
+    fireFittedTick(player)
+    player:setMockTrait("UniversalTraits:UT_fitted", false)
+    UTCore.rebuildActiveHandlers(player)
+    assert_eq(item._setWeightCalls, weightCalls, "released item must not be reprocessed or restored again")
+    assert_eq(item._setRunCalls, runCalls, "released run field must not be touched again")
+    assert_eq(item._setCombatCalls, combatCalls, "released combat field must not be touched again")
+end)
+
+test("fitted duplicate worn references apply and track once", function()
+    local item = MockClothingItem("Shirt", {
+        actualWeight = 2.0, runSpeedModifier = 0.8, combatSpeedModifier = 0.9,
+    })
+    local player = fittedPlayer({ item, item })
+    fireFittedTick(player)
+    assert_eq(item:getActualWeight(), 1.0, "duplicate worn reference must not compound weight")
+    assert_eq(item._setWeightCalls, 1, "duplicate worn reference must write weight once")
+    assert_eq(item._setRunCalls, 1, "duplicate worn reference must write run once")
+    assert_eq(item._setCombatCalls, 1, "duplicate worn reference must write combat once")
+    player:setMockTrait("UniversalTraits:UT_fitted", false)
+    UTCore.rebuildActiveHandlers(player)
+    assert_eq(item._setWeightCalls, 2, "duplicate worn reference must restore weight once")
+end)
+
+test("fitted preserves explicit zero fields without Lua default corruption", function()
+    local item = MockClothingItem("Zeroes", {
+        actualWeight = 0, runSpeedModifier = 0, combatSpeedModifier = 0,
+    })
+    local player = fittedPlayer({ item })
+    fireFittedTick(player)
+    assert_eq(item:getActualWeight(), 0, "zero weight must remain zero")
+    assert_eq(item:getRunSpeedModifier(), 1.0, "zero run penalty must neutralize to one")
+    assert_eq(item:getCombatSpeedModifier(), 1.0, "zero combat penalty must neutralize to one")
+    player:setMockTrait("UniversalTraits:UT_fitted", false)
+    UTCore.rebuildActiveHandlers(player)
+    assert_eq(item:getActualWeight(), 0, "zero base weight must restore exactly")
+    assert_eq(item:getRunSpeedModifier(), 0, "zero base run modifier must restore exactly")
+    assert_eq(item:getCombatSpeedModifier(), 0, "zero base combat modifier must restore exactly")
+end)
+
+test("fitted player replacement tears down old state and handles the new player", function()
+    local oldItem = MockClothingItem("OldShirt", { actualWeight = 2.0 })
+    local oldPlayer = fittedPlayer({ oldItem })
+    fireFittedTick(oldPlayer)
+    assert_eq(oldItem:getActualWeight(), 1.0, "old player precondition must apply")
+
+    local newItem = MockClothingItem("NewShirt", { actualWeight = 4.0 })
+    local newPlayer = fittedPlayer({ newItem })
+    fireFittedTick(newPlayer)
+    assert_eq(oldItem:getActualWeight(), 2.0, "replacement player tick must tear down old state")
+    assert_eq(newItem:getActualWeight(), 2.0, "replacement player must receive Fitted normally")
 end)
 
 -- ─── gourmand: food stat modification ──────────────────────────────────────────

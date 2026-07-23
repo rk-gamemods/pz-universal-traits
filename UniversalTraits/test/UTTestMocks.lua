@@ -1923,6 +1923,8 @@ function MockClothingItem(typeName, opts)
     if _runSpeedMod == nil then _runSpeedMod = 0.8 end
     if _combatSpeedMod == nil then _combatSpeedMod = 0.9 end
     if _weight == nil then _weight = 2.0 end
+    local _isClothing = opts.isClothing
+    if _isClothing == nil then _isClothing = true end
     local item = {
         _mockType            = "InventoryItem",
         _type                = typeName or "Shirt",
@@ -1931,7 +1933,8 @@ function MockClothingItem(typeName, opts)
         _setWeightCalls       = 0,
         getType              = function(self) return self._type end,
         getFullType          = function(self) return self._type end,
-        IsClothing           = function(self) return true end,
+        IsClothing           = function(self) return _isClothing end,
+        setMockIsClothing    = function(self, value) _isClothing = value == true end,
         getModData           = function(self) return _moddata end,
         getRunSpeedModifier  = function(self) return _runSpeedMod end,
         setRunSpeedModifier  = function(self, v) _runSpeedMod = v; self._setRunCalls = self._setRunCalls + 1 end,

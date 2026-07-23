@@ -133,7 +133,10 @@ local function onTick(player, _tick)
 
     for i = trackedCount, 1, -1 do
         local item = trackedItems[i]
-        if wornItems == nil or wornItems:contains(item) == false then
+        if wornItems == nil
+            or wornItems:contains(item) == false
+            or item:IsClothing() == false
+        then
             restoreItem(item)
             table.remove(trackedItems, i)
             trackedCount = trackedCount - 1
