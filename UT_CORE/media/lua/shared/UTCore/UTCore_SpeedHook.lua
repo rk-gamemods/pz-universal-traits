@@ -61,6 +61,21 @@ if legacyHandler and not state.dispatcher then
     return
 end
 
+if state.dispatcher ~= nil and type(state.dispatcher) ~= "function" then
+    state.relaunchRequired = true
+    state.dispatcherCorruptRelaunchRequired = true
+    state.reloadRetry = {
+        reason = "corrupt dispatcher has unknown registration cardinality",
+    }
+    state.registration = {
+        attempted = true,
+        outcome = "corrupt_dispatcher_unknown",
+        cardinality = "unknown",
+        terminal = true,
+    }
+    return
+end
+
 -- Skip if pending animation delta exceeds this (teleport, map load, fast travel).
 local TELEPORT_GUARD = 5.0
 
@@ -74,6 +89,12 @@ local function isFinite(value)
         and value == value
         and value > -math.huge
         and value < math.huge
+end
+
+local function protectedGetter(player, method)
+    local ok, value = pcall(method, player)
+    if not ok then return false, nil end
+    return true, value
 end
 
 local function restorePendingTarget(player, originalX, originalY)
@@ -109,12 +130,15 @@ local function onPlayerMove()
         or type(player.getNextX) ~= "function"
         or type(player.getNextY) ~= "function"
         or type(player.setNextX) ~= "function"
-        or type(player.setNextY) ~= "function"
-        or not player:isLocalPlayer() then
+        or type(player.setNextY) ~= "function" then
         return
     end
 
-    local md = player:getModData()
+    local localOk, isLocal = protectedGetter(player, player.isLocalPlayer)
+    if not localOk or type(isLocal) ~= "boolean" or not isLocal then return end
+
+    local modDataOk, md = protectedGetter(player, player.getModData)
+    if not modDataOk then return end
     if type(md) ~= "table" then return end
     local mod = md["UT_speedMod"]
 
@@ -129,11 +153,12 @@ local function onPlayerMove()
 
     -- Read the pending movement delta that doDeferredMovement() accumulated
     -- into nextX/nextY during this frame's update() phase.
-    local x = player:getX()
-    local y = player:getY()
-    local nextX = player:getNextX()
-    local nextY = player:getNextY()
-    if not isFinite(x) or not isFinite(y)
+    local xOk, x = protectedGetter(player, player.getX)
+    local yOk, y = protectedGetter(player, player.getY)
+    local nextXOk, nextX = protectedGetter(player, player.getNextX)
+    local nextYOk, nextY = protectedGetter(player, player.getNextY)
+    if not xOk or not yOk or not nextXOk or not nextYOk
+        or not isFinite(x) or not isFinite(y)
         or not isFinite(nextX) or not isFinite(nextY) then
         return
     end

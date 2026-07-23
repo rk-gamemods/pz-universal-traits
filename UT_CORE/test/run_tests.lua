@@ -1801,6 +1801,92 @@ test("SpeedHook rejects malformed bridge methods before mutation", function()
     end
 end)
 
+local function exerciseSpeedHookGetterFailures(methodName, malformedResults)
+    local failures = {
+        { name = "missing", value = false },
+        { name = "throw", value = function() error("injected getter failure") end },
+    }
+    for _, value in ipairs(malformedResults) do
+        local result = value
+        failures[#failures + 1] = { name = "malformed result", value = function() return result end }
+    end
+
+    for _, failure in ipairs(failures) do
+        local player = MockPlayer({})
+        player:getModData()["UT_speedMod"] = 0.5
+        player:moveTo(2, 3)
+        player:setNextX(2.4)
+        player:setNextY(3.2)
+
+        local originalGetter = player[methodName]
+        local originalSetX = player.setNextX
+        local originalSetY = player.setNextY
+        local writes = 0
+        player.setNextX = function(self, value)
+            writes = writes + 1
+            return originalSetX(self, value)
+        end
+        player.setNextY = function(self, value)
+            writes = writes + 1
+            return originalSetY(self, value)
+        end
+        player[methodName] = failure.value
+
+        local originalPrint = _G.print
+        local originalUTSmoke = _G.UTSmoke
+        local originalDiagnostic = UTCore.recordDiagnostic
+        local diagnostics = 0
+        _G.print = function() diagnostics = diagnostics + 1 end
+        _G.UTSmoke = { record = function() diagnostics = diagnostics + 1 end }
+        UTCore.recordDiagnostic = function() diagnostics = diagnostics + 1 end
+
+        local ok, err = pcall(function()
+            withActivePlayer(player, function()
+                Events.OnPlayerMove.fire()
+            end)
+        end)
+
+        _G.print = originalPrint
+        _G.UTSmoke = originalUTSmoke
+        UTCore.recordDiagnostic = originalDiagnostic
+        player[methodName] = originalGetter
+        player.setNextX = originalSetX
+        player.setNextY = originalSetY
+
+        if not ok then error(err, 0) end
+        assert_eq(writes, 0, methodName .. " " .. failure.name .. " must not mutate")
+        assert_eq(diagnostics, 0, methodName .. " " .. failure.name .. " must stay silent")
+        assert_close(player:getNextX(), 2.4, 0.000001,
+            methodName .. " " .. failure.name .. " must preserve X")
+        assert_close(player:getNextY(), 3.2, 0.000001,
+            methodName .. " " .. failure.name .. " must preserve Y")
+    end
+end
+
+test("SpeedHook protects isLocalPlayer failures", function()
+    exerciseSpeedHookGetterFailures("isLocalPlayer", { "not-a-boolean", 1 })
+end)
+
+test("SpeedHook protects getModData failures", function()
+    exerciseSpeedHookGetterFailures("getModData", { "not-a-table", 1 })
+end)
+
+test("SpeedHook protects getX failures", function()
+    exerciseSpeedHookGetterFailures("getX", { "not-a-number", 0 / 0, math.huge })
+end)
+
+test("SpeedHook protects getY failures", function()
+    exerciseSpeedHookGetterFailures("getY", { "not-a-number", 0 / 0, -math.huge })
+end)
+
+test("SpeedHook protects getNextX failures", function()
+    exerciseSpeedHookGetterFailures("getNextX", { "not-a-number", 0 / 0, math.huge })
+end)
+
+test("SpeedHook protects getNextY failures", function()
+    exerciseSpeedHookGetterFailures("getNextY", { "not-a-number", 0 / 0, -math.huge })
+end)
+
 local function exerciseSpeedHookSetterFailure(failingAxis, failurePhase)
     local player = MockPlayer({})
     player:getModData()["UT_speedMod"] = 0.5
@@ -1916,6 +2002,48 @@ test("SpeedHook legacy marker requires relaunch without registering or disabling
         "legacy detection must not stack a dispatcher")
     legacyState.implementation()
     assert_eq(legacyCalls, 1, "legacy behavior pointer must remain working")
+end)
+
+test("SpeedHook corrupt dispatcher requires relaunch and never registers or retries", function()
+    local currentState = UTCore._speedHookLifecycle
+    local currentPublicState = UTSpeedHookLifecycle
+    local currentEvent = Events.OnPlayerMove
+    local corruptDispatcher = {}
+    local state = { dispatcher = corruptDispatcher }
+    local addCalls = 0
+
+    UTCore._speedHookLifecycle = state
+    UTSpeedHookLifecycle = state
+    Events.OnPlayerMove = {
+        Add = function()
+            addCalls = addCalls + 1
+            error("corrupt dispatcher state must not call Add")
+        end,
+    }
+
+    local ok, err = pcall(function()
+        dofile(base .. "../media/lua/shared/UTCore/UTCore_SpeedHook.lua")
+        dofile(base .. "../media/lua/shared/UTCore/UTCore_SpeedHook.lua")
+        dofile(base .. "../media/lua/shared/UTCore/UTCore_SpeedHook.lua")
+    end)
+    UTCore._speedHookLifecycle = currentState
+    UTSpeedHookLifecycle = currentPublicState
+    Events.OnPlayerMove = currentEvent
+    if not ok then error(err, 0) end
+
+    assert_eq(state.dispatcher, corruptDispatcher, "corrupt pointer must remain untouched")
+    assert_eq(state.relaunchRequired, true, "corrupt pointer must require relaunch")
+    assert_eq(state.dispatcherCorruptRelaunchRequired, true,
+        "corrupt dispatcher terminal state must be explicit")
+    assert_eq(state.registration.attempted, true,
+        "unknown prior registration must not be treated as disproven")
+    assert_eq(state.registration.outcome, "corrupt_dispatcher_unknown",
+        "corrupt dispatcher outcome must remain explicit")
+    assert_eq(state.registration.cardinality, "unknown",
+        "corrupt dispatcher callback cardinality must remain unknown")
+    assert_eq(state.registration.terminal, true,
+        "corrupt dispatcher state must be terminal for this process")
+    assert_eq(addCalls, 0, "repeated loads must not register or retry")
 end)
 
 test("SpeedHook registration false nil and post-mutation throw never retry", function()
