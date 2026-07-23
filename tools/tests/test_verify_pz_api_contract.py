@@ -515,3 +515,46 @@ def test_method_declarations_are_not_counted_as_call_occurrences(tmp_path):
     )
     calls = verifier.extract_mod_calls(path)
     assert [(call.receiver, call.method, call.line_num) for call in calls] == [("player", "getStats", 4)]
+
+
+def test_java_interface_methods_are_indexed(tmp_path):
+    path = tmp_path / "VariableSource.java"
+    path.write_text(
+        """public interface VariableSource {
+    String getValue(String key);
+
+    default boolean getFlag(String key) {
+        return getValue(key) != null;
+    }
+}
+""",
+        encoding="utf-8",
+    )
+
+    methods = verifier.extract_java_methods(path)
+    signatures = {(method.name, method.param_count) for method in methods}
+    assert signatures == {("getValue", 1), ("getFlag", 1)}
+
+
+def test_java_inheritance_resolution_is_transitive(monkeypatch):
+    interface_method = verifier.JavaMethod(
+        name="getFlag",
+        param_count=1,
+        return_type="boolean",
+        file="VariableSource.java",
+        line_num=2,
+        is_static=False,
+    )
+    raw_index = {
+        "Child": {},
+        "Parent": {},
+        "VariableSource": {"getFlag": [interface_method]},
+    }
+    monkeypatch.setattr(
+        verifier,
+        "JAVA_INHERITANCE",
+        {"Child": ["Parent"], "Parent": ["VariableSource"]},
+    )
+
+    resolved = verifier.resolve_java_index_with_inheritance(raw_index)
+    assert resolved["Child"]["getFlag"] == [interface_method]

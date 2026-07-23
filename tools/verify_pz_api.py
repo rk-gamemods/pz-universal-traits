@@ -100,6 +100,8 @@ JAVA_CLASS_FILES = {
     "IsoObject": "zombie/iso/IsoObject.java",
     "IsoMovingObject": "zombie/iso/IsoMovingObject.java",
     "IsoLivingCharacter": "zombie/characters/IsoLivingCharacter.java",
+    "IAnimationVariableSource": "zombie/core/skinnedmodel/advancedanimation/IAnimationVariableSource.java",
+    "IAnimationVariableMap": "zombie/core/skinnedmodel/advancedanimation/IAnimationVariableMap.java",
     "Clothing": "zombie/inventory/types/Clothing.java",
     "ClimateManager": "zombie/iso/weather/ClimateManager.java",
     "Literature": "zombie/inventory/types/Literature.java",
@@ -283,6 +285,17 @@ JAVA_CONSTRUCTOR_RE = re.compile(
     re.MULTILINE
 )
 
+JAVA_INTERFACE_METHOD_RE = re.compile(
+    r'^\s*'
+    r'(?:(?:public|default|static|abstract)\s+)*'
+    r'(?:<[^>\n]+>\s+)?'
+    r'(\S+)\s+'           # return type
+    r'(\w+)\s*'           # method name
+    r'\(([^)]*)\)\s*'     # parameters
+    r'(?:\{|;)',
+    re.MULTILINE,
+)
+
 
 def extract_java_methods(filepath: Path) -> list[JavaMethod]:
     """Extract all public methods from a Java source file."""
@@ -292,12 +305,21 @@ def extract_java_methods(filepath: Path) -> list[JavaMethod]:
     text = filepath.read_text(encoding="utf-8", errors="replace")
     methods = []
 
-    for m in JAVA_METHOD_RE.finditer(text):
+    matches = list(JAVA_METHOD_RE.finditer(text))
+    if re.search(r'\binterface\s+\w+', text):
+        matches.extend(JAVA_INTERFACE_METHOD_RE.finditer(text))
+
+    seen = set()
+    for m in sorted(matches, key=lambda item: item.start()):
         return_type = m.group(1)
         name = m.group(2)
         params = m.group(3).strip()
         param_count = 0 if not params else len(params.split(","))
         line_num = text[:m.start()].count("\n") + 1
+        identity = (name, param_count, line_num)
+        if identity in seen:
+            continue
+        seen.add(identity)
         is_static = "static" in m.group(0)
         methods.append(JavaMethod(
             name=name,
@@ -695,7 +717,8 @@ def verify_call(
 # When a method isn't found on a child class, we search parent classes.
 JAVA_INHERITANCE = {
     "IsoPlayer": ["IsoGameCharacter", "IsoLivingCharacter", "IsoMovingObject", "IsoObject"],
-    "IsoGameCharacter": ["IsoLivingCharacter", "IsoMovingObject", "IsoObject"],
+    "IsoGameCharacter": ["IsoLivingCharacter", "IsoMovingObject", "IsoObject", "IAnimationVariableMap"],
+    "IAnimationVariableMap": ["IAnimationVariableSource"],
     "IsoLivingCharacter": ["IsoMovingObject", "IsoObject"],
     "IsoZombie": ["IsoGameCharacter", "IsoLivingCharacter", "IsoMovingObject", "IsoObject"],
     "IsoMovingObject": ["IsoObject"],
@@ -717,15 +740,28 @@ def resolve_java_index_with_inheritance(
     Build a resolved index where each class includes inherited methods.
     """
     resolved = {}
-    for class_name, methods in raw_index.items():
-        merged = dict(methods)  # start with own methods
-        parents = JAVA_INHERITANCE.get(class_name, [])
-        for parent in parents:
-            if parent in raw_index:
-                for mn, ml in raw_index[parent].items():
-                    if mn not in merged:
-                        merged[mn] = ml
+
+    def resolve(class_name: str, visiting: set[str]) -> dict[str, list[JavaMethod]]:
+        if class_name in resolved:
+            return resolved[class_name]
+        if class_name in visiting:
+            chain = " -> ".join((*sorted(visiting), class_name))
+            raise ValueError(f"Java inheritance cycle: {chain}")
+
+        visiting.add(class_name)
+        merged = dict(raw_index.get(class_name, {}))
+        for parent in JAVA_INHERITANCE.get(class_name, []):
+            if parent not in raw_index:
+                continue
+            for method_name, methods in resolve(parent, visiting).items():
+                if method_name not in merged:
+                    merged[method_name] = methods
+        visiting.remove(class_name)
         resolved[class_name] = merged
+        return merged
+
+    for class_name in raw_index:
+        resolve(class_name, set())
     return resolved
 
 
