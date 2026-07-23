@@ -516,9 +516,9 @@ local ENGINE_FIELDS = {
 local FIELD_ACCESS = {
     maxSpeed = { get = "getMaxSpeed", set = "setMaxSpeed", min = 0 },
     brakingForce = { get = "getBrakingForce", set = "setBrakingForce", min = 0 },
-    engineQuality = { get = "getEngineQuality", min = 0, max = 100 },
-    engineLoudness = { get = "getEngineLoudness", min = 0 },
-    enginePower = { get = "getEnginePower", min = 0 },
+    engineQuality = { get = "getEngineQuality", min = 0, max = 100, integer = true },
+    engineLoudness = { get = "getEngineLoudness", min = 0, integer = true },
+    enginePower = { get = "getEnginePower", min = 0, integer = true },
     initialMass = { get = "getInitialMass", set = "setInitialMass", minExclusive = 0 },
 }
 
@@ -537,6 +537,7 @@ local function readVehicleField(vehicle, field)
         or value ~= value
         or value == math.huge
         or value == -math.huge
+        or (access.integer and value ~= math.floor(value))
         or (access.min ~= nil and value < access.min)
         or (access.minExclusive ~= nil and value <= access.minExclusive)
         or (access.max ~= nil and value > access.max) then

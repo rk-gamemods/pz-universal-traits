@@ -2819,6 +2819,96 @@ test("Vehicle field validation preserves valid float and integer bridge values",
     assert_eq(vehicle:getEnginePower(), 200, "valid power integer must remain accepted")
 end)
 
+test("Vehicle engine fields reject fractional acquisition reads without consuming retries", function()
+    for _, hostile in ipairs({
+        { field = "engineQuality", getter = "getEngineQuality", value = 50.5 },
+        { field = "engineLoudness", getter = "getEngineLoudness", value = 100.5 },
+        { field = "enginePower", getter = "getEnginePower", value = 100.5 },
+    }) do
+        UTCore._vehicleTraitDefs = {}
+        local vehicle = MockVehicle()
+        vehicle[hostile.getter] = function() return hostile.value end
+        local player = MockPlayer({"UniversalTraits:UT_testdriver"}, { vehicle = vehicle, driving = true })
+        UTCore.registerVehicleTrait("UniversalTraits:UT_testdriver", "UT_testdriverState", {
+            engineQuality = 0.5,
+            engineLoudness = 0.5,
+            enginePower = 2,
+        }, 1)
+
+        Events.OnEnterVehicle.fire(player)
+
+        local ownership = vehicle:getModData().UT_vehicleTraitOwnership
+        assert_eq(vehicle._setterCalls.engineFeature or 0, 0,
+            hostile.field .. " fractional acquisition must not call the grouped setter")
+        assert_eq(ownership.fields[hostile.field], nil,
+            hostile.field .. " fractional acquisition must remain unresolved")
+        assert_eq(ownership.restoreAttempts.engineFields, nil,
+            hostile.field .. " fractional acquisition must not consume retry budget")
+    end
+end)
+
+test("Vehicle engine fields retain restore evidence for fractional reads without consuming retries", function()
+    for _, hostile in ipairs({
+        { field = "engineQuality", storage = "_engineQuality", value = 50.5 },
+        { field = "engineLoudness", storage = "_engineLoudness", value = 50.5 },
+        { field = "enginePower", storage = "_enginePower", value = 200.5 },
+    }) do
+        UTCore._vehicleTraitDefs = {}
+        local vehicle = MockVehicle()
+        local player = MockPlayer({"UniversalTraits:UT_testdriver"}, { vehicle = vehicle, driving = true })
+        UTCore.registerVehicleTrait("UniversalTraits:UT_testdriver", "UT_testdriverState", {
+            engineQuality = 0.5,
+            engineLoudness = 0.5,
+            enginePower = 2,
+        }, 1)
+        Events.OnEnterVehicle.fire(player)
+        local callsAfterApply = vehicle._setterCalls.engineFeature
+        vehicle[hostile.storage] = hostile.value
+
+        player:setVehicle(nil)
+        UTCore.updateVehicleTraitState(player)
+
+        local ownership = vehicle:getModData().UT_vehicleTraitOwnership
+        assert_eq(vehicle._setterCalls.engineFeature, callsAfterApply,
+            hostile.field .. " fractional restore read must not call the grouped setter")
+        assert_true(type(ownership.fields[hostile.field]) == "table",
+            hostile.field .. " fractional restore read must retain ownership evidence")
+        assert_eq(ownership.restoreAttempts.engineFields, nil,
+            hostile.field .. " fractional restore read must not consume retry budget")
+    end
+end)
+
+test("Vehicle engine fields accept integer domain boundaries", function()
+    for _, boundary in ipairs({
+        { name = "lower", engineQuality = 0, engineLoudness = 0, enginePower = 0 },
+        { name = "quality upper", engineQuality = 100, engineLoudness = 1, enginePower = 1 },
+    }) do
+        UTCore._vehicleTraitDefs = {}
+        local vehicle = MockVehicle()
+        vehicle._engineQuality = boundary.engineQuality
+        vehicle._engineLoudness = boundary.engineLoudness
+        vehicle._enginePower = boundary.enginePower
+        local player = MockPlayer({"UniversalTraits:UT_testdriver"}, { vehicle = vehicle, driving = true })
+        UTCore.registerVehicleTrait("UniversalTraits:UT_testdriver", "UT_testdriverState", {
+            engineQuality = 1,
+            engineLoudness = 1,
+            enginePower = 1,
+        }, 1)
+
+        Events.OnEnterVehicle.fire(player)
+
+        local fields = vehicle:getModData().UT_vehicleTraitOwnership.fields
+        assert_eq(fields.engineQuality.baseline, boundary.engineQuality,
+            boundary.name .. " quality integer must be acquired")
+        assert_eq(fields.engineLoudness.baseline, boundary.engineLoudness,
+            boundary.name .. " loudness integer must be acquired")
+        assert_eq(fields.enginePower.baseline, boundary.enginePower,
+            boundary.name .. " power integer must be acquired")
+        assert_eq(vehicle._setterCalls.engineFeature or 0, 0,
+            boundary.name .. " equal integer targets must not trigger a setter")
+    end
+end)
+
 -- ===== ZombieCollisionHook tests =====
 
 local function withCollisionDebugHarness(body)
