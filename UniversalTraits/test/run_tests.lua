@@ -4464,11 +4464,20 @@ test("packmouse preserves external inventory capacity ownership", function()
 end)
 
 test("packmouse bridge failures fail safely", function()
-    local badModData = MockPlayer({ PACKMOUSE_ID })
+    local inaccessibleModData = {}
+    local badModData = MockPlayer(
+        { PACKMOUSE_ID },
+        { moddata = inaccessibleModData }
+    )
     badModData.getModData = function() error("injected getModData failure") end
     assert_true(
         pcall(function() UTPackMouseLifecycle.onCreatePlayer(0, badModData) end),
         "getModData failure must not escape"
+    )
+    assert_eq(
+        inaccessibleModData.UT_modifierBuckets,
+        nil,
+        "getModData failure must not introduce modifier buckets"
     )
 
     local badInventory = MockPlayer({ PACKMOUSE_ID })
@@ -4477,12 +4486,28 @@ test("packmouse bridge failures fail safely", function()
         pcall(function() UTPackMouseLifecycle.onCreatePlayer(0, badInventory) end),
         "inventory failure must not escape"
     )
+    assert_eq(
+        packmouseBucket(badInventory)[PACKMOUSE_ID],
+        -2,
+        "contained inventory failure must leave the successful Pack Mouse source active"
+    )
 
     local badSetter = MockPlayer({ PACKMOUSE_ID })
+    UTCore.applyCarryWeight(badSetter, 3, "test:foreign")
     badSetter.setMaxWeightBase = function() error("injected setter failure") end
     assert_true(
         pcall(function() UTPackMouseLifecycle.onCreatePlayer(0, badSetter) end),
         "setter failure must not escape"
+    )
+    assert_eq(
+        packmouseBucket(badSetter)[PACKMOUSE_ID],
+        nil,
+        "setter failure must roll back the newly introduced Pack Mouse source"
+    )
+    assert_eq(
+        packmouseBucket(badSetter)["test:foreign"],
+        3,
+        "setter failure rollback must preserve foreign carry sources"
     )
 end)
 

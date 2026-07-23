@@ -8,10 +8,28 @@ local state = UTPackMouseLifecycle
 
 local function syncOwnedCarry(player, value)
     if not player then return false end
-    return pcall(function()
+    local snapshotOk, hadSource, previousValue = pcall(function()
+        local modData = player:getModData()
+        local buckets = modData and modData["UT_modifierBuckets"]
+        local carryBucket = type(buckets) == "table" and buckets["carryFlatAdd"] or nil
+        if type(carryBucket) ~= "table" then
+            return false, nil
+        end
+        return carryBucket[TRAIT_ID] ~= nil, carryBucket[TRAIT_ID]
+    end)
+    if not snapshotOk then return false end
+
+    local applied = pcall(function()
         UTCore.applyCarryWeight(player, value, TRAIT_ID)
         UTCore.reconcileAggregatedModifiers(player)
     end)
+    if applied then return true end
+
+    pcall(function()
+        UTCore.applyCarryWeight(player, hadSource and previousValue or nil, TRAIT_ID)
+        UTCore.reconcileAggregatedModifiers(player)
+    end)
+    return false
 end
 
 local function clearTrackedPlayer()
@@ -56,8 +74,9 @@ local function onCreatePlayer(_playerIndex, player)
         return
     end
 
-    state.player = player
-    syncOwnedCarry(player, -2)
+    if syncOwnedCarry(player, -2) then
+        state.player = player
+    end
 end
 
 state.onCreatePlayer = onCreatePlayer
