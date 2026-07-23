@@ -217,7 +217,7 @@ class GourmandGeneratorSafetyTests(unittest.TestCase):
             }.issubset(open_dimensions)
         )
 
-    def test_exact_cross_finding_projection_preserves_gordanite(self) -> None:
+    def test_exact_cross_finding_projection_preserves_later_gordanite_closure(self) -> None:
         self.run_generator()
         review = json.loads(
             (self.campaign / "independent_reviews" / "traits_01_04.json").read_bytes()
@@ -228,7 +228,8 @@ class GourmandGeneratorSafetyTests(unittest.TestCase):
             if row["id"] == GENERATOR.ITEM_MUTATION_FINDING
         )
         self.assertNotIn(GENERATOR.TRAIT, finding["affected_surfaces"])
-        self.assertIn("UniversalTraits:UT_gordanite", finding["affected_surfaces"])
+        self.assertEqual(finding["affected_surfaces"], [])
+        self.assertEqual(finding["state"], "proven-correct")
         self.assertEqual(
             finding["partial_resolutions"][GENERATOR.TRAIT],
             "implemented-and-statically-validated at 984ec687 with exact current-eater consumption deltas",

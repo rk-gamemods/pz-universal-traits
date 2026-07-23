@@ -11031,7 +11031,7 @@
       "trait_id": "UniversalTraits:UT_gordanite",
       "source_batch": "batch_04",
       "original_state": "runtime-unproven",
-      "review_state": "needs-correction",
+      "review_state": "accepted",
       "checked_dimensions": [
         {
           "id": "registration",
@@ -11185,7 +11185,7 @@
       "omissions": [
         {
           "id": "IR0104-GORDANITE-DOUBLE-CALORIES",
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "severity": "high",
           "confidence": "high",
           "title": "Gordanite grants 2.25x base calories on the first installed wrapper, not 1.5x",
@@ -11204,11 +11204,14 @@
           "reproduction_evidence": "The inventory scan changes 200 calories to 300; vanilla Eat adds 300; the wrapper then adds half of the already modified 300, for total gain 450.",
           "missing_proof": "",
           "recommended_correction": "Choose either item-value mutation or one post-eat correction, not both.",
-          "smallest_regression_test": "Model vanilla Eat plus the wrapper for a 200-calorie item and assert total gain is exactly 300."
+          "smallest_regression_test": "Model vanilla Eat plus the wrapper for a 200-calorie item and assert total gain is exactly 300.",
+          "resolution_state": "implemented-and-statically-validated",
+          "resolution_evidence": "Accepted final behavior at 6497d16d removes persistent item mutation and scan ownership, uses immutable native deltas, and is duplicate-load safe.",
+          "remaining_runtime_proof": "Actual current-build Kahlua/SVN 964 meal consumption remains unobserved."
         },
         {
           "id": "IR0104-GORDANITE-HOOK-STACK",
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "severity": "high",
           "confidence": "high",
           "title": "Shared consumption hooks stack on repeated OnGameStart",
@@ -11226,11 +11229,14 @@
           "reproduction_evidence": "Each OnGameStart captures the already wrapped perform method and wraps it again without a sentinel, causing the post-consumption correction is applied more than once.",
           "missing_proof": "The exact number of world-entry cycles in a normal user session was not observed in game; two invocations are sufficient to reproduce the static wrapper chain.",
           "recommended_correction": "Install each wrapper once, preserve the true original once, and make repeated installation a no-op.",
-          "smallest_regression_test": "Fire OnGameStart twice, perform one matching consumption action, and assert one original call and one trait effect."
+          "smallest_regression_test": "Fire OnGameStart twice, perform one matching consumption action, and assert one original call and one trait effect.",
+          "resolution_state": "implemented-and-statically-validated",
+          "resolution_evidence": "Accepted final behavior at 6497d16d removes persistent item mutation and scan ownership, uses immutable native deltas, and is duplicate-load safe.",
+          "remaining_runtime_proof": "Actual current-build Kahlua/SVN 964 meal consumption remains unobserved."
         },
         {
           "id": "IR0104-GORDANITE-ITEM-SCOPE",
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "severity": "high",
           "confidence": "high",
           "title": "Gordanite mutates every cooked food item in inventory, including food cooked by others, and leaks values across owners",
@@ -11246,15 +11252,52 @@
           "reproduction_evidence": "The scan tests only cooked state and trait ownership of the current player; it mutates shared item calories/hunger values without provenance or a complete restore/transfer path.",
           "missing_proof": "Save/load persistence and multiplayer are untested, though same-world transfer is statically sufficient.",
           "recommended_correction": "Track cook provenance and compute the bonus at consumption without persistent shared-item mutation.",
-          "smallest_regression_test": "Place another character's cooked food in the trait holder inventory, run the scan, transfer it back, and assert unchanged base values."
+          "smallest_regression_test": "Place another character's cooked food in the trait holder inventory, run the scan, transfer it back, and assert unchanged base values.",
+          "resolution_state": "implemented-and-statically-validated",
+          "resolution_evidence": "Accepted final behavior at 6497d16d removes persistent item mutation and scan ownership, uses immutable native deltas, and is duplicate-load safe.",
+          "remaining_runtime_proof": "Actual current-build Kahlua/SVN 964 meal consumption remains unobserved."
         }
       ],
       "unresolved_proof": [
-        "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-        "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-        "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-        "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
-      ]
+        "Actual current-build Kahlua/SVN 964 completed and interrupted consumption remains unobserved.",
+        "Full desktop relaunch, repeated world entry, and current-version save/load remain unobserved.",
+        "Only English localization exists; gameplay balance and profiler evidence remain unobserved."
+      ],
+      "accepted_overall_state": "runtime-unproven",
+      "independent_state": "runtime-unproven",
+      "resolution_record": "change-impact/gordanite-native-delta-resolution.json",
+      "superseding_review": {
+        "state": "accepted-static-resolution-runtime-unproven",
+        "historical_review_preserved": true,
+        "review_chronology": [
+          {
+            "snapshot": "5b8b28fd2cac6198dadeb3c703f24706967aac9f",
+            "disposition": "changes-requested",
+            "finding": "Chef full-name fallback was lost when username lookup failed."
+          },
+          {
+            "snapshot": "6497d16ddc181cb387d069daa96c94ebcec2d549",
+            "disposition": "accepted",
+            "finding": "Exact three-file identity correction accepted with focused 13/0 and full 586/0."
+          }
+        ],
+        "resolved_finding_ids": [
+          "IR0104-GORDANITE-DOUBLE-CALORIES",
+          "IR0104-GORDANITE-HOOK-STACK",
+          "IR0104-GORDANITE-ITEM-SCOPE"
+        ],
+        "retained_finding_ids": [
+          "B04-gordanite-RUNTIME"
+        ]
+      },
+      "release_parity": {
+        "trait_source": "4BD3B688F591ED2EB3ED03A979886C17F2B0BDC97BD63DAA3181814E01E22DC2",
+        "trait_release": "4BD3B688F591ED2EB3ED03A979886C17F2B0BDC97BD63DAA3181814E01E22DC2",
+        "hook_source": "17F6B48D4763096011339389494A538E5E9682451CBA4F9B3A7CCCCA285CBDBA",
+        "hook_release": "17F6B48D4763096011339389494A538E5E9682451CBA4F9B3A7CCCCA285CBDBA",
+        "accepted_review_reported_hook_sha256": "C4F91442FB1B0ACA042CA5311E5F986B061CD5702FEFC10739CAA1A0A8A0B6F9",
+        "state": "proven-correct"
+      }
     },
     {
       "trait_id": "UniversalTraits:UT_gourmand",
@@ -12398,7 +12441,7 @@
     },
     {
       "id": "XTF0104-FOOD-ITEM-MUTATION",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
       "title": "Food traits mutate transferable item state and Gordanite double-counts its calorie bonus",
@@ -12406,20 +12449,16 @@
         "UniversalTraits/media/lua/shared/UniversalTraits/UT_gordanite.lua:18-41",
         "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6398-6430"
       ],
-      "affected_surfaces": [
-        "UniversalTraits:UT_gordanite",
-        "runtime",
-        "item_state",
-        "cross_player",
-        "reset"
-      ],
-      "reproduction_evidence": "Gourmand no longer mutates shared food objects or modData. Gordanite remains affected and still requires its own exact correction.",
-      "missing_proof": "Save/load persistence was not observed; same-world transfer and the 2.25x arithmetic are proven from current source and engine order.",
-      "recommended_correction": "Calculate approved effects at consumption time without persistent shared-item mutation and restore or migrate existing cached state safely.",
-      "smallest_regression_test": "Consume a 200-calorie item through the full vanilla-plus-hook path and assert 300 total, then transfer inspected Gordanite/Gourmand food to a non-trait player and assert base values.",
+      "affected_surfaces": [],
+      "reproduction_evidence": "Gourmand and Gordanite now compute consumption-time corrections from immutable native deltas without persistent item mutation.",
+      "missing_proof": "Actual current-build Kahlua consumption remains unobserved for each trait.",
+      "recommended_correction": "No further static correction is indicated.",
+      "smallest_regression_test": "Covered by Gordanite and Gourmand native-delta, transfer-state, composition, and parity tests.",
       "partial_resolutions": {
         "UniversalTraits:UT_gourmand": "implemented-and-statically-validated at 984ec687 with exact current-eater consumption deltas"
-      }
+      },
+      "resolution_state": "implemented-and-statically-validated",
+      "resolution_evidence": "Gordanite was the last remaining trait owner; accepted 6497d16d removes it and leaves no affected trait."
     },
     {
       "id": "XTF0104-ITEM-CONSUMPTION-WRAPPERS",

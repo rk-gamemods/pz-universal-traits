@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "remediation_queue_sha256": "2cf0fb1745135627438171a04199bb60ba10b76d28be422cf69308349d064d5e",
+  "remediation_queue_sha256": "71518d5bbf82eedd15a4ba3cb49c6b6007373dedae57b67bb4f8d4f784870964",
   "category_label": "release-blocker",
   "classification_scope_statement": "Only the queue rows listed by these reviewed semantic identities are classified as release-blocker; all other rows remain unclassified in the exhaustive ledger.",
   "identities": [
@@ -34,12 +34,11 @@
       "queue_ids": [
         "finding:IR0104-ALLERGIC-HOOK-STACK",
         "finding:IR0104-ANTIVAXXER-HOOK-STACK",
-        "finding:IR0104-GORDANITE-HOOK-STACK",
         "finding:IR0104-ADDICTEDTOCAFFEINE-HOOK-STACK",
         "dimension:UniversalTraits:UT_pillsallergy:events"
       ],
       "dependencies": [],
-      "evidence_scope": "The shared wrapper sentinel is statically corrected. Caller-specific review records remain queued until their assigned trait closures reconcile them."
+      "evidence_scope": "The shared wrapper sentinel is statically corrected. Allergic, Antivaxxer, Addicted to Caffeine, and Pills Allergy records remain queued until their assigned trait closures reconcile them."
     },
     {
       "semantic_identity": "package:UniversalTraits-release-reconciliation",

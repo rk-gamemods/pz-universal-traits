@@ -332,21 +332,29 @@ def _plan_review(root: Path, campaign: Path, plan: dict[str, bytes]) -> None:
         "cross_player",
         "reset",
     ]
-    if mutation["affected_surfaces"] not in (expected_surfaces, corrected_surfaces):
+    closed_surfaces = []
+    if mutation["affected_surfaces"] not in (
+        expected_surfaces,
+        corrected_surfaces,
+        closed_surfaces,
+    ):
         raise ValueError(f"{ITEM_MUTATION_FINDING} exact membership drifted")
-    mutation["affected_surfaces"] = corrected_surfaces
-    mutation["anchors"] = [
-        anchor
-        for anchor in mutation["anchors"]
-        if anchor
-        not in {
-            "UniversalTraits/media/lua/shared/UniversalTraits/UT_gourmand.lua",
-            "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua:66-106",
-        }
-    ]
-    mutation["reproduction_evidence"] = (
-        "Gourmand no longer mutates shared food objects or modData. Gordanite remains affected and still requires its own exact correction."
-    )
+    if mutation["affected_surfaces"]:
+        mutation["affected_surfaces"] = corrected_surfaces
+        mutation["anchors"] = [
+            anchor
+            for anchor in mutation["anchors"]
+            if anchor
+            not in {
+                "UniversalTraits/media/lua/shared/UniversalTraits/UT_gourmand.lua",
+                "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua:66-106",
+            }
+        ]
+        mutation["reproduction_evidence"] = (
+            "Gourmand no longer mutates shared food objects or modData. Gordanite remains affected and still requires its own exact correction."
+        )
+    elif mutation.get("state") != "proven-correct":
+        raise ValueError(f"{ITEM_MUTATION_FINDING} empty membership is not closed")
     mutation["partial_resolutions"] = {
         **mutation.get("partial_resolutions", {}),
         TRAIT: "implemented-and-statically-validated at 984ec687 with exact current-eater consumption deltas",

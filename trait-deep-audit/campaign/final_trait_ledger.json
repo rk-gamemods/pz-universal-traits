@@ -45,14 +45,14 @@
     }
   },
   "source_artifact_sha256": {
-    "independent_reviews/traits_01_04.json": "CCE30545DE396EC52BBDB6AC90D3DB4019038409725C1E77B4B9446BFA22F2C8",
+    "independent_reviews/traits_01_04.json": "C8314A582A7F0AF549FD45EC289FAA62BB616A8679E098B20A9043817BF22984",
     "independent_reviews/traits_05_08.json": "D255A15AFCA8FC010573892EEA19FDC404F30F3066879C1939B702BEF5B2A474",
     "independent_reviews/traits_09_12.json": "A5322FD2CE42AA99B66AEF17BC4A915B1E924852503C59FFC2E6944197B2102E",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "4FD54923B0938C3294AB5E9D0C0168A08FDBF353A73FBE83BCE7F5DDF8B911F2",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
     "trait_batches/batch_03.jsonl": "DE80C7E88D64E27AEDFA1248A855290E9892605D7A1800D9933BFFFBD8271DA9",
-    "trait_batches/batch_04.jsonl": "424FC71A59F0228A53D8B00C14C639A2CA8ABC44AC20860D86960C23B5AB3C8A",
+    "trait_batches/batch_04.jsonl": "16E28CB45A0BED125D1A00F4B382C95B5D7BF59C7344FBCBCF72814881EC758C",
     "trait_batches/batch_05.jsonl": "3B947F6228AB251E6E17074CF88F62A636D3EDFA01474F1E2DE2CC30ED42433D",
     "trait_batches/batch_06.jsonl": "32B529C5117E409EBFC41BF178BB94BFDD8301716D6187AC4950CF983A32CAAB",
     "trait_batches/batch_07.jsonl": "0483F4C2595D692E19FD6F60DE04E5D633C7942497A2669CF1B48459C0AFA771",
@@ -61,7 +61,7 @@
     "trait_batches/batch_10.jsonl": "33304EC69C6072CE027BFD779AB0E2332EEDE70DC56B6920468F46BC4A2ABE31",
     "trait_batches/batch_11.jsonl": "D1617D3F6DE1E81879EB3FA2B81F7DA1058630E103CF1DFD2D907B026311D959",
     "trait_batches/batch_12.jsonl": "3578367CB91C26719B23781AED4347327F5121A33FBBA47CE36891DC42DCEC9C",
-    "translation_audit.json": "C706C0B763A33E5352F9A47EEF85ED154B371D5EC96D2563D4C41A3858AE045C"
+    "translation_audit.json": "910237369FCAFE9CD126A1CF3D9D995A2C483D016F853632BEA6CF4B2D4B480E"
   },
   "counts": {
     "traits": 198,
@@ -70,10 +70,10 @@
     "independent_reviewed_traits": 198,
     "independent_review_findings": 117,
     "independent_review_states": {
-      "accepted": 86,
+      "accepted": 87,
       "confirmed-defect": 29,
       "coverage-gap": 20,
-      "needs-correction": 49,
+      "needs-correction": 48,
       "runtime-unproven": 14
     },
     "overall_states": {
@@ -83,9 +83,9 @@
       "runtime-unproven": 109
     },
     "dimension_states": {
-      "proven-correct": 2811,
+      "proven-correct": 2813,
       "confirmed-defect": 192,
-      "coverage-gap": 749,
+      "coverage-gap": 747,
       "runtime-unproven": 1000
     }
   },
@@ -812,7 +812,7 @@
     },
     {
       "id": "IR0104-GORDANITE-DOUBLE-CALORIES",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
       "title": "Gordanite grants 2.25x base calories on the first installed wrapper, not 1.5x",
@@ -835,7 +835,7 @@
     },
     {
       "id": "IR0104-GORDANITE-HOOK-STACK",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
       "title": "Shared consumption hooks stack on repeated OnGameStart",
@@ -857,7 +857,7 @@
     },
     {
       "id": "IR0104-GORDANITE-ITEM-SCOPE",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
       "title": "Gordanite mutates every cooked food item in inventory, including food cooked by others, and leaks values across owners",
@@ -2580,7 +2580,7 @@
     },
     {
       "id": "XTF0104-FOOD-ITEM-MUTATION",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
       "title": "Food traits mutate transferable item state and Gordanite double-counts its calorie bonus",
@@ -2588,17 +2588,11 @@
         "UniversalTraits/media/lua/shared/UniversalTraits/UT_gordanite.lua:18-41",
         "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6398-6430"
       ],
-      "affected_surfaces": [
-        "UniversalTraits:UT_gordanite",
-        "runtime",
-        "item_state",
-        "cross_player",
-        "reset"
-      ],
-      "reproduction_evidence": "Gourmand no longer mutates shared food objects or modData. Gordanite remains affected and still requires its own exact correction.",
-      "missing_proof": "Save/load persistence was not observed; same-world transfer and the 2.25x arithmetic are proven from current source and engine order.",
-      "recommended_correction": "Calculate approved effects at consumption time without persistent shared-item mutation and restore or migrate existing cached state safely.",
-      "smallest_regression_test": "Consume a 200-calorie item through the full vanilla-plus-hook path and assert 300 total, then transfer inspected Gordanite/Gourmand food to a non-trait player and assert base values."
+      "affected_surfaces": [],
+      "reproduction_evidence": "Gourmand and Gordanite now compute consumption-time corrections from immutable native deltas without persistent item mutation.",
+      "missing_proof": "Actual current-build Kahlua consumption remains unobserved for each trait.",
+      "recommended_correction": "No further static correction is indicated.",
+      "smallest_regression_test": "Covered by Gordanite and Gourmand native-delta, transfer-state, composition, and parity tests."
     },
     {
       "id": "XTF0104-ITEM-CONSUMPTION-WRAPPERS",
@@ -21082,9 +21076,11 @@
         "registration": {
           "state": "proven-correct",
           "evidence": [
-            "registries.lua registers UniversalTraits:UT_gordanite"
+            "Registry, definition, runtime id, and English keys agree."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "registration"
           ]
@@ -21092,19 +21088,23 @@
         "definition_parser": {
           "state": "proven-correct",
           "evidence": [
-            "complete-file regex parse found one definition; shared parser test passed"
+            "Cost 4, Cooking +2, no grants or exclusions, and multiplayer-disabled metadata pass deterministic parsing."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "complete script definition and parser validity"
+            "definition_parser"
           ]
         },
         "namespace": {
           "state": "proven-correct",
           "evidence": [
-            "registration, CharacterTrait, and definition use UniversalTraits:UT_gordanite"
+            "Every owned surface uses UniversalTraits:UT_gordanite."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "namespace"
           ]
@@ -21112,53 +21112,59 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "Cost=4; XP/grants=Cooking=2; exclusions=none",
-            "complete script parsed for reverse exclusions"
+            "Pre-campaign master and current source agree on cost 4, Cooking +2, and no grants or exclusions."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "cost/XP/grants/exclusions and bidirectional exclusion behavior"
+            "cost_xp_grants_exclusions"
           ]
         },
         "source_intent": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gordanite.lua comments/implementation"
+            "Pre-campaign master establishes food cooked by the player at 1.5 times native hunger relief and calories."
           ],
           "missing_proof": [
-            "No authoritative upstream source-mod snapshot was included in the allowed evidence set."
+            "none"
           ],
           "source_dimensions": [
-            "source-mod intent"
+            "source_intent"
           ]
         },
         "runtime_path": {
           "state": "proven-correct",
           "evidence": [
-            "UTCore tick throttle 60; cooked inventory food marked once; calories x1.5 and consumption hook hunger multiplier 1.5"
+            "The trait file is declaration-only; completed and interrupted eating snapshot immutable native deltas and add one half after one native call."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "exact runtime path through UT_CORE or script-only behavior"
+            "runtime_path"
           ]
         },
         "numbers": {
           "state": "proven-correct",
           "evidence": [
-            "Cost=4; XP=Cooking=2",
-            "UTCore tick throttle 60; cooked inventory food marked once; calories x1.5 and consumption hook hunger multiplier 1.5"
+            "Each independently positive native hunger-relief and calorie delta receives exactly a 0.5 additive correction."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "numerical behavior"
+            "numbers"
           ]
         },
         "cadence": {
           "state": "proven-correct",
           "evidence": [
-            "UTCore tick throttle 60; cooked inventory food marked once; calories x1.5 and consumption hook hunger multiplier 1.5"
+            "No tick or inventory scan exists; one correction follows each qualifying native complete or eat call."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cadence"
           ]
@@ -21166,143 +21172,155 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
-            "No explicit cooldown beyond documented event/throttle"
+            "Gordanite has no cooldown or accumulator."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "cooldowns"
+            "cooldown"
           ]
         },
         "reset_save_load": {
           "state": "runtime-unproven",
           "evidence": [
-            "modData/item-state paths inspected; standard-Lua tests only"
+            "The accepted path owns no persistent food mutation or Gordanite modData."
           ],
           "missing_proof": [
-            "No real save/reload and trait-removal game run."
+            "Current-version save/load and repeated world entry remain unobserved."
           ],
           "source_dimensions": [
-            "reset and save/load"
+            "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "current indexed PZ/UT API anchors plus standard-Lua mocks"
+            "SVN 964 complete and eat paths, chef access, meal stats, and nutrition deltas were statically traced."
           ],
           "missing_proof": [
-            "No Kahlua/Java bridge execution in the game."
+            "none"
           ],
           "source_dimensions": [
-            "Java-Lua exposure"
+            "java_lua"
           ]
         },
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "all runtime trait Lua files compile in standard Lua; zero-based Java collection loops inspected"
+            "The accepted implementation uses guarded Kahlua-compatible calls and independently protected identity getters."
           ],
           "missing_proof": [
-            "Standard Lua is not Kahlua runtime proof."
+            "Actual current-build Kahlua execution remains unobserved."
           ],
           "source_dimensions": [
-            "Kahlua compatibility"
+            "kahlua"
           ]
         },
         "events": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "UTCore tick throttle 60; cooked inventory food marked once; calories x1.5 and consumption hook hunger multiplier 1.5"
+            "Stable sentinels make repeated hook installation a no-op and preserve one native call and one effect."
           ],
           "missing_proof": [
-            "No full game launch/reload/removal lifecycle trace."
+            "none"
           ],
           "source_dimensions": [
-            "event lifecycle"
+            "events"
           ]
         },
         "stacking_interactions": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "UTCore tick throttle 60; cooked inventory food marked once; calories x1.5 and consumption hook hunger multiplier 1.5",
-            "declared exclusions=none"
+            "Gourmand and Gordanite add from one immutable native hunger delta for exactly 2.0 times relief; Wildsman is unchanged."
           ],
           "missing_proof": [
-            "No exhaustive multi-trait or third-party-mod interaction matrix."
+            "none"
           ],
           "source_dimensions": [
-            "stacking and cross-trait interactions"
+            "stacking_interactions"
           ]
         },
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "DisabledInMultiplayer=true"
+            "DisabledInMultiplayer is true and multiplayer support is a product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "multiplayer restriction"
+            "multiplayer"
           ]
         },
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "EN UI key resolves to 'Gordanite'"
+            "The exact English display name is Gordanite."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "display name"
+            "display"
           ]
         },
         "description": {
           "state": "proven-correct",
           "evidence": [
-            "English description compared with script/runtime numbers"
+            "English accurately states Cooking +2 and 50 percent more nutrition and calories for food the player cooked."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "description accuracy"
+            "description"
           ]
         },
         "localization": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "source inventory records EN as the only locale; name and description keys exist in EN"
+            "Exact English keys exist with source-release parity."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "No non-English UniversalTraits locale exists."
+          ],
           "source_dimensions": [
-            "localization coverage including absent locales"
+            "localization"
           ]
         },
         "balance": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "Cost=4; mechanics=UTCore tick throttle 60; cooked inventory food marked once; calories x1.5 and consumption hook hunger multiplier 1.5"
+            "Cost 4, Cooking +2, and the accepted 1.5 multiplier are unchanged."
           ],
           "missing_proof": [
-            "No gameplay telemetry, comparative pick-rate data, or explicit accepted balance rubric."
+            "No gameplay telemetry exists."
           ],
           "source_dimensions": [
             "balance"
           ]
         },
         "performance": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "UTCore tick throttle 60; cooked inventory food marked once; calories x1.5 and consumption hook hunger multiplier 1.5"
+            "The accepted path performs bounded snapshots and constant-time corrections with no scans."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "No current-build profiler capture exists."
+          ],
           "source_dimensions": [
-            "performance risk"
+            "performance"
           ]
         },
         "tests": {
           "state": "proven-correct",
           "evidence": [
-            "UniversalTraits test/run_tests.lua: 374 passed, 0 failed",
-            "targeted behavior/compile coverage found where noted"
+            "Focused 13/13 and full 586/586 cover identity fallbacks, fail-closed cases, immutable deltas, composition, returns, errors, and parity."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "tests"
           ]
@@ -21310,9 +21328,11 @@
         "mocks": {
           "state": "proven-correct",
           "evidence": [
-            "UTTestMocks.lua boundaries used by the suite; mocks preserve zero-based Java lists where applicable"
+            "Focused doubles independently fail username and full-name getters and model native hunger and calorie deltas."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "mocks"
           ]
@@ -21320,23 +21340,25 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "per-trait source and 42.0 release SHA-256 hashes match"
+            "The final review proved exact source-release parity and reported hook SHA-256 C4F91442FB1B0ACA042CA5311E5F986B061CD5702FEFC10739CAA1A0A8A0B6F9."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "source/release parity"
+            "source_release_parity"
           ]
         },
         "packaging": {
           "state": "coverage-gap",
           "evidence": [
-            "assigned per-trait release file exists and hash-matches source"
+            "No release drift exists for Gordanite-owned runtime surfaces."
           ],
           "missing_proof": [
-            "Shared release registries/scripts/translations were outside the allowed release-read scope."
+            "The unrelated missing source poster remains open."
           ],
           "source_dimensions": [
-            "packaging integrity"
+            "packaging"
           ]
         }
       },
@@ -21344,14 +21366,15 @@
         "B04-gordanite-RUNTIME"
       ],
       "unknowns": [
-        "No game runtime was launched.",
-        "Only EN localization exists in the bounded source inventory.",
-        "Shared release packaging surfaces were not read because the delegation forbids them."
+        "Actual current-build Kahlua/SVN 964 consumption remains unobserved.",
+        "Full desktop relaunch, repeated world entry, and current-version save/load remain unobserved.",
+        "Rendered English, gameplay balance, and profiler observation remain unobserved.",
+        "The missing source poster is unrelated and remains separate."
       ],
-      "translation_terminal_state": "confirmed-defect",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_01_04.json",
-        "review_state": "needs-correction",
+        "review_state": "accepted",
         "omission_finding_ids": [
           "IR0104-GORDANITE-DOUBLE-CALORIES",
           "IR0104-GORDANITE-HOOK-STACK",
@@ -21363,10 +21386,9 @@
         ],
         "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [
-          "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-          "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-          "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-          "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
+          "Actual current-build Kahlua/SVN 964 completed and interrupted consumption remains unobserved.",
+          "Full desktop relaunch, repeated world entry, and current-version save/load remain unobserved.",
+          "Only English localization exists; gameplay balance and profiler evidence remain unobserved."
         ]
       }
     },

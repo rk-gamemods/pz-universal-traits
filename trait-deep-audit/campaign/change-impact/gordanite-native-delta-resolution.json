@@ -1,0 +1,159 @@
+{
+  "schema": "ut-gordanite-native-delta-resolution-v1",
+  "trait_id": "UniversalTraits:UT_gordanite",
+  "authority": {
+    "pre_campaign_master": "a32f251e7cebdc27b533907b6b16c7aa135eb882",
+    "accepted_runtime_commits": [
+      "5b8b28fd2cac6198dadeb3c703f24706967aac9f",
+      "6497d16ddc181cb387d069daa96c94ebcec2d549"
+    ],
+    "pz_snapshot": "SVN revision 964",
+    "final_independent_review": {
+      "verdict": "ACCEPT",
+      "snapshot": "6497d16d",
+      "focused": {
+        "passed": 13,
+        "failed": 0
+      },
+      "full_universaltraits": {
+        "passed": 586,
+        "failed": 0
+      }
+    }
+  },
+  "review_iterations": [
+    {
+      "snapshot": "5b8b28fd2cac6198dadeb3c703f24706967aac9f",
+      "disposition": "changes-requested",
+      "finding": "Username getter failure incorrectly prevented the independently valid full-name chef match.",
+      "resolved_by": "6497d16ddc181cb387d069daa96c94ebcec2d549"
+    },
+    {
+      "snapshot": "6497d16ddc181cb387d069daa96c94ebcec2d549",
+      "disposition": "accepted",
+      "finding": "Exact three-file correction preserves independent identity fallbacks and fail-closed invalid identities.",
+      "resolved_by": null
+    }
+  ],
+  "accepted_intent": {
+    "cost": 4,
+    "cooking_xp": 2,
+    "grants": [],
+    "exclusions": [],
+    "food_benefit_multiplier": 1.5,
+    "english": "+2 to Cooking. Food you cook provides 50 percent more nutrition and calories."
+  },
+  "runtime_contract": {
+    "trait_file": "declaration-only",
+    "native_calls_per_action": 1,
+    "delta_source": "immutable pre-native and post-native snapshots",
+    "bonus": "0.5 of each independently positive hunger-relief and calorie delta",
+    "chef_identity": "independently protected non-empty username or full name",
+    "invalid_identity": "fail closed",
+    "gourmand_composition": "exactly 2.0 times native hunger relief",
+    "wildsman": "unchanged",
+    "persistent_gordanite_state": false,
+    "duplicate_load": "one wrapper and one effect",
+    "native_returns_and_errors": "preserved"
+  },
+  "resolved_findings": [
+    "IR0104-GORDANITE-DOUBLE-CALORIES",
+    "IR0104-GORDANITE-HOOK-STACK",
+    "IR0104-GORDANITE-ITEM-SCOPE"
+  ],
+  "resolved_cross_findings": [
+    "XTF0104-FOOD-ITEM-MUTATION"
+  ],
+  "retained_runtime_findings": [
+    "B04-gordanite-RUNTIME"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gordanite.lua",
+      "sha256": "4BD3B688F591ED2EB3ED03A979886C17F2B0BDC97BD63DAA3181814E01E22DC2",
+      "bytes": 216
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_gordanite.lua",
+      "sha256": "4BD3B688F591ED2EB3ED03A979886C17F2B0BDC97BD63DAA3181814E01E22DC2",
+      "bytes": 216
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+      "sha256": "17F6B48D4763096011339389494A538E5E9682451CBA4F9B3A7CCCCA285CBDBA",
+      "bytes": 17053
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+      "sha256": "17F6B48D4763096011339389494A538E5E9682451CBA4F9B3A7CCCCA285CBDBA",
+      "bytes": 17053
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "58C5DE47626CB2E39F87586EA96367B18D53C662F14B7B0F3D9295BCC9FC746F",
+      "bytes": 37141
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "58C5DE47626CB2E39F87586EA96367B18D53C662F14B7B0F3D9295BCC9FC746F",
+      "bytes": 37141
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/media/registries.lua",
+      "sha256": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+      "bytes": 23864
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/registries.lua",
+      "sha256": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+      "bytes": 23864
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "171CB838FF380AB42BF327F08FDD256A47859B5B9A7366CFDB6BB051419BEC89",
+      "bytes": 393129
+    },
+    {
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "sha256": "82DA5436E39918C94A39117D6D07066AA49A6440A652E6AF9F4F62D37F85E78E",
+      "bytes": 83345
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_gordanite.md",
+      "sha256": "4F750F9CB8694336C24D88D120AC3DB7E9123108E9E45BD4B65534822020EB17",
+      "bytes": 3124
+    }
+  ],
+  "accepted_review_reported_hook_sha256": "C4F91442FB1B0ACA042CA5311E5F986B061CD5702FEFC10739CAA1A0A8A0B6F9",
+  "package_verification": {
+    "release_drift": [],
+    "known_unrelated": [
+      "missing-source:poster.png"
+    ]
+  },
+  "retained_runtime_proof": [
+    "full exit-to-desktop relaunch and current-build Kahlua load",
+    "completed and interrupted real meal consumption",
+    "username and full-name chef identity variants",
+    "Gourmand composition and repeated world entry",
+    "current-version save/load",
+    "rendered English, gameplay balance, and profiler observation"
+  ],
+  "runtime_proof": "Unobserved; accepted static and standard-Lua evidence does not establish actual in-game Kahlua/SVN 964 consumption.",
+  "non_goals": [
+    "multiplayer",
+    "backward migration",
+    "deployment",
+    "rebalance"
+  ]
+}
