@@ -18,6 +18,7 @@ local function test(name, fn)
     if testFilter and not name:lower():find(testFilter:lower(), 1, true) then return end
     UTCore._mockTickCount = 0   -- reset dispatch tick counter per test
     setMockRealworldSecondsSinceLastUpdate(1 / 60)
+    setMockGameMultiplier(1.0)
     local ok, err = pcall(fn)
     if ok then
         print("PASS  " .. name)
@@ -4705,7 +4706,7 @@ test("sore registers pain floor via UTCore.applyStatFloor on update", function()
 end)
 
 test("sloth records fatigue removal when not running or sprinting", function()
-    local p = MockPlayer({ "UniversalTraits:UT_sloth" })
+    local p = MockPlayer({ "UniversalTraits:UT_sloth" }, { fatigue = 0.5 })
     p._running   = false
     p._sprinting = false
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
@@ -4720,20 +4721,88 @@ test("sloth skips when sprinting", function()
     assert_eq(p:getStats()._charStatAccum[CharacterStat.FATIGUE], nil, "no fatigue removal when sprinting")
 end)
 
-test("squirrel records fatigue removal when running", function()
-    local p = MockPlayer({ "UniversalTraits:UT_squirrel" })
+test("squirrel removes exactly 0.0015 fatigue when running", function()
+    local p = MockPlayer({ "UniversalTraits:UT_squirrel" }, {
+        fatigue = 0.5,
+        endurance = 0.75,
+        stress = 0.25,
+    })
     p._running = true
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    local accum = p:getStats()._charStatAccum[CharacterStat.FATIGUE]
-    assert_true(type(accum) == "number" and accum < 0,
-        "expected fatigue charstat removal when running, got " .. tostring(accum))
+    local stats = p:getStats()
+    assert_close(stats:get(CharacterStat.FATIGUE), 0.4985, 1e-9, "running fatigue")
+    assert_close(stats._charStatAccum[CharacterStat.FATIGUE], -0.0015, 1e-9, "running fatigue write")
+    assert_eq(stats:get(CharacterStat.ENDURANCE), 0.75, "endurance must be unchanged")
+    assert_eq(stats:get(CharacterStat.STRESS), 0.25, "stress must be unchanged")
+    for stat in pairs(stats._charStatAccum) do
+        assert_eq(stat, CharacterStat.FATIGUE, "squirrel must not write unrelated stats")
+    end
 end)
-test("squirrel skips when not running or sprinting", function()
-    local p = MockPlayer({ "UniversalTraits:UT_squirrel" })
-    p._running   = false
-    p._sprinting = false
+
+test("squirrel removes exactly 0.0015 fatigue when sprinting", function()
+    local p = MockPlayer({ "UniversalTraits:UT_squirrel" }, { fatigue = 0.5 })
+    p._sprinting = true
     withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
-    assert_eq(p:getStats()._charStatAccum[CharacterStat.FATIGUE], nil, "no fatigue removal when idle")
+    assert_close(p:getStats():get(CharacterStat.FATIGUE), 0.4985, 1e-9, "sprinting fatigue")
+end)
+
+test("squirrel skips idle and walking players", function()
+    for _, movingState in ipairs({ "idle", "walking" }) do
+        local p = MockPlayer({ "UniversalTraits:UT_squirrel" }, { fatigue = 0.5 })
+        p._walking = movingState == "walking"
+        withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
+        assert_eq(p:getStats()._charStatAccum[CharacterStat.FATIGUE], nil,
+            "no fatigue write while " .. movingState)
+        assert_eq(p:getStats():get(CharacterStat.FATIGUE), 0.5,
+            "fatigue unchanged while " .. movingState)
+    end
+end)
+
+test("squirrel skips players without the trait", function()
+    local p = MockPlayer({}, { fatigue = 0.5 })
+    p._running = true
+    withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
+    assert_eq(p:getStats()._charStatAccum[CharacterStat.FATIGUE], nil, "no fatigue write without trait")
+    assert_eq(p:getStats():get(CharacterStat.FATIGUE), 0.5, "fatigue unchanged without trait")
+end)
+
+test("squirrel periodic wrapper skips a missing player", function()
+    withActivePlayer(nil, function() Events.EveryOneMinute:fire() end)
+end)
+
+test("squirrel amount is independent of game multiplier", function()
+    for _, multiplier in ipairs({ 1, 5, 20, 40 }) do
+        local p = MockPlayer({ "UniversalTraits:UT_squirrel" }, { fatigue = 0.5 })
+        p._running = true
+        setMockGameMultiplier(multiplier)
+        withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
+        assert_close(p:getStats():get(CharacterStat.FATIGUE), 0.4985, 1e-9,
+            "fatigue at multiplier " .. multiplier)
+    end
+end)
+
+test("squirrel fatigue removal clamps at the native lower bound", function()
+    local p = MockPlayer({ "UniversalTraits:UT_squirrel" }, { fatigue = 0.0005 })
+    p._running = true
+    withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
+    assert_eq(p:getStats():get(CharacterStat.FATIGUE), 0, "fatigue lower clamp")
+    assert_close(p:getStats()._charStatAccum[CharacterStat.FATIGUE], -0.0005, 1e-9,
+        "only the unclamped remainder is removed")
+end)
+
+test("squirrel reload replaces its handler without duplicate effects", function()
+    local key = "UniversalTraits:UT_squirrel::EveryOneMinute"
+    local before = UTCore._periodicHandlers[key]
+    assert_true(before ~= nil, "squirrel periodic handler should be registered")
+    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_squirrel.lua")
+    local after = UTCore._periodicHandlers[key]
+    assert_true(after ~= nil and after ~= before, "reload should replace the registered handler")
+
+    local p = MockPlayer({ "UniversalTraits:UT_squirrel" }, { fatigue = 0.5 })
+    p._running = true
+    withActivePlayer(p, function() Events.EveryOneMinute:fire() end)
+    assert_close(p:getStats():get(CharacterStat.FATIGUE), 0.4985, 1e-9,
+        "reload must leave exactly one active handler")
 end)
 
 test("sundayrunner records unhappiness addition when sprinting", function()

@@ -8,7 +8,7 @@ local function handler(player)
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
     if not (player:isRunning() or player:isSprinting()) then return end
     local stats = player:getStats()
-    stats:remove(CharacterStat.FATIGUE, GameTime.getInstance():getMultiplier() * 0.0015)
+    stats:remove(CharacterStat.FATIGUE, 0.0015)
 end
 
 UTCore.registerPeriodicHandler(TRAIT_ID, "EveryOneMinute", handler)

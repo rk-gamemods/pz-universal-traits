@@ -115,8 +115,13 @@ local function makeStats(opts)
             charStatAccum[stat] = (charStatAccum[stat] or 0) + delta
         end,
         remove = function(self, stat, delta)
-            data[stat] = (data[stat] or 0) - delta
-            charStatAccum[stat] = (charStatAccum[stat] or 0) - delta
+            local oldValue = data[stat] or 0
+            local newValue = oldValue - delta
+            if stat == CharacterStat.FATIGUE then
+                newValue = stat:clamp(newValue)
+            end
+            data[stat] = newValue
+            charStatAccum[stat] = (charStatAccum[stat] or 0) + newValue - oldValue
         end,
     }
 end
@@ -816,16 +821,25 @@ local function periodicHandlerKey(traitId, interval)
 end
 UTCore.registerPeriodicHandler = function(traitId, interval, fn)
     local key = periodicHandlerKey(traitId, interval)
-    if UTCore._periodicHandlers[key] then return end
+    local existing = UTCore._periodicHandlers[key]
+    if existing then
+        if existing.fn == fn and existing.event == interval then return false end
+        if _G.Events and _G.Events[existing.event] then
+            _G.Events[existing.event].Remove(existing.wrapped)
+        end
+        UTCore._periodicHandlers[key] = nil
+    end
     local wrapped = function()
         if getPlayer then
-            fn(getPlayer())
+            local player = getPlayer()
+            if player then fn(player) end
         end
     end
     UTCore._periodicHandlers[key] = { traitId = traitId, event = interval, fn = fn, wrapped = wrapped }
     if _G.Events and _G.Events[interval] then
         _G.Events[interval].Add(wrapped)
     end
+    return true
 end
 UTCore.unregisterPeriodicHandler = function(traitId, interval)
     local keys = {}
@@ -1165,6 +1179,7 @@ local _mockGameTime = {
     worldAgeHours = 0,
     timeOfDay = 12,  -- engine contract is an hour on a 0..24 clock
     realworldSecondsSinceLastUpdate = 1 / 60,
+    multiplier = 1.0,
 }
 
 function setMockGameTime(worldAgeHours)
@@ -1181,6 +1196,10 @@ end
 
 function setMockRealworldSecondsSinceLastUpdate(delta)
     _mockGameTime.realworldSecondsSinceLastUpdate = delta or 0
+end
+
+function setMockGameMultiplier(multiplier)
+    _mockGameTime.multiplier = multiplier or 1.0
 end
 
 function getGameTime()
@@ -1773,7 +1792,7 @@ end
 if not _G.GameTime then
     _G.GameTime = {
         getInstance = function()
-            return { getMultiplier = function(self) return 1.0 end }
+            return { getMultiplier = function(self) return _mockGameTime.multiplier end }
         end,
     }
 end
