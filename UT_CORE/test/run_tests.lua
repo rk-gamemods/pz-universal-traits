@@ -3765,10 +3765,84 @@ test("DamageMultHook reload contains throwing event Remove bridges", function()
     dofile(base .. "../media/lua/shared/UTCore/UTCore_DamageMultHook.lua")
 end)
 
+test("DamageMultHook preserves dense, sparse, keyed, and high-hole registry state", function()
+    local originalRegister = UTCore.registerCoreHandler
+    local originalHandlers = UTCore._coreHandlers
+    local originalCount = UTCore._coreHandlerCount
+    local originalDirty = UTCore._coreHandlersDirty
+    local unrelatedA = { id = "UnrelatedA", fn = function() end }
+    local unrelatedB = { id = "UnrelatedB", fn = function() end }
+    local keyedMetadata = { owner = "other-mod" }
+    local oldDamage = { id = "DamageMultHook", fn = function() end }
+
+    local registry = {
+        [1] = unrelatedA,
+        [2] = oldDamage,
+        [3] = unrelatedB,
+        [99] = unrelatedA,
+        registryMetadata = keyedMetadata,
+    }
+    UTCore._coreHandlers = registry
+    UTCore._coreHandlerCount = 3
+    UTCore._coreHandlersDirty = false
+    dofile(base .. "../media/lua/shared/UTCore/UTCore_DamageMultHook.lua")
+
+    assert_eq(UTCore._coreHandlers, registry, "registry table identity")
+    assert_eq(UTCore._coreHandlers[1], unrelatedA, "dense unrelated identity")
+    assert_eq(UTCore._coreHandlers[3], unrelatedB, "later dense unrelated identity")
+    assert_eq(UTCore._coreHandlers[99], unrelatedA, "high-hole unrelated identity")
+    assert_eq(UTCore._coreHandlers.registryMetadata, keyedMetadata,
+        "keyed metadata identity")
+    assert_eq(UTCore._coreHandlerCount, 3, "coherent count must be preserved")
+    assert_eq(UTCore._coreHandlersDirty, true, "successful normalization marks sorting dirty")
+    assert_eq(UTCore._coreHandlers[2].id, "DamageMultHook")
+    assert_eq(UTCore._coreHandlers[2].fn, UTCore._damageMultTickDispatcher)
+
+    UTCore._coreHandlers = originalHandlers
+    UTCore._coreHandlerCount = originalCount
+    UTCore._coreHandlersDirty = originalDirty
+    UTCore.registerCoreHandler = originalRegister
+    dofile(base .. "../media/lua/shared/UTCore/UTCore_DamageMultHook.lua")
+end)
+
+test("DamageMultHook appends after a keyed match without disturbing keyed state", function()
+    local originalRegister = UTCore.registerCoreHandler
+    local originalHandlers = UTCore._coreHandlers
+    local originalCount = UTCore._coreHandlerCount
+    local originalDirty = UTCore._coreHandlersDirty
+    local unrelated = { id = "Unrelated", fn = function() end }
+    local keyedDamage = { id = "DamageMultHook", fn = function() end }
+
+    UTCore._coreHandlers = {
+        [1] = unrelated,
+        damageKey = keyedDamage,
+        ignored = "unchanged",
+    }
+    UTCore._coreHandlerCount = 1
+    UTCore._coreHandlersDirty = false
+    dofile(base .. "../media/lua/shared/UTCore/UTCore_DamageMultHook.lua")
+
+    assert_eq(UTCore._coreHandlers[1], unrelated)
+    assert_eq(UTCore._coreHandlers.damageKey, nil, "keyed matching row must be removed")
+    assert_eq(UTCore._coreHandlers.ignored, "unchanged")
+    assert_eq(UTCore._coreHandlerCount, 2)
+    assert_eq(UTCore._coreHandlers[2].id, "DamageMultHook")
+    assert_eq(UTCore._coreHandlers[2].fn, UTCore._damageMultTickDispatcher)
+
+    UTCore._coreHandlers = originalHandlers
+    UTCore._coreHandlerCount = originalCount
+    UTCore._coreHandlersDirty = originalDirty
+    UTCore.registerCoreHandler = originalRegister
+    dofile(base .. "../media/lua/shared/UTCore/UTCore_DamageMultHook.lua")
+end)
+
 test("DamageMultHook fails closed for hostile core registration with exact bounds", function()
     local originalRegister = UTCore.registerCoreHandler
     local originalMetatable = getmetatable(UTCore)
     local originalAdd = Events.OnPlayerUpdate.Add
+    local savedHandlers = UTCore._coreHandlers
+    local savedCount = UTCore._coreHandlerCount
+    local savedDirty = UTCore._coreHandlersDirty
     local cases = {
         {
             name = "missing registration",
@@ -3782,6 +3856,36 @@ test("DamageMultHook fails closed for hostile core registration with exact bound
             install = function() UTCore.registerCoreHandler = "not-a-function" end,
             expectedLookups = 0,
             expectedCalls = 0,
+            expectedSafe = false,
+        },
+        {
+            name = "mutation then false",
+            install = function(state)
+                UTCore.registerCoreHandler = function(id, fn)
+                    state.calls = state.calls + 1
+                    UTCore._coreHandlers[1] = {
+                        id = id, fn = fn, throttle = 0, priority = 0,
+                    }
+                    UTCore._coreHandlerCount = 1
+                    return false
+                end
+            end,
+            expectedLookups = 0,
+            expectedCalls = 1,
+            expectedSafe = false,
+        },
+        {
+            name = "mutation then nil invalid",
+            install = function(state)
+                UTCore.registerCoreHandler = function(id)
+                    state.calls = state.calls + 1
+                    UTCore._coreHandlers[1] = { id = id, fn = function() end }
+                    UTCore._coreHandlerCount = 1
+                    return nil
+                end
+            end,
+            expectedLookups = 0,
+            expectedCalls = 1,
             expectedSafe = false,
         },
         {
@@ -3908,8 +4012,19 @@ test("DamageMultHook fails closed for hostile core registration with exact bound
     for _, case in ipairs(cases) do
         setmetatable(UTCore, originalMetatable)
         UTCore.registerCoreHandler = originalRegister
-        originalRegister("DamageMultHook", UTCore._damageMultTickDispatcher, { priority = 0 })
-        local originalCount = UTCore.getCoreHandlerCount()
+        local unrelatedDense = { id = "DenseUnrelated", fn = function() end }
+        local unrelatedHigh = { id = "HighUnrelated", fn = function() end }
+        local unrelatedKeyed = { owner = case.name }
+        local unsafeDamage = { id = "DamageMultHook", fn = function() error("old") end }
+        local registry = {
+            [1] = unrelatedDense,
+            [2] = unsafeDamage,
+            [91] = unrelatedHigh,
+            metadata = unrelatedKeyed,
+        }
+        UTCore._coreHandlers = registry
+        UTCore._coreHandlerCount = 2
+        UTCore._coreHandlersDirty = false
         local state = { lookups = 0, calls = 0, adds = 0 }
         Events.OnPlayerUpdate.Add = function(...)
             state.adds = state.adds + 1
@@ -3921,14 +4036,22 @@ test("DamageMultHook fails closed for hostile core registration with exact bound
         assert_eq(state.lookups, case.expectedLookups, case.name .. " lookup bound")
         assert_eq(state.calls, case.expectedCalls, case.name .. " call bound")
         assert_eq(state.adds, 0, case.name .. " must not install a direct fallback")
-        local expectedCount = originalCount - (case.expectedSafe and 0 or 1)
-        assert_eq(UTCore.getCoreHandlerCount(), expectedCount,
-            case.name .. " must leave the exact total row count")
-        assert_eq(#UTCore._coreHandlers, expectedCount,
-            case.name .. " table and authoritative count must agree")
+        assert_eq(UTCore._coreHandlers, registry, case.name .. " registry table identity")
+        assert_eq(UTCore._coreHandlers[1], unrelatedDense,
+            case.name .. " dense unrelated identity")
+        assert_eq(UTCore._coreHandlers[91], unrelatedHigh,
+            case.name .. " high-hole unrelated identity")
+        assert_eq(UTCore._coreHandlers.metadata, unrelatedKeyed,
+            case.name .. " keyed unrelated identity")
+        assert_eq(UTCore._coreHandlerCount, 2,
+            case.name .. " count metadata preservation")
+        assert_eq(UTCore._coreHandlersDirty, case.expectedSafe,
+            case.name .. " dirty metadata semantics")
         local damageRows = 0
-        for _, row in ipairs(UTCore._coreHandlers) do
-            if row.id == "DamageMultHook" or row.fn == UTCore._damageMultTickDispatcher then
+        for _, row in pairs(UTCore._coreHandlers) do
+            if type(row) == "table"
+                    and (row.id == "DamageMultHook"
+                        or row.fn == UTCore._damageMultTickDispatcher) then
                 damageRows = damageRows + 1
                 assert_eq(row.id, "DamageMultHook",
                     case.name .. " matching row must retain the canonical key")
@@ -3943,6 +4066,39 @@ test("DamageMultHook fails closed for hostile core registration with exact bound
     setmetatable(UTCore, originalMetatable)
     UTCore.registerCoreHandler = originalRegister
     Events.OnPlayerUpdate.Add = originalAdd
+    UTCore._coreHandlers = savedHandlers
+    UTCore._coreHandlerCount = savedCount
+    UTCore._coreHandlersDirty = savedDirty
+    dofile(base .. "../media/lua/shared/UTCore/UTCore_DamageMultHook.lua")
+end)
+
+test("DamageMultHook preserves inconsistent count metadata and unrelated order on failure", function()
+    local originalRegister = UTCore.registerCoreHandler
+    local originalHandlers = UTCore._coreHandlers
+    local originalCount = UTCore._coreHandlerCount
+    local originalDirty = UTCore._coreHandlersDirty
+    local first = { id = "First", fn = function() end }
+    local third = { id = "Third", fn = function() end }
+    local keyedDamage = { fn = UTCore._damageMultTickDispatcher }
+    local registry = { [1] = first, [3] = third, damage = keyedDamage }
+
+    UTCore._coreHandlers = registry
+    UTCore._coreHandlerCount = 3
+    UTCore._coreHandlersDirty = false
+    dofile(base .. "../media/lua/shared/UTCore/UTCore_DamageMultHook.lua")
+
+    assert_eq(UTCore._coreHandlers, registry)
+    assert_eq(UTCore._coreHandlers[1], first)
+    assert_eq(UTCore._coreHandlers[2], nil)
+    assert_eq(UTCore._coreHandlers[3], third)
+    assert_eq(UTCore._coreHandlers.damage, nil, "only matching keyed row is removed")
+    assert_eq(UTCore._coreHandlerCount, 3, "inconsistent count metadata is preserved")
+    assert_eq(UTCore._coreHandlersDirty, false, "failure restores dirty metadata")
+
+    UTCore._coreHandlers = originalHandlers
+    UTCore._coreHandlerCount = originalCount
+    UTCore._coreHandlersDirty = originalDirty
+    UTCore.registerCoreHandler = originalRegister
     dofile(base .. "../media/lua/shared/UTCore/UTCore_DamageMultHook.lua")
 end)
 

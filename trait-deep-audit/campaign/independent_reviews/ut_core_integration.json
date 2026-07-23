@@ -95,10 +95,10 @@
     },
     {
       "path": "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "852f50edb90ecb4cd48dc266c2e0467637b6c620f7688c4e45fb7a7df644094f",
-      "bytes": 11746,
+      "sha256": "11aaf6bbba4c3059cb80647ef694fde73b27fe8176914b0e53c6439054288b3e",
+      "bytes": 14492,
       "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "release_sha256": "852f50edb90ecb4cd48dc266c2e0467637b6c620f7688c4e45fb7a7df644094f",
+      "release_sha256": "11aaf6bbba4c3059cb80647ef694fde73b27fe8176914b0e53c6439054288b3e",
       "release_parity": "exact"
     },
     {
@@ -802,10 +802,10 @@
     },
     {
       "path": "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "852f50edb90ecb4cd48dc266c2e0467637b6c620f7688c4e45fb7a7df644094f",
-      "bytes": 11746,
+      "sha256": "11aaf6bbba4c3059cb80647ef694fde73b27fe8176914b0e53c6439054288b3e",
+      "bytes": 14492,
       "release_path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "release_sha256": "852f50edb90ecb4cd48dc266c2e0467637b6c620f7688c4e45fb7a7df644094f",
+      "release_sha256": "11aaf6bbba4c3059cb80647ef694fde73b27fe8176914b0e53c6439054288b3e",
       "release_parity": "exact",
       "source_role": "safe aggregate body-health loss multiplier pending complete-source policy",
       "overall_state": "runtime-unproven",
