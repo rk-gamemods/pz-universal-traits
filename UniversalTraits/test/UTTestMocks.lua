@@ -343,16 +343,28 @@ function MockPlayer(traitList, opts)
         _bumpDone            = false,
         setBumpDone          = function(self, v) self._bumpDone = v end,
         isBumpDone           = function(self) return self._bumpDone end,
-        -- Generic animation variable store (setVariable/getVariable/clearVariable)
+        -- Generic animation variable store. getVariable remains a legacy test
+        -- convenience; production string comparisons must use getVariableString
+        -- or isVariable because the Java getVariable API returns a slot object.
         setVariable          = function(self, key, val)
             variables[key] = tostring(val)
         end,
         getVariable          = function(self, key) return variables[key] end,
+        getVariableString    = function(self, key) return variables[key] or "" end,
         getVariableBoolean   = function(self, key)
             return variables[key] == "true"
         end,
+        isVariable           = function(self, key, val)
+            return tostring(variables[key] or ""):lower() == tostring(val):lower()
+        end,
         clearVariable        = function(self, key) variables[key] = nil end,
         _variables           = variables,  -- expose for test assertions
+        _climbingRope        = opts.climbingRope or false,
+        isClimbingRope       = function(self) return self._climbingRope end,
+        setClimbingRope      = function(self, value) self._climbingRope = value end,
+        _climbRopeTime       = opts.climbRopeTime or 0,
+        getClimbRopeTime     = function(self) return self._climbRopeTime end,
+        setClimbRopeTime     = function(self, value) self._climbRopeTime = value end,
         _z                   = opts.z or 0,
         getZ                 = function(self) return self._z end,
         setZ                 = function(self, v) self._z = v end,

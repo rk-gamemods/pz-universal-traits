@@ -26,7 +26,7 @@
     "UI_UT_marathonrunner": "Marathon Runner",
     "UI_UT_marathonrunnerDesc": "+2 to Sprinting. Fatigue and endurance drain reduced by 15%.",
     "UI_UT_strongnimble": "Strong and Nimble",
-    "UI_UT_strongnimbleDesc": "+2 to Nimble, +1 to Strength. You do not suffer random falls while climbing fences.",
+    "UI_UT_strongnimbleDesc": "+2 to Nimble, +1 to Strength. You do not suffer random falls while climbing fences or intact ropes.",
     "UI_UT_taut": "Taut",
     "UI_UT_tautDesc": "Lean muscle built through calisthenics. +2 to Fitness.",
     "UI_UT_ninjaway": "Ninja Way",

@@ -1962,10 +1962,35 @@ end)
 
 test("strongnimble converts only the exact fence fall outcome", function()
     local player = MockPlayer({ "UniversalTraits:UT_strongnimble" })
+    player.getVariable = function()
+        error("getVariable returns an animation-variable slot in the game")
+    end
     player:setVariable("ClimbingFence", true)
     player:setVariable("ClimbFenceOutcome", "fall")
     Events.OnPlayerUpdate:fire(player)
-    assert_eq(player:getVariable("ClimbFenceOutcome"), "success")
+    assert_eq(player:getVariableString("ClimbFenceOutcome"), "success")
+end)
+
+test("strongnimble suppresses intact-rope random-fall checks", function()
+    local player = MockPlayer(
+        { "UniversalTraits:UT_strongnimble" },
+        { climbingRope = true, climbRopeTime = 900 }
+    )
+    Events.OnPlayerUpdate:fire(player)
+    assert_eq(player:getClimbRopeTime(), 0)
+end)
+
+test("strongnimble leaves rope timing untouched off-rope and without the trait", function()
+    local offRope = MockPlayer(
+        { "UniversalTraits:UT_strongnimble" },
+        { climbingRope = false, climbRopeTime = 900 }
+    )
+    Events.OnPlayerUpdate:fire(offRope)
+    assert_eq(offRope:getClimbRopeTime(), 900)
+
+    local withoutTrait = MockPlayer({}, { climbingRope = true, climbRopeTime = 900 })
+    Events.OnPlayerUpdate:fire(withoutTrait)
+    assert_eq(withoutTrait:getClimbRopeTime(), 900)
 end)
 
 test("strongnimble preserves the climb outcome matrix and ordinary falls", function()
@@ -1974,7 +1999,7 @@ test("strongnimble preserves the climb outcome matrix and ordinary falls", funct
         player:setVariable("ClimbingFence", true)
         player:setVariable("ClimbFenceOutcome", outcome)
         Events.OnPlayerUpdate:fire(player)
-        assert_eq(player:getVariable("ClimbFenceOutcome"), outcome)
+        assert_eq(player:getVariableString("ClimbFenceOutcome"), outcome)
         assert_eq(player:isFalling(), true)
     end
 
@@ -1982,7 +2007,7 @@ test("strongnimble preserves the climb outcome matrix and ordinary falls", funct
     player:setVariable("ClimbingFence", false)
     player:setVariable("ClimbFenceOutcome", "fall")
     Events.OnPlayerUpdate:fire(player)
-    assert_eq(player:getVariable("ClimbFenceOutcome"), "fall")
+    assert_eq(player:getVariableString("ClimbFenceOutcome"), "fall")
 end)
 
 test("strongnimble requires the trait", function()
@@ -1990,7 +2015,7 @@ test("strongnimble requires the trait", function()
     player:setVariable("ClimbingFence", true)
     player:setVariable("ClimbFenceOutcome", "fall")
     Events.OnPlayerUpdate:fire(player)
-    assert_eq(player:getVariable("ClimbFenceOutcome"), "fall")
+    assert_eq(player:getVariableString("ClimbFenceOutcome"), "fall")
 end)
 
 test("axes boosts crit chance through WeaponCategory API", function()
