@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 174,
-  "total_bytes": 13748730,
+  "total_bytes": 13758898,
   "files": [
     {
       "path": ".gitattributes",
@@ -222,8 +222,8 @@
       "path": "change-impact/paramedic-medical-action-resolution.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
-      "bytes": 3393,
-      "sha256": "A1E79FC7FA2928DCD642C5DBBADD9DEB289CB43FA1423328C6FA1ABA248877E4"
+      "bytes": 5949,
+      "sha256": "963B35E28595CE419232C8C99922CA4C88BB5BFB515F05AF8074F4AEF12BF141"
     },
     {
       "path": "change-impact/scardycat-panic-lifecycle.json",
@@ -356,7 +356,7 @@
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
       "bytes": 2100261,
-      "sha256": "52838CC0F8C95A970A122944F22547E420EEF625CDFF1F1E23B35195BFDC77DF"
+      "sha256": "C5ED9F9304A50C6250A595DF72F8705B4FEF9BEA53125C70C22CD833EC909ABB"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
@@ -390,8 +390,8 @@
       "path": "independent_reviews/traits_05_08.json",
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
-      "bytes": 256958,
-      "sha256": "440B5A395270AD3EEACC783B53B113518B5180D00ACBE2373D94C66EA603D31C"
+      "bytes": 259489,
+      "sha256": "883A5158842ABA11E5AD03996F639A9967315128DD6C37F32B5D9B0502DCC859"
     },
     {
       "path": "independent_reviews/traits_09_12.json",
@@ -747,8 +747,8 @@
       "path": "tests/test_regenerate_paramedic.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 8184,
-      "sha256": "E75B508133ECDE45C5AD38EE5DDB61DF312EB2722AF121473226C6368845D33B"
+      "bytes": 9503,
+      "sha256": "672F201C32BF4C8971CAC9A8B2B48E1E343D3D56BDBE1A29B03FED093F7FEB4D"
     },
     {
       "path": "tests/test_regenerate_scardycat.py",
@@ -1041,8 +1041,8 @@
       "path": "tools/regenerate_paramedic.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 15351,
-      "sha256": "8D593381516F7C8CDA74D25AB6C160CCC1DE99D91A531785757A04BFACB2E59F"
+      "bytes": 19038,
+      "sha256": "42B0D7CA8279C71066D423E177452430F5C133D2171F528EC5B5D44084C87159"
     },
     {
       "path": "tools/regenerate_scardycat.py",
@@ -1223,8 +1223,8 @@
       "path": "trait_batches/batch_08.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 159545,
-      "sha256": "B8D4BEB66BDC2B74EBDC6DE1873D07B31099ADE4B2482D284B1FD000CCCC94B4"
+      "bytes": 159620,
+      "sha256": "526B50D6733E9A65541D34027B7F100B2746DB4A006DB5011E520586BC1C1603"
     },
     {
       "path": "trait_batches/batch_09.jsonl",
@@ -1259,7 +1259,7 @@
       "kind": "translation-audit",
       "byte_semantics": "utf-8-lf",
       "bytes": 496284,
-      "sha256": "FE6B9AE9F22A5F1638575A7635DB759FB3E781B2DEAC5560F99C4864D3E6E60B"
+      "sha256": "52A93E8343E31FC8A69A2BCF876FF5CDFB57ACC737148EC29D1EAB1D57D2E89D"
     }
   ]
 }

@@ -4086,6 +4086,69 @@
       "release_parity": {
         "source_runtime_sha256": "7A54065EB6D583466EBC07469F8ED5027F5EFBBBB964383207FE0F2BA503DDE0",
         "release_runtime_sha256": "7A54065EB6D583466EBC07469F8ED5027F5EFBBBB964383207FE0F2BA503DDE0",
+        "shared_work_speed_hook": {
+          "source": {
+            "path": "UT_CORE/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua",
+            "sha256": "420FD72544F377CC7D8B7FE24F6C65FFF87514927275FEB5B8F7DBAC8B657BD3",
+            "bytes": 6192
+          },
+          "release_42_0": {
+            "path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua",
+            "sha256": "420FD72544F377CC7D8B7FE24F6C65FFF87514927275FEB5B8F7DBAC8B657BD3",
+            "bytes": 6192
+          },
+          "byte_identical": true,
+          "exact_medical_action_types": [
+            "ISMedicalCheckAction",
+            "ISApplyBandage",
+            "ISCleanBurn",
+            "ISComfreyCataplasm",
+            "ISGarlicCataplasm",
+            "ISPlantainCataplasm",
+            "ISDisinfect",
+            "ISRemoveBullet",
+            "ISRemoveGlass",
+            "ISSplint",
+            "ISStitch"
+          ],
+          "constructor_action_types": [
+            "ISMedicalCheckAction",
+            "ISSplint"
+          ],
+          "semantic_anchors": [
+            {
+              "id": "double_apply_guard",
+              "kind": "line-independent-source-fragment",
+              "fragment": "timedAction._utParamedicDurationApplied or not hasParamedic(timedAction)"
+            },
+            {
+              "id": "independent_half_factor",
+              "kind": "line-independent-source-fragment",
+              "fragment": "math.floor(duration * 0.5)"
+            },
+            {
+              "id": "additive_modifiers_before_paramedic",
+              "kind": "line-independent-source-fragment",
+              "fragment": "duration = applyParamedicFactor(timedAction, duration)"
+            },
+            {
+              "id": "constructor_marks_applied",
+              "kind": "line-independent-source-fragment",
+              "fragment": "action._utParamedicDurationApplied = true"
+            },
+            {
+              "id": "constructor_installation",
+              "kind": "line-independent-source-fragment",
+              "fragment": "patchConstructor(\"ISMedicalCheckAction\")\n    patchConstructor(\"ISSplint\")"
+            }
+          ],
+          "ordering": {
+            "id": "additive-modifiers-then-independent-paramedic-half",
+            "kind": "line-independent-relative-order",
+            "before": "local totalMod = workMod + readMod + transferMod + traitMod",
+            "after": "duration = applyParamedicFactor(timedAction, duration)"
+          }
+        },
         "state": "proven-correct"
       },
       "omissions": [],

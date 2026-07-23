@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -42,6 +43,8 @@ RELEASE = (
     "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/"
     "UniversalTraits/traits/UT_paramedic.lua"
 )
+SHARED_RUNTIME = "UT_CORE/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua"
+SHARED_RELEASE = "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua"
 SOURCE_UI = "UniversalTraits/media/lua/shared/Translate/EN/UI.json"
 RELEASE_UI = "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json"
 SOURCE_DEFINITION = "UniversalTraits/media/scripts/UT_character_traits.txt"
@@ -71,6 +74,81 @@ OWNED_OUTPUTS = (
 
 def _d(state: str, evidence: str, missing: str = "") -> dict[str, Any]:
     return HELPER._dimension(state, evidence, missing)
+
+
+def _lua_table_keys(source: str, table_name: str) -> tuple[str, ...]:
+    match = re.search(
+        rf"local\s+{re.escape(table_name)}\s*=\s*\{{(?P<body>.*?)\n\}}",
+        source,
+        re.DOTALL,
+    )
+    if not match:
+        raise ValueError(f"shared work-speed hook is missing {table_name}")
+    return tuple(re.findall(r"^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*true,\s*$", match.group("body"), re.MULTILINE))
+
+
+def _shared_hook_evidence(root: Path) -> dict[str, Any]:
+    source_path = root / SHARED_RUNTIME
+    release_path = root / SHARED_RELEASE
+    source_bytes = source_path.read_bytes()
+    release_bytes = release_path.read_bytes()
+    if source_bytes != release_bytes:
+        raise ValueError("shared work-speed hook source and exact 42.0 release mirror diverge")
+
+    source = source_bytes.decode("utf-8")
+    medical_types = _lua_table_keys(source, "MEDICAL_ACTION_TYPES")
+    constructor_types = _lua_table_keys(source, "CONSTRUCTOR_MEDICAL_ACTION_TYPES")
+    if medical_types != MEDICAL_ACTION_TYPES:
+        raise ValueError("shared work-speed hook medical action allowlist drifted")
+    expected_constructors = ("ISMedicalCheckAction", "ISSplint")
+    if constructor_types != expected_constructors:
+        raise ValueError("shared work-speed hook constructor allowlist drifted")
+
+    semantic_fragments = {
+        "double_apply_guard": (
+            "timedAction._utParamedicDurationApplied or not hasParamedic(timedAction)"
+        ),
+        "independent_half_factor": "math.floor(duration * 0.5)",
+        "additive_modifiers_before_paramedic": (
+            "duration = applyParamedicFactor(timedAction, duration)"
+        ),
+        "constructor_marks_applied": (
+            "action._utParamedicDurationApplied = true"
+        ),
+        "constructor_installation": (
+            'patchConstructor("ISMedicalCheckAction")\n'
+            '    patchConstructor("ISSplint")'
+        ),
+    }
+    for name, fragment in semantic_fragments.items():
+        if fragment not in source:
+            raise ValueError(f"shared work-speed hook semantic anchor drifted: {name}")
+    total_mod = source.find("local totalMod = workMod + readMod + transferMod + traitMod")
+    factor = source.find(semantic_fragments["additive_modifiers_before_paramedic"])
+    if total_mod < 0 or factor <= total_mod:
+        raise ValueError("shared work-speed hook no longer applies the independent Paramedic factor after additive modifiers")
+
+    return {
+        "source": HELPER._metadata(root, SHARED_RUNTIME),
+        "release_42_0": HELPER._metadata(root, SHARED_RELEASE),
+        "byte_identical": True,
+        "exact_medical_action_types": list(medical_types),
+        "constructor_action_types": list(constructor_types),
+        "semantic_anchors": [
+            {
+                "id": name,
+                "kind": "line-independent-source-fragment",
+                "fragment": fragment,
+            }
+            for name, fragment in semantic_fragments.items()
+        ],
+        "ordering": {
+            "id": "additive-modifiers-then-independent-paramedic-half",
+            "kind": "line-independent-relative-order",
+            "before": "local totalMod = workMod + readMod + transferMod + traitMod",
+            "after": semantic_fragments["additive_modifiers_before_paramedic"],
+        },
+    }
 
 
 def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
@@ -110,7 +188,8 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
     row["overall_state"] = "runtime-unproven"
     row["evidence_anchors"] = [
         RUNTIME,
-        "UT_CORE/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua:9-25",
+        SHARED_RUNTIME,
+        SHARED_RELEASE,
         "UT_CORE/test/run_tests.lua:1158-1215",
         "UniversalTraits/test/run_tests.lua:4220-4245",
         ACTIVE_AUDIT,
@@ -174,6 +253,7 @@ def _plan_review(root: Path, campaign: Path, plan: dict[str, bytes]) -> None:
     row["release_parity"] = {
         "source_runtime_sha256": HELPER._metadata(root, RUNTIME)["sha256"],
         "release_runtime_sha256": HELPER._metadata(root, RELEASE)["sha256"],
+        "shared_work_speed_hook": _shared_hook_evidence(root),
         "state": "proven-correct",
     }
     row["resolution_record"] = RESOLUTION
@@ -181,7 +261,11 @@ def _plan_review(root: Path, campaign: Path, plan: dict[str, bytes]) -> None:
 
 
 def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
-    files = (RUNTIME, RELEASE, SOURCE_UI, RELEASE_UI, SOURCE_DEFINITION, RELEASE_DEFINITION, MOCKS, TESTS, ACTIVE_AUDIT)
+    shared_hook = _shared_hook_evidence(root)
+    files = (
+        RUNTIME, RELEASE, SHARED_RUNTIME, SHARED_RELEASE, SOURCE_UI, RELEASE_UI,
+        SOURCE_DEFINITION, RELEASE_DEFINITION, MOCKS, TESTS, ACTIVE_AUDIT,
+    )
     plan[RESOLUTION] = HELPER._json_bytes({
         "schema": "ut-paramedic-medical-action-resolution-v1",
         "trait_id": TRAIT,
@@ -202,6 +286,7 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
         "accepted_intent": {"cost": 4, "doctor_xp": 2, "exclusions": [], "medical_duration_multiplier": 0.5},
         "exact_medical_action_types": list(MEDICAL_ACTION_TYPES),
         "rejected_invented_action_types": list(INVENTED_ACTION_TYPES),
+        "shared_work_speed_hook": shared_hook,
         "files": [HELPER._metadata(root, source) for source in files],
         "remaining_runtime_proof": [
             "full exit-to-desktop relaunch and current-build Kahlua load",

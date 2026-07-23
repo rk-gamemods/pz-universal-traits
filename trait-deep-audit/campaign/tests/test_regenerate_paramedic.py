@@ -41,6 +41,7 @@ class ParamedicGeneratorSafetyTests(unittest.TestCase):
         source_root = CAMPAIGN.parents[1]
         for relative in (
             GENERATOR.RUNTIME, GENERATOR.RELEASE, GENERATOR.SOURCE_UI,
+            GENERATOR.SHARED_RUNTIME, GENERATOR.SHARED_RELEASE,
             GENERATOR.RELEASE_UI, GENERATOR.SOURCE_DEFINITION,
             GENERATOR.RELEASE_DEFINITION, GENERATOR.MOCKS, GENERATOR.TESTS,
             GENERATOR.ACTIVE_AUDIT,
@@ -118,6 +119,35 @@ class ParamedicGeneratorSafetyTests(unittest.TestCase):
         self.assertEqual(resolution["exact_medical_action_types"], expected)
         self.assertEqual(resolution["rejected_invented_action_types"], invented)
         self.assertTrue(set(expected).isdisjoint(invented))
+        hook = resolution["shared_work_speed_hook"]
+        self.assertTrue(hook["byte_identical"])
+        self.assertEqual(hook["exact_medical_action_types"], expected)
+        self.assertEqual(
+            hook["constructor_action_types"],
+            ["ISMedicalCheckAction", "ISSplint"],
+        )
+        self.assertEqual(
+            {anchor["id"] for anchor in hook["semantic_anchors"]},
+            {
+                "double_apply_guard",
+                "independent_half_factor",
+                "additive_modifiers_before_paramedic",
+                "constructor_marks_applied",
+                "constructor_installation",
+            },
+        )
+        self.assertEqual(
+            hook["source"]["sha256"],
+            hook["release_42_0"]["sha256"],
+        )
+
+    def test_temporary_shared_hook_divergence_is_rejected_without_canonical_writes(self) -> None:
+        release = self.root / GENERATOR.SHARED_RELEASE
+        release.write_bytes(release.read_bytes() + b"\n-- temporary divergence\n")
+        before = _files(self.campaign)
+        with self.assertRaisesRegex(ValueError, "exact 42.0 release mirror diverge"):
+            GENERATOR.build_plan(self.root, self.campaign)
+        self.assertEqual(before, _files(self.campaign))
 
     def test_shared_blocker_removes_only_paramedic_queue_id(self) -> None:
         self._run()

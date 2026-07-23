@@ -43,6 +43,69 @@
     "ISApplyGarlic",
     "ISApplyPlantain"
   ],
+  "shared_work_speed_hook": {
+    "source": {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua",
+      "sha256": "420FD72544F377CC7D8B7FE24F6C65FFF87514927275FEB5B8F7DBAC8B657BD3",
+      "bytes": 6192
+    },
+    "release_42_0": {
+      "path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua",
+      "sha256": "420FD72544F377CC7D8B7FE24F6C65FFF87514927275FEB5B8F7DBAC8B657BD3",
+      "bytes": 6192
+    },
+    "byte_identical": true,
+    "exact_medical_action_types": [
+      "ISMedicalCheckAction",
+      "ISApplyBandage",
+      "ISCleanBurn",
+      "ISComfreyCataplasm",
+      "ISGarlicCataplasm",
+      "ISPlantainCataplasm",
+      "ISDisinfect",
+      "ISRemoveBullet",
+      "ISRemoveGlass",
+      "ISSplint",
+      "ISStitch"
+    ],
+    "constructor_action_types": [
+      "ISMedicalCheckAction",
+      "ISSplint"
+    ],
+    "semantic_anchors": [
+      {
+        "id": "double_apply_guard",
+        "kind": "line-independent-source-fragment",
+        "fragment": "timedAction._utParamedicDurationApplied or not hasParamedic(timedAction)"
+      },
+      {
+        "id": "independent_half_factor",
+        "kind": "line-independent-source-fragment",
+        "fragment": "math.floor(duration * 0.5)"
+      },
+      {
+        "id": "additive_modifiers_before_paramedic",
+        "kind": "line-independent-source-fragment",
+        "fragment": "duration = applyParamedicFactor(timedAction, duration)"
+      },
+      {
+        "id": "constructor_marks_applied",
+        "kind": "line-independent-source-fragment",
+        "fragment": "action._utParamedicDurationApplied = true"
+      },
+      {
+        "id": "constructor_installation",
+        "kind": "line-independent-source-fragment",
+        "fragment": "patchConstructor(\"ISMedicalCheckAction\")\n    patchConstructor(\"ISSplint\")"
+      }
+    ],
+    "ordering": {
+      "id": "additive-modifiers-then-independent-paramedic-half",
+      "kind": "line-independent-relative-order",
+      "before": "local totalMod = workMod + readMod + transferMod + traitMod",
+      "after": "duration = applyParamedicFactor(timedAction, duration)"
+    }
+  },
   "files": [
     {
       "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_paramedic.lua",
@@ -55,14 +118,24 @@
       "bytes": 166
     },
     {
+      "path": "UT_CORE/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua",
+      "sha256": "420FD72544F377CC7D8B7FE24F6C65FFF87514927275FEB5B8F7DBAC8B657BD3",
+      "bytes": 6192
+    },
+    {
+      "path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_WorkSpeedHook.lua",
+      "sha256": "420FD72544F377CC7D8B7FE24F6C65FFF87514927275FEB5B8F7DBAC8B657BD3",
+      "bytes": 6192
+    },
+    {
       "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
-      "sha256": "CD91DE9D7B42F603C5B3F5FCAE1CF99D29BCE785F83CC79377574B18CE02E672",
-      "bytes": 37457
+      "sha256": "F3590F0EBC9B613FE24AD7522A6B3E812072F1653B2BB185D040FC7EB3A8459D",
+      "bytes": 37447
     },
     {
       "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
-      "sha256": "CD91DE9D7B42F603C5B3F5FCAE1CF99D29BCE785F83CC79377574B18CE02E672",
-      "bytes": 37457
+      "sha256": "F3590F0EBC9B613FE24AD7522A6B3E812072F1653B2BB185D040FC7EB3A8459D",
+      "bytes": 37447
     },
     {
       "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
@@ -76,13 +149,13 @@
     },
     {
       "path": "UT_CORE/test/run_tests.lua",
-      "sha256": "C972B2CC2AACCCEC664373887ECAF6F4EE627FA758EC39EF6BB75D7041C3F89D",
-      "bytes": 113913
+      "sha256": "99B9CADF6E44E56A5D34CDF80B38B93DFCC0EE36DAA7574C4A6EDDC4BFCA6400",
+      "bytes": 184487
     },
     {
       "path": "UniversalTraits/test/run_tests.lua",
-      "sha256": "2B6B7DCAE8EA0FA570E5F91CE45623D76D9D6DCF8B79EEFE1F8357564CB6CD37",
-      "bytes": 386375
+      "sha256": "F2552A79464F8CDCE1B9BEA4723CE2C2B16CA9A1B0441FEC1F397F4A33BFE8DB",
+      "bytes": 462370
     },
     {
       "path": "trait-deep-audit/active/batch/traits/UT_paramedic.md",
