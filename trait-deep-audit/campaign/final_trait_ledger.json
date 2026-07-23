@@ -47,7 +47,7 @@
   "source_artifact_sha256": {
     "independent_reviews/traits_01_04.json": "29C24133912335231DA8ED2E8462B64D9DBE837A0F553E3988547AEA52347D8D",
     "independent_reviews/traits_05_08.json": "B1CDBE8BBEE77E5C4D9417E0E77E1EF69178E8F34BD4C18B825038266D7E9D53",
-    "independent_reviews/traits_09_12.json": "8814871A086968498235CD4C396CC5DAD7B752F096F2B834B249743ACCB3C104",
+    "independent_reviews/traits_09_12.json": "E53E0A1223BEDCB823178E33213FA98549B35ECD3E25ADCC8434DDFCF4FE232D",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "4FD54923B0938C3294AB5E9D0C0168A08FDBF353A73FBE83BCE7F5DDF8B911F2",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
@@ -59,9 +59,9 @@
     "trait_batches/batch_08.jsonl": "58722C1E8C681AAB2E4631E00092436A62058F339414859A66B2AFE10B8A326A",
     "trait_batches/batch_09.jsonl": "7493EABBF27471F551A42E6B750D8927EC80B36404B51ED6E7CBC74349EAFE44",
     "trait_batches/batch_10.jsonl": "33304EC69C6072CE027BFD779AB0E2332EEDE70DC56B6920468F46BC4A2ABE31",
-    "trait_batches/batch_11.jsonl": "4D522A3E63C7F9DD61487EA08B1505EE505A07ABFA0D8236C4FB19EB353D9B58",
+    "trait_batches/batch_11.jsonl": "D1617D3F6DE1E81879EB3FA2B81F7DA1058630E103CF1DFD2D907B026311D959",
     "trait_batches/batch_12.jsonl": "AE044BC0927A818D38DFB20DF59DADDCDA7C951F4E8082D633DC69CB0FF29BD8",
-    "translation_audit.json": "42291B3C6F33E262ABF00127A2BF26E8CDE1728A81204747EBD32F667962FD4F"
+    "translation_audit.json": "93D24ADCE27AE2603E973B258A6251EB53D0A3B01F7A2E681A0E0C9931939591"
   },
   "counts": {
     "traits": 198,
@@ -71,22 +71,22 @@
     "independent_review_findings": 118,
     "independent_review_states": {
       "accepted": 84,
-      "confirmed-defect": 31,
+      "confirmed-defect": 30,
       "coverage-gap": 20,
       "needs-correction": 51,
-      "runtime-unproven": 12
+      "runtime-unproven": 13
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 56,
+      "confirmed-defect": 55,
       "coverage-gap": 12,
-      "runtime-unproven": 105
+      "runtime-unproven": 106
     },
     "dimension_states": {
-      "proven-correct": 2793,
-      "confirmed-defect": 207,
-      "coverage-gap": 761,
-      "runtime-unproven": 991
+      "proven-correct": 2798,
+      "confirmed-defect": 204,
+      "coverage-gap": 758,
+      "runtime-unproven": 992
     }
   },
   "independent_review_findings": [
@@ -55742,7 +55742,7 @@
     {
       "trait_id": "UniversalTraits:UT_sundayrunner",
       "batch": "batch_11",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
@@ -55757,9 +55757,11 @@
         "definition_parser": {
           "state": "proven-correct",
           "evidence": [
-            "complete"
+            "Cost -1, multiplayer disabled, no XP boosts or grants, and reciprocal Sprint Demon exclusion are exact."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "definition_parser"
           ]
@@ -55777,31 +55779,35 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "cost -1; no XP/grants; bidirectional Sprint Demon exclusion"
+            "Cost -1; no XP boosts or grants; reciprocal exclusion with UniversalTraits:UT_sprintdemon."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cost_xp_grants_exclusions"
           ]
         },
         "source_intent": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "SomewhatTraits-derived sprinting unhappiness penalty"
+            "Accepted UT intent preserves a conditional sprinting unhappiness penalty without historical stress or OnTick behavior."
           ],
           "missing_proof": [
-            "The authoritative upstream balance specification was not supplied."
+            "none"
           ],
           "source_dimensions": [
             "source_intent"
           ]
         },
         "runtime_path": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "EveryOneMinute -> if sprinting -> UNHAPPINESS +2"
+            "UTCore EveryOneMinute resolves getPlayer; only a local sprinting trait holder receives +2 CharacterStat.UNHAPPINESS."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "runtime_path"
           ]
@@ -55809,9 +55815,11 @@
         "numbers": {
           "state": "proven-correct",
           "evidence": [
-            "+2 per elapsed game minute; stat clamps 0..100"
+            "Exactly +2 per qualifying event, capped at the native unhappiness maximum."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "numbers"
           ]
@@ -55819,10 +55827,10 @@
         "cadence": {
           "state": "runtime-unproven",
           "evidence": [
-            "minute event, no cooldown"
+            "One application per owned EveryOneMinute callback."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "Current-build event production is unobserved."
           ],
           "source_dimensions": [
             "cadence"
@@ -55831,9 +55839,11 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
+            "No cooldown."
+          ],
+          "missing_proof": [
             "none"
           ],
-          "missing_proof": [],
           "source_dimensions": [
             "cooldown"
           ]
@@ -55841,10 +55851,10 @@
         "reset_save_load": {
           "state": "runtime-unproven",
           "evidence": [
-            "stat persists normally; handler registered at load"
+            "Duplicate module load leaves one replacement handler."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "Full relaunch and current-version save-load remain unobserved."
           ],
           "source_dimensions": [
             "reset_save_load"
@@ -55853,9 +55863,11 @@
         "java_lua": {
           "state": "proven-correct",
           "evidence": [
-            "Stats.add contract verified"
+            "SVN 964 anchors generic CharacterStat access, isSprinting, and the no-player EveryOneMinute producer."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "java_lua"
           ]
@@ -55863,10 +55875,10 @@
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "compatible"
+            "Lua shapes and Java receiver calls are statically compatible."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "Live current-build Kahlua execution remains unobserved."
           ],
           "source_dimensions": [
             "kahlua"
@@ -55875,9 +55887,11 @@
         "events": {
           "state": "proven-correct",
           "evidence": [
-            "EveryOneMinute signature correct"
+            "The wrapper ignores event arguments and resolves only getPlayer for EveryOneMinute."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "events"
           ]
@@ -55885,9 +55899,11 @@
         "stacking_interactions": {
           "state": "proven-correct",
           "evidence": [
-            "blocks Sprint Demon; other mood effects stack"
+            "Running, walking, idle, nil, absent/removed trait, and non-local players receive no change; reload does not stack."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "stacking_interactions"
           ]
@@ -55895,9 +55911,11 @@
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "disabled"
+            "DisabledInMultiplayer is true and multiplayer support is a product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "multiplayer"
           ]
@@ -55905,20 +55923,22 @@
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "EN present"
+            "Exact English display name is Sunday Runner."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "display"
           ]
         },
         "description": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "claims below-average Fitness but definition has no Fitness penalty and omits runtime unhappiness"
+            "English states the exact sprint condition, +2 amount, and per-game-minute cadence."
           ],
           "missing_proof": [
-            "The authoritative upstream balance specification was not supplied."
+            "none"
           ],
           "source_dimensions": [
             "description"
@@ -55927,22 +55947,22 @@
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "EN only"
+            "Exact English keys exist with source/release parity."
           ],
           "missing_proof": [
-            "A non-EN localization requirement was not supplied."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
             "localization"
           ]
         },
         "balance": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "negative cost is based on undisclosed penalty"
+            "Accepted cost -1 contract is unchanged."
           ],
           "missing_proof": [
-            "A formal balance target was not supplied."
+            "No gameplay balance observation exists."
           ],
           "source_dimensions": [
             "balance"
@@ -55951,34 +55971,34 @@
         "performance": {
           "state": "runtime-unproven",
           "evidence": [
-            "cheap minute handler"
+            "One constant-time minute handler with early guards."
           ],
           "missing_proof": [
-            "No matching in-game Kahlua/runtime trace was supplied."
+            "No current-build profiler capture exists."
           ],
           "source_dimensions": [
             "performance"
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "runtime branches pass but UI/definition contract is untested"
+            "Focused standard-Lua cases cover exact effect, local routing, negatives, clamp, unrelated non-effects, metadata, copy, and reload replacement."
           ],
           "missing_proof": [
-            "A targeted regression covering this exact dimension is missing or incomplete."
+            "none"
           ],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "Stats accumulation mirrors add but cannot catch description drift"
+            "Mocks expose native CharacterStat storage, sprint state, local-player routing, XP observation, and event handler counts."
           ],
           "missing_proof": [
-            "A current engine-faithful mock for this exact path is missing or incomplete."
+            "none"
           ],
           "source_dimensions": [
             "mocks"
@@ -55987,9 +56007,11 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "equal"
+            "Runtime, UI, definition, registry, tests, mocks, and audit are fingerprinted; packaged counterparts are byte-identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "source_release_parity"
           ]
@@ -55997,9 +56019,11 @@
         "packaging": {
           "state": "proven-correct",
           "evidence": [
-            "complete"
+            "Sunday-owned 42.0 runtime, UI, definition, and registry counterparts are present and identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "packaging"
           ]
@@ -56009,13 +56033,14 @@
         "B11-SUNDAY-001"
       ],
       "unknowns": [
-        "Authoritative upstream intent and balance target unavailable.",
-        "No non-EN requirement/in-game trace."
+        "Live current-build Kahlua and current-build EveryOneMinute production remain unobserved.",
+        "Full relaunch, current-version save-load, death, repeated world entry, gameplay balance, and profiler observation remain unrun.",
+        "Rendered English and non-English localization remain unobserved."
       ],
-      "translation_terminal_state": "coverage-gap",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_09_12.json",
-        "review_state": "confirmed-defect",
+        "review_state": "runtime-unproven",
         "omission_finding_ids": [],
         "cross_finding_ids": [
           "IR0912-FINDING-STATE-001",

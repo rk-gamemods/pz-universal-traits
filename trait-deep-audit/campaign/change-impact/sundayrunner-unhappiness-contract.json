@@ -1,0 +1,134 @@
+{
+  "schema": "ut-sundayrunner-unhappiness-contract-v1",
+  "trait_id": "UniversalTraits:UT_sundayrunner",
+  "authority": {
+    "honest_pre_campaign_commit": "a32f251e7cebdc27b533907b6b16c7aa135eb882",
+    "accepted_behavior_commits": [
+      "23524ac",
+      "ec57b7f426c9b1376597064b840368bc5105348f"
+    ],
+    "pz_snapshot": "SVN revision 964"
+  },
+  "accepted_intent": {
+    "cost": -1,
+    "xp_boosts": {},
+    "grants": [],
+    "exclusions": [
+      "UniversalTraits:UT_sprintdemon"
+    ],
+    "multiplayer": false,
+    "event": "UTCore EveryOneMinute",
+    "player": "local getPlayer only",
+    "condition": "isSprinting()==true",
+    "effect": {
+      "stat": "CharacterStat.UNHAPPINESS",
+      "delta": 2,
+      "cap": "native domain"
+    },
+    "explicit_non_effects": [
+      "stress",
+      "panic",
+      "boredom",
+      "Fitness",
+      "Sprinting level",
+      "XP",
+      "legacy BodyDamage unhappiness"
+    ],
+    "english": "Sprinting increases unhappiness by 2 every in-game minute."
+  },
+  "engine_anchors": [
+    "SVN 964 LuaEventManager EveryOneMinute producer",
+    "SVN 964 Stats CharacterStat domain",
+    "SVN 964 IsoPlayer.isSprinting"
+  ],
+  "resolved_findings": [
+    "B11-SUNDAY-001"
+  ],
+  "resolved_independent_defects": [
+    "stale Fitness copy",
+    "missing reciprocal exclusion",
+    "missing focused behavior proof",
+    "event-argument ambiguity",
+    "duplicate-handler ambiguity"
+  ],
+  "retained_runtime_proof": [
+    "current-build Kahlua",
+    "current-build event production",
+    "full relaunch",
+    "current-version save-load",
+    "death and repeated world entry",
+    "rendered English",
+    "non-English localization",
+    "gameplay balance",
+    "profiler"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_sundayrunner.lua",
+      "sha256": "AFDFA9ADA292B3272C86C2C99A3D799980B9BEFFBE5F9E16D00128F4FF7BAADD",
+      "bytes": 502
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_sundayrunner.lua",
+      "sha256": "AFDFA9ADA292B3272C86C2C99A3D799980B9BEFFBE5F9E16D00128F4FF7BAADD",
+      "bytes": 502
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "850D680158E8C8E154D551D54A04DEAD40648076853AD8FEF1973D4046A3B35F",
+      "bytes": 37049
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "850D680158E8C8E154D551D54A04DEAD40648076853AD8FEF1973D4046A3B35F",
+      "bytes": 37049
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/media/registries.lua",
+      "sha256": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+      "bytes": 23864
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/registries.lua",
+      "sha256": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+      "bytes": 23864
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "95502EE5AAC863D25B5BF90F777FCC230073007696F05D0F1840381626703465",
+      "bytes": 345908
+    },
+    {
+      "path": "UniversalTraits/test/UTTestMocks.lua",
+      "sha256": "72641DDCEE3B92AFA1DCD688529AC4338D9293DEB10430DBF6C2C03A4B2BBC00",
+      "bytes": 82589
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_sundayrunner.md",
+      "sha256": "3392B177A6D598053354C41E1772F72D389132E93CC4E1AF3A3485C4F1C61A2E",
+      "bytes": 5146
+    },
+    {
+      "path": "PRD.md",
+      "sha256": "E7C18D288DBE9B7E030E9F6C5FE0B01A45E61B0A41079A5FF6673222108028A0",
+      "bytes": 54520
+    }
+  ],
+  "runtime_proof": "Unobserved; static and standard-Lua evidence do not establish current-version live gameplay.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment",
+    "historical stress restoration"
+  ]
+}

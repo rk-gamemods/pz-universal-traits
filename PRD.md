@@ -218,7 +218,7 @@ These traits are fully data-driven for the supported new-character path. Wood Sp
 | UT_squirrel | Squirrel | 2 | Stat: +carry weight | SomewhatTraits | |
 | UT_antivaxxer | Anti-Vaxxer | -3 | Stat modifier | SomewhatTraits | |
 | UT_flimsy | Flimsy | -4 | Stat modifier | SomewhatTraits | |
-| UT_sundayrunner | Sunday Runner | -1 | Stat: -sprint speed | SomewhatTraits | |
+| UT_sundayrunner | Sunday Runner | -1 | Runtime: +2 unhappiness per sprinting in-game minute | SomewhatTraits | Reciprocal character-creation exclusion with Sprint Demon; no stress, Fitness, Sprinting-level, or XP effect. |
 | UT_lesssweaty | Less Sweaty | 2 | Stat: -sweat/smell | MoreSimpleTraits | |
 | UT_highsweaty | High Sweaty | -3 | Stat: +sweat/smell | MoreSimpleTraits | |
 | UT_cangrabmore | Can Grab More | 2 | Stat modifier | MoreSimpleTraits | |
