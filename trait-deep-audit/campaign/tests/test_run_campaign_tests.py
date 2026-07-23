@@ -4,13 +4,15 @@ from __future__ import annotations
 
 import importlib.util
 import io
+import os
+import subprocess
 import sys
 import tempfile
 import threading
 import time
 import unittest
-from pathlib import Path
 from contextlib import redirect_stderr, redirect_stdout
+from pathlib import Path
 from unittest import mock
 
 
@@ -60,13 +62,23 @@ class RunnerContractTests(unittest.TestCase):
         self.assertEqual(results[1].status, "failed")
 
     def test_launch_error_fails_closed(self) -> None:
-        def fail_launch(*_args, **_kwargs):
+        launch_options = {}
+
+        def fail_launch(*_args, **kwargs):
+            launch_options.update(kwargs)
             raise OSError("injected launch failure")
 
         with tempfile.TemporaryDirectory() as directory:
             result = RUNNER.run_module(Path(directory) / "test_x.py", Path(directory), popen=fail_launch)
         self.assertEqual(result.status, "launch-error")
         self.assertIn("injected launch failure", result.detail)
+        if os.name == "nt":
+            self.assertEqual(
+                launch_options["creationflags"] & subprocess.CREATE_NO_WINDOW,
+                subprocess.CREATE_NO_WINDOW,
+            )
+        else:
+            self.assertIs(launch_options["start_new_session"], True)
 
     def _write_module(self, root: Path, body: str) -> Path:
         path = root / "test_fixture.py"
@@ -74,18 +86,90 @@ class RunnerContractTests(unittest.TestCase):
         return path
 
     def test_timeout_is_bounded_and_temp_output_is_removable(self) -> None:
+        timeout_pid = None
+        interrupted_pid = None
+        started = time.perf_counter()
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            test_path = self._write_module(
-                root,
-                "import time\nclass T(unittest.TestCase):\n    def test_wait(self): time.sleep(5)\n",
-            )
+            pid_path = root / "descendant.pid"
+            test_path = self._write_descendant_module(root, pid_path)
             output = root / "output"
             output.mkdir()
-            result = RUNNER.run_module(test_path, output, timeout=0.05)
+            result = RUNNER.run_module(test_path, output, timeout=0.2)
             self.assertEqual(result.status, "timeout")
+            timeout_pid = int(pid_path.read_text(encoding="ascii"))
             self.assertTrue(result.output_path and result.output_path.is_file())
+        self.assertLess(time.perf_counter() - started, 3.0)
         self.assertFalse(root.exists())
+        self._assert_pid_exits(timeout_pid)
+
+        started = time.perf_counter()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pid_path = root / "interrupted-descendant.pid"
+            test_path = self._write_descendant_module(root, pid_path)
+            output = root / "output"
+            output.mkdir()
+
+            def interrupt_after_descendant_starts(_futures):
+                deadline = time.monotonic() + 2
+                while not pid_path.is_file() and time.monotonic() < deadline:
+                    time.sleep(0.01)
+                self.assertTrue(pid_path.is_file())
+                raise KeyboardInterrupt
+                yield
+
+            with mock.patch.object(
+                RUNNER, "as_completed", interrupt_after_descendant_starts
+            ), self.assertRaises(KeyboardInterrupt):
+                RUNNER.run_suite([test_path], output)
+            interrupted_pid = int(pid_path.read_text(encoding="ascii"))
+        self.assertLess(time.perf_counter() - started, 3.0)
+        self.assertFalse(root.exists())
+        self._assert_pid_exits(interrupted_pid)
+
+    def _write_descendant_module(self, root: Path, pid_path: Path) -> Path:
+        return self._write_module(
+            root,
+            "import pathlib, subprocess, sys, time\n"
+            "class T(unittest.TestCase):\n"
+            "    def test_descendant(self):\n"
+            "        child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(30)'])\n"
+            f"        pathlib.Path({str(pid_path)!r}).write_text(str(child.pid), encoding='ascii')\n"
+            "        time.sleep(30)\n",
+        )
+
+    def _assert_pid_exits(self, pid: int) -> None:
+        deadline = time.monotonic() + 1
+        while self._pid_alive(pid) and time.monotonic() < deadline:
+            time.sleep(0.01)
+        self.assertFalse(self._pid_alive(pid))
+
+    def _pid_alive(self, pid: int) -> bool:
+        if os.name != "nt":
+            stat_path = Path(f"/proc/{pid}/stat")
+            if stat_path.is_file():
+                try:
+                    if stat_path.read_text(encoding="ascii").split()[2] == "Z":
+                        return False
+                except (OSError, IndexError):
+                    pass
+            try:
+                os.kill(pid, 0)
+            except ProcessLookupError:
+                return False
+            return True
+        import ctypes
+        from ctypes import wintypes
+
+        synchronize = 0x00100000
+        handle = ctypes.windll.kernel32.OpenProcess(synchronize, False, pid)
+        if not handle:
+            return False
+        try:
+            return ctypes.windll.kernel32.WaitForSingleObject(wintypes.HANDLE(handle), 0) == 0x102
+        finally:
+            ctypes.windll.kernel32.CloseHandle(wintypes.HANDLE(handle))
 
     def test_output_is_bounded(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
