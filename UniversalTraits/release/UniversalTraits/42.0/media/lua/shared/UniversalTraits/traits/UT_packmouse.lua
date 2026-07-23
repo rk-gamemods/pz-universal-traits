@@ -134,10 +134,14 @@ end
 
 local retainedHandler = state.onCreatePlayer
 if retainedHandler then
+    if not retryPendingRollback() or not clearTrackedPlayer() then
+        return
+    end
+
     local removed = Events.OnCreatePlayer
         and Events.OnCreatePlayer.Remove
         and pcall(Events.OnCreatePlayer.Remove, retainedHandler)
-    if not retryPendingRollback() or not clearTrackedPlayer() or not removed then
+    if not removed then
         return
     end
 end

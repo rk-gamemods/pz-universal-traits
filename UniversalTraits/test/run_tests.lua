@@ -4429,6 +4429,77 @@ test("packmouse duplicate load keeps one handler and clears stale source", funct
     assert_eq(packmouseBucket(p)[PACKMOUSE_ID], nil, "reload teardown must clear stale source")
 end)
 
+test("packmouse duplicate load retains the old retry handler until cleanup succeeds", function()
+    local p = fireCreatePlayer(PACKMOUSE_ID)
+    local oldHandler = UTPackMouseLifecycle.onCreatePlayer
+    local handlerCount = Events.OnCreatePlayer.getHandlerCount()
+    local originalReconcile = UTCore.reconcileAggregatedModifiers
+    local cleanupAttempts = 0
+
+    UTCore.reconcileAggregatedModifiers = function(player)
+        cleanupAttempts = cleanupAttempts + 1
+        error("injected duplicate-load cleanup failure")
+    end
+
+    local firstLoadOk, firstLoadError =
+        pcall(dofile, base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+    assert_true(firstLoadOk, "failed duplicate load must return safely: " .. tostring(firstLoadError))
+    assert_eq(cleanupAttempts, 1, "first duplicate load must attempt cleanup once")
+    assert_eq(UTPackMouseLifecycle.onCreatePlayer, oldHandler,
+        "failed cleanup must retain the exact old retry handler identity")
+    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount,
+        "failed cleanup must retain exactly one old handler")
+    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], -2,
+        "failed cleanup must retain the retry-owned Pack Mouse source")
+    assert_eq(UTPackMouseLifecycle.player, p, "failed cleanup must retain tracked player state")
+
+    local secondLoadOk, secondLoadError =
+        pcall(dofile, base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+    assert_true(secondLoadOk, "repeated failed load must return safely: " .. tostring(secondLoadError))
+    assert_eq(cleanupAttempts, 2, "repeated duplicate load must retry cleanup once")
+    assert_eq(UTPackMouseLifecycle.onCreatePlayer, oldHandler,
+        "repeated failure must still retain the exact old handler")
+    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount,
+        "repeated failure must not stack handlers")
+
+    UTCore.reconcileAggregatedModifiers = originalReconcile
+    p:setMockTrait(PACKMOUSE_ID, false)
+    Events.OnCreatePlayer:fire(0, p)
+    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], nil,
+        "later old-handler retry must remove the stale source")
+    assert_eq(UTPackMouseLifecycle.player, nil, "later retry must clear tracked player state")
+    assert_eq(UTPackMouseLifecycle.onCreatePlayer, oldHandler,
+        "event retry must not replace the retained handler")
+    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount,
+        "successful event retry must retain exactly one handler")
+
+    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+    local replacementHandler = UTPackMouseLifecycle.onCreatePlayer
+    assert_true(replacementHandler ~= oldHandler,
+        "successful duplicate cleanup must install a replacement identity")
+    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount,
+        "successful duplicate cleanup must remove old identity and install one replacement")
+
+    dofile(base .. "../media/lua/shared/UniversalTraits/traits/UT_packmouse.lua")
+    assert_true(UTPackMouseLifecycle.onCreatePlayer ~= replacementHandler,
+        "repeated successful evaluation must replace the prior exact identity")
+    assert_eq(Events.OnCreatePlayer.getHandlerCount(), handlerCount,
+        "repeated successful evaluation must never stack handlers")
+end)
+
+test("packmouse deactivation preserves a foreign receiver through shared ownership fence", function()
+    local p = fireCreatePlayer(PACKMOUSE_ID)
+    assert_eq(p:getMaxWeightBase(), 6, "Pack Mouse active receiver")
+
+    p:setMaxWeightBase(31)
+    p:setMockTrait(PACKMOUSE_ID, false)
+    UTPackMouseLifecycle.onCreatePlayer(0, p)
+
+    assert_eq(packmouseBucket(p)[PACKMOUSE_ID], nil, "deactivation must release Pack Mouse source")
+    assert_eq(p:getMaxWeightBase(), 31, "foreign receiver value must remain untouched")
+    assert_eq(UTPackMouseLifecycle.player, nil, "deactivation must clear tracked ownership")
+end)
+
 test("packmouse current version reconstruction reapplies one source", function()
     local persisted = {
         UT_modifierBuckets = {
