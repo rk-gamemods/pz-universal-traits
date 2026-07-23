@@ -74,11 +74,6 @@
     ],
     "semantic_anchors": [
       {
-        "id": "double_apply_guard",
-        "kind": "line-independent-source-fragment",
-        "fragment": "timedAction._utParamedicDurationApplied or not hasParamedic(timedAction)"
-      },
-      {
         "id": "independent_half_factor",
         "kind": "line-independent-source-fragment",
         "fragment": "math.floor(duration * 0.5)"
@@ -89,14 +84,21 @@
         "fragment": "duration = applyParamedicFactor(timedAction, duration)"
       },
       {
-        "id": "constructor_marks_applied",
-        "kind": "line-independent-source-fragment",
-        "fragment": "action._utParamedicDurationApplied = true"
-      },
-      {
         "id": "constructor_installation",
         "kind": "line-independent-source-fragment",
         "fragment": "patchConstructor(\"ISMedicalCheckAction\")\n    patchConstructor(\"ISSplint\")"
+      },
+      {
+        "id": "get_duration_skips_constructor_adjusted_action",
+        "kind": "semantic-source-contract"
+      },
+      {
+        "id": "constructor_skips_already_adjusted_action",
+        "kind": "semantic-source-contract"
+      },
+      {
+        "id": "constructor_marks_adjusted_after_half_factor",
+        "kind": "semantic-source-contract"
       }
     ],
     "ordering": {
@@ -149,8 +151,8 @@
     },
     {
       "path": "UT_CORE/test/run_tests.lua",
-      "sha256": "99B9CADF6E44E56A5D34CDF80B38B93DFCC0EE36DAA7574C4A6EDDC4BFCA6400",
-      "bytes": 184487
+      "sha256": "7C106397604B12653F1D6AD2CD6F8422D810EE51747C60D37DF1DA541794026B",
+      "bytes": 192829
     },
     {
       "path": "UniversalTraits/test/run_tests.lua",

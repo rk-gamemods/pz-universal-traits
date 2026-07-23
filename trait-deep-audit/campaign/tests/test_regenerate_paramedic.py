@@ -129,11 +129,12 @@ class ParamedicGeneratorSafetyTests(unittest.TestCase):
         self.assertEqual(
             {anchor["id"] for anchor in hook["semantic_anchors"]},
             {
-                "double_apply_guard",
                 "independent_half_factor",
                 "additive_modifiers_before_paramedic",
-                "constructor_marks_applied",
                 "constructor_installation",
+                "get_duration_skips_constructor_adjusted_action",
+                "constructor_skips_already_adjusted_action",
+                "constructor_marks_adjusted_after_half_factor",
             },
         )
         self.assertEqual(
@@ -144,6 +145,37 @@ class ParamedicGeneratorSafetyTests(unittest.TestCase):
     def test_temporary_shared_hook_divergence_is_rejected_without_canonical_writes(self) -> None:
         release = self.root / GENERATOR.SHARED_RELEASE
         release.write_bytes(release.read_bytes() + b"\n-- temporary divergence\n")
+        before = _files(self.campaign)
+        with self.assertRaisesRegex(ValueError, "exact 42.0 release mirror diverge"):
+            GENERATOR.build_plan(self.root, self.campaign)
+        self.assertEqual(before, _files(self.campaign))
+
+    def test_guard_removal_from_both_parity_copies_is_rejected_without_artifact_writes(self) -> None:
+        for relative in (GENERATOR.SHARED_RUNTIME, GENERATOR.SHARED_RELEASE):
+            path = self.root / relative
+            source = path.read_text(encoding="utf-8")
+            changed = source.replace(
+                "            action._utParamedicDurationApplied = true\n",
+                "",
+                1,
+            )
+            self.assertNotEqual(source, changed)
+            path.write_text(changed, encoding="utf-8")
+        before = _files(self.campaign)
+        with self.assertRaisesRegex(ValueError, "double-apply guard drifted"):
+            GENERATOR.build_plan(self.root, self.campaign)
+        self.assertEqual(before, _files(self.campaign))
+
+    def test_guard_removal_from_one_parity_copy_is_rejected_without_artifact_writes(self) -> None:
+        path = self.root / GENERATOR.SHARED_RUNTIME
+        source = path.read_text(encoding="utf-8")
+        changed = source.replace(
+            "    if timedAction._utParamedicDurationApplied or not hasParamedic(timedAction) then\n",
+            "    if not hasParamedic(timedAction) then\n",
+            1,
+        )
+        self.assertNotEqual(source, changed)
+        path.write_text(changed, encoding="utf-8")
         before = _files(self.campaign)
         with self.assertRaisesRegex(ValueError, "exact 42.0 release mirror diverge"):
             GENERATOR.build_plan(self.root, self.campaign)

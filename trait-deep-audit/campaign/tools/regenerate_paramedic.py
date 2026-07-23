@@ -87,6 +87,10 @@ def _lua_table_keys(source: str, table_name: str) -> tuple[str, ...]:
     return tuple(re.findall(r"^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*true,\s*$", match.group("body"), re.MULTILINE))
 
 
+def _without_lua_comments(source: str) -> str:
+    return re.sub(r"--[^\r\n]*", "", source)
+
+
 def _shared_hook_evidence(root: Path) -> dict[str, Any]:
     source_path = root / SHARED_RUNTIME
     release_path = root / SHARED_RELEASE
@@ -95,7 +99,7 @@ def _shared_hook_evidence(root: Path) -> dict[str, Any]:
     if source_bytes != release_bytes:
         raise ValueError("shared work-speed hook source and exact 42.0 release mirror diverge")
 
-    source = source_bytes.decode("utf-8")
+    source = _without_lua_comments(source_bytes.decode("utf-8").replace("\r\n", "\n"))
     medical_types = _lua_table_keys(source, "MEDICAL_ACTION_TYPES")
     constructor_types = _lua_table_keys(source, "CONSTRUCTOR_MEDICAL_ACTION_TYPES")
     if medical_types != MEDICAL_ACTION_TYPES:
@@ -105,15 +109,9 @@ def _shared_hook_evidence(root: Path) -> dict[str, Any]:
         raise ValueError("shared work-speed hook constructor allowlist drifted")
 
     semantic_fragments = {
-        "double_apply_guard": (
-            "timedAction._utParamedicDurationApplied or not hasParamedic(timedAction)"
-        ),
         "independent_half_factor": "math.floor(duration * 0.5)",
         "additive_modifiers_before_paramedic": (
             "duration = applyParamedicFactor(timedAction, duration)"
-        ),
-        "constructor_marks_applied": (
-            "action._utParamedicDurationApplied = true"
         ),
         "constructor_installation": (
             'patchConstructor("ISMedicalCheckAction")\n'
@@ -128,6 +126,33 @@ def _shared_hook_evidence(root: Path) -> dict[str, Any]:
     if total_mod < 0 or factor <= total_mod:
         raise ValueError("shared work-speed hook no longer applies the independent Paramedic factor after additive modifiers")
 
+    guard_contracts = {
+        "get_duration_skips_constructor_adjusted_action": re.search(
+            r"if\s+timedAction\._utParamedicDurationApplied\s+or\s+not\s+hasParamedic"
+            r"\s*\(\s*timedAction\s*\)\s+then\s+return\s+duration\s+end",
+            source,
+        ),
+        "constructor_skips_already_adjusted_action": re.search(
+            r"if\s+not\s+CONSTRUCTOR_MEDICAL_ACTION_TYPES\s*\[\s*action\.Type\s*\]"
+            r".*?\bor\s+action\._utParamedicDurationApplied\b"
+            r".*?\bor\s+type\s*\(\s*action\.maxTime\s*\)\s*~=\s*\"number\""
+            r".*?\bor\s+not\s+hasParamedic\s*\(\s*action\s*\)\s+then\s+return\s+end",
+            source,
+            re.DOTALL,
+        ),
+        "constructor_marks_adjusted_after_half_factor": re.search(
+            r"action\.maxTime\s*=\s*applyParamedicFactor\s*\(\s*action\s*,\s*action\.maxTime\s*\)"
+            r"\s*action\._utParamedicDurationApplied\s*=\s*true\b",
+            source,
+        ),
+    }
+    missing_guard_contracts = [name for name, match in guard_contracts.items() if match is None]
+    if missing_guard_contracts:
+        raise ValueError(
+            "shared work-speed hook constructor/getDuration double-apply guard drifted: "
+            + ", ".join(missing_guard_contracts)
+        )
+
     return {
         "source": HELPER._metadata(root, SHARED_RUNTIME),
         "release_42_0": HELPER._metadata(root, SHARED_RELEASE),
@@ -141,6 +166,9 @@ def _shared_hook_evidence(root: Path) -> dict[str, Any]:
                 "fragment": fragment,
             }
             for name, fragment in semantic_fragments.items()
+        ] + [
+            {"id": name, "kind": "semantic-source-contract"}
+            for name in guard_contracts
         ],
         "ordering": {
             "id": "additive-modifiers-then-independent-paramedic-half",

@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 174,
-  "total_bytes": 13761570,
+  "total_bytes": 13764510,
   "files": [
     {
       "path": ".gitattributes",
@@ -222,8 +222,8 @@
       "path": "change-impact/paramedic-medical-action-resolution.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
-      "bytes": 5949,
-      "sha256": "963B35E28595CE419232C8C99922CA4C88BB5BFB515F05AF8074F4AEF12BF141"
+      "bytes": 5938,
+      "sha256": "FD8017F870E364163395F9906FAC14B83E329DE67182B2919401EDF5BFA46EC7"
     },
     {
       "path": "change-impact/scardycat-panic-lifecycle.json",
@@ -356,7 +356,7 @@
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
       "bytes": 2100278,
-      "sha256": "4E0F8A6579BDA5862589BDDE6276B3FE7896F95B7AC42365AE0CB56859AED4F8"
+      "sha256": "0964E628B0B4406F562B2DB3649F6F631A6881D9079AF5CBFD33E28BA696CE46"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
@@ -390,8 +390,8 @@
       "path": "independent_reviews/traits_05_08.json",
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
-      "bytes": 259489,
-      "sha256": "883A5158842ABA11E5AD03996F639A9967315128DD6C37F32B5D9B0502DCC859"
+      "bytes": 259490,
+      "sha256": "8FBD6909C38D5C6EC2F26CFB57915D098CCCFED92AA2C38071D7F7585DD80052"
     },
     {
       "path": "independent_reviews/traits_09_12.json",
@@ -747,8 +747,8 @@
       "path": "tests/test_regenerate_paramedic.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 9503,
-      "sha256": "672F201C32BF4C8971CAC9A8B2B48E1E343D3D56BDBE1A29B03FED093F7FEB4D"
+      "bytes": 11147,
+      "sha256": "9576B47A227BBBBE48C012FE7E1F95BC4A77BD8889879F2D18EDAC68389F0D5C"
     },
     {
       "path": "tests/test_regenerate_scardycat.py",
@@ -1041,8 +1041,8 @@
       "path": "tools/regenerate_paramedic.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 19038,
-      "sha256": "42B0D7CA8279C71066D423E177452430F5C133D2171F528EC5B5D44084C87159"
+      "bytes": 20344,
+      "sha256": "2E88B5C16C8A9E4D167674B776BFEFD0622CCA189F86FAC890FB18BF463451FF"
     },
     {
       "path": "tools/regenerate_scardycat.py",

@@ -4117,11 +4117,6 @@
           ],
           "semantic_anchors": [
             {
-              "id": "double_apply_guard",
-              "kind": "line-independent-source-fragment",
-              "fragment": "timedAction._utParamedicDurationApplied or not hasParamedic(timedAction)"
-            },
-            {
               "id": "independent_half_factor",
               "kind": "line-independent-source-fragment",
               "fragment": "math.floor(duration * 0.5)"
@@ -4132,14 +4127,21 @@
               "fragment": "duration = applyParamedicFactor(timedAction, duration)"
             },
             {
-              "id": "constructor_marks_applied",
-              "kind": "line-independent-source-fragment",
-              "fragment": "action._utParamedicDurationApplied = true"
-            },
-            {
               "id": "constructor_installation",
               "kind": "line-independent-source-fragment",
               "fragment": "patchConstructor(\"ISMedicalCheckAction\")\n    patchConstructor(\"ISSplint\")"
+            },
+            {
+              "id": "get_duration_skips_constructor_adjusted_action",
+              "kind": "semantic-source-contract"
+            },
+            {
+              "id": "constructor_skips_already_adjusted_action",
+              "kind": "semantic-source-contract"
+            },
+            {
+              "id": "constructor_marks_adjusted_after_half_factor",
+              "kind": "semantic-source-contract"
             }
           ],
           "ordering": {
