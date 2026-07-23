@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "remediation_queue_sha256": "1a09a2101f2a52f86e4b341e533198c4ab8a8315c8dbac89cef21dbdbde239ff",
+  "remediation_queue_sha256": "1a6079767cc00ff105575f3a2251a7b298616955e851c0bc5b8a0ec169fe1734",
   "category_label": "release-blocker",
   "classification_scope_statement": "Only the queue rows listed by these reviewed semantic identities are classified as release-blocker; all other rows remain unclassified in the exhaustive ledger.",
   "identities": [
@@ -43,19 +43,6 @@
       "evidence_scope": "The shared wrapper sentinel is statically corrected. Caller-specific review records remain queued until their assigned trait closures reconcile them."
     },
     {
-      "semantic_identity": "package:UT_antique",
-      "identity_kind": "package",
-      "status": "open",
-      "priority_reason_code": "trait-package-parity-drift",
-      "queue_ids": [
-        "finding:B01-ANT-PARITY",
-        "dimension:UniversalTraits:UT_antique:packaging",
-        "dimension:UniversalTraits:UT_antique:source_release_parity"
-      ],
-      "dependencies": [],
-      "evidence_scope": "Antique source and packaged release differ on the container-add API and package parity."
-    },
-    {
       "semantic_identity": "package:UniversalTraits-release-reconciliation",
       "identity_kind": "package",
       "status": "open",
@@ -76,7 +63,6 @@
         "trait:UT_anorexy",
         "package:Bouncer-I",
         "package:Bouncer-II",
-        "package:UT_antique",
         "package:UT_scrounger"
       ],
       "evidence_scope": "Reconcile the UniversalTraits release tree after all reviewed runtime, source, and package outputs that affect release are complete."

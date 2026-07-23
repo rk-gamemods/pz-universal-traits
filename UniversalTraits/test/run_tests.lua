@@ -6589,6 +6589,7 @@ test("woodsplitter anchors all four vanilla Axeman effects in SVN 964", function
 end)
 
 dofile(base .. "test_scrounger_runtime.lua").run(test, assert_eq, assert_true, base)
+dofile(base .. "test_antique_runtime.lua").run(test, assert_eq, assert_true, base)
 
 print(string.format("\n%d passed, %d failed", passed, failed))
 if failed > 0 then os.exit(1) end

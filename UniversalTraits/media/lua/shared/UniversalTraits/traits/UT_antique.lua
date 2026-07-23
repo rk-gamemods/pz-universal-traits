@@ -31,7 +31,7 @@ local function getRespawnHours()
     return nil
 end
 
-local function rollAntiqueItem(container, containerObj)
+local function rollAntiqueItem(container)
     local i = ZombRand(#ITEMS) + 1
     local item = container:AddItem(ITEMS[i])
     if item then
@@ -39,14 +39,17 @@ local function rollAntiqueItem(container, containerObj)
     end
 end
 
-local function onContainerUpdate(inventoryPage, state, player)
+local function onContainerUpdate(inventoryPage, state)
+    if state ~= "end" then return end
+
+    local player = inventoryPage and getSpecificPlayer(inventoryPage.player)
+    if not player then return end
     if not UTCore.hasTrait(player, TRAIT_ID) then return end
 
     local respawnHours = getRespawnHours()
     local now = getGameTime():getWorldAgeHours()
 
-    for j = 0, inventoryPage.backpacks:size() - 1 do
-        local bp = inventoryPage.backpacks:get(j)
+    for _, bp in ipairs(inventoryPage.backpacks or {}) do
         if bp and bp.inventory then
             local inv = bp.inventory
             local containerObj = inv.getParent and inv:getParent()
@@ -74,7 +77,7 @@ local function onContainerUpdate(inventoryPage, state, player)
                         containerObj:transmitModData()
 
                         if ZombRand(ROLL_DENOM) < ROLL_CHANCE then
-                            rollAntiqueItem(container, containerObj)
+                            rollAntiqueItem(container)
                         end
                     end
                 end
@@ -83,4 +86,8 @@ local function onContainerUpdate(inventoryPage, state, player)
     end
 end
 
-Events.OnRefreshInventoryWindowContainers.Add(onContainerUpdate)
+UTAntiqueRuntime = UTAntiqueRuntime or {}
+if not UTAntiqueRuntime.registered then
+    Events.OnRefreshInventoryWindowContainers.Add(onContainerUpdate)
+    UTAntiqueRuntime.registered = true
+end

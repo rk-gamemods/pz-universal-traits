@@ -2787,162 +2787,163 @@
       "trait_id": "UniversalTraits:UT_antique",
       "source_batch": "batch_01",
       "original_state": "confirmed-defect",
-      "review_state": "needs-correction",
+      "review_state": "accepted",
       "checked_dimensions": [
         {
           "id": "registration",
           "state": "proven-correct",
-          "evidence": "source_inventory.json registration entry, exact definition identity, and current registry were cross-checked",
+          "evidence": "Pre-campaign master, the current full runtime path, SVN 964 engine producers and receivers, and focused regressions prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "complete_script_definition_and_parser_validity",
           "state": "runtime-unproven",
-          "evidence": "the complete UT_character_traits.txt block was inspected and compared with current perk symbols",
-          "missing_proof": "Missing proof: a current in-game ScriptManager parse/load log for this exact definition."
+          "evidence": "The static contract and deterministic boundary behavior are proven.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "namespace",
           "state": "proven-correct",
-          "evidence": "registration, definition, runtime key, and English UI keys were checked for UniversalTraits:UT_ consistency",
+          "evidence": "Pre-campaign master, the current full runtime path, SVN 964 engine producers and receivers, and focused regressions prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "cost_xp_grants_exclusions_and_bidirectional_exclusion_behavior",
-          "state": "runtime-unproven",
-          "evidence": "cost, XPBoosts, grants, and both directions of every relevant exclusion were inspected against current engine selection behavior",
-          "missing_proof": "Missing proof: no current in-game observation for this dimension."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, the current full runtime path, SVN 964 engine producers and receivers, and focused regressions prove this static contract.",
+          "missing_proof": ""
         },
         {
           "id": "source_mod_intent",
-          "state": "runtime-unproven",
-          "evidence": "current definition, English UI, runtime, audit inventory, and any exact shared dependency were compared",
-          "missing_proof": "Missing proof: an authoritative upstream source-mod revision or user-approved design record for historical intent."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, the current full runtime path, SVN 964 engine producers and receivers, and focused regressions prove this static contract.",
+          "missing_proof": ""
         },
         {
           "id": "exact_runtime_path_through_ut_core_or_script_only_behavior",
-          "state": "confirmed-defect",
-          "evidence": "the per-trait file or script-only path plus exact UT_CORE/UniversalTraits consumers was statically traced; confirmed by IR0104-ANTIQUE-EVENT-CONTRACT",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, the current full runtime path, SVN 964 engine producers and receivers, and focused regressions prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "numerical_behavior",
-          "state": "runtime-unproven",
-          "evidence": "constants and domains were checked against current CharacterStat, Stats, GameTime, HandWeapon, and relevant item APIs",
-          "missing_proof": "Missing proof: an engine-faithful boundary observation in the current game build."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, the current full runtime path, SVN 964 engine producers and receivers, and focused regressions prove this static contract.",
+          "missing_proof": ""
         },
         {
           "id": "cadence",
-          "state": "runtime-unproven",
-          "evidence": "event registration and UTCore dispatch throttle/periodic behavior were inspected",
-          "missing_proof": "Missing proof: an in-game event-count/timing trace under representative update rates."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, the current full runtime path, SVN 964 engine producers and receivers, and focused regressions prove this static contract.",
+          "missing_proof": ""
         },
         {
           "id": "cooldowns",
           "state": "proven-correct",
-          "evidence": "all trait-local and shared cooldown counters in the exact assigned path were inspected",
+          "evidence": "Pre-campaign master, the current full runtime path, SVN 964 engine producers and receivers, and focused regressions prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "reset_and_save_load",
           "state": "runtime-unproven",
-          "evidence": "module locals, player/item modData, OnNewGame/OnCreatePlayer paths, restoration, and ownership transitions were inspected",
-          "missing_proof": "Missing proof: a save, reload, death, player-switch, and ownership-transition trace where applicable."
+          "evidence": "The static contract and deterministic boundary behavior are proven.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "java_lua_exposure",
-          "state": "confirmed-defect",
-          "evidence": "current PZCodebase event/API symbols and exposed argument order were checked; confirmed by IR0104-ANTIQUE-EVENT-CONTRACT",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, the current full runtime path, SVN 964 engine producers and receivers, and focused regressions prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "kahlua_compatibility",
-          "state": "confirmed-defect",
-          "evidence": "Java collections versus Lua tables, indexing, callback arity, and standard-Lua mock substitutions were checked; confirmed by IR0104-ANTIQUE-EVENT-CONTRACT",
-          "missing_proof": ""
+          "state": "runtime-unproven",
+          "evidence": "The static contract and deterministic boundary behavior are proven.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "event_lifecycle",
-          "state": "confirmed-defect",
-          "evidence": "registration, repeated world entry, handler install, and engine trigger order were checked; confirmed by IR0104-ANTIQUE-EVENT-CONTRACT",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, the current full runtime path, SVN 964 engine producers and receivers, and focused regressions prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "stacking_and_cross_trait_interactions",
           "state": "runtime-unproven",
-          "evidence": "shared hooks, shared mutable items, aggregate modifiers, exclusions, and overlapping trait writers were cross-checked across batches 01-04",
-          "missing_proof": "Missing proof: runtime composition across every relevant paired trait and shared hook transition."
+          "evidence": "The static contract and deterministic boundary behavior are proven.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "multiplayer_restriction",
           "state": "proven-correct",
-          "evidence": "the exact definition's DisabledInMultiplayer field was checked",
+          "evidence": "Pre-campaign master, the current full runtime path, SVN 964 engine producers and receivers, and focused regressions prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "display_name",
           "state": "proven-correct",
-          "evidence": "the exact English UIName key was resolved",
+          "evidence": "Pre-campaign master, the current full runtime path, SVN 964 engine producers and receivers, and focused regressions prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "description_accuracy",
-          "state": "runtime-unproven",
-          "evidence": "English UIDescription was compared to the full exact runtime path and numerical/cadence behavior",
-          "missing_proof": "Missing proof: no additional dynamic behavior exists outside the closed-world inspected source."
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, the current full runtime path, SVN 964 engine producers and receivers, and focused regressions prove this static contract.",
+          "missing_proof": ""
         },
         {
           "id": "localization_coverage_including_absent_locales",
           "state": "coverage-gap",
-          "evidence": "the closed-world inventory confirms only EN UI localization in scope and the exact EN keys were checked",
-          "missing_proof": "Missing proof: no non-English locale files exist in the closed-world source inventory."
+          "evidence": "The exact English keys and translator-safe percent wording are proven with source-release parity.",
+          "missing_proof": "No non-English UniversalTraits locale exists."
         },
         {
           "id": "balance",
           "state": "runtime-unproven",
-          "evidence": "cost and implemented magnitude were statically compared; no telemetry was available",
-          "missing_proof": "Missing proof: gameplay telemetry or comparative playtest for the stated cost and magnitude."
+          "evidence": "The static contract and deterministic boundary behavior are proven.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "performance_risk",
           "state": "runtime-unproven",
-          "evidence": "handler frequency, collection scans, wrapper depth, and cache writes were inspected",
-          "missing_proof": "Missing proof: an in-game profiler capture under representative inventory/player state."
+          "evidence": "The static contract and deterministic boundary behavior are proven.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "tests",
-          "state": "confirmed-defect",
-          "evidence": "only exact assigned test regions were inspected; the mixed-trait suite was intentionally not executed because it reads unrelated traits; confirmed by IR0104-ANTIQUE-EVENT-CONTRACT",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, the current full runtime path, SVN 964 engine producers and receivers, and focused regressions prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "mocks",
-          "state": "confirmed-defect",
-          "evidence": "exact mocks were compared with engine stat clamps, collection shapes, event order, and HandWeapon getter/setter behavior; confirmed by IR0104-ANTIQUE-EVENT-CONTRACT",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, the current full runtime path, SVN 964 engine producers and receivers, and focused regressions prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "source_release_parity",
-          "state": "confirmed-defect",
-          "evidence": "exact assigned definitions, runtime Lua, registries, English UI, and release counterparts were hash/content compared; confirmed by verified-original-finding",
+          "state": "proven-correct",
+          "evidence": "Pre-campaign master, the current full runtime path, SVN 964 engine producers and receivers, and focused regressions prove this static contract.",
           "missing_proof": ""
         },
         {
           "id": "packaging_integrity",
-          "state": "confirmed-defect",
-          "evidence": "presence in source and 42.0 release, registration, definition, UI, and exact assigned runtime paths was checked",
-          "missing_proof": ""
+          "state": "coverage-gap",
+          "evidence": "All Antique-owned source and 42.0 release files are exact.",
+          "missing_proof": "The separately tracked missing source poster remains open."
         }
       ],
       "verified_finding_ids": [
+        "B01-ANT-PARITY",
         "B01-ANT-COVER",
-        "B01-ANT-PARITY"
+        "IR0104-ANTIQUE-EVENT-CONTRACT"
       ],
       "rejected_finding_ids": [],
       "omissions": [
         {
           "id": "IR0104-ANTIQUE-EVENT-CONTRACT",
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "severity": "high",
           "confidence": "high",
           "title": "Antique cannot reach its reward logic under the current inventory refresh event contract",
@@ -2957,17 +2958,42 @@
             "runtime"
           ],
           "reproduction_evidence": "The event emits (self,state), but the callback expects a third player argument and exits on nil. It also treats self.backpacks, a Lua table, as a Java list with size/get.",
-          "missing_proof": "No alternate event emitter with the expected three-argument/Java-list shape exists in the current indexed PZCodebase.",
-          "recommended_correction": "Accept (inventoryPage,state), resolve the player from the page/current player, and iterate backpacks with ipairs/#.",
-          "smallest_regression_test": "Trigger OnRefreshInventoryWindowContainers with the exact engine arguments and a Lua-table backpacks fixture; assert one qualifying reward path."
+          "missing_proof": "Current-build Kahlua and live inventory refresh remain unobserved.",
+          "recommended_correction": "No further static correction is indicated.",
+          "smallest_regression_test": "Covered by the exact two-argument, four-phase, Lua-table focused regression.",
+          "resolution_state": "implemented-and-statically-validated",
+          "resolution_evidence": "The callback now accepts exactly (inventoryPage,state), gates to end, resolves getSpecificPlayer(inventoryPage.player), and traverses the Lua backpacks table with ipairs."
         }
       ],
       "unresolved_proof": [
-        "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-        "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-        "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-        "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
-      ]
+        "No current-game Kahlua, live container, save-load, or loot-respawn cycle was observed.",
+        "Live stacking order with Scrounger and Vagabond remains unobserved.",
+        "Only English UI localization exists.",
+        "No gameplay telemetry or profiler capture exists."
+      ],
+      "accepted_overall_state": "runtime-unproven",
+      "independent_state": "runtime-unproven",
+      "omission_disposition": "resolved",
+      "repair_resolution": {
+        "state": "implemented-and-statically-validated",
+        "resolved_finding_ids": [
+          "B01-ANT-PARITY",
+          "B01-ANT-COVER",
+          "IR0104-ANTIQUE-EVENT-CONTRACT"
+        ],
+        "open_finding_ids": [],
+        "remaining_runtime_proof": "Current-build Kahlua, live containers, save-load, respawn reopening, stacked loot traits, rendered English, balance, and profiling remain unrun."
+      },
+      "release_parity": {
+        "source_runtime_sha256": "4E7FEFB47F4A35E6817E3ADA586268D3ADA80C747E3618A0A0A39BEAFC35EBF1",
+        "release_runtime_sha256": "4E7FEFB47F4A35E6817E3ADA586268D3ADA80C747E3618A0A0A39BEAFC35EBF1",
+        "source_english_sha256": "53E2E543B577E80991428DADBFB4052D545C87648812617B22142A4F8E04CD7B",
+        "release_english_sha256": "53E2E543B577E80991428DADBFB4052D545C87648812617B22142A4F8E04CD7B",
+        "source_items_sha256": "397A5EEA57B8907C325C1FA8CCDBDCDE1489BB178A9B6D74071A44590D9FDEE7",
+        "release_items_sha256": "397A5EEA57B8907C325C1FA8CCDBDCDE1489BB178A9B6D74071A44590D9FDEE7",
+        "state": "proven-correct"
+      },
+      "resolution_record": "change-impact/antique-inventory-event-contract.json"
     },
     {
       "trait_id": "UniversalTraits:UT_antivaxxer",

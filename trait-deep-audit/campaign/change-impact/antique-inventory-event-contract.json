@@ -1,0 +1,111 @@
+{
+  "schema": "ut-antique-inventory-event-contract-v1",
+  "trait_id": "UniversalTraits:UT_antique",
+  "authority": {
+    "accepted_baseline": "pre-campaign UTMods master",
+    "accepted_contract": "cost 6; no XP, grants, or exclusions; one 8 in 1000 seven-item Antique reward roll per eligible crate or metal shelf per configured loot-respawn cycle",
+    "historical_provenance": "More Traits Build 42 ContainerEvents and ToadTraitAntique",
+    "pz_snapshot": "SVN revision 964"
+  },
+  "resolved_findings": [
+    "B01-ANT-PARITY",
+    "B01-ANT-COVER",
+    "IR0104-ANTIQUE-EVENT-CONTRACT"
+  ],
+  "correction": {
+    "event_arguments": [
+      "inventoryPage",
+      "state"
+    ],
+    "accepted_phase": "end",
+    "player_resolution": "getSpecificPlayer(inventoryPage.player)",
+    "backpack_collection": "1-based Lua table traversed with ipairs",
+    "chance": "ZombRand(1000) < 8",
+    "reward_selection": "ZombRand(7) + 1",
+    "registration": "one handler through UTAntiqueRuntime.registered",
+    "runtime_scope": "single-player"
+  },
+  "engine_evidence": [
+    "PZCodebase/Lua/client/ISUI/ISInventoryPage.lua:1461-1510,1560,1794,1801,1902",
+    "PZCodebase/Java/source/zombie/inventory/ItemContainer.java:534-570",
+    "PZCodebase/Java/source/zombie/Lua/LuaManager.java:10223-10230",
+    "research/installed-mods/MoreTraits/mods/More Traits/42/media/lua/client/MoreTraits .lua:1061-1186,3381-3391"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_antique.lua",
+      "sha256": "4E7FEFB47F4A35E6817E3ADA586268D3ADA80C747E3618A0A0A39BEAFC35EBF1",
+      "bytes": 3200
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_antique.lua",
+      "sha256": "4E7FEFB47F4A35E6817E3ADA586268D3ADA80C747E3618A0A0A39BEAFC35EBF1",
+      "bytes": 3200
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "53E2E543B577E80991428DADBFB4052D545C87648812617B22142A4F8E04CD7B",
+      "bytes": 37469
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "53E2E543B577E80991428DADBFB4052D545C87648812617B22142A4F8E04CD7B",
+      "bytes": 37469
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_items.txt",
+      "sha256": "397A5EEA57B8907C325C1FA8CCDBDCDE1489BB178A9B6D74071A44590D9FDEE7",
+      "bytes": 7655
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_items.txt",
+      "sha256": "397A5EEA57B8907C325C1FA8CCDBDCDE1489BB178A9B6D74071A44590D9FDEE7",
+      "bytes": 7655
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "342773E31DDF2E7E201A78C74024CCC3435E72F7EFA8CE45E8130449078A3B5A",
+      "bytes": 317479
+    },
+    {
+      "path": "UniversalTraits/test/test_antique_runtime.lua",
+      "sha256": "4DFD38CFC87A87E79070D6F1208C0682988CAD5D8535474690BEE07860280E38",
+      "bytes": 13270
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_antique.md",
+      "sha256": "6AC1014A6AA62C490D71369499DCCA2428C464F84B2DF4C6A0F470DFF57B144D",
+      "bytes": 8462
+    }
+  ],
+  "regression_cases": [
+    "exact two-argument event and four-phase gate",
+    "page-player and trait gates",
+    "Lua backpacks and world-object eligibility",
+    "chance values 0, 7, 8, and 999",
+    "one roll after success or failure",
+    "LootRespawn modes 1 through 5 and exact hour boundaries",
+    "first and last reward selection",
+    "nil insertion and global sync behavior",
+    "reload-safe registration",
+    "metadata, English, seven item definitions, and source-release parity"
+  ],
+  "performance_model": "One bounded pass over the already built inventory-page button table at refresh end, with no polling or background work.",
+  "runtime_proof": "Unobserved; requires full desktop relaunch, live eligible containers, save-load, a respawn cycle, repeated world entry, stacked loot traits, rendered English, balance, and profiler observation.",
+  "non_goals": [
+    "multiplayer",
+    "backward save migration",
+    "deployment",
+    "changing cost, chance, reward table, eligible types, or respawn mapping"
+  ]
+}

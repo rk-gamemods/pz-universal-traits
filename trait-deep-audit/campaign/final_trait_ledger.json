@@ -45,11 +45,11 @@
     }
   },
   "source_artifact_sha256": {
-    "independent_reviews/traits_01_04.json": "417C222A68161C10EB07CAEFE38D7D6E5C73E010CCC14431FE732754B34F0DB8",
+    "independent_reviews/traits_01_04.json": "29C24133912335231DA8ED2E8462B64D9DBE837A0F553E3988547AEA52347D8D",
     "independent_reviews/traits_05_08.json": "B1CDBE8BBEE77E5C4D9417E0E77E1EF69178E8F34BD4C18B825038266D7E9D53",
     "independent_reviews/traits_09_12.json": "9DF50D6489EE80C99BC6302D5F73A3D43EE13DEFA421E605E932D85CD3ECEC11",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
-    "trait_batches/batch_01.jsonl": "7B741591E807E09BDE359BECBB8CF8BCBA18A872A9DD6B022EF105975DA78499",
+    "trait_batches/batch_01.jsonl": "4FD54923B0938C3294AB5E9D0C0168A08FDBF353A73FBE83BCE7F5DDF8B911F2",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
     "trait_batches/batch_03.jsonl": "DE80C7E88D64E27AEDFA1248A855290E9892605D7A1800D9933BFFFBD8271DA9",
     "trait_batches/batch_04.jsonl": "7BE87A0648404822CC35EE0904E3E4CC43391B4F955363D61BE1E3B8FEC6DA6E",
@@ -61,7 +61,7 @@
     "trait_batches/batch_10.jsonl": "33304EC69C6072CE027BFD779AB0E2332EEDE70DC56B6920468F46BC4A2ABE31",
     "trait_batches/batch_11.jsonl": "96361D7DDD836EA81336A763B7787799DAAF09B8BDBFA4B68729A2F5B0ECAA61",
     "trait_batches/batch_12.jsonl": "C510CBE58A2283058C425CF86EC3E9C814B9C732CCD45092DC243984E282A00F",
-    "translation_audit.json": "F7AE3B2AFC3B727FFAD90B749142B8B4C57A3822B41553DD1A81B56B41F07F67"
+    "translation_audit.json": "C80D3677A8FBDECBF4D23102CA851D05DE24125CD7FCCD4BFD71F72253461182"
   },
   "counts": {
     "traits": 198,
@@ -70,23 +70,23 @@
     "independent_reviewed_traits": 198,
     "independent_review_findings": 118,
     "independent_review_states": {
-      "accepted": 82,
+      "accepted": 83,
       "confirmed-defect": 34,
       "coverage-gap": 20,
-      "needs-correction": 52,
+      "needs-correction": 51,
       "runtime-unproven": 10
     },
     "overall_states": {
       "proven-correct": 25,
-      "confirmed-defect": 61,
+      "confirmed-defect": 60,
       "coverage-gap": 12,
-      "runtime-unproven": 100
+      "runtime-unproven": 101
     },
     "dimension_states": {
-      "proven-correct": 2762,
-      "confirmed-defect": 245,
-      "coverage-gap": 764,
-      "runtime-unproven": 981
+      "proven-correct": 2769,
+      "confirmed-defect": 243,
+      "coverage-gap": 763,
+      "runtime-unproven": 977
     }
   },
   "independent_review_findings": [
@@ -241,7 +241,7 @@
     },
     {
       "id": "IR0104-ANTIQUE-EVENT-CONTRACT",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
       "title": "Antique cannot reach its reward logic under the current inventory refresh event contract",
@@ -256,9 +256,9 @@
         "runtime"
       ],
       "reproduction_evidence": "The event emits (self,state), but the callback expects a third player argument and exits on nil. It also treats self.backpacks, a Lua table, as a Java list with size/get.",
-      "missing_proof": "No alternate event emitter with the expected three-argument/Java-list shape exists in the current indexed PZCodebase.",
-      "recommended_correction": "Accept (inventoryPage,state), resolve the player from the page/current player, and iterate backpacks with ipairs/#.",
-      "smallest_regression_test": "Trigger OnRefreshInventoryWindowContainers with the exact engine arguments and a Lua-table backpacks fixture; assert one qualifying reward path."
+      "missing_proof": "Current-build Kahlua and live inventory refresh remain unobserved.",
+      "recommended_correction": "No further static correction is indicated.",
+      "smallest_regression_test": "Covered by the exact two-argument, four-phase, Lua-table focused regression."
     },
     {
       "id": "IR0104-ANTIVAXXER-HOOK-STACK",
@@ -7177,12 +7177,12 @@
     {
       "trait_id": "UniversalTraits:UT_antique",
       "batch": "batch_01",
-      "overall_state": "confirmed-defect",
+      "overall_state": "runtime-unproven",
       "dimensions": {
         "registration": {
           "state": "proven-correct",
           "evidence": [
-            "registries.lua contains CharacterTrait.register(\"UniversalTraits:UT_antique\")"
+            "One exact namespaced registration exists and agrees with the definition, runtime, and English keys."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -7192,19 +7192,19 @@
         "definition_parser": {
           "state": "runtime-unproven",
           "evidence": [
-            "UT_character_traits.txt definition at line 732 parsed as a complete block; deterministic closed-world parser matched all 198 unique definitions; assigned definition has required identity/UI fields"
+            "The complete source and release definition blocks are byte-identical and pass the standard-Lua consistency parser."
           ],
           "missing_proof": [
-            "No in-game ScriptManager load/log was run."
+            "Current-build ScriptManager loading remains unobserved in game."
           ],
           "source_dimensions": [
-            "complete script definition and parser validity"
+            "definition_parser"
           ]
         },
         "namespace": {
           "state": "proven-correct",
           "evidence": [
-            "Registration, CharacterTrait, runtime ID, and UI keys consistently use UniversalTraits:UT_antique"
+            "Registration, CharacterTrait, runtime TRAIT_ID, UI keys, and all seven reward full types use their exact namespaces."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -7214,51 +7214,47 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "Cost=6; XPBoosts=none; GrantedTraits=none; exclusions=none. Deterministic complete-definition reverse scan found every listed exclusion exists and is reciprocal."
+            "Pre-campaign master and current definition agree on cost 6, no XP boosts, no granted traits, no exclusions, and multiplayer disabled."
           ],
           "missing_proof": [],
           "source_dimensions": [
-            "cost/XP/grants/exclusions and bidirectional exclusion behavior"
+            "cost_xp_grants_exclusions"
           ]
         },
         "source_intent": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Current source comments, script fields, English UI, and indexed planning/audit documents were compared; implementation intent is represented by the recorded runtime path."
+            "Pre-campaign master fixes the accepted result at one 8 in 1000 Antique reward chance per eligible crate or metal shelf per loot-respawn cycle."
           ],
-          "missing_proof": [
-            "No upstream source-mod commit/tag was supplied for historical equivalence."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
-            "source-mod intent"
+            "source_intent"
           ]
         },
         "runtime_path": {
           "state": "proven-correct",
           "evidence": [
-            "OnRefreshInventoryWindowContainers iterates Java backbacks 0-based; once per container/respawn cycle, eligible crate/metal_shelves rolls 8/1000 and adds one of seven items."
+            "The exact two-argument end-phase callback resolves the page player, traverses Lua backpacks, validates the world container, consumes one cycle roll, and inserts one scripted reward on success."
           ],
           "missing_proof": [],
           "source_dimensions": [
-            "exact runtime path through UT_CORE or script-only behavior"
+            "runtime_path"
           ]
         },
         "numbers": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "OnRefreshInventoryWindowContainers iterates Java backbacks 0-based; once per container/respawn cycle, eligible crate/metal_shelves rolls 8/1000 and adds one of seven items."
+            "Tests prove chance values 0 and 7 succeed, 8 and 999 fail, item indices 0 and 6 select the table boundaries, and respawn modes map to 24, 168, 720, and 1440 hours."
           ],
-          "missing_proof": [
-            "No in-game numeric observation was available."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
-            "numerical behavior"
+            "numbers"
           ]
         },
         "cadence": {
           "state": "proven-correct",
           "evidence": [
-            "Events.OnRefreshInventoryWindowContainers"
+            "Only the inventory refresh end phase scans containers; begin, beforeFloor, and buttonsAdded are rejected."
           ],
           "missing_proof": [],
           "source_dimensions": [
@@ -7268,122 +7264,118 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
-            "Container modData plus LootRespawn hours gates one roll per cycle."
+            "Persistent object modData enforces one roll per cycle, and the exact LootRespawn elapsed-hour boundary reopens modes 2 through 5 while mode 1 never reopens."
           ],
           "missing_proof": [],
           "source_dimensions": [
-            "cooldowns"
+            "cooldown"
           ]
         },
         "reset_save_load": {
           "state": "runtime-unproven",
           "evidence": [
-            "Container modData UT_antiqueRolled/Checked is transmitted and expected to save; respawn-hours gate resets eligibility."
+            "The handler stores cycle state in world-object modData and derives reopening from persistent world age."
           ],
           "missing_proof": [
-            "No save/reload game session was run."
+            "A current-build save, full exit, reload, and respawn-cycle observation remains unrun."
           ],
           "source_dimensions": [
-            "reset and save/load"
+            "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Uses Java ArrayList size/get with 0-based indexing, InventoryContainer/IsoObject methods, ModData transmit, GameTime and network add APIs."
+            "SVN 964 proves the two event arguments, four phases, Lua-table backpacks, ItemContainer.AddItem(String), and the global sendAddItemToContainer surface."
           ],
-          "missing_proof": [
-            "No Kahlua bridge invocation was observed in game."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
-            "Java-Lua exposure"
+            "java_lua"
           ]
         },
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "All 16 present per-trait Lua sources plus three shared files passed Lua loadfile syntax; constructs are Kahlua-compatible patterns (no goto, Java lists treated 0-based where used)."
+            "Focused standard-Lua tests use the exact event arity, Lua indexing, receiver methods, and nil returns from the current engine contract."
           ],
           "missing_proof": [
-            "Standard Lua syntax is not an in-game Kahlua execution proof."
+            "Current-build Kahlua execution remains unobserved."
           ],
           "source_dimensions": [
-            "Kahlua compatibility"
+            "kahlua"
           ]
         },
         "events": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "Handler registration path: Events.OnRefreshInventoryWindowContainers; module-load registration is single-shot under require caching."
+            "A trait-local sentinel registers exactly one callback across repeated module loads, and only the producer's end phase performs work."
           ],
-          "missing_proof": [
-            "No full game exit/relaunch event trace was captured."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
-            "event lifecycle"
+            "events"
           ]
         },
         "stacking_interactions": {
           "state": "runtime-unproven",
           "evidence": [
-            "Script exclusions none; No other explicit assigned-trait stacking rule found."
+            "Antique, Scrounger, and Vagabond use separate modData keys and do not overwrite one another."
           ],
           "missing_proof": [
-            "Emergent stacking with all 198 traits was not executed in game."
+            "Live handler order can affect whether another loot trait sees an Antique reward added during the same refresh."
           ],
           "source_dimensions": [
-            "stacking and cross-trait interactions"
+            "stacking_interactions"
           ]
         },
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "DisabledInMultiplayer=true in the complete definition."
+            "The definition disables Antique in multiplayer, and multiplayer support is an explicit product non-goal."
           ],
           "missing_proof": [],
           "source_dimensions": [
-            "multiplayer restriction"
+            "multiplayer"
           ]
         },
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "English UI key resolves to \"Antique Enthusiast\"."
+            "The exact English display name is Antique Enthusiast."
           ],
           "missing_proof": [],
           "source_dimensions": [
-            "display name"
+            "display"
           ]
         },
         "description": {
           "state": "proven-correct",
           "evidence": [
-            "English description compared directly with implementation."
+            "English states the eligible container types, approximate 0.8 percent chance, Antique reward category, and one roll per loot cycle."
           ],
           "missing_proof": [],
           "source_dimensions": [
-            "description accuracy"
+            "description"
           ]
         },
         "localization": {
           "state": "coverage-gap",
           "evidence": [
-            "Only Translate/EN/UI.json exists in closed-world source inventory; both assigned English keys are present. All non-English locales are absent."
+            "The exact English keys exist with source-release parity and translator-safe percent wording."
           ],
           "missing_proof": [
-            "No non-English localization files exist."
+            "No non-English UniversalTraits locale exists."
           ],
           "source_dimensions": [
-            "localization coverage including absent locales"
+            "localization"
           ]
         },
         "balance": {
           "state": "runtime-unproven",
           "evidence": [
-            "Cost 6 compared with implemented magnitude/cadence; static review recorded no additional balance defect beyond findings."
+            "The correction preserves cost 6, 8 in 1000 chance, seven rewards, eligible types, and respawn mapping exactly."
           ],
           "missing_proof": [
-            "No gameplay telemetry or comparative playtest was available."
+            "No gameplay telemetry or comparative balance session exists."
           ],
           "source_dimensions": [
             "balance"
@@ -7392,61 +7384,55 @@
         "performance": {
           "state": "runtime-unproven",
           "evidence": [
-            "Inventory refresh scans each backpack; bounded by UI contents but unprofiled."
+            "The corrected handler performs one bounded scan of existing inventory buttons per completed refresh and no background polling."
           ],
           "missing_proof": [
-            "No in-game profiler capture."
+            "No current-build profiler capture exists."
           ],
           "source_dimensions": [
-            "performance risk"
+            "performance"
           ]
         },
         "tests": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "No behavioral antique test found; only inventory/event mock anchors."
+            "Seven focused cases prove event intake, phases, player and trait gates, eligible types, roll and table boundaries, respawn modes, nil insertion, reload, metadata, English, item definitions, and parity."
           ],
-          "missing_proof": [
-            "Behavioral coverage absent."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "tests"
           ]
         },
         "mocks": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "UTTestMocks supplies OnRefreshInventoryWindowContainers but no full antique container/network behavioral fixture."
+            "The focused fixture enforces exactly two producer arguments, a 1-based Lua backpacks table, current Java receiver methods, bounded PZ RNG, and the global sync call."
           ],
-          "missing_proof": [
-            "Missing realistic Java backpack/container and network-add behavior."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
             "mocks"
           ]
         },
         "source_release_parity": {
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "evidence": [
-            "Defect: source uses sendAddItemToContainer; release uses container:addItemOnServer."
+            "Runtime, definition, English, and reward-item source/release pairs are byte-identical."
           ],
-          "missing_proof": [
-            "Release must be regenerated/verified."
-          ],
+          "missing_proof": [],
           "source_dimensions": [
-            "source/release parity"
+            "source_release_parity"
           ]
         },
         "packaging": {
-          "state": "confirmed-defect",
+          "state": "coverage-gap",
           "evidence": [
-            "Per-trait file exists in both 42.0 source/release layout but contents differ."
+            "All Antique-owned 42.0 runtime, metadata, English, and item-definition counterparts are present and identical."
           ],
           "missing_proof": [
-            "Package is stale relative to source."
+            "Read-only package verification still tracks the separate missing source poster."
           ],
           "source_dimensions": [
-            "packaging integrity"
+            "packaging"
           ]
         }
       },
@@ -7455,28 +7441,31 @@
         "B01-ANT-COVER"
       ],
       "unknowns": [
-        "No Project Zomboid in-game runtime session, multiplayer session, save/reload cycle, or profiler capture was run.",
-        "Non-English localization is absent.",
-        "Which divergent container-add call is the intended canonical multiplayer API requires runtime/owner confirmation."
+        "Current-build Kahlua, live container insertion, save-load, and exact loot-respawn reopening remain unobserved.",
+        "Live stacking order with Scrounger and Vagabond remains unobserved.",
+        "Rendered English, balance telemetry, and profiler capture remain unobserved.",
+        "Only English UI localization exists in the closed-world source inventory.",
+        "Multiplayer and backward save migration are explicit non-goals."
       ],
-      "translation_terminal_state": "confirmed-defect",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_01_04.json",
-        "review_state": "needs-correction",
+        "review_state": "accepted",
         "omission_finding_ids": [
           "IR0104-ANTIQUE-EVENT-CONTRACT"
         ],
         "cross_finding_ids": [],
         "verified_first_pass_finding_ids": [
+          "B01-ANT-PARITY",
           "B01-ANT-COVER",
-          "B01-ANT-PARITY"
+          "IR0104-ANTIQUE-EVENT-CONTRACT"
         ],
         "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [
-          "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-          "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-          "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-          "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
+          "No current-game Kahlua, live container, save-load, or loot-respawn cycle was observed.",
+          "Live stacking order with Scrounger and Vagabond remains unobserved.",
+          "Only English UI localization exists.",
+          "No gameplay telemetry or profiler capture exists."
         ]
       }
     },
