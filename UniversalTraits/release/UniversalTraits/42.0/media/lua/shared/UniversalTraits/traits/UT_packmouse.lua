@@ -163,60 +163,105 @@ local function onCreatePlayer(_playerIndex, player)
     end
 end
 
-local function eventOperationSucceeded(operation, handler)
-    if not operation then return false end
+local function runEventOperation(operation, handler)
+    if not operation then
+        return false, "missing operation"
+    end
     local ok, result = pcall(operation, handler)
-    return ok and result ~= false
+    if not ok then
+        return false, tostring(result)
+    end
+    if result == false then
+        return false, "explicit false"
+    end
+    return true, nil
+end
+
+local function canonicalizeEventHandler(event, preferredHandler, otherHandler, reason)
+    local recovery = {
+        preferredHandler = preferredHandler,
+        otherHandler = otherHandler,
+        reason = reason,
+        attempts = {},
+    }
+
+    for round = 1, 2 do
+        local attempt = {}
+        recovery.attempts[round] = attempt
+        attempt.removePreferred, attempt.removePreferredError =
+            runEventOperation(event and event.Remove, preferredHandler)
+        attempt.removeOther, attempt.removeOtherError =
+            runEventOperation(event and event.Remove, otherHandler)
+        attempt.addPreferred, attempt.addPreferredError =
+            runEventOperation(event and event.Add, preferredHandler)
+
+        if attempt.removePreferred and attempt.removeOther and attempt.addPreferred then
+            state.onCreatePlayer = preferredHandler
+            state.eventRecovery = nil
+            return true
+        end
+    end
+
+    state.onCreatePlayer = preferredHandler
+    state.eventRecovery = recovery
+    return false
 end
 
 local event = Events.OnCreatePlayer
-local retainedHandler = state.onCreatePlayer
-local pendingReplacement = state.eventReplacement
-if pendingReplacement then
-    if eventOperationSucceeded(event and event.Remove, pendingReplacement.replacementHandler) then
-        state.eventReplacement = nil
-    elseif eventOperationSucceeded(event and event.Remove, pendingReplacement.retainedHandler) then
-        state.onCreatePlayer = pendingReplacement.replacementHandler
-        state.eventReplacement = nil
-        retainedHandler = state.onCreatePlayer
-    else
+local pendingRecovery = state.eventRecovery
+if pendingRecovery then
+    if not canonicalizeEventHandler(
+        event,
+        pendingRecovery.preferredHandler,
+        pendingRecovery.otherHandler,
+        "retry: " .. tostring(pendingRecovery.reason)
+    ) then
         return
     end
 end
 
+local retainedHandler = state.onCreatePlayer
 if retainedHandler then
     if not retryPendingRollback() or not clearTrackedPlayer() then
         return
     end
 
-    if not eventOperationSucceeded(event and event.Add, onCreatePlayer) then
-        eventOperationSucceeded(event and event.Remove, onCreatePlayer)
+    local added, addError = runEventOperation(event and event.Add, onCreatePlayer)
+    if not added then
+        local removedNew, removeNewError =
+            runEventOperation(event and event.Remove, onCreatePlayer)
+        state.onCreatePlayer = retainedHandler
+        if removedNew then
+            state.eventRecovery = nil
+        else
+            state.eventRecovery = {
+                preferredHandler = retainedHandler,
+                otherHandler = onCreatePlayer,
+                reason = "Add replacement failed: " .. tostring(addError)
+                    .. "; replacement cleanup failed: " .. tostring(removeNewError),
+                attempts = {},
+            }
+        end
         return
     end
 
-    if eventOperationSucceeded(event and event.Remove, retainedHandler) then
+    local removedOld, removeOldError =
+        runEventOperation(event and event.Remove, retainedHandler)
+    if removedOld then
         state.onCreatePlayer = onCreatePlayer
-        state.eventReplacement = nil
+        state.eventRecovery = nil
         return
     end
 
-    if eventOperationSucceeded(event and event.Remove, onCreatePlayer) then
-        return
-    end
-
-    if eventOperationSucceeded(event and event.Remove, retainedHandler) then
-        state.onCreatePlayer = onCreatePlayer
-        state.eventReplacement = nil
-        return
-    end
-
-    state.eventReplacement = {
-        retainedHandler = retainedHandler,
-        replacementHandler = onCreatePlayer,
-    }
+    canonicalizeEventHandler(
+        event,
+        onCreatePlayer,
+        retainedHandler,
+        "Remove retained handler failed: " .. tostring(removeOldError)
+    )
     return
 end
 
-if eventOperationSucceeded(event and event.Add, onCreatePlayer) then
+if runEventOperation(event and event.Add, onCreatePlayer) then
     state.onCreatePlayer = onCreatePlayer
 end
