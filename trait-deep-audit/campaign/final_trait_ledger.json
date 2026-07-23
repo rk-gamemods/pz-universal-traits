@@ -45,14 +45,14 @@
     }
   },
   "source_artifact_sha256": {
-    "independent_reviews/traits_01_04.json": "29C24133912335231DA8ED2E8462B64D9DBE837A0F553E3988547AEA52347D8D",
+    "independent_reviews/traits_01_04.json": "CCE30545DE396EC52BBDB6AC90D3DB4019038409725C1E77B4B9446BFA22F2C8",
     "independent_reviews/traits_05_08.json": "0497B9C7C97D9F4BB0F0899EF84692F5D4522DCE75F222EDAF80D4BC8FD84EB9",
     "independent_reviews/traits_09_12.json": "A5322FD2CE42AA99B66AEF17BC4A915B1E924852503C59FFC2E6944197B2102E",
     "source_inventory.json": "9311E7E7531BDF8CA24F09BF066514EE84D35052DD2F7926D347BDC5878EA1C7",
     "trait_batches/batch_01.jsonl": "4FD54923B0938C3294AB5E9D0C0168A08FDBF353A73FBE83BCE7F5DDF8B911F2",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
     "trait_batches/batch_03.jsonl": "DE80C7E88D64E27AEDFA1248A855290E9892605D7A1800D9933BFFFBD8271DA9",
-    "trait_batches/batch_04.jsonl": "7BE87A0648404822CC35EE0904E3E4CC43391B4F955363D61BE1E3B8FEC6DA6E",
+    "trait_batches/batch_04.jsonl": "424FC71A59F0228A53D8B00C14C639A2CA8ABC44AC20860D86960C23B5AB3C8A",
     "trait_batches/batch_05.jsonl": "3B947F6228AB251E6E17074CF88F62A636D3EDFA01474F1E2DE2CC30ED42433D",
     "trait_batches/batch_06.jsonl": "32B529C5117E409EBFC41BF178BB94BFDD8301716D6187AC4950CF983A32CAAB",
     "trait_batches/batch_07.jsonl": "0483F4C2595D692E19FD6F60DE04E5D633C7942497A2669CF1B48459C0AFA771",
@@ -61,7 +61,7 @@
     "trait_batches/batch_10.jsonl": "33304EC69C6072CE027BFD779AB0E2332EEDE70DC56B6920468F46BC4A2ABE31",
     "trait_batches/batch_11.jsonl": "D1617D3F6DE1E81879EB3FA2B81F7DA1058630E103CF1DFD2D907B026311D959",
     "trait_batches/batch_12.jsonl": "3578367CB91C26719B23781AED4347327F5121A33FBBA47CE36891DC42DCEC9C",
-    "translation_audit.json": "D5FD509BB608FF804EF080E3F3831DBC3C93407948FE476D49019E909B77DE57"
+    "translation_audit.json": "A1C6880A817873CF8DD33853DCB242C10DF0F45F45AF31F92CBFBD9FCE791E2D"
   },
   "counts": {
     "traits": 198,
@@ -70,10 +70,10 @@
     "independent_reviewed_traits": 198,
     "independent_review_findings": 117,
     "independent_review_states": {
-      "accepted": 85,
+      "accepted": 86,
       "confirmed-defect": 29,
       "coverage-gap": 20,
-      "needs-correction": 50,
+      "needs-correction": 49,
       "runtime-unproven": 14
     },
     "overall_states": {
@@ -83,10 +83,10 @@
       "runtime-unproven": 108
     },
     "dimension_states": {
-      "proven-correct": 2801,
+      "proven-correct": 2802,
       "confirmed-defect": 199,
-      "coverage-gap": 753,
-      "runtime-unproven": 999
+      "coverage-gap": 751,
+      "runtime-unproven": 1000
     }
   },
   "independent_review_findings": [
@@ -877,7 +877,7 @@
     },
     {
       "id": "IR0104-GOURMAND-RECIPROCAL-EXCLUSION",
-      "state": "confirmed-defect",
+      "state": "proven-correct",
       "severity": "high",
       "confidence": "high",
       "title": "Competitive Eater and Gourmand are mutually exclusive in only one selection direction",
@@ -892,9 +892,9 @@
         "cross_trait"
       ],
       "reproduction_evidence": "Competitive Eater lists Gourmand, but Gourmand does not list Competitive Eater; current selection checks are directional.",
-      "missing_proof": "No user-approved intent authorizes order-dependent coexistence.",
-      "recommended_correction": "Make the exclusion reciprocal or remove it after an explicit design decision.",
-      "smallest_regression_test": "Select each trait first and assert the other is rejected in both orders."
+      "missing_proof": "",
+      "recommended_correction": "No further static correction is indicated.",
+      "smallest_regression_test": "Covered by the accepted exact reciprocal-exclusion assertion."
     },
     {
       "id": "IR0104-GUNSPECIALIST3-WEAPON-LEAK",
@@ -2586,19 +2586,16 @@
       "title": "Food traits mutate transferable item state and Gordanite double-counts its calorie bonus",
       "anchors": [
         "UniversalTraits/media/lua/shared/UniversalTraits/UT_gordanite.lua:18-41",
-        "UniversalTraits/media/lua/shared/UniversalTraits/UT_gourmand.lua",
-        "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua:66-106",
         "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6398-6430"
       ],
       "affected_surfaces": [
         "UniversalTraits:UT_gordanite",
-        "UniversalTraits:UT_gourmand",
         "runtime",
         "item_state",
         "cross_player",
         "reset"
       ],
-      "reproduction_evidence": "Both traits mutate shared food objects. Gordanite changes item calories to 1.5x before vanilla Eat and then adds half of the already-modified value, yielding 2.25x base calories; transfer exposes mutations to other owners.",
+      "reproduction_evidence": "Gourmand no longer mutates shared food objects or modData. Gordanite remains affected and still requires its own exact correction.",
       "missing_proof": "Save/load persistence was not observed; same-world transfer and the 2.25x arithmetic are proven from current source and engine order.",
       "recommended_correction": "Calculate approved effects at consumption time without persistent shared-item mutation and restore or migrate existing cached state safely.",
       "smallest_regression_test": "Consume a 200-calorie item through the full vanilla-plus-hook path and assert 300 total, then transfer inspected Gordanite/Gourmand food to a non-trait player and assert base values."
@@ -21381,29 +21378,35 @@
         "registration": {
           "state": "proven-correct",
           "evidence": [
-            "registries.lua registers UniversalTraits:UT_gourmand"
+            "CharacterTrait.register uses the exact UniversalTraits:UT_gourmand id."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "registration"
           ]
         },
         "definition_parser": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "complete-file regex parse found one definition; shared parser test passed"
+            "The complete source and release definitions parse in the accepted standard-Lua suite."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "Current-build ScriptManager parsing remains unobserved."
+          ],
           "source_dimensions": [
-            "complete script definition and parser validity"
+            "definition_parser"
           ]
         },
         "namespace": {
           "state": "proven-correct",
           "evidence": [
-            "registration, CharacterTrait, and definition use UniversalTraits:UT_gourmand"
+            "Registration, CharacterTrait, runtime id, and English keys use one exact namespace."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "namespace"
           ]
@@ -21411,53 +21414,59 @@
         "cost_xp_grants_exclusions": {
           "state": "proven-correct",
           "evidence": [
-            "Cost=4; XP/grants=none; exclusions=UT_ascetic;UT_anorexy",
-            "complete script parsed for reverse exclusions"
+            "Cost 4, no XP or grants, multiplayer disabled, and exact current exclusions are reciprocal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "cost/XP/grants/exclusions and bidirectional exclusion behavior"
+            "cost_xp_grants_exclusions"
           ]
         },
         "source_intent": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gourmand.lua comments/implementation"
+            "Pinned pre-campaign and current evidence preserve exactly 50 percent extra beneficial hunger, boredom, and unhappiness relief proportional to actual native consumption."
           ],
           "missing_proof": [
-            "No authoritative upstream source-mod snapshot was included in the allowed evidence set."
+            "none"
           ],
           "source_dimensions": [
-            "source-mod intent"
+            "source_intent"
           ]
         },
         "runtime_path": {
           "state": "proven-correct",
           "evidence": [
-            "UTCore tick throttle 30; inventory foods get hunger/happiness/boredom beneficial values x1.5 once"
+            "SVN 964 ISEatFoodAction complete and interrupted eat paths are wrapped once; native consumption runs first and Gourmand adds half of only the actual beneficial stat deltas."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "exact runtime path through UT_CORE or script-only behavior"
+            "runtime_path"
           ]
         },
         "numbers": {
           "state": "proven-correct",
           "evidence": [
-            "Cost=4; XP=none",
-            "UTCore tick throttle 30; inventory foods get hunger/happiness/boredom beneficial values x1.5 once"
+            "Each positive native relief delta receives an exact 0.5 multiplier bonus; harmful or zero changes receive no bonus."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "numerical behavior"
+            "numbers"
           ]
         },
         "cadence": {
           "state": "proven-correct",
           "evidence": [
-            "UTCore tick throttle 30; inventory foods get hunger/happiness/boredom beneficial values x1.5 once"
+            "Gourmand runs only on completed or interrupted positive consumption, with no inventory poll or tick handler."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "cadence"
           ]
@@ -21465,143 +21474,155 @@
         "cooldown": {
           "state": "proven-correct",
           "evidence": [
-            "No explicit cooldown beyond documented event/throttle"
+            "No cooldown belongs to the accepted consumption contract."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "cooldowns"
+            "cooldown"
           ]
         },
         "reset_save_load": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "modData/item-state paths inspected; standard-Lua tests only"
+            "The corrected path owns no food, player, or persistent baseline state; focused replacement and trait-removal cases prove no stale state is required."
           ],
           "missing_proof": [
-            "revertGourmandFood is defined but never called; no proof that items restore when the trait is absent/removed."
+            "Full relaunch and current-version save-load remain unobserved."
           ],
           "source_dimensions": [
-            "reset and save/load"
+            "reset_save_load"
           ]
         },
         "java_lua": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "current indexed PZ/UT API anchors plus standard-Lua mocks"
+            "SVN 964 ISEatFoodAction complete/eat and Stats CharacterStat hunger, boredom, and unhappiness accessors are statically traced."
           ],
           "missing_proof": [
-            "No Kahlua/Java bridge execution in the game."
+            "none"
           ],
           "source_dimensions": [
-            "Java-Lua exposure"
+            "java_lua"
           ]
         },
         "kahlua": {
           "state": "runtime-unproven",
           "evidence": [
-            "all runtime trait Lua files compile in standard Lua; zero-based Java collection loops inspected"
+            "Accepted source uses statically verified Kahlua-compatible wrapper and receiver shapes."
           ],
           "missing_proof": [
-            "Standard Lua is not Kahlua runtime proof."
+            "Actual B42 Kahlua action execution remains unobserved."
           ],
           "source_dimensions": [
-            "Kahlua compatibility"
+            "kahlua"
           ]
         },
         "events": {
-          "state": "runtime-unproven",
+          "state": "proven-correct",
           "evidence": [
-            "UTCore tick throttle 30; inventory foods get hunger/happiness/boredom beneficial values x1.5 once"
+            "Stable shared sentinels keep complete/eat wrappers single across repeated module evaluation and world-start installation."
           ],
           "missing_proof": [
-            "No full game launch/reload/removal lifecycle trace."
+            "none"
           ],
           "source_dimensions": [
-            "event lifecycle"
+            "events"
           ]
         },
         "stacking_interactions": {
-          "state": "coverage-gap",
+          "state": "proven-correct",
           "evidence": [
-            "UTCore tick throttle 30; inventory foods get hunger/happiness/boredom beneficial values x1.5 once",
-            "declared exclusions=UT_ascetic;UT_anorexy"
+            "The hook composes around native consumption without mutating transferable food objects or modData and evaluates the current eater and trait state."
           ],
           "missing_proof": [
-            "No exhaustive multi-trait or third-party-mod interaction matrix."
+            "none"
           ],
           "source_dimensions": [
-            "stacking and cross-trait interactions"
+            "stacking_interactions"
           ]
         },
         "multiplayer": {
           "state": "proven-correct",
           "evidence": [
-            "DisabledInMultiplayer=true"
+            "DisabledInMultiplayer is true and multiplayer support is a product non-goal."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "multiplayer restriction"
+            "multiplayer"
           ]
         },
         "display": {
           "state": "proven-correct",
           "evidence": [
-            "EN UI key resolves to 'Gourmand'"
+            "The exact English display name is Gourmand."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "display name"
+            "display"
           ]
         },
         "description": {
           "state": "proven-correct",
           "evidence": [
-            "English description compared with script/runtime numbers"
+            "English states the exact 50 percent proportional hunger, boredom, and unhappiness relief."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "description accuracy"
+            "description"
           ]
         },
         "localization": {
-          "state": "proven-correct",
+          "state": "coverage-gap",
           "evidence": [
-            "source inventory records EN as the only locale; name and description keys exist in EN"
+            "Exact English keys exist with source-release parity."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "No non-English UniversalTraits locale exists."
+          ],
           "source_dimensions": [
-            "localization coverage including absent locales"
+            "localization"
           ]
         },
         "balance": {
-          "state": "coverage-gap",
+          "state": "runtime-unproven",
           "evidence": [
-            "Cost=4; mechanics=UTCore tick throttle 30; inventory foods get hunger/happiness/boredom beneficial values x1.5 once"
+            "Cost 4 and the accepted 50 percent proportional beneficial relief remain unchanged."
           ],
           "missing_proof": [
-            "No gameplay telemetry, comparative pick-rate data, or explicit accepted balance rubric."
+            "No gameplay balance session exists."
           ],
           "source_dimensions": [
             "balance"
           ]
         },
         "performance": {
-          "state": "proven-correct",
+          "state": "runtime-unproven",
           "evidence": [
-            "UTCore tick throttle 30; inventory foods get hunger/happiness/boredom beneficial values x1.5 once"
+            "The obsolete inventory poll is removed and work is bounded to actual consumption calls."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "No current-build profiler capture exists."
+          ],
           "source_dimensions": [
-            "performance risk"
+            "performance"
           ]
         },
         "tests": {
           "state": "proven-correct",
           "evidence": [
-            "UniversalTraits test/run_tests.lua: 374 passed, 0 failed",
-            "targeted behavior/compile coverage found where noted"
+            "Eleven focused cases cover complete and partial consumption, exact deltas, guards, repeated bites, transfer/replacement, trait removal, duplicate load, failure safety, no persistent state, and source-release parity; full suite passes 576/576."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "tests"
           ]
@@ -21609,9 +21630,11 @@
         "mocks": {
           "state": "proven-correct",
           "evidence": [
-            "UTTestMocks.lua boundaries used by the suite; mocks preserve zero-based Java lists where applicable"
+            "Focused timed-action doubles execute native stat changes between before and after snapshots and cover current-player replacement without fabricated persistent state."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
             "mocks"
           ]
@@ -21619,23 +21642,25 @@
         "source_release_parity": {
           "state": "proven-correct",
           "evidence": [
-            "per-trait source and 42.0 release SHA-256 hashes match"
+            "Gourmand trait and shared-hook source/release runtime pairs are byte-identical."
           ],
-          "missing_proof": [],
+          "missing_proof": [
+            "none"
+          ],
           "source_dimensions": [
-            "source/release parity"
+            "source_release_parity"
           ]
         },
         "packaging": {
           "state": "coverage-gap",
           "evidence": [
-            "assigned per-trait release file exists and hash-matches source"
+            "Gourmand-owned 42.0 runtime, English, definition, and registry counterparts are present."
           ],
           "missing_proof": [
-            "Shared release registries/scripts/translations were outside the allowed release-read scope."
+            "Package/live deployment remains unrun and the root poster.png is missing."
           ],
           "source_dimensions": [
-            "packaging integrity"
+            "packaging"
           ]
         }
       },
@@ -21644,14 +21669,16 @@
         "B04-gourmand-RUNTIME"
       ],
       "unknowns": [
-        "No game runtime was launched.",
-        "Only EN localization exists in the bounded source inventory.",
-        "Shared release packaging surfaces were not read because the delegation forbids them."
+        "Actual B42 Kahlua action execution remains unobserved.",
+        "Full desktop relaunch and current-version save-load remain unobserved.",
+        "Gameplay balance and profiler behavior remain unobserved.",
+        "No non-English UniversalTraits locale exists.",
+        "Package/live deployment remains unrun and the root poster.png is missing."
       ],
-      "translation_terminal_state": "confirmed-defect",
+      "translation_terminal_state": "runtime-unproven",
       "independent_review": {
         "artifact": "independent_reviews/traits_01_04.json",
-        "review_state": "needs-correction",
+        "review_state": "accepted",
         "omission_finding_ids": [
           "IR0104-GOURMAND-RECIPROCAL-EXCLUSION"
         ],
@@ -21662,10 +21689,10 @@
         ],
         "rejected_first_pass_finding_ids": [],
         "unresolved_runtime_proofs": [
-          "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-          "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-          "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-          "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
+          "Actual B42 Kahlua action execution, full relaunch, and current-version save-load remain unobserved.",
+          "Gameplay balance and profiler behavior remain unobserved.",
+          "Only English UI localization exists.",
+          "Package/live deployment remains unrun and the root poster.png is missing."
         ]
       }
     },

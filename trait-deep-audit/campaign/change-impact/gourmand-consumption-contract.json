@@ -1,0 +1,135 @@
+{
+  "schema": "ut-gourmand-consumption-contract-v1",
+  "trait_id": "UniversalTraits:UT_gourmand",
+  "authority": {
+    "accepted_implementation_commit": "984ec687b4096d57296bfee1cbc2872e83e31215",
+    "accepted_parent": "914efed64ed0d8af7e75d61ddb5df9331c96dbc1",
+    "pz_snapshot": "SVN revision 964",
+    "final_independent_review": {
+      "verdict": "ACCEPT",
+      "snapshot": "984ec687",
+      "focused_cases": 11,
+      "full_cases": 576,
+      "blocking_findings": 0
+    }
+  },
+  "accepted_intent": {
+    "cost": 4,
+    "bonus_fraction": 0.5,
+    "applies_to": [
+      "beneficial hunger relief",
+      "beneficial boredom relief",
+      "beneficial unhappiness relief"
+    ],
+    "basis": "actual native consumption delta",
+    "english": "Food is one of life's great pleasures. Each meal grants +50 percent bonus hunger relief and reduces boredom and unhappiness by the same proportion."
+  },
+  "runtime_contract": {
+    "completed_path": "SVN 964 ISEatFoodAction.complete",
+    "partial_path": "SVN 964 ISEatFoodAction.eat",
+    "native_order": "snapshot before, native exactly once, compare after, then apply eligible bonus",
+    "persistent_baseline": false,
+    "food_mutation": false,
+    "food_moddata": false,
+    "duplicate_load_safe": true
+  },
+  "resolved_findings": [
+    "B04-gourmand-RESET",
+    "IR0104-GOURMAND-RECIPROCAL-EXCLUSION"
+  ],
+  "retained_runtime_finding": "B04-gourmand-RUNTIME",
+  "partially_resolved_cross_findings": [
+    "XTF0104-FOOD-ITEM-MUTATION"
+  ],
+  "regression_cases": [
+    "exact completed meal deltas",
+    "exact interrupted partial-consumption deltas",
+    "repeated bites without compounding",
+    "zero, harmful, non-food, and missing-trait guards",
+    "current eater across transfer and replacement",
+    "trait removal and replacement without persistent state",
+    "duplicate module evaluation",
+    "snapshot failure preserves native consumption",
+    "no polling, item mutation, item modData, player modData, or retained baseline",
+    "exact English contract",
+    "source-release runtime parity"
+  ],
+  "files": [
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_gourmand.lua",
+      "sha256": "65758A3BA329C2AC01E5668C6F35742D8D7CD293CBEF897AFA70E4EC4B919C31",
+      "bytes": 316
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/traits/UT_gourmand.lua",
+      "sha256": "65758A3BA329C2AC01E5668C6F35742D8D7CD293CBEF897AFA70E4EC4B919C31",
+      "bytes": 316
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+      "sha256": "0ACA2DB1F60CED038982ABA79F39FF7563BE00BDCC1B6196AA7814C06BBCCBF4",
+      "bytes": 15480
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+      "sha256": "0ACA2DB1F60CED038982ABA79F39FF7563BE00BDCC1B6196AA7814C06BBCCBF4",
+      "bytes": 15480
+    },
+    {
+      "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "CD91DE9D7B42F603C5B3F5FCAE1CF99D29BCE785F83CC79377574B18CE02E672",
+      "bytes": 37457
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
+      "sha256": "CD91DE9D7B42F603C5B3F5FCAE1CF99D29BCE785F83CC79377574B18CE02E672",
+      "bytes": 37457
+    },
+    {
+      "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/scripts/UT_character_traits.txt",
+      "sha256": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+      "bytes": 82426
+    },
+    {
+      "path": "UniversalTraits/media/registries.lua",
+      "sha256": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+      "bytes": 23864
+    },
+    {
+      "path": "UniversalTraits/release/UniversalTraits/42.0/media/registries.lua",
+      "sha256": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+      "bytes": 23864
+    },
+    {
+      "path": "UniversalTraits/test/run_tests.lua",
+      "sha256": "80216AC9B113ADD3639A3FC0F2662858CBA227D258E3F5C3647E592DF0733349",
+      "bytes": 386015
+    },
+    {
+      "path": "trait-deep-audit/active/batch/traits/UT_gourmand.md",
+      "sha256": "F1197FB2E5D633D9B22F738BBB135B4995DBB3554D90EED43570ECB570034685",
+      "bytes": 3225
+    }
+  ],
+  "retained_runtime_proof": [
+    "actual B42 Kahlua action execution",
+    "full desktop relaunch",
+    "current-version save-load",
+    "gameplay balance session",
+    "profiler/performance capture",
+    "non-English localization if required",
+    "package/live deployment",
+    "missing root poster.png"
+  ],
+  "runtime_proof": "Unobserved; static and standard-Lua evidence do not establish live current-build gameplay.",
+  "non_goals": [
+    "multiplayer",
+    "deployment",
+    "rebalance"
+  ]
+}

@@ -40,8 +40,8 @@
     "trait_batches/batch_12.jsonl",
     "translation_audit.json"
   ],
-  "file_count": 162,
-  "total_bytes": 13604471,
+  "file_count": 165,
+  "total_bytes": 13642912,
   "files": [
     {
       "path": ".gitattributes",
@@ -147,6 +147,13 @@
       "byte_semantics": "utf-8-lf",
       "bytes": 3775,
       "sha256": "2888EF7612545206688CCE8613673C15C75B7750005201C21BA0855079F46A3E"
+    },
+    {
+      "path": "change-impact/gourmand-consumption-contract.json",
+      "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 5019,
+      "sha256": "837D3D4E1578660409F6C5A8940C29591F7BFC137FDDFC41050291C8B1EC1AF6"
     },
     {
       "path": "change-impact/heavilybleedingwounds-met-resolution.json",
@@ -320,22 +327,22 @@
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2272183,
-      "sha256": "570F9F03BD1042061D52D5A695010CDF81B2D1E09471E3B991C1FD762B27F0E3"
+      "bytes": 2272458,
+      "sha256": "BF29999111F24B814250CACCE9FB3C72B171BAD5D9D36CE771D7CF046B9623DA"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2098941,
-      "sha256": "0782875CC43E033B2B8DFFA028E98C42AF0BA0F615EEB94335A8AE64BF7968B8"
+      "bytes": 2099054,
+      "sha256": "833675BB827411B257852FE1DCEAC5CC2B93149FDFB1134E1206A80A20BDA8DF"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1293694,
-      "sha256": "624DD3A1850F2A2D492AD37BD3474B5097F40401B1EEE00594BDD57C8F50FA0A"
+      "bytes": 1293869,
+      "sha256": "58AEC5A29ABF7C156F7CF1CFEE900F89C9611DED42C906EDC9D1C677366B1577"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
@@ -355,8 +362,8 @@
       "path": "independent_reviews/traits_01_04.json",
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
-      "bytes": 673142,
-      "sha256": "29C24133912335231DA8ED2E8462B64D9DBE837A0F553E3988547AEA52347D8D"
+      "bytes": 673459,
+      "sha256": "CCE30545DE396EC52BBDB6AC90D3DB4019038409725C1E77B4B9446BFA22F2C8"
     },
     {
       "path": "independent_reviews/traits_05_08.json",
@@ -391,21 +398,21 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 2939,
-      "sha256": "4DEC191E29500432715B98E8DC22E052BAEBB195794F7B9D411DF8043B9B262D"
+      "sha256": "3BB3EA88A105E634B0321DFC5E92E93F803E2ADF35CF3533F6111F0E8900741F"
     },
     {
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2068352,
-      "sha256": "1882780539C2E699CA1B233F5F4BF978A2063EF5CB0F88C71E28DF8BE626EF3C"
+      "bytes": 2064484,
+      "sha256": "790AB51EFEE20590BCE52E06960EB1FE3C68657ED04573C3B88650BA6E7DE227"
     },
     {
       "path": "remediation_summary.json",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1211,
-      "sha256": "3D6D5D559D84E6C759831F6B6C6C85AB91DFE105EC2E3CDFE19BD7A162122A7D"
+      "bytes": 1212,
+      "sha256": "E6EBD1C9A1A8C33BDD1684CB190DB40C5DC8263B0E08C6CC33424E512DFF11F4"
     },
     {
       "path": "runtime-traces/utcore-wave-01.jsonl",
@@ -651,6 +658,13 @@
       "byte_semantics": "utf-8-lf",
       "bytes": 9715,
       "sha256": "66D896086EA0B6E43199C44723B166CE9172E3C9F3173A978CEC7E1037D77AE8"
+    },
+    {
+      "path": "tests/test_regenerate_gourmand.py",
+      "kind": "regression-test",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 12196,
+      "sha256": "584DE4B764331568535D3B0600D55D36B9414BCE5669601895ADBBCD267F3BBA"
     },
     {
       "path": "tests/test_regenerate_heavilybleedingwounds.py",
@@ -912,6 +926,13 @@
       "sha256": "038CA3E167BE066F79EC4DDE3A38F77FBA06C9D307ADB6EBFED54BA01968E2DE"
     },
     {
+      "path": "tools/regenerate_gourmand.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 23190,
+      "sha256": "0A209D655C25846B8AA6B05DED7D9750E44CF2523E57ADEEA49ACA6D0E8AEB05"
+    },
+    {
       "path": "tools/regenerate_heavilybleedingwounds.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
@@ -1111,8 +1132,8 @@
       "path": "trait_batches/batch_04.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 110780,
-      "sha256": "7BE87A0648404822CC35EE0904E3E4CC43391B4F955363D61BE1E3B8FEC6DA6E"
+      "bytes": 111784,
+      "sha256": "424FC71A59F0228A53D8B00C14C639A2CA8ABC44AC20860D86960C23B5AB3C8A"
     },
     {
       "path": "trait_batches/batch_05.jsonl",
@@ -1174,8 +1195,8 @@
       "path": "translation_audit.json",
       "kind": "translation-audit",
       "byte_semantics": "utf-8-lf",
-      "bytes": 496176,
-      "sha256": "D5FD509BB608FF804EF080E3F3831DBC3C93407948FE476D49019E909B77DE57"
+      "bytes": 496195,
+      "sha256": "A1C6880A817873CF8DD33853DCB242C10DF0F45F45AF31F92CBFBD9FCE791E2D"
     }
   ]
 }

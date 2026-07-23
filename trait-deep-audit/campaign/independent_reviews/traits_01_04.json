@@ -11260,151 +11260,151 @@
       "trait_id": "UniversalTraits:UT_gourmand",
       "source_batch": "batch_04",
       "original_state": "runtime-unproven",
-      "review_state": "needs-correction",
+      "review_state": "accepted",
       "checked_dimensions": [
         {
           "id": "registration",
           "state": "proven-correct",
-          "evidence": "source_inventory.json registration entry, exact definition identity, and current registry were cross-checked",
+          "evidence": "Pinned intent, current source, SVN 964 static tracing, accepted focused tests, and independent review prove this exact static contract.",
           "missing_proof": ""
         },
         {
           "id": "complete_script_definition_and_parser_validity",
-          "state": "runtime-unproven",
-          "evidence": "the complete UT_character_traits.txt block was inspected and compared with current perk symbols",
-          "missing_proof": "Missing proof: a current in-game ScriptManager parse/load log for this exact definition."
+          "state": "coverage-gap",
+          "evidence": "The complete source/release definition parses in the accepted standard-Lua suite.",
+          "missing_proof": "Current-build ScriptManager parsing remains unobserved."
         },
         {
           "id": "namespace",
           "state": "proven-correct",
-          "evidence": "registration, definition, runtime key, and English UI keys were checked for UniversalTraits:UT_ consistency",
+          "evidence": "Pinned intent, current source, SVN 964 static tracing, accepted focused tests, and independent review prove this exact static contract.",
           "missing_proof": ""
         },
         {
           "id": "cost_xp_grants_exclusions_and_bidirectional_exclusion_behavior",
-          "state": "confirmed-defect",
-          "evidence": "cost, XPBoosts, grants, and both directions of every relevant exclusion were inspected against current engine selection behavior; confirmed by IR0104-GOURMAND-RECIPROCAL-EXCLUSION",
+          "state": "proven-correct",
+          "evidence": "Pinned intent, current source, SVN 964 static tracing, accepted focused tests, and independent review prove this exact static contract.",
           "missing_proof": ""
         },
         {
           "id": "source_mod_intent",
-          "state": "runtime-unproven",
-          "evidence": "current definition, English UI, runtime, audit inventory, and any exact shared dependency were compared",
-          "missing_proof": "Missing proof: an authoritative upstream source-mod revision or user-approved design record for historical intent."
+          "state": "proven-correct",
+          "evidence": "Pinned intent, current source, SVN 964 static tracing, accepted focused tests, and independent review prove this exact static contract.",
+          "missing_proof": ""
         },
         {
           "id": "exact_runtime_path_through_ut_core_or_script_only_behavior",
-          "state": "runtime-unproven",
-          "evidence": "the per-trait file or script-only path plus exact UT_CORE/UniversalTraits consumers was statically traced",
-          "missing_proof": "Missing proof: an in-game Kahlua execution trace through the exact static path."
+          "state": "proven-correct",
+          "evidence": "Pinned intent, current source, SVN 964 static tracing, accepted focused tests, and independent review prove this exact static contract.",
+          "missing_proof": ""
         },
         {
           "id": "numerical_behavior",
-          "state": "runtime-unproven",
-          "evidence": "constants and domains were checked against current CharacterStat, Stats, GameTime, HandWeapon, and relevant item APIs",
-          "missing_proof": "Missing proof: an engine-faithful boundary observation in the current game build."
+          "state": "proven-correct",
+          "evidence": "Pinned intent, current source, SVN 964 static tracing, accepted focused tests, and independent review prove this exact static contract.",
+          "missing_proof": ""
         },
         {
           "id": "cadence",
-          "state": "runtime-unproven",
-          "evidence": "event registration and UTCore dispatch throttle/periodic behavior were inspected",
-          "missing_proof": "Missing proof: an in-game event-count/timing trace under representative update rates."
+          "state": "proven-correct",
+          "evidence": "Pinned intent, current source, SVN 964 static tracing, accepted focused tests, and independent review prove this exact static contract.",
+          "missing_proof": ""
         },
         {
           "id": "cooldowns",
           "state": "proven-correct",
-          "evidence": "all trait-local and shared cooldown counters in the exact assigned path were inspected",
+          "evidence": "Pinned intent, current source, SVN 964 static tracing, accepted focused tests, and independent review prove this exact static contract.",
           "missing_proof": ""
         },
         {
           "id": "reset_and_save_load",
-          "state": "confirmed-defect",
-          "evidence": "module locals, player/item modData, OnNewGame/OnCreatePlayer paths, restoration, and ownership transitions were inspected; confirmed by verified-original-finding",
-          "missing_proof": ""
+          "state": "runtime-unproven",
+          "evidence": "Static source and focused regression evidence is complete for the implemented contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "java_lua_exposure",
           "state": "runtime-unproven",
-          "evidence": "current PZCodebase event/API symbols and exposed argument order were checked",
-          "missing_proof": "Missing proof: an observed current-game Kahlua bridge invocation for the exact callback/API path."
+          "evidence": "Static source and focused regression evidence is complete for the implemented contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "kahlua_compatibility",
           "state": "runtime-unproven",
-          "evidence": "Java collections versus Lua tables, indexing, callback arity, and standard-Lua mock substitutions were checked",
-          "missing_proof": "Missing proof: execution under the current in-game Kahlua runtime; standard Lua syntax/mocks are insufficient."
+          "evidence": "Static source and focused regression evidence is complete for the implemented contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "event_lifecycle",
-          "state": "runtime-unproven",
-          "evidence": "registration, repeated world entry, handler install, and engine trigger order were checked",
-          "missing_proof": "Missing proof: repeated world entry plus full desktop relaunch event traces."
+          "state": "proven-correct",
+          "evidence": "Pinned intent, current source, SVN 964 static tracing, accepted focused tests, and independent review prove this exact static contract.",
+          "missing_proof": ""
         },
         {
           "id": "stacking_and_cross_trait_interactions",
-          "state": "confirmed-defect",
-          "evidence": "shared hooks, shared mutable items, aggregate modifiers, exclusions, and overlapping trait writers were cross-checked across batches 01-04; confirmed by IR0104-GOURMAND-RECIPROCAL-EXCLUSION",
+          "state": "proven-correct",
+          "evidence": "Pinned intent, current source, SVN 964 static tracing, accepted focused tests, and independent review prove this exact static contract.",
           "missing_proof": ""
         },
         {
           "id": "multiplayer_restriction",
           "state": "proven-correct",
-          "evidence": "the exact definition's DisabledInMultiplayer field was checked",
+          "evidence": "Pinned intent, current source, SVN 964 static tracing, accepted focused tests, and independent review prove this exact static contract.",
           "missing_proof": ""
         },
         {
           "id": "display_name",
           "state": "proven-correct",
-          "evidence": "the exact English UIName key was resolved",
+          "evidence": "Pinned intent, current source, SVN 964 static tracing, accepted focused tests, and independent review prove this exact static contract.",
           "missing_proof": ""
         },
         {
           "id": "description_accuracy",
-          "state": "runtime-unproven",
-          "evidence": "English UIDescription was compared to the full exact runtime path and numerical/cadence behavior",
-          "missing_proof": "Missing proof: no additional dynamic behavior exists outside the closed-world inspected source."
+          "state": "proven-correct",
+          "evidence": "Pinned intent, current source, SVN 964 static tracing, accepted focused tests, and independent review prove this exact static contract.",
+          "missing_proof": ""
         },
         {
           "id": "localization_coverage_including_absent_locales",
           "state": "coverage-gap",
-          "evidence": "the closed-world inventory confirms only EN UI localization in scope and the exact EN keys were checked",
-          "missing_proof": "Missing proof: no non-English locale files exist in the closed-world source inventory."
+          "evidence": "Exact English source/release copy is proven.",
+          "missing_proof": "No non-English UniversalTraits locale exists."
         },
         {
           "id": "balance",
           "state": "runtime-unproven",
-          "evidence": "cost and implemented magnitude were statically compared; no telemetry was available",
-          "missing_proof": "Missing proof: gameplay telemetry or comparative playtest for the stated cost and magnitude."
+          "evidence": "Static source and focused regression evidence is complete for the implemented contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "performance_risk",
           "state": "runtime-unproven",
-          "evidence": "handler frequency, collection scans, wrapper depth, and cache writes were inspected",
-          "missing_proof": "Missing proof: an in-game profiler capture under representative inventory/player state."
+          "evidence": "Static source and focused regression evidence is complete for the implemented contract.",
+          "missing_proof": "Current-build in-game observation remains required."
         },
         {
           "id": "tests",
-          "state": "coverage-gap",
-          "evidence": "only exact assigned test regions were inspected; the mixed-trait suite was intentionally not executed because it reads unrelated traits",
-          "missing_proof": "Missing proof: no exact engine-order, save/load, transfer, and boundary regression covers every runtime premise for this trait."
+          "state": "proven-correct",
+          "evidence": "Pinned intent, current source, SVN 964 static tracing, accepted focused tests, and independent review prove this exact static contract.",
+          "missing_proof": ""
         },
         {
           "id": "mocks",
-          "state": "coverage-gap",
-          "evidence": "exact mocks were compared with engine stat clamps, collection shapes, event order, and HandWeapon getter/setter behavior",
-          "missing_proof": "Missing proof: mocks do not universally reproduce engine clamping, event timing, collection shapes, or item getter/setter domains."
+          "state": "proven-correct",
+          "evidence": "Pinned intent, current source, SVN 964 static tracing, accepted focused tests, and independent review prove this exact static contract.",
+          "missing_proof": ""
         },
         {
           "id": "source_release_parity",
           "state": "proven-correct",
-          "evidence": "exact assigned definitions, runtime Lua, registries, English UI, and release counterparts were hash/content compared",
+          "evidence": "Pinned intent, current source, SVN 964 static tracing, accepted focused tests, and independent review prove this exact static contract.",
           "missing_proof": ""
         },
         {
           "id": "packaging_integrity",
-          "state": "proven-correct",
-          "evidence": "presence in source and 42.0 release, registration, definition, UI, and exact assigned runtime paths was checked",
-          "missing_proof": ""
+          "state": "coverage-gap",
+          "evidence": "Gourmand-owned source/release content is exact.",
+          "missing_proof": "Package/live deployment remains unrun and the root poster.png is missing."
         }
       ],
       "verified_finding_ids": [
@@ -11415,7 +11415,7 @@
       "omissions": [
         {
           "id": "IR0104-GOURMAND-RECIPROCAL-EXCLUSION",
-          "state": "confirmed-defect",
+          "state": "proven-correct",
           "severity": "high",
           "confidence": "high",
           "title": "Competitive Eater and Gourmand are mutually exclusive in only one selection direction",
@@ -11430,17 +11430,39 @@
             "cross_trait"
           ],
           "reproduction_evidence": "Competitive Eater lists Gourmand, but Gourmand does not list Competitive Eater; current selection checks are directional.",
-          "missing_proof": "No user-approved intent authorizes order-dependent coexistence.",
-          "recommended_correction": "Make the exclusion reciprocal or remove it after an explicit design decision.",
-          "smallest_regression_test": "Select each trait first and assert the other is rejected in both orders."
+          "missing_proof": "",
+          "recommended_correction": "No further static correction is indicated.",
+          "smallest_regression_test": "Covered by the accepted exact reciprocal-exclusion assertion.",
+          "resolution_state": "implemented-and-statically-validated",
+          "resolution_evidence": "Current source and focused exact-membership assertions prove Competitive Eater and Gourmand exclusions in both directions."
         }
       ],
       "unresolved_proof": [
-        "No current-game Kahlua execution, full desktop relaunch, or repeated-world-entry trace was performed for this trait.",
-        "No save/load, death, player-switch, drop/transfer, or multiplayer trace was performed where the runtime path could retain state.",
-        "Only English UI localization exists in the closed-world source inventory; non-English localization remains absent.",
-        "No gameplay telemetry or profiler capture was available; static balance/performance conclusions remain explicitly runtime-unproven."
-      ]
+        "Actual B42 Kahlua action execution, full relaunch, and current-version save-load remain unobserved.",
+        "Gameplay balance and profiler behavior remain unobserved.",
+        "Only English UI localization exists.",
+        "Package/live deployment remains unrun and the root poster.png is missing."
+      ],
+      "explicit_non_goals": [
+        "multiplayer",
+        "deployment",
+        "rebalance"
+      ],
+      "resolution_record": "change-impact/gourmand-consumption-contract.json",
+      "release_parity": {
+        "trait_runtime": "65758A3BA329C2AC01E5668C6F35742D8D7CD293CBEF897AFA70E4EC4B919C31",
+        "trait_release": "65758A3BA329C2AC01E5668C6F35742D8D7CD293CBEF897AFA70E4EC4B919C31",
+        "hook_runtime": "0ACA2DB1F60CED038982ABA79F39FF7563BE00BDCC1B6196AA7814C06BBCCBF4",
+        "hook_release": "0ACA2DB1F60CED038982ABA79F39FF7563BE00BDCC1B6196AA7814C06BBCCBF4",
+        "definition_runtime": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+        "definition_release": "09D06DC8DAD556A899CF17FE3E1FE47832E19287873F0295BC19B81A233D9CA6",
+        "english_runtime": "CD91DE9D7B42F603C5B3F5FCAE1CF99D29BCE785F83CC79377574B18CE02E672",
+        "english_release": "CD91DE9D7B42F603C5B3F5FCAE1CF99D29BCE785F83CC79377574B18CE02E672",
+        "registry_runtime": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+        "registry_release": "251DA2A8293DD602DEAAB47FE03DD435F06C1AE8ECAA03C59307CFAE5ACC4531",
+        "tests": "80216AC9B113ADD3639A3FC0F2662858CBA227D258E3F5C3647E592DF0733349",
+        "state": "proven-correct"
+      }
     },
     {
       "trait_id": "UniversalTraits:UT_graverobber",
@@ -12382,22 +12404,22 @@
       "title": "Food traits mutate transferable item state and Gordanite double-counts its calorie bonus",
       "anchors": [
         "UniversalTraits/media/lua/shared/UniversalTraits/UT_gordanite.lua:18-41",
-        "UniversalTraits/media/lua/shared/UniversalTraits/UT_gourmand.lua",
-        "UniversalTraits/media/lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua:66-106",
         "PZCodebase/Java/source/zombie/characters/IsoGameCharacter.java:6398-6430"
       ],
       "affected_surfaces": [
         "UniversalTraits:UT_gordanite",
-        "UniversalTraits:UT_gourmand",
         "runtime",
         "item_state",
         "cross_player",
         "reset"
       ],
-      "reproduction_evidence": "Both traits mutate shared food objects. Gordanite changes item calories to 1.5x before vanilla Eat and then adds half of the already-modified value, yielding 2.25x base calories; transfer exposes mutations to other owners.",
+      "reproduction_evidence": "Gourmand no longer mutates shared food objects or modData. Gordanite remains affected and still requires its own exact correction.",
       "missing_proof": "Save/load persistence was not observed; same-world transfer and the 2.25x arithmetic are proven from current source and engine order.",
       "recommended_correction": "Calculate approved effects at consumption time without persistent shared-item mutation and restore or migrate existing cached state safely.",
-      "smallest_regression_test": "Consume a 200-calorie item through the full vanilla-plus-hook path and assert 300 total, then transfer inspected Gordanite/Gourmand food to a non-trait player and assert base values."
+      "smallest_regression_test": "Consume a 200-calorie item through the full vanilla-plus-hook path and assert 300 total, then transfer inspected Gordanite/Gourmand food to a non-trait player and assert base values.",
+      "partial_resolutions": {
+        "UniversalTraits:UT_gourmand": "implemented-and-statically-validated at 984ec687 with exact current-eater consumption deltas"
+      }
     },
     {
       "id": "XTF0104-ITEM-CONSUMPTION-WRAPPERS",
