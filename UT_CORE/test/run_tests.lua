@@ -551,6 +551,22 @@ test("carry ownership tolerates nil missing inventory and bridge failures", func
     assert_eq(setFailure:getModData().UT_inventoryCapacityApplied, nil)
 end)
 
+test("carry ownership safely rejects a nil moddata return", function()
+    local player = {
+        getModData = function() return nil end,
+    }
+    assert_eq(UTCore.refreshAggregatedModifierCache(player), nil)
+    assert_eq(UTCore.reconcileAggregatedModifiers(player), nil)
+end)
+
+test("carry ownership safely rejects a throwing getModData bridge", function()
+    local player = {
+        getModData = function() error("injected getModData failure") end,
+    }
+    assert_eq(UTCore.refreshAggregatedModifierCache(player), nil)
+    assert_eq(UTCore.reconcileAggregatedModifiers(player), nil)
+end)
+
 test("carry ownership source and release files have byte parity", function()
     local sourcePath = base .. "../media/lua/shared/UTCore/UTCore_StatModifiers.lua"
     local releasePath = base .. "../release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_StatModifiers.lua"

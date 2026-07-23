@@ -59,7 +59,9 @@ local function hasEntries(tbl)
 end
 
 local function ensureModifierBuckets(player)
-    local md = player:getModData()
+    if not player or type(player.getModData) ~= "function" then return nil, nil end
+    local ok, md = pcall(player.getModData, player)
+    if not ok or type(md) ~= "table" then return nil, nil end
     local buckets = md[MODIFIER_BUCKETS_KEY]
     if type(buckets) ~= "table" then
         buckets = {}
@@ -79,6 +81,7 @@ end
 
 local function migrateLegacyBuckets(player)
     local md, buckets = ensureModifierBuckets(player)
+    if not md then return nil, nil end
     if md[MODIFIER_BUCKET_VERSION_KEY] == MODIFIER_BUCKETS_VERSION then
         return md, buckets
     end
@@ -103,6 +106,7 @@ local function setBucketValue(player, bucketName, sourceId, value, legacySource)
     if not player then return end
 
     local md, buckets = migrateLegacyBuckets(player)
+    if not md then return end
     local bucket = buckets[bucketName]
     local key = sourceId or "__anonymous"
 
@@ -143,6 +147,7 @@ function UTCore.refreshAggregatedModifierCache(player)
     if not player then return nil end
 
     local md, buckets = migrateLegacyBuckets(player)
+    if not md then return nil end
 
     local speedMod = clamp(sumBucket(buckets[SPEED_BUCKET]), SPEED_MIN_DELTA, SPEED_MAX_DELTA)
     local workMod = clamp(sumBucket(buckets[WORK_BUCKET]), WORK_MIN_DELTA, WORK_MAX_DELTA)
@@ -181,6 +186,7 @@ function UTCore.reconcileAggregatedModifiers(player)
     if not player or not player.getModData then return nil end
 
     local summary = UTCore.refreshAggregatedModifierCache(player)
+    if not summary then return nil end
     local carryTarget = summary and summary.carryTargetBase or nil
     if carryTarget ~= nil and player.getMaxWeightBase and player.setMaxWeightBase then
         local current = player:getMaxWeightBase()
