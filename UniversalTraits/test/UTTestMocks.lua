@@ -318,6 +318,14 @@ function MockPlayer(traitList, opts)
         moveTo = function(self, nx, ny) x = nx; y = ny end,
         isLocalPlayer = function(self) return true end,
         getNutrition = function(self) return nutrition end,
+        getUsername = function(self)
+            if opts.usernameError then error("injected username failure") end
+            return opts.username
+        end,
+        getFullName = function(self)
+            if opts.fullNameError then error("injected full-name failure") end
+            return opts.fullName
+        end,
         getPlayerNum = function(self) return self._playerNum end,
         isDriving = function(self) return self._driving end,
         getVehicle = function(self) return self._vehicle end,
@@ -1596,6 +1604,7 @@ function MockItem(typeName, opts)
     local actualWeight = opts.actualWeight or 1
     local worldScale = opts.worldScale or 1
     local moddata = opts.moddata or {}
+    local chef = opts.chef
     -- Build the scriptItem with a forage category set compatible with B42 API
     local scriptItem = {
         getForageFocusCategories = function(self)
@@ -1613,6 +1622,12 @@ function MockItem(typeName, opts)
         getType           = function(self) return self._type end,
         getFullType       = function(self) return self._type end,
         getScriptItem     = function(self) return scriptItem end,
+        getCategory       = function(self) return opts.category or "Food" end,
+        getChef           = function(self)
+            if opts.chefError then error("injected chef failure") end
+            return chef
+        end,
+        setChef           = function(self, value) chef = value end,
         isFood            = function(self) return isFood end,
         isCooked          = function(self) return isCooked end,
         setCooked         = function(self, value) isCooked = value end,

@@ -2050,7 +2050,7 @@ test("improviser doubles condition lower chance via B42 API", function()
     assert_eq(weapon:getConditionLowerChance(), 6, "expected UT_improviser to double condition lower chance")
 end)
 
-test("gordanite marks cooked food for hunger bonus and boosts calories once", function()
+test("gordanite is declaration-only and does not mutate food or register a tick", function()
     local item = MockItem("Stew", { isCooked = true, hungerChange = -20, calories = 200 })
     local inventory = MockInventory(0, 8)
     inventory:AddItem(item)
@@ -2065,9 +2065,12 @@ test("gordanite marks cooked food for hunger bonus and boosts calories once", fu
         end
     end)
 
-    assert_eq(item:getModData()["UT_gordBoosted"], true, "expected cooked food to be marked as boosted")
-    assert_eq(item:getModData()["UT_gordHungerMult"], 1.5, "expected hunger multiplier marker")
-    assert_eq(item:getCalories(), 300, "expected calories to be multiplied once")
+    assert_eq(item:getModData()["UT_gordBoosted"], nil, "Gordanite must not mark food")
+    assert_eq(item:getModData()["UT_gordHungerMult"], nil, "Gordanite must not own food modData")
+    assert_eq(item:getCalories(), 200, "Gordanite must not mutate item calories")
+    for _, handler in ipairs(UTCore._tickHandlers or {}) do
+        assert_true(handler.id ~= "UniversalTraits:UT_gordanite", "Gordanite must not register a tick")
+    end
 end)
 
 local function makeCaughtFish()
@@ -3231,43 +3234,16 @@ test("caffeine consumption hooks are reload-safe and preserve later hook owners"
         "a later hook owner must remain installed")
 end)
 
-test("gordanite consumption keeps one net 1.5x effect after native consumption", function()
-    local cases = {
-        { name = "full", percentage = 1.0, hungerChange = -0.2, expectedHunger = 0.5 },
-        { name = "partial", percentage = 0.5, hungerChange = -0.2, expectedHunger = 0.55 },
-        { name = "zero percentage", percentage = 0, hungerChange = -0.2, expectedHunger = 0.6 },
-        { name = "negative percentage", percentage = -0.5, hungerChange = -0.2, expectedHunger = 0.6 },
-        { name = "zero hunger change", percentage = 1.0, hungerChange = 0, expectedHunger = 0.6 },
-        { name = "positive hunger change", percentage = 1.0, hungerChange = 0.2, expectedHunger = 0.6 },
-    }
-
-    for _, case in ipairs(cases) do
-        -- The starting values represent state after vanilla complete() consumed
-        -- the already-boosted 300-calorie item and applied its base hunger change.
-        local player = MockPlayer({}, { hunger = 0.6, calories = 2300 })
-        local item = MockItem("Stew", {
-            hungerChange = case.hungerChange,
-            calories = 300,
-            moddata = { UT_gordHungerMult = 1.5 },
-        })
-        local action = {
-            character = player,
-            item = item,
-            percentage = case.percentage,
-            _originalPerformReturn = "vanilla-return",
-        }
-
-        local result = ISEatFoodAction.perform(action)
-
-        assert_true(math.abs(player:getStats():get(CharacterStat.HUNGER) - case.expectedHunger) < 1e-9,
-            case.name .. ": expected exactly one 1.5x hunger effect")
-        assert_eq(player:getNutrition():getCalories(), 2300,
-            case.name .. ": Gordanite calories must not receive a second 1.5x application")
-        assert_eq(action._originalPerformCalls, 1,
-            case.name .. ": original perform must run exactly once")
-        assert_eq(result, nil,
-            case.name .. ": wrapper return behavior must remain unchanged")
-    end
+test("legacy Gordanite food modData does not activate the perform path", function()
+    local player = MockPlayer({ "UniversalTraits:UT_gordanite" }, {
+        hunger = 0.6, calories = 2200, username = "Chef",
+    })
+    local item = MockItem("Stew", {
+        chef = "Chef", moddata = { UT_gordBoosted = true, UT_gordHungerMult = 1.5 },
+    })
+    ISEatFoodAction.perform({ character = player, item = item, percentage = 1.0 })
+    assert_eq(player:getStats():get(CharacterStat.HUNGER), 0.6, "perform must not apply Gordanite")
+    assert_eq(player:getNutrition():getCalories(), 2200, "legacy modData must not activate Gordanite")
 end)
 
 test("consumption hook leaves non-Gordanite food unchanged", function()
@@ -5520,6 +5496,111 @@ end)
 local ANOREXY_ID = "UniversalTraits:UT_anorexy"
 local COMPETITIVE_EATER_ID = "UniversalTraits:UT_competitiveeater"
 local BAD_TEETH_ID = "UniversalTraits:UT_badteeth"
+local GORDANITE_ID = "UniversalTraits:UT_gordanite"
+
+local function makeGordaniteComplete(traits, playerOpts, itemOpts, afterHunger, afterCalories)
+    local player = MockPlayer(traits, playerOpts)
+    local item = MockItem("Stew", itemOpts)
+    local action = {
+        character = player, item = item, percentage = 1.0,
+        _originalCompleteReturn = "native-result",
+        _onComplete = function(self)
+            self.character:getStats():set(CharacterStat.HUNGER, afterHunger)
+            self.character:getNutrition():setCalories(afterCalories)
+        end,
+    }
+    return player, item, action
+end
+
+test("gordanite completed meal uses realized native deltas and preserves return", function()
+    local p, item, action = makeGordaniteComplete({ GORDANITE_ID },
+        { hunger = 0.8, calories = 2000, username = "Chef" },
+        { chef = "Chef", calories = 200 }, 0.4, 2200)
+    assert_eq(ISEatFoodAction.complete(action), "native-result", "native return must be preserved")
+    assert_eq(action._originalCompleteCalls, 1, "native complete must run once")
+    assert_close(p:getStats():get(CharacterStat.HUNGER), 0.2, 0.000001, "half hunger delta")
+    assert_close(p:getNutrition():getCalories(), 2300, 0.000001, "half calorie delta")
+    assert_eq(item:getCalories(), 200, "food calories must not mutate")
+    assert_eq(item:getModData().UT_gordBoosted, nil, "food modData must not mutate")
+    assert_eq(p:getModData().UT_gordBoosted, nil, "player modData must not mutate")
+end)
+
+test("gordanite interrupted eat uses self.item and full-name chef", function()
+    local p = MockPlayer({ GORDANITE_ID }, { hunger = 0.7, calories = 2100, fullName = "Ada Cook" })
+    local action = {
+        character = p, item = MockItem("Stew", { chef = "Ada Cook" }), percentage = 0.5,
+        _originalEatReturn = "partial-result",
+        _onEat = function(self)
+            self.character:getStats():set(CharacterStat.HUNGER, 0.5)
+            self.character:getNutrition():setCalories(2200)
+        end,
+    }
+    local result = ISEatFoodAction.eat(action, MockItem("Other", { chef = "Other" }), 0.5)
+    assert_eq(result, "partial-result", "native partial return must be preserved")
+    assert_eq(action._originalEatCalls, 1, "native eat must run once")
+    assert_close(p:getStats():get(CharacterStat.HUNGER), 0.4, 0.000001, "self.item eligibility")
+    assert_close(p:getNutrition():getCalories(), 2250, 0.000001, "partial realized calories")
+end)
+
+test("gordanite chef identity and current trait fail closed", function()
+    for _, case in ipairs({
+        { chef = nil }, { chef = "" }, { chef = 42 }, { chef = "Other" },
+        { chef = "Chef", chefError = true },
+    }) do
+        local p, _, action = makeGordaniteComplete({ GORDANITE_ID },
+            { hunger = 0.8, calories = 2000, username = "Chef" }, case, 0.4, 2200)
+        ISEatFoodAction.complete(action)
+        assert_eq(p:getStats():get(CharacterStat.HUNGER), 0.4, "invalid chef must fail closed")
+        assert_eq(p:getNutrition():getCalories(), 2200, "invalid chef calories must fail closed")
+    end
+    local p, _, action = makeGordaniteComplete({},
+        { hunger = 0.8, calories = 2000, username = "Chef" }, { chef = "Chef" }, 0.4, 2200)
+    ISEatFoodAction.complete(action)
+    assert_eq(p:getStats():get(CharacterStat.HUNGER), 0.4, "trait removal must apply immediately")
+end)
+
+test("gourmand and gordanite add from one immutable native hunger delta", function()
+    local p, _, action = makeGordaniteComplete({ GORDANITE_ID, "UniversalTraits:UT_gourmand" },
+        { hunger = 0.8, calories = 2000, username = "Chef" },
+        { chef = "Chef", category = "Food" }, 0.4, 2200)
+    ISEatFoodAction.complete(action)
+    assert_close(p:getStats():get(CharacterStat.HUNGER), 0.0, 0.000001, "exact additive 2.0x relief")
+    assert_close(p:getNutrition():getCalories(), 2300, 0.000001, "Gordanite calorie half-delta")
+end)
+
+test("gordanite ignores zero and harmful deltas and preserves native errors", function()
+    local p, _, action = makeGordaniteComplete({ GORDANITE_ID },
+        { hunger = 0.1, calories = 2000, username = "Chef" }, { chef = "Chef" }, 0.1, 1900)
+    ISEatFoodAction.complete(action)
+    assert_eq(p:getStats():get(CharacterStat.HUNGER), 0.1, "zero hunger delta")
+    assert_eq(p:getNutrition():getCalories(), 1900, "harmful calorie delta")
+
+    local throwing = MockPlayer({ GORDANITE_ID }, { hunger = 0.8, calories = 2000, username = "Chef" })
+    local throwAction = {
+        character = throwing, item = MockItem("Stew", { chef = "Chef" }),
+        _onComplete = function() error("native failure") end,
+    }
+    local ok, err = pcall(ISEatFoodAction.complete, throwAction)
+    assert_true(not ok and tostring(err):find("native failure", 1, true), "native error must propagate")
+    assert_eq(throwing:getStats():get(CharacterStat.HUNGER), 0.8, "no post effect after native error")
+end)
+
+test("gordanite runtime source and release copies stay byte-identical", function()
+    local function readAll(path)
+        local file = assert(io.open(path, "rb"))
+        local content = file:read("*a")
+        file:close()
+        return content
+    end
+    for _, path in ipairs({
+        "lua/shared/UniversalTraits/traits/UT_gordanite.lua",
+        "lua/shared/UniversalTraits/UT_ItemConsumptionHooks.lua",
+    }) do
+        assert_eq(readAll(base .. "../media/" .. path),
+            readAll(base .. "../release/UniversalTraits/42.0/media/" .. path),
+            "source and release must match for " .. path)
+    end
+end)
 
 test("anorexy applies exactly 0.10 after completed food effects", function()
     local p = MockPlayer({ ANOREXY_ID }, { stress = 0.4 })

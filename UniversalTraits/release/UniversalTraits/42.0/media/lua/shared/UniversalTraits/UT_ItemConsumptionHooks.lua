@@ -20,6 +20,7 @@ local ANOREXY_ID = "UniversalTraits:UT_anorexy"
 local COMPETITIVE_EATER_ID = "UniversalTraits:UT_competitiveeater"
 local BAD_TEETH_ID = "UniversalTraits:UT_badteeth"
 local GOURMAND_ID = "UniversalTraits:UT_gourmand"
+local GORDANITE_ID = "UniversalTraits:UT_gordanite"
 
 -- Exact InventoryItem:getType() identities for current vanilla medications.
 local MEDICATION_TYPES = {
@@ -73,19 +74,11 @@ local function getFoodBonusMultipliers(item)
 
     local md = item:getModData()
     local multiplier = 1.0
-    local gordaniteCaloriesAlreadyBoosted = false
-
-    if type(md["UT_gordHungerMult"]) == "number" and md["UT_gordHungerMult"] > multiplier then
-        multiplier = md["UT_gordHungerMult"]
-        gordaniteCaloriesAlreadyBoosted = true
-    end
-
     if type(md["UT_wildsmanFishHungerMult"]) == "number" and md["UT_wildsmanFishHungerMult"] > multiplier then
         multiplier = md["UT_wildsmanFishHungerMult"]
     end
 
-    local calorieMultiplier = gordaniteCaloriesAlreadyBoosted and 1.0 or multiplier
-    return multiplier, calorieMultiplier
+    return multiplier, multiplier
 end
 
 local function applyFoodBonusEffects(character, item, percentage)
@@ -209,10 +202,12 @@ end
 local function readMealBenefitState(character)
     if not character then return nil end
     local stats = character:getStats()
+    local nutrition = character.getNutrition and character:getNutrition() or nil
     return {
         hunger = stats:get(CharacterStat.HUNGER),
         boredom = stats:get(CharacterStat.BOREDOM),
         unhappiness = stats:get(CharacterStat.UNHAPPINESS),
+        calories = nutrition and nutrition.getCalories and nutrition:getCalories() or nil,
     }
 end
 
@@ -222,28 +217,50 @@ local function tryReadMealBenefitState(character)
     return state
 end
 
-local function applyGourmandBonus(character, item, previousState)
-    if not previousState or not isFoodItem(item) then return end
+local function applyGourmandBonus(character, item, previousState, nativeAfter)
+    if not previousState or not nativeAfter or not isFoodItem(item) then return end
     if not item.getCategory or item:getCategory() ~= "Food" then return end
     if not UTCore.hasTrait(character, GOURMAND_ID) then return end
 
     local stats = character:getStats()
-    local current = readMealBenefitState(character)
     local function addHalfOfBenefit(stat, before, after)
         if type(before) == "number" and type(after) == "number" and after < before then
-            stats:set(stat, math.max(0.0, after - ((before - after) * 0.5)))
+            stats:set(stat, math.max(0.0, stats:get(stat) - ((before - after) * 0.5)))
         end
     end
 
-    addHalfOfBenefit(CharacterStat.HUNGER, previousState.hunger, current.hunger)
-    addHalfOfBenefit(CharacterStat.BOREDOM, previousState.boredom, current.boredom)
-    addHalfOfBenefit(CharacterStat.UNHAPPINESS, previousState.unhappiness, current.unhappiness)
+    addHalfOfBenefit(CharacterStat.HUNGER, previousState.hunger, nativeAfter.hunger)
+    addHalfOfBenefit(CharacterStat.BOREDOM, previousState.boredom, nativeAfter.boredom)
+    addHalfOfBenefit(CharacterStat.UNHAPPINESS, previousState.unhappiness, nativeAfter.unhappiness)
 end
 
-local function applyPostConsumptionEffects(character, item, consumedFraction, previousFoodTimer, previousMealState)
+local function applyGordaniteBonus(character, item, before, nativeAfter)
+    if not before or not nativeAfter or not character or not item then return end
+    if not UTCore.hasTrait(character, GORDANITE_ID) or type(item.getChef) ~= "function" then return end
+    local chef = item:getChef()
+    if type(chef) ~= "string" or chef == "" then return end
+    local username = character.getUsername and character:getUsername() or nil
+    local fullName = character.getFullName and character:getFullName() or nil
+    if chef ~= username and chef ~= fullName then return end
+    local stats = character:getStats()
+    if type(before.hunger) == "number" and type(nativeAfter.hunger) == "number"
+        and before.hunger > nativeAfter.hunger then
+        stats:set(CharacterStat.HUNGER,
+            stats:get(CharacterStat.HUNGER) - ((before.hunger - nativeAfter.hunger) * 0.5))
+    end
+    if type(before.calories) == "number" and type(nativeAfter.calories) == "number"
+        and nativeAfter.calories > before.calories then
+        local nutrition = character:getNutrition()
+        nutrition:setCalories(nutrition:getCalories() + ((nativeAfter.calories - before.calories) * 0.5))
+    end
+end
+
+local function applyPostConsumptionEffects(character, item, consumedFraction, previousFoodTimer, previousMealState,
+    nativeAfterMealState)
     if not character or not consumedFraction or consumedFraction <= 0 then return end
 
-    applyGourmandBonus(character, item, previousMealState)
+    applyGourmandBonus(character, item, previousMealState, nativeAfterMealState)
+    pcall(applyGordaniteBonus, character, item, previousMealState, nativeAfterMealState)
 
     local stats = character:getStats()
     if UTCore.hasTrait(character, ANOREXY_ID) then
@@ -281,8 +298,9 @@ local function hookISEatFoodActionPostConsumption()
                 local _, previousFoodTimer = tryReadFoodHealingState(self.character)
                 local previousMealState = tryReadMealBenefitState(self.character)
                 local result = originalComplete(self)
+                local nativeAfterMealState = tryReadMealBenefitState(self.character)
                 pcall(applyPostConsumptionEffects, self.character, self.item, self.percentage or 1.0,
-                    previousFoodTimer, previousMealState)
+                    previousFoodTimer, previousMealState, nativeAfterMealState)
                 return result
             end
             ISEatFoodAction.complete = completeWrapper
@@ -297,9 +315,10 @@ local function hookISEatFoodActionPostConsumption()
                 local _, previousFoodTimer = tryReadFoodHealingState(self.character)
                 local previousMealState = tryReadMealBenefitState(self.character)
                 local result = originalEat(self, food, percentage)
+                local nativeAfterMealState = tryReadMealBenefitState(self.character)
                 local consumedFraction = (self.percentage or 1.0) * (percentage or 0)
-                pcall(applyPostConsumptionEffects, self.character, food, consumedFraction,
-                    previousFoodTimer, previousMealState)
+                pcall(applyPostConsumptionEffects, self.character, self.item, consumedFraction,
+                    previousFoodTimer, previousMealState, nativeAfterMealState)
                 return result
             end
             ISEatFoodAction.eat = partialWrapper
