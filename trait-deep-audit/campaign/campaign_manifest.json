@@ -40,9 +40,16 @@
     "trait_batches/batch_12.jsonl",
     "translation_audit.json"
   ],
-  "file_count": 152,
-  "total_bytes": 13491972,
+  "file_count": 153,
+  "total_bytes": 13492030,
   "files": [
+    {
+      "path": ".gitattributes",
+      "kind": "campaign-artifact",
+      "byte_semantics": "raw",
+      "bytes": 41,
+      "sha256": "3F57416EE0E59D479E1E035FB43363F04A7814FCDEFB3DB06629DBE84081F90D"
+    },
     {
       "path": "HAPPY_PATH_PRIORITY.md",
       "kind": "campaign-artifact",
@@ -237,7 +244,7 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 4005,
-      "sha256": "9AC1D06B04C8F5F419532CC73571800243BE94419879CBF49C233CBEB3745141"
+      "sha256": "CC9671739229154FC4B21B1D022EA364EB6DEC98D0FAD6A225A93F723FF2ACD7"
     },
     {
       "path": "change-impact/thickblood-weighted-bleed-damage.json",
@@ -300,7 +307,7 @@
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
       "bytes": 2095988,
-      "sha256": "73F6D75C6A76E124384C953EBE27D124F0E6C04E3231B9175F3DF37F1011D400"
+      "sha256": "7CC83EF62B1865B0493C521C0E51A7E39D4C83191D7BA994767E3DACB5B32488"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
@@ -342,7 +349,7 @@
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
       "bytes": 124726,
-      "sha256": "C18D6417F4F824C3001B3BB851B2EBD7DDD4EDFF7661B445C125E1F9C791ADFF"
+      "sha256": "8814871A086968498235CD4C396CC5DAD7B752F096F2B834B249743ACCB3C104"
     },
     {
       "path": "independent_reviews/ut_core_integration.json",
@@ -712,8 +719,8 @@
       "path": "tests/test_regenerate_tavernbrawler.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 7494,
-      "sha256": "46E6F45405B03945C447BB9FDCDBBDF82C64409A95E58B25DA41EA0665DC91D0"
+      "bytes": 7935,
+      "sha256": "820CA688682532923E05E4B8B8F2B72BDD8003E3B2E51209D251607A60688843"
     },
     {
       "path": "tests/test_regenerate_thickblood.py",
@@ -964,8 +971,8 @@
       "path": "tools/regenerate_tavernbrawler.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 15901,
-      "sha256": "2A30B9A18BF313CBE487E0F5EA5FEF1FD90983D7C9584EC403F54FC5627EF530"
+      "bytes": 15477,
+      "sha256": "0D5CCC48C9FD6E738CDF56E37CE461DC84E40F24E237F174AE60F69640DF5334"
     },
     {
       "path": "tools/regenerate_thickblood.py",

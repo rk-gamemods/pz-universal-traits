@@ -61,10 +61,24 @@ class TavernBrawlerGeneratorSafetyTests(unittest.TestCase):
             relative
             for relative in GENERATOR.OWNED_OUTPUTS
             if not (self.campaign / relative).is_file()
-            or GENERATOR._normalized_bytes(self.campaign / relative)
-            != plan[relative].replace(b"\r\n", b"\n")
+            or (self.campaign / relative).read_bytes() != plan[relative]
         ]
         self.assertEqual(stale, [], "committed Tavern outputs must be exact before any generator run")
+
+    def test_crlf_output_is_detected_as_stale_against_lf_plan(self) -> None:
+        plan = GENERATOR.build_plan(self.root, self.campaign)
+        GENERATOR.commit_plan(plan, self.campaign)
+        plan = GENERATOR.build_plan(self.root, self.campaign)
+        relative = "campaign_manifest.json"
+        destination = self.campaign / relative
+        expected = plan[relative]
+        self.assertIn(b"\n", expected)
+        destination.write_bytes(expected.replace(b"\n", b"\r\n"))
+
+        changed = GENERATOR.commit_plan(plan, self.campaign)
+
+        self.assertEqual(changed, [relative])
+        self.assertEqual(destination.read_bytes(), expected)
 
     def test_non_target_batch_and_review_records_are_preserved(self) -> None:
         batch = self.campaign / "trait_batches" / "batch_11.jsonl"
@@ -111,7 +125,6 @@ class TavernBrawlerGeneratorSafetyTests(unittest.TestCase):
         names = ("TRAIT", "FINDINGS", "_plan_batch", "_plan_review", "OWNED_OUTPUTS")
         base_before = {name: getattr(GENERATOR.base, name) for name in names}
         metadata_before = GENERATOR.HELPER._metadata
-        ledger_sha256_before = GENERATOR.build_final_trait_ledger._sha256
         transaction_outputs_before = GENERATOR.transaction.OWNED_OUTPUTS
         plan = GENERATOR.build_plan(self.root, self.campaign)
         plan[GENERATOR.OWNED_OUTPUTS[0]] += b" "
@@ -135,7 +148,6 @@ class TavernBrawlerGeneratorSafetyTests(unittest.TestCase):
             base_before,
         )
         self.assertIs(GENERATOR.HELPER._metadata, metadata_before)
-        self.assertIs(GENERATOR.build_final_trait_ledger._sha256, ledger_sha256_before)
         self.assertIs(GENERATOR.transaction.OWNED_OUTPUTS, transaction_outputs_before)
         self.assertFalse(
             any(
