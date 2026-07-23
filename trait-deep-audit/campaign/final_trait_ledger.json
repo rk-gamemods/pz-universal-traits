@@ -45,14 +45,14 @@
     }
   },
   "source_artifact_sha256": {
-    "independent_reviews/traits_01_04.json": "C8314A582A7F0AF549FD45EC289FAA62BB616A8679E098B20A9043817BF22984",
+    "independent_reviews/traits_01_04.json": "AB339DB02DC862D4BDB824AA493D23370E872EC8A48DBA06F5D9658B705F6D98",
     "independent_reviews/traits_05_08.json": "440B5A395270AD3EEACC783B53B113518B5180D00ACBE2373D94C66EA603D31C",
     "independent_reviews/traits_09_12.json": "C13D6E432C4AD272ED0C2510CBB8C527FEF3394CEC13AEA6AF2D9C0FB21B118E",
     "source_inventory.json": "01FC9DA5EAA5353D106D852734D8B31B20DB750069908B03879DE3C6127B2919",
     "trait_batches/batch_01.jsonl": "4FD54923B0938C3294AB5E9D0C0168A08FDBF353A73FBE83BCE7F5DDF8B911F2",
     "trait_batches/batch_02.jsonl": "FA7F96C7F8950B0FE0B4660BCC8D512B2E8D338584043892C9214A28FDA316FE",
     "trait_batches/batch_03.jsonl": "DE80C7E88D64E27AEDFA1248A855290E9892605D7A1800D9933BFFFBD8271DA9",
-    "trait_batches/batch_04.jsonl": "8954D8E8AEE90F826FBD0D7DCCC3E026FF9C8E05BAF2438CEBF6179DE7CE7A93",
+    "trait_batches/batch_04.jsonl": "DEE665D724F18B015C818714F7B8784400CC2EB3B3963341D9EEE18C9E109DF1",
     "trait_batches/batch_05.jsonl": "3B947F6228AB251E6E17074CF88F62A636D3EDFA01474F1E2DE2CC30ED42433D",
     "trait_batches/batch_06.jsonl": "32B529C5117E409EBFC41BF178BB94BFDD8301716D6187AC4950CF983A32CAAB",
     "trait_batches/batch_07.jsonl": "1A554765021A167458955E851DBDA4197520CB1CBFAFB724E68C9806696B6B43",
@@ -61,7 +61,7 @@
     "trait_batches/batch_10.jsonl": "0B4D9F886C24F1CFEB96D07F013B90F28B579A0086D1DB80DBEDC68671FEBE34",
     "trait_batches/batch_11.jsonl": "D1617D3F6DE1E81879EB3FA2B81F7DA1058630E103CF1DFD2D907B026311D959",
     "trait_batches/batch_12.jsonl": "0D668CE4517CD35E208A253B4214905C00C658B5BB97E970D14E1F52FC5DB850",
-    "translation_audit.json": "DC734D6A5EB01E5D596E94301364784BD84F3A0D311EE46C68FCD34982BB12D1"
+    "translation_audit.json": "FE6B9AE9F22A5F1638575A7635DB759FB3E781B2DEAC5560F99C4864D3E6E60B"
   },
   "counts": {
     "traits": 198,
@@ -20814,7 +20814,7 @@
         "runtime_path": {
           "state": "proven-correct",
           "evidence": [
-            "OnNewGame writes UT_damageMult=1.5. The existing central update dispatch compares resolved overall body health, applies only the extra 50 percent through ReduceGeneralHealth, and stores the expected aggregate so its own reduction is not multiplied again."
+            "OnNewGame writes UT_damageMult=1.5. The existing central update dispatch compares resolved overall body health, distributes the extra 50 percent across body parts by their current weighted health capacity, and stores the expected aggregate so its own adjustment is not multiplied again."
           ],
           "missing_proof": [
             "none"
@@ -20874,7 +20874,7 @@
         "java_lua": {
           "state": "proven-correct",
           "evidence": [
-            "SVN 964 exposes BodyDamage.getOverallBodyHealth and ReduceGeneralHealth. IsoPlayer emits OnPlayerUpdate before the following IsoGameCharacter update recalculates overall body health."
+            "SVN 964 exposes BodyDamage.getOverallBodyHealth/getBodyParts, Java list size/get, BodyPart.getHealth/SetHealth, and BodyPartType.getDamageModifyer. BodyDamage.calculateOverallHealth proves the weighted sum, and IsoPlayer emits OnPlayerUpdate before the following IsoGameCharacter update recalculates overall body health."
           ],
           "missing_proof": [
             "none"
@@ -20982,7 +20982,7 @@
         "performance": {
           "state": "runtime-unproven",
           "evidence": [
-            "No new loop was added. The existing central dispatch adds one Lua marker check for inactive players and one aggregate-health getter for an active Glass Body player."
+            "No new handler was added. The existing central dispatch adds one marker check for inactive players, one aggregate-health getter per active update, and a bounded body-part distribution only when new resolved loss is observed."
           ],
           "missing_proof": [
             "No current-build profiler capture exists."
@@ -20994,7 +20994,7 @@
         "tests": {
           "state": "proven-correct",
           "evidence": [
-            "Resolved all-source loss, exact multiplier, recursion prevention, healing, lethal cap, player replacement, and same-process reload are regression-protected."
+            "Resolved all-source loss, weighted exactness with depleted parts, finite clamps, near-death and overkill, recursion prevention, activation/reset, healing, malformed or throwing bridges, player replacement, and same-process reload are regression-protected."
           ],
           "missing_proof": [
             "none"

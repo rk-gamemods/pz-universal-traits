@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 174,
-  "total_bytes": 13728220,
+  "total_bytes": 13730867,
   "files": [
     {
       "path": ".gitattributes",
@@ -145,8 +145,8 @@
       "path": "change-impact/glassbody-resolved-damage-contract.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
-      "bytes": 3775,
-      "sha256": "2888EF7612545206688CCE8613673C15C75B7750005201C21BA0855079F46A3E"
+      "bytes": 4291,
+      "sha256": "C4917FB8E70E25B72D9194068A7D7684A9A4DF1124FF69D01DF869CB915E51E1"
     },
     {
       "path": "change-impact/gordanite-native-delta-resolution.json",
@@ -348,22 +348,22 @@
       "path": "dimension_ledger_rows.jsonl",
       "kind": "normalized-dimension-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2272609,
-      "sha256": "A3742B826AFE5F481F14AF7CF1CC41CD6579C0B5C3FBC258B582150E1361CE3A"
+      "bytes": 2272938,
+      "sha256": "0B62B04565B1B07418B6CE54595F3CA58F509A3CEB97BA2A1C7AF2F46E9DEAF3"
     },
     {
       "path": "final_trait_ledger.json",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2098874,
-      "sha256": "2F208F134D4D6D6C2430A873FF3D739184DD0A57F0272B001FA328BCCCE74B4B"
+      "bytes": 2099203,
+      "sha256": "86AC434790459BD3F7F042B06553EEB962F9E205C14E3DFE5A2E2A1045A30C81"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
-      "bytes": 1293518,
-      "sha256": "65EFA3290B40A5AFACEF3491FA2646C204ABB31637B1B31918124053EA8B6063"
+      "bytes": 1293847,
+      "sha256": "B85A008EF9CF124D671106D27FEAD34DD5258253CA18358930599DE0496C9E4B"
     },
     {
       "path": "independent_reviews/documentation_localization_skills.json",
@@ -384,7 +384,7 @@
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
       "bytes": 675783,
-      "sha256": "C8314A582A7F0AF549FD45EC289FAA62BB616A8679E098B20A9043817BF22984"
+      "sha256": "AB339DB02DC862D4BDB824AA493D23370E872EC8A48DBA06F5D9658B705F6D98"
     },
     {
       "path": "independent_reviews/traits_05_08.json",
@@ -405,7 +405,7 @@
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
       "bytes": 175575,
-      "sha256": "42FFB28D8E15D39067E539E1AA28ACBF0713FC5C07CD21BFDDA376F799806284"
+      "sha256": "F7AA5F1F30CBDEE3CA32C14671341289569F02D3B64BF4A89C472AEB5ABFF533"
     },
     {
       "path": "recurring_pattern_findings.json",
@@ -419,14 +419,14 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 2861,
-      "sha256": "16A411D99633B0AEA0D55B4BA2D4569254406B374767EDC581627209D7D1CBA8"
+      "sha256": "EA02257AB2A84294B98E1AC75D31887314472EACB51EA6012A7113ED4B2209D9"
     },
     {
       "path": "remediation_queue.jsonl",
       "kind": "remediation-queue",
       "byte_semantics": "utf-8-lf",
-      "bytes": 2039237,
-      "sha256": "FEF1DC1A1AE54DDB75069546B3D2104ACA32425081236C009E3A79E51CDE75C8"
+      "bytes": 2039297,
+      "sha256": "DBD08635EE2BB020C01D7B0DC2177DF8E51C7918607CD6A161A1313E62D4A363"
     },
     {
       "path": "remediation_summary.json",
@@ -677,8 +677,8 @@
       "path": "tests/test_regenerate_glassbody.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 9715,
-      "sha256": "66D896086EA0B6E43199C44723B166CE9172E3C9F3173A978CEC7E1037D77AE8"
+      "bytes": 9777,
+      "sha256": "28A492EB34C7A7E6B129B84426BC5687EF47AC713A653ADEFCE45574CC674A3E"
     },
     {
       "path": "tests/test_regenerate_gordanite.py",
@@ -964,8 +964,8 @@
       "path": "tools/regenerate_glassbody.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 28386,
-      "sha256": "038CA3E167BE066F79EC4DDE3A38F77FBA06C9D307ADB6EBFED54BA01968E2DE"
+      "bytes": 29079,
+      "sha256": "37406E2A0EAD1BC8CC1B9EA2A47DE105C463DE0A28359CEF5864328D567AD8FD"
     },
     {
       "path": "tools/regenerate_gordanite.py",
@@ -1195,8 +1195,8 @@
       "path": "trait_batches/batch_04.jsonl",
       "kind": "trait-batch",
       "byte_semantics": "utf-8-lf",
-      "bytes": 111759,
-      "sha256": "8954D8E8AEE90F826FBD0D7DCCC3E026FF9C8E05BAF2438CEBF6179DE7CE7A93"
+      "bytes": 112088,
+      "sha256": "DEE665D724F18B015C818714F7B8784400CC2EB3B3963341D9EEE18C9E109DF1"
     },
     {
       "path": "trait_batches/batch_05.jsonl",
@@ -1259,7 +1259,7 @@
       "kind": "translation-audit",
       "byte_semantics": "utf-8-lf",
       "bytes": 496284,
-      "sha256": "DC734D6A5EB01E5D596E94301364784BD84F3A0D311EE46C68FCD34982BB12D1"
+      "sha256": "FE6B9AE9F22A5F1638575A7635DB759FB3E781B2DEAC5560F99C4864D3E6E60B"
     }
   ]
 }

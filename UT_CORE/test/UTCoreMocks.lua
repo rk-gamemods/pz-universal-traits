@@ -360,6 +360,7 @@ function MockBodyPart(partType, isBleeding, isStemmed)
         bleeding             = function(self) return _bleeding end,
         IsBleedingStemmed    = function(self) return _stemmed end,
         getHealth            = function(self) return _health end,
+        SetHealth            = function(self, v) _health = v end,
         AddHealth            = function(self, v) addHealthCalls = addHealthCalls + 1; _health = _health + v end,
         ReduceHealth         = function(self, v) reduceHealthCalls = reduceHealthCalls + 1; _health = _health - v end,
         getAddHealthCalls    = function(self) return addHealthCalls end,

@@ -57,6 +57,8 @@ class GlassBodyGeneratorSafetyTests(unittest.TestCase):
             GENERATOR.SOURCE_UI,
             GENERATOR.RELEASE_UI,
             GENERATOR.TESTS,
+            GENERATOR.MOCKS,
+            GENERATOR.API_TESTS,
             GENERATOR.TRAIT_TESTS,
             GENERATOR.ACTIVE_AUDIT,
         ):

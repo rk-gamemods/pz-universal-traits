@@ -46,6 +46,8 @@ HOOK_RELEASE = "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_Dama
 SOURCE_UI = "UniversalTraits/media/lua/shared/Translate/EN/UI.json"
 RELEASE_UI = "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json"
 TESTS = "UT_CORE/test/run_tests.lua"
+MOCKS = "UT_CORE/test/UTCoreMocks.lua"
+API_TESTS = "UT_CORE/test/test_pz_api_surface.lua"
 TRAIT_TESTS = "UniversalTraits/test/run_tests.lua"
 ACTIVE_AUDIT = "trait-deep-audit/active/batch/traits/UT_glassbody.md"
 RESOLUTION = "change-impact/glassbody-resolved-damage-contract.json"
@@ -89,7 +91,7 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
     )
     dimensions["exact_runtime_path_through_UT_CORE_or_script_only_behavior"] = _dimension(
         "proven",
-        "OnNewGame writes UT_damageMult=1.5. The existing central update dispatch compares resolved overall body health, applies only the extra 50 percent through ReduceGeneralHealth, and stores the expected aggregate so its own reduction is not multiplied again.",
+        "OnNewGame writes UT_damageMult=1.5. The existing central update dispatch compares resolved overall body health, distributes the extra 50 percent across body parts by their current weighted health capacity, and stores the expected aggregate so its own adjustment is not multiplied again.",
     )
     dimensions["numerical_behavior"] = _dimension(
         "proven",
@@ -109,7 +111,7 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
     )
     dimensions["Java_Lua_exposure"] = _dimension(
         "proven",
-        "SVN 964 exposes BodyDamage.getOverallBodyHealth and ReduceGeneralHealth. IsoPlayer emits OnPlayerUpdate before the following IsoGameCharacter update recalculates overall body health.",
+        "SVN 964 exposes BodyDamage.getOverallBodyHealth/getBodyParts, Java list size/get, BodyPart.getHealth/SetHealth, and BodyPartType.getDamageModifyer. BodyDamage.calculateOverallHealth proves the weighted sum, and IsoPlayer emits OnPlayerUpdate before the following IsoGameCharacter update recalculates overall body health.",
     )
     dimensions["Kahlua_compatibility"] = _dimension(
         "runtime-unproven",
@@ -145,12 +147,12 @@ def _plan_batch(campaign: Path, plan: dict[str, bytes]) -> None:
     )
     dimensions["performance_risk"] = _dimension(
         "runtime-unproven",
-        "No new loop was added. The existing central dispatch adds one Lua marker check for inactive players and one aggregate-health getter for an active Glass Body player.",
+        "No new handler was added. The existing central dispatch adds one marker check for inactive players, one aggregate-health getter per active update, and a bounded body-part distribution only when new resolved loss is observed.",
         "No current-build profiler capture exists.",
     )
     dimensions["tests"] = _dimension(
         "proven",
-        "Resolved all-source loss, exact multiplier, recursion prevention, healing, lethal cap, player replacement, and same-process reload are regression-protected.",
+        "Resolved all-source loss, weighted exactness with depleted parts, finite clamps, near-death and overkill, recursion prevention, activation/reset, healing, malformed or throwing bridges, player replacement, and same-process reload are regression-protected.",
     )
     dimensions["mocks"] = _dimension(
         "proven",
@@ -460,6 +462,8 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
                     SOURCE_UI,
                     RELEASE_UI,
                     TESTS,
+                    MOCKS,
+                    API_TESTS,
                     TRAIT_TESTS,
                     ACTIVE_AUDIT,
                 )
@@ -473,6 +477,9 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
                 "lethal extra-damage cap",
                 "replacement player baseline",
                 "same-process hook reload",
+                "depleted-body-part weighted distribution",
+                "activation and trait reset",
+                "malformed and throwing bridge rollback",
             ],
             "preserved_surfaces": [
                 "trait cost",
@@ -482,7 +489,7 @@ def _plan_resolution(root: Path, plan: dict[str, bytes]) -> None:
                 "registration and English copy",
             ],
             "performance_model": (
-                "No new loop or handler is added. The existing central dispatch performs one marker lookup for inactive players and one aggregate-health getter per active Glass Body update."
+                "No new handler is added. The existing central dispatch performs one marker lookup for inactive players, one aggregate-health getter per active Glass Body update, and a bounded body-part distribution only after resolved loss."
             ),
             "runtime_proof": (
                 "Unobserved; requires full Exit to Desktop, current-build multi-source damage observation, current-version save/load, rendered English, and profiler capture."

@@ -35,33 +35,43 @@
     },
     {
       "path": "UT_CORE/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "3E411385566AD04BCAE211DD4BA9917EF91D3E77230BA4179670CDE350D59B05",
-      "bytes": 3139
+      "sha256": "160C133FC444F8AE12A42DEFF8F0B3461ED0F37A911EF432FE03AD9FF2AEFB96",
+      "bytes": 5594
     },
     {
       "path": "UT_CORE/release/UT_CORE/42.0/media/lua/shared/UTCore/UTCore_DamageMultHook.lua",
-      "sha256": "3E411385566AD04BCAE211DD4BA9917EF91D3E77230BA4179670CDE350D59B05",
-      "bytes": 3139
+      "sha256": "160C133FC444F8AE12A42DEFF8F0B3461ED0F37A911EF432FE03AD9FF2AEFB96",
+      "bytes": 5594
     },
     {
       "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
-      "sha256": "C8A3B1E644300DD354A9F2E98F110AC91267EC2B9172A7FCF9253FF3E59D1FEE",
-      "bytes": 36923
+      "sha256": "F3590F0EBC9B613FE24AD7522A6B3E812072F1653B2BB185D040FC7EB3A8459D",
+      "bytes": 37447
     },
     {
       "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
-      "sha256": "C8A3B1E644300DD354A9F2E98F110AC91267EC2B9172A7FCF9253FF3E59D1FEE",
-      "bytes": 36923
+      "sha256": "F3590F0EBC9B613FE24AD7522A6B3E812072F1653B2BB185D040FC7EB3A8459D",
+      "bytes": 37447
     },
     {
       "path": "UT_CORE/test/run_tests.lua",
-      "sha256": "109777A2CEB770F8A1737D4853FAA20F28473DA85C275F76F6599FBEF9EDBE89",
-      "bytes": 101721
+      "sha256": "DEFB5E03648CE730E5B27B273072655871CB96E41A26BFE06DA515668729DD3F",
+      "bytes": 167754
+    },
+    {
+      "path": "UT_CORE/test/UTCoreMocks.lua",
+      "sha256": "FAEC8333B3C3E5C4EBACF1791A56B2C87E0CF4607A1F04F9D87B4B0BD1D82778",
+      "bytes": 22311
+    },
+    {
+      "path": "UT_CORE/test/test_pz_api_surface.lua",
+      "sha256": "3949F47F73350776F1BB06D0E63359AE211F388F606CE3E3EC462C402A803333",
+      "bytes": 27810
     },
     {
       "path": "UniversalTraits/test/run_tests.lua",
-      "sha256": "364A554767C69E4DCE976272EF0519E1E535A0CD1014471693B1454D588632C3",
-      "bytes": 263229
+      "sha256": "046474AD0AA7DB61B5C594840DDD05375CE7B3E3CFD1C8EFF0CC6589D359D034",
+      "bytes": 445472
     },
     {
       "path": "trait-deep-audit/active/batch/traits/UT_glassbody.md",
@@ -77,7 +87,10 @@
     "healing baseline reset",
     "lethal extra-damage cap",
     "replacement player baseline",
-    "same-process hook reload"
+    "same-process hook reload",
+    "depleted-body-part weighted distribution",
+    "activation and trait reset",
+    "malformed and throwing bridge rollback"
   ],
   "preserved_surfaces": [
     "trait cost",
@@ -86,7 +99,7 @@
     "reciprocal Analgesia exclusion",
     "registration and English copy"
   ],
-  "performance_model": "No new loop or handler is added. The existing central dispatch performs one marker lookup for inactive players and one aggregate-health getter per active Glass Body update.",
+  "performance_model": "No new handler is added. The existing central dispatch performs one marker lookup for inactive players, one aggregate-health getter per active Glass Body update, and a bounded body-part distribution only after resolved loss.",
   "runtime_proof": "Unobserved; requires full Exit to Desktop, current-build multi-source damage observation, current-version save/load, rendered English, and profiler capture.",
   "non_goals": [
     "multiplayer",

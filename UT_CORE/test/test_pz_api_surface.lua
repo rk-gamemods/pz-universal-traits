@@ -564,6 +564,13 @@ test("API:Static — BodyPartType.FromString() exists", function()
     assert(type(BodyPartType.FromString) == "function", "FromString must be a function")
 end)
 
+test("API:BodyPart — getHealth/SetHealth round-trip", function()
+    local part = MockBodyPart(BodyPartType.Neck)
+    assert_eq(part:getHealth(), 1.0)
+    part:SetHealth(0.25)
+    assert_eq(part:getHealth(), 0.25)
+end)
+
 test("API:Static: BodyPartType.getDamageModifyer() exists", function()
     assert(type(BodyPartType.getDamageModifyer) == "function", "getDamageModifyer must be a function")
 end)

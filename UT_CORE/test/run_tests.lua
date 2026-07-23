@@ -3081,51 +3081,98 @@ end)
 
 -- ===== DamageMultHook tests =====
 
-local function makeDamageMultPlayer(multiplier, initialHealth)
+local function makeDamageMultPlayer(multiplier, initialHealth, partHealths, modifiers)
     local p = MockPlayer({})
     local reportedHealth = initialHealth or 100
-    local bodyPartHealth = reportedHealth
-    local reductions = {}
+    local parts = {}
+    local setCalls = {}
+    partHealths = partHealths or { reportedHealth }
+    modifiers = modifiers or { 1 }
+
+    for index, initialPartHealth in ipairs(partHealths) do
+        local partHealth = initialPartHealth
+        parts[index] = {
+            getHealth = function() return partHealth end,
+            SetHealth = function(_, value)
+                setCalls[#setCalls + 1] = { index = index, value = value }
+                partHealth = value
+            end,
+            currentHealth = function() return partHealth end,
+            setResolvedHealth = function(value) partHealth = value end,
+        }
+    end
+
+    local bodyParts = {
+        size = function() return #parts end,
+        get = function(_, index) return parts[index + 1] end,
+    }
     local bodyDamage = {
         getOverallBodyHealth = function() return reportedHealth end,
-        ReduceGeneralHealth = function(_, amount)
-            reductions[#reductions + 1] = amount
-            bodyPartHealth = math.max(0, bodyPartHealth - amount)
-        end,
+        getBodyParts = function() return bodyParts end,
     }
     p:setBodyDamage(bodyDamage)
     p:getModData()["UT_damageMult"] = multiplier
+    local savedModifiers = BodyPartType._damageModifiers
+    BodyPartType._damageModifiers = modifiers
     return p, {
-        setResolvedHealth = function(value)
+        setResolvedHealth = function(value, resolvedPartHealths)
             reportedHealth = value
-            bodyPartHealth = value
+            if resolvedPartHealths then
+                for index, partHealth in ipairs(resolvedPartHealths) do
+                    parts[index].setResolvedHealth(partHealth)
+                    partHealths[index] = partHealth
+                end
+            elseif #parts == 1 and modifiers[1] == 1 then
+                parts[1].setResolvedHealth(value)
+                partHealths[1] = value
+            end
         end,
-        flushBodyPartHealth = function()
-            reportedHealth = bodyPartHealth
+        flushOverallHealth = function()
+            local totalDamage = 0
+            for index, part in ipairs(parts) do
+                totalDamage = totalDamage + (100 - part.currentHealth()) * modifiers[index]
+            end
+            reportedHealth = math.max(0, 100 - totalDamage)
         end,
-        getBodyPartHealth = function() return bodyPartHealth end,
-        reductions = reductions,
+        overallAppliedLoss = function()
+            local loss = 0
+            for _, call in ipairs(setCalls) do
+                local before = partHealths[call.index]
+                loss = loss + (before - call.value) * modifiers[call.index]
+                partHealths[call.index] = call.value
+            end
+            setCalls = {}
+            return loss
+        end,
+        partHealth = function(index) return parts[index].currentHealth() end,
+        setCalls = function() return setCalls end,
+        restore = function() BodyPartType._damageModifiers = savedModifiers end,
+        bodyDamage = bodyDamage,
+        bodyParts = bodyParts,
+        parts = parts,
     }
 end
 
 test("DamageMultHook applies +50 percent to resolved all-source health loss", function()
-    local p, health = makeDamageMultPlayer(1.5, 100)
+    local p, health = makeDamageMultPlayer(1.5, 100, { 100, 100 }, { 0.25, 0.75 })
     Events.OnPlayerUpdate.fire(p) -- establish the baseline
-    health.setResolvedHealth(80)  -- any engine damage source resolved 20 health loss
+    -- Any engine source resolves 20 aggregate loss into the body-part state.
+    health.setResolvedHealth(80, { 20, 100 })
     Events.OnPlayerUpdate.fire(p)
-    assert_eq(#health.reductions, 1, "expected one extra-damage application")
-    assert_close(health.reductions[1], 10, 0.0001, "expected 50 percent extra damage")
-    assert_close(health.getBodyPartHealth(), 70, 0.0001, "expected 30 total damage")
+    assert_close(health.overallAppliedLoss(), 10, 0.0001, "expected 50 percent extra damage")
+    health.restore()
 end)
 
 test("DamageMultHook does not multiply its own deferred body-part reduction", function()
-    local p, health = makeDamageMultPlayer(1.5, 100)
+    local p, health = makeDamageMultPlayer(1.5, 100, { 100 }, { 1 })
     Events.OnPlayerUpdate.fire(p)
     health.setResolvedHealth(80)
     Events.OnPlayerUpdate.fire(p)
-    health.flushBodyPartHealth() -- mirrors the next BodyDamage.calculateOverallHealth
+    assert_close(health.overallAppliedLoss(), 10, 0.0001)
+    health.flushOverallHealth() -- mirrors the next BodyDamage.calculateOverallHealth
     Events.OnPlayerUpdate.fire(p)
-    assert_eq(#health.reductions, 1, "expected no recursive extra-damage application")
+    assert_eq(#health.setCalls(), 0, "expected no recursive extra-damage application")
+    health.restore()
 end)
 
 test("DamageMultHook does nothing when mult is 1.0", function()
@@ -3133,7 +3180,31 @@ test("DamageMultHook does nothing when mult is 1.0", function()
     Events.OnPlayerUpdate.fire(p)
     health.setResolvedHealth(80)
     Events.OnPlayerUpdate.fire(p)
-    assert_eq(#health.reductions, 0, "expected no extra loss when mult=1.0")
+    assert_eq(#health.setCalls(), 0, "expected no extra loss when mult=1.0")
+    health.restore()
+end)
+
+test("DamageMultHook resets without a trait marker and activates from a fresh baseline", function()
+    local p, health = makeDamageMultPlayer(nil, 100)
+    Events.OnPlayerUpdate.fire(p)
+    health.setResolvedHealth(80)
+    Events.OnPlayerUpdate.fire(p)
+    assert_eq(#health.setCalls(), 0, "missing marker must not apply damage")
+
+    p:getModData()["UT_damageMult"] = 1.5
+    Events.OnPlayerUpdate.fire(p)
+    assert_eq(#health.setCalls(), 0, "activation update must establish a baseline")
+    health.setResolvedHealth(70)
+    Events.OnPlayerUpdate.fire(p)
+    assert_close(health.overallAppliedLoss(), 5, 0.0001)
+
+    p:getModData()["UT_damageMult"] = nil
+    Events.OnPlayerUpdate.fire(p)
+    p:getModData()["UT_damageMult"] = 1.5
+    health.setResolvedHealth(50)
+    Events.OnPlayerUpdate.fire(p)
+    assert_eq(#health.setCalls(), 0, "reactivation must not attribute inactive loss")
+    health.restore()
 end)
 
 test("DamageMultHook resets its baseline after healing", function()
@@ -3143,16 +3214,18 @@ test("DamageMultHook resets its baseline after healing", function()
     Events.OnPlayerUpdate.fire(p)
     health.setResolvedHealth(80)
     Events.OnPlayerUpdate.fire(p)
-    assert_close(health.reductions[1], 5, 0.0001, "expected only later 10-point loss multiplied")
+    assert_close(health.overallAppliedLoss(), 5, 0.0001, "expected only later 10-point loss multiplied")
+    health.restore()
 end)
 
 test("DamageMultHook caps extra damage at remaining health", function()
-    local p, health = makeDamageMultPlayer(3.0, 10)
+    local p, health = makeDamageMultPlayer(3.0, 10, { 10 }, { 1 })
     Events.OnPlayerUpdate.fire(p)
     health.setResolvedHealth(4)
     Events.OnPlayerUpdate.fire(p)
-    assert_close(health.reductions[1], 4, 0.0001, "expected extra damage capped at remaining health")
-    assert_close(health.getBodyPartHealth(), 0, 0.0001, "expected zero body-part health")
+    assert_close(health.overallAppliedLoss(), 4, 0.0001, "expected extra damage capped at remaining health")
+    assert_close(health.partHealth(1), 0, 0.0001, "expected zero body-part health")
+    health.restore()
 end)
 
 test("DamageMultHook initializes a replacement player without cross-attributing loss", function()
@@ -3160,8 +3233,57 @@ test("DamageMultHook initializes a replacement player without cross-attributing 
     local second, secondHealth = makeDamageMultPlayer(1.5, 35)
     Events.OnPlayerUpdate.fire(first)
     Events.OnPlayerUpdate.fire(second)
-    assert_eq(#firstHealth.reductions, 0, "expected no loss on the first player")
-    assert_eq(#secondHealth.reductions, 0, "expected replacement player to establish a baseline")
+    assert_eq(#firstHealth.setCalls(), 0, "expected no loss on the first player")
+    assert_eq(#secondHealth.setCalls(), 0, "expected replacement player to establish a baseline")
+    secondHealth.restore()
+    firstHealth.restore()
+end)
+
+test("DamageMultHook consumes exact weighted loss across depleted parts", function()
+    local p, health = makeDamageMultPlayer(1.5, 90, { 0, 0, 100 }, { 0.05, 0.05, 0.9 })
+    Events.OnPlayerUpdate.fire(p)
+    health.setResolvedHealth(70, { 0, 0, 77.7777777778 })
+    Events.OnPlayerUpdate.fire(p)
+    assert_close(health.overallAppliedLoss(), 10, 0.0001)
+    assert_eq(health.partHealth(1), 0, "depleted part must remain at zero")
+    assert_eq(health.partHealth(2), 0, "second depleted part must remain at zero")
+    assert(health.partHealth(3) >= 0, "remaining part must never become negative")
+    health.restore()
+end)
+
+test("DamageMultHook applies all representable overkill without negative health", function()
+    local p, health = makeDamageMultPlayer(4.0, 8, { 0, 2 }, { 1, 1 })
+    Events.OnPlayerUpdate.fire(p)
+    health.setResolvedHealth(2)
+    Events.OnPlayerUpdate.fire(p)
+    assert_close(health.overallAppliedLoss(), 2, 0.0001)
+    assert_eq(health.partHealth(2), 0)
+    health.restore()
+end)
+
+test("DamageMultHook ignores zero loss, malformed bridges, and throwing setters", function()
+    local p, health = makeDamageMultPlayer(1.5, 100, { 100, 100 }, { 0.05, 0.95 })
+    Events.OnPlayerUpdate.fire(p)
+    Events.OnPlayerUpdate.fire(p)
+    assert_eq(#health.setCalls(), 0, "zero loss must not write")
+
+    health.bodyParts.size = function() return math.huge end
+    health.setResolvedHealth(80)
+    Events.OnPlayerUpdate.fire(p)
+    assert_eq(#health.setCalls(), 0, "malformed list must fail closed")
+
+    health.bodyParts.size = function() return 2 end
+    health.parts[2].SetHealth = function() error("bridge failure") end
+    health.setResolvedHealth(60)
+    Events.OnPlayerUpdate.fire(p)
+    assert_close(health.partHealth(1), 100, 0.0001, "earlier writes must roll back")
+
+    health.parts[2].SetHealth = function() end
+    health.parts[1].getHealth = function() error("getter failure") end
+    health.setResolvedHealth(40)
+    Events.OnPlayerUpdate.fire(p)
+    assert_close(health.partHealth(1), 100, 0.0001, "throwing getter must fail closed")
+    health.restore()
 end)
 
 test("DamageMultHook reload replaces behavior without adding a dispatcher", function()
