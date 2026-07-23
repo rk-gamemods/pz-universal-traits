@@ -239,8 +239,15 @@ local function applyGordaniteBonus(character, item, before, nativeAfter)
     if not UTCore.hasTrait(character, GORDANITE_ID) or type(item.getChef) ~= "function" then return end
     local chef = item:getChef()
     if type(chef) ~= "string" or chef == "" then return end
-    local username = character.getUsername and character:getUsername() or nil
-    local fullName = character.getFullName and character:getFullName() or nil
+    local function tryReadIdentity(getter)
+        local ok, value = pcall(getter)
+        if not ok or type(value) ~= "string" or value == "" then return nil end
+        return value
+    end
+    local username = character.getUsername
+        and tryReadIdentity(function() return character:getUsername() end) or nil
+    local fullName = character.getFullName
+        and tryReadIdentity(function() return character:getFullName() end) or nil
     if chef ~= username and chef ~= fullName then return end
     local stats = character:getStats()
     if type(before.hunger) == "number" and type(nativeAfter.hunger) == "number"

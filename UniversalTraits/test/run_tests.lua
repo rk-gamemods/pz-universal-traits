@@ -5542,6 +5542,20 @@ test("gordanite interrupted eat uses self.item and full-name chef", function()
     assert_close(p:getNutrition():getCalories(), 2250, 0.000001, "partial realized calories")
 end)
 
+test("gordanite full-name chef still applies when username lookup fails", function()
+    local p, _, action = makeGordaniteComplete({ GORDANITE_ID },
+        {
+            hunger = 0.8, calories = 2000, usernameError = true,
+            fullName = "Ada Cook",
+        },
+        { chef = "Ada Cook" }, 0.4, 2200)
+    ISEatFoodAction.complete(action)
+    assert_close(p:getStats():get(CharacterStat.HUNGER), 0.2, 0.000001,
+        "full-name match must survive username lookup failure")
+    assert_close(p:getNutrition():getCalories(), 2300, 0.000001,
+        "full-name match must apply calorie bonus")
+end)
+
 test("gordanite chef identity and current trait fail closed", function()
     for _, case in ipairs({
         { chef = nil }, { chef = "" }, { chef = 42 }, { chef = "Other" },
@@ -5568,6 +5582,28 @@ test("gourmand and gordanite add from one immutable native hunger delta", functi
     assert_close(p:getNutrition():getCalories(), 2300, 0.000001, "Gordanite calorie half-delta")
 end)
 
+test("gordanite ignores harmful hunger delta", function()
+    local p, _, action = makeGordaniteComplete({ GORDANITE_ID },
+        { hunger = 0.4, calories = 2000, username = "Chef" },
+        { chef = "Chef" }, 0.6, 2200)
+    ISEatFoodAction.complete(action)
+    assert_eq(p:getStats():get(CharacterStat.HUNGER), 0.6,
+        "positive hunger delta must receive no bonus")
+    assert_eq(p:getNutrition():getCalories(), 2300,
+        "independent positive calorie delta must still receive its bonus")
+end)
+
+test("gordanite ignores zero calorie delta", function()
+    local p, _, action = makeGordaniteComplete({ GORDANITE_ID },
+        { hunger = 0.8, calories = 2000, username = "Chef" },
+        { chef = "Chef" }, 0.4, 2000)
+    ISEatFoodAction.complete(action)
+    assert_eq(p:getStats():get(CharacterStat.HUNGER), 0.2,
+        "independent hunger relief must still receive its bonus")
+    assert_eq(p:getNutrition():getCalories(), 2000,
+        "zero calorie delta must receive no bonus")
+end)
+
 test("gordanite ignores zero and harmful deltas and preserves native errors", function()
     local p, _, action = makeGordaniteComplete({ GORDANITE_ID },
         { hunger = 0.1, calories = 2000, username = "Chef" }, { chef = "Chef" }, 0.1, 1900)
@@ -5583,6 +5619,22 @@ test("gordanite ignores zero and harmful deltas and preserves native errors", fu
     local ok, err = pcall(ISEatFoodAction.complete, throwAction)
     assert_true(not ok and tostring(err):find("native failure", 1, true), "native error must propagate")
     assert_eq(throwing:getStats():get(CharacterStat.HUNGER), 0.8, "no post effect after native error")
+end)
+
+test("gordanite interrupted eat preserves native errors", function()
+    local throwing = MockPlayer({ GORDANITE_ID },
+        { hunger = 0.8, calories = 2000, username = "Chef" })
+    local throwAction = {
+        character = throwing, item = MockItem("Stew", { chef = "Chef" }),
+        _onEat = function() error("native eat failure") end,
+    }
+    local ok, err = pcall(ISEatFoodAction.eat, throwAction,
+        MockItem("Other", { chef = "Other" }), 0.5)
+    assert_true(not ok and tostring(err):find("native eat failure", 1, true),
+        "native eat error must propagate")
+    assert_eq(throwAction._originalEatCalls, 1, "native eat must run exactly once")
+    assert_eq(throwing:getStats():get(CharacterStat.HUNGER), 0.8,
+        "no post effect after native eat error")
 end)
 
 test("gordanite runtime source and release copies stay byte-identical", function()
