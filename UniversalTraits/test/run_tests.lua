@@ -4511,6 +4511,114 @@ test("packmouse bridge failures fail safely", function()
     )
 end)
 
+local function resetPackMouseTracking()
+    UTPackMouseLifecycle.onCreatePlayer(0, nil)
+    assert_eq(UTPackMouseLifecycle.player, nil, "Pack Mouse must have no tracked player")
+end
+
+local function withPatchedPackMouseCore(patches, fn)
+    local originals = {}
+    for name, replacement in pairs(patches) do
+        originals[name] = UTCore[name]
+        UTCore[name] = replacement
+    end
+
+    local ok, err = pcall(fn)
+    for name, original in pairs(originals) do
+        UTCore[name] = original
+    end
+    if not ok then error(err) end
+end
+
+test("packmouse getModData failure before snapshot preserves absent source and ownership", function()
+    resetPackMouseTracking()
+    local inaccessibleModData = {}
+    local p = MockPlayer({ PACKMOUSE_ID }, { moddata = inaccessibleModData })
+    p.getModData = function() error("injected getModData failure before snapshot") end
+
+    assert_true(
+        pcall(function() UTPackMouseLifecycle.onCreatePlayer(0, p) end),
+        "getModData failure must not escape"
+    )
+    assert_eq(inaccessibleModData.UT_modifierBuckets, nil, "modifier buckets must remain absent")
+    assert_eq(UTPackMouseLifecycle.player, nil, "failed snapshot must not record ownership")
+end)
+
+test("packmouse initial apply mutation then throw restores absent source without retry", function()
+    resetPackMouseTracking()
+    local p = MockPlayer({ PACKMOUSE_ID })
+    local originalApply = UTCore.applyCarryWeight
+    local applyCalls = 0
+
+    withPatchedPackMouseCore({
+        applyCarryWeight = function(player, value, sourceId)
+            applyCalls = applyCalls + 1
+            originalApply(player, value, sourceId)
+            error("injected apply failure after mutation")
+        end,
+    }, function()
+        assert_true(
+            pcall(function() UTPackMouseLifecycle.onCreatePlayer(0, p) end),
+            "mutating apply failure must not escape"
+        )
+    end)
+
+    assert_eq(applyCalls, 1, "rollback must not retry the failing apply helper")
+    assert_eq(p:getModData().UT_modifierBuckets, nil, "created modifier buckets must be removed")
+    assert_eq(UTPackMouseLifecycle.player, nil, "failed apply must not record ownership")
+end)
+
+test("packmouse reconciliation mutation then throw restores absent source", function()
+    resetPackMouseTracking()
+    local p = MockPlayer({ PACKMOUSE_ID })
+    local originalReconcile = UTCore.reconcileAggregatedModifiers
+
+    withPatchedPackMouseCore({
+        reconcileAggregatedModifiers = function(player)
+            originalReconcile(player)
+            error("injected reconciliation failure after mutation")
+        end,
+    }, function()
+        assert_true(
+            pcall(function() UTPackMouseLifecycle.onCreatePlayer(0, p) end),
+            "reconciliation failure must not escape"
+        )
+    end)
+
+    assert_eq(p:getModData().UT_modifierBuckets, nil, "reconciliation failure must restore absent buckets")
+    assert_eq(UTPackMouseLifecycle.player, nil, "failed reconciliation must not record ownership")
+end)
+
+test("packmouse failure restores preexisting source and every foreign source", function()
+    resetPackMouseTracking()
+    local p = MockPlayer({ PACKMOUSE_ID })
+    UTCore.applyCarryWeight(p, 7, PACKMOUSE_ID)
+    UTCore.applyCarryWeight(p, 3, "test:foreign-flat")
+    UTCore.applyStrengthCarryWeight(p, 4, "test:foreign-strength")
+    local originalApply = UTCore.applyCarryWeight
+    local applyCalls = 0
+
+    withPatchedPackMouseCore({
+        applyCarryWeight = function(player, value, sourceId)
+            applyCalls = applyCalls + 1
+            originalApply(player, value, sourceId)
+            error("injected apply and rollback-helper failure")
+        end,
+    }, function()
+        assert_true(
+            pcall(function() UTPackMouseLifecycle.onCreatePlayer(0, p) end),
+            "failure with preexisting sources must not escape"
+        )
+    end)
+
+    local buckets = p:getModData().UT_modifierBuckets
+    assert_eq(applyCalls, 1, "rollback must not invoke the patched helper")
+    assert_eq(buckets.carryFlatAdd[PACKMOUSE_ID], 7, "exact prior Pack Mouse source")
+    assert_eq(buckets.carryFlatAdd["test:foreign-flat"], 3, "foreign flat source")
+    assert_eq(buckets.carryStrengthAdd["test:foreign-strength"], 4, "foreign strength source")
+    assert_eq(UTPackMouseLifecycle.player, nil, "failed transaction must not record ownership")
+end)
+
 test("packmouse source and release bytes match", function()
     local function readAll(path)
         local handle = assert(io.open(path, "rb"))

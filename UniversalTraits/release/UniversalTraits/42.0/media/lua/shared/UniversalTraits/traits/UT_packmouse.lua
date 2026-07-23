@@ -6,17 +6,53 @@ local TRAIT_ID = "UniversalTraits:UT_packmouse"
 UTPackMouseLifecycle = UTPackMouseLifecycle or {}
 local state = UTPackMouseLifecycle
 
+local SNAPSHOT_KEYS = {
+    "UT_modifierBuckets",
+    "UT_modifierBucketsVersion",
+    "UT_speedMod",
+    "UT_workSpeedMod",
+    "UT_transferSpeedMult",
+    "UT_carryFlatMod",
+    "UT_carryStrengthBonus",
+    "UT_carryTargetBase",
+}
+
+local function copyTable(value, seen)
+    if type(value) ~= "table" then return value end
+    seen = seen or {}
+    if seen[value] then return seen[value] end
+
+    local copy = {}
+    seen[value] = copy
+    for key, entry in pairs(value) do
+        copy[copyTable(key, seen)] = copyTable(entry, seen)
+    end
+    return copy
+end
+
+local function captureCarrySnapshot(player)
+    local modData = player:getModData()
+    local snapshot = { modData = modData, present = {}, values = {} }
+    for _, key in ipairs(SNAPSHOT_KEYS) do
+        snapshot.present[key] = modData[key] ~= nil
+        snapshot.values[key] = copyTable(modData[key])
+    end
+    return snapshot
+end
+
+local function restoreCarrySnapshot(snapshot)
+    for _, key in ipairs(SNAPSHOT_KEYS) do
+        if snapshot.present[key] then
+            snapshot.modData[key] = copyTable(snapshot.values[key])
+        else
+            snapshot.modData[key] = nil
+        end
+    end
+end
+
 local function syncOwnedCarry(player, value)
     if not player then return false end
-    local snapshotOk, hadSource, previousValue = pcall(function()
-        local modData = player:getModData()
-        local buckets = modData and modData["UT_modifierBuckets"]
-        local carryBucket = type(buckets) == "table" and buckets["carryFlatAdd"] or nil
-        if type(carryBucket) ~= "table" then
-            return false, nil
-        end
-        return carryBucket[TRAIT_ID] ~= nil, carryBucket[TRAIT_ID]
-    end)
+    local snapshotOk, snapshot = pcall(captureCarrySnapshot, player)
     if not snapshotOk then return false end
 
     local applied = pcall(function()
@@ -25,10 +61,7 @@ local function syncOwnedCarry(player, value)
     end)
     if applied then return true end
 
-    pcall(function()
-        UTCore.applyCarryWeight(player, hadSource and previousValue or nil, TRAIT_ID)
-        UTCore.reconcileAggregatedModifiers(player)
-    end)
+    restoreCarrySnapshot(snapshot)
     return false
 end
 
