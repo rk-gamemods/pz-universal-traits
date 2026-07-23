@@ -2613,6 +2613,146 @@ test("FreezeLogger: OnPlayerMove tracker sets flag", function()
     end)
 end)
 
+local function withCoreHandlerRegistry(fn)
+    local handlers = UTCore._coreHandlers
+    local count = UTCore._coreHandlerCount
+    local dirty = UTCore._coreHandlersDirty
+    UTCore._coreHandlers = {}
+    UTCore._coreHandlerCount = 0
+    UTCore._coreHandlersDirty = true
+    local ok, err = pcall(fn)
+    UTCore._coreHandlers = handlers
+    UTCore._coreHandlerCount = count
+    UTCore._coreHandlersDirty = dirty
+    if not ok then error(err, 0) end
+end
+
+test("registerCoreHandler initial insert creates one keyed entry", function()
+    withCoreHandlerRegistry(function()
+        local handler = function() end
+        UTCore.registerCoreHandler("test.initial", handler)
+        assert_eq(UTCore.getCoreHandlerCount(), 1)
+        assert_eq(UTCore._coreHandlers[1].id, "test.initial")
+        assert_eq(UTCore._coreHandlers[1].fn, handler)
+    end)
+end)
+
+test("registerCoreHandler same ID replaces same and new closures", function()
+    withCoreHandlerRegistry(function()
+        local oldCalls, newCalls = 0, 0
+        local oldHandler = function() oldCalls = oldCalls + 1 end
+        local newHandler = function() newCalls = newCalls + 1 end
+        UTCore.registerCoreHandler("test.replace", oldHandler)
+        UTCore.registerCoreHandler("test.replace", oldHandler)
+        assert_eq(UTCore.getCoreHandlerCount(), 1, "same closure must remain unique")
+        UTCore.registerCoreHandler("test.replace", newHandler)
+        assert_eq(UTCore.getCoreHandlerCount(), 1, "new closure must replace by ID")
+        Events.OnPlayerUpdate.fire(MockPlayer({}))
+        assert_eq(oldCalls, 0, "stale closure must not execute")
+        assert_eq(newCalls, 1, "replacement closure should execute once")
+    end)
+end)
+
+test("registerCoreHandler replaces options and reorders late priority", function()
+    withCoreHandlerRegistry(function()
+        local order = {}
+        UTCore.registerCoreHandler("test.low", function() order[#order + 1] = "low" end, {
+            throttle = 4,
+            priority = 0,
+        })
+        UTCore.registerCoreHandler("test.low", function() order[#order + 1] = "low-new" end, {
+            throttle = 0,
+            priority = 1,
+        })
+        assert_eq(UTCore._coreHandlers[1].throttle, 0, "replacement throttle")
+        assert_eq(UTCore._coreHandlers[1].priority, 1, "replacement priority")
+        Events.OnPlayerUpdate.fire(MockPlayer({}))
+        UTCore.registerCoreHandler("test.high", function() order[#order + 1] = "high" end, {
+            priority = 100,
+        })
+        order = {}
+        Events.OnPlayerUpdate.fire(MockPlayer({}))
+        assert_eq(order[1], "high", "late high-priority handler must run first")
+        assert_eq(order[2], "low-new", "replacement must remain registered")
+    end)
+end)
+
+test("registerCoreHandler keeps distinct IDs sharing one function", function()
+    withCoreHandlerRegistry(function()
+        local calls = 0
+        local shared = function() calls = calls + 1 end
+        UTCore.registerCoreHandler("test.shared-a", shared)
+        UTCore.registerCoreHandler("test.shared-b", shared)
+        assert_eq(UTCore.getCoreHandlerCount(), 2)
+        Events.OnPlayerUpdate.fire(MockPlayer({}))
+        assert_eq(calls, 2, "distinct IDs should dispatch independently")
+    end)
+end)
+
+test("registerCoreHandler collapses historical duplicate rows", function()
+    withCoreHandlerRegistry(function()
+        local replacement = function() end
+        UTCore._coreHandlers = {
+            { id = "test.duplicate", fn = function() end, throttle = 7, priority = -1 },
+            { id = "test.distinct", fn = function() end, throttle = 0, priority = 0 },
+            { id = "test.duplicate", fn = function() end, throttle = 9, priority = -2 },
+        }
+        UTCore._coreHandlerCount = 3
+        UTCore.registerCoreHandler("test.duplicate", replacement, { throttle = 2, priority = 5 })
+        assert_eq(UTCore.getCoreHandlerCount(), 2, "duplicates should collapse to one row")
+        assert_eq(UTCore._coreHandlers[1].id, "test.duplicate")
+        assert_eq(UTCore._coreHandlers[1].fn, replacement)
+        assert_eq(UTCore._coreHandlers[1].throttle, 2)
+        assert_eq(UTCore._coreHandlers[1].priority, 5)
+        assert_eq(UTCore._coreHandlers[2].id, "test.distinct", "distinct row should remain")
+    end)
+end)
+
+test("registerCoreHandler rejects invalid inputs before mutation", function()
+    withCoreHandlerRegistry(function()
+        local existing = function() end
+        UTCore.registerCoreHandler("test.valid", existing)
+        local originalRow = UTCore._coreHandlers[1]
+        local invalid = {
+            { nil, existing, nil },
+            { "", existing, nil },
+            { 12, existing, nil },
+            { "test.invalid", nil, nil },
+            { "test.invalid", "not-a-function", nil },
+            { "test.invalid", existing, false },
+            { "test.invalid", existing, { throttle = -1 } },
+            { "test.invalid", existing, { throttle = 1.5 } },
+            { "test.invalid", existing, { throttle = 0 / 0 } },
+            { "test.invalid", existing, { throttle = math.huge } },
+            { "test.invalid", existing, { priority = "high" } },
+            { "test.invalid", existing, { priority = 0 / 0 } },
+            { "test.invalid", existing, { priority = -math.huge } },
+        }
+        for i, args in ipairs(invalid) do
+            local ok = pcall(UTCore.registerCoreHandler, args[1], args[2], args[3])
+            assert_eq(ok, false, "invalid case " .. tostring(i) .. " should fail")
+            assert_eq(UTCore.getCoreHandlerCount(), 1, "invalid input must not change count")
+            assert_eq(UTCore._coreHandlers[1], originalRow, "invalid input must not replace registry row")
+        end
+    end)
+end)
+
+test("keyed core registration makes affected caller reloads idempotent", function()
+    local count = UTCore.getCoreHandlerCount()
+    dofile(base .. "../media/lua/shared/UTCore/UTCore_BleedHook.lua")
+    dofile(base .. "../media/lua/shared/UTCore/UTCore_MeleeDelayHook.lua")
+    dofile(base .. "../media/lua/shared/UTCore/UTCore_ZombieCollisionHook.lua")
+    assert_eq(UTCore.getCoreHandlerCount(), count,
+        "affected caller reloads must replace their keyed handlers")
+end)
+
+test("TickDispatch module reload keeps one central OnPlayerUpdate callback", function()
+    local count = Events.OnPlayerUpdate._handlerCount()
+    dofile(base .. "../media/lua/shared/UTCore/UTCore_TickDispatch.lua")
+    assert_eq(Events.OnPlayerUpdate._handlerCount(), count,
+        "remove-before-add must preserve one central callback")
+end)
+
 -- ===== PZ API Surface Tests =====
 dofile(base .. "test_pz_api_surface.lua")
 

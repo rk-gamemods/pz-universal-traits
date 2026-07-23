@@ -18,6 +18,42 @@ UTCore = UTCore or {}
 ---------------------------------------------------------------------
 UTCore._coreHandlers = UTCore._coreHandlers or {}
 UTCore._coreHandlerCount = UTCore._coreHandlerCount or 0
+UTCore._coreHandlersDirty = UTCore._coreHandlersDirty ~= false
+
+local function validateCoreHandler(id, fn, opts)
+    if type(id) ~= "string" or id == "" then
+        error("core handler id must be a non-empty string", 3)
+    end
+    if type(fn) ~= "function" then
+        error("core handler fn must be a function", 3)
+    end
+    if opts ~= nil and type(opts) ~= "table" then
+        error("core handler opts must be a table or nil", 3)
+    end
+
+    opts = opts or {}
+    local throttle = opts.throttle
+    if throttle == nil then throttle = 0 end
+    if type(throttle) ~= "number"
+        or throttle ~= throttle
+        or throttle == math.huge
+        or throttle == -math.huge
+        or throttle < 0
+        or throttle % 1 ~= 0 then
+        error("core handler throttle must be a non-negative finite integer", 3)
+    end
+
+    local priority = opts.priority
+    if priority == nil then priority = 0 end
+    if type(priority) ~= "number"
+        or priority ~= priority
+        or priority == math.huge
+        or priority == -math.huge then
+        error("core handler priority must be a finite number", 3)
+    end
+
+    return throttle, priority
+end
 
 --- Register a core infrastructure handler that runs every tick inside
 --- the central dispatch, BEFORE trait handlers.
@@ -27,15 +63,43 @@ UTCore._coreHandlerCount = UTCore._coreHandlerCount or 0
 ---   throttle = N     run every Nth tick (0 = every tick, default)
 ---   priority = N     higher runs first (default 0)
 function UTCore.registerCoreHandler(id, fn, opts)
-    opts = opts or {}
-    local n = UTCore._coreHandlerCount + 1
-    UTCore._coreHandlerCount = n
-    UTCore._coreHandlers[n] = {
-        id       = id,
-        fn       = fn,
-        throttle = opts.throttle or 0,
-        priority = opts.priority or 0,
-    }
+    local throttle, priority = validateCoreHandler(id, fn, opts)
+    local handlers = UTCore._coreHandlers
+    local count = UTCore._coreHandlerCount
+    local kept = {}
+    local keptCount = 0
+    local replacement = nil
+
+    for i = 1, count do
+        local handler = handlers[i]
+        if handler.id == id then
+            if replacement == nil then
+                replacement = handler
+                replacement.fn = fn
+                replacement.throttle = throttle
+                replacement.priority = priority
+                keptCount = keptCount + 1
+                kept[keptCount] = replacement
+            end
+        else
+            keptCount = keptCount + 1
+            kept[keptCount] = handler
+        end
+    end
+
+    if replacement == nil then
+        keptCount = keptCount + 1
+        kept[keptCount] = {
+            id       = id,
+            fn       = fn,
+            throttle = throttle,
+            priority = priority,
+        }
+    end
+
+    UTCore._coreHandlers = kept
+    UTCore._coreHandlerCount = keptCount
+    UTCore._coreHandlersDirty = true
 end
 
 --- Return core handler count (testing/diagnostics).

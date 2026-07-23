@@ -203,7 +203,6 @@ end
 -- Tick context builder (called ONCE per frame)
 ---------------------------------------------------------------------
 local _tickCount = 0
-local _coreHandlersSorted = false
 
 local function buildTickContext(player)
     _tickCount = _tickCount + 1
@@ -358,13 +357,13 @@ local function centralDispatch(player)
         return
     end
 
-    -- Sort core handlers by priority once (highest first)
-    if not _coreHandlersSorted and UTCore._coreHandlerCount > 1 then
+    -- Sort whenever registration has changed the keyed registry.
+    if UTCore._coreHandlersDirty and UTCore._coreHandlerCount > 1 then
         table.sort(UTCore._coreHandlers, function(a, b)
             return (a.priority or 0) > (b.priority or 0)
         end)
-        _coreHandlersSorted = true
     end
+    UTCore._coreHandlersDirty = false
 
     -- Build shared tick context ONCE
     local tick = buildTickContext(player)
@@ -481,7 +480,11 @@ local function centralDispatch(player)
 
 end
 
-Events.OnPlayerUpdate.Add(centralDispatch)
+if UTCore._centralDispatchHandler then
+    Events.OnPlayerUpdate.Remove(UTCore._centralDispatchHandler)
+end
+UTCore._centralDispatchHandler = centralDispatch
+Events.OnPlayerUpdate.Add(UTCore._centralDispatchHandler)
 
 -- Build active handler array on character creation / save load
 if not UTCore._dispatchCreatePlayerRegistered then
