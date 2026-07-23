@@ -13,6 +13,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Callable, Iterator
 
+import build_remediation_queue as remediation
 import regenerate_heavilybleedingwounds as base
 from campaign_cli import no_arg_command
 
@@ -349,6 +350,22 @@ def _rewrite_shared_blocker(campaign: Path) -> None:
 
 
 @contextmanager
+def _reviewed_recurring_findings(campaign: Path) -> Iterator[None]:
+    """Keep derived projections bound to the reviewed campaign artifact."""
+    path = campaign / "recurring_pattern_findings.json"
+    artifact = json.loads(path.read_text(encoding="utf-8"))
+    findings = artifact.get("findings")
+    if not isinstance(findings, list):
+        raise ValueError("recurring pattern findings artifact is malformed")
+    original = remediation.build_report
+    try:
+        remediation.build_report = lambda: artifact
+        yield
+    finally:
+        remediation.build_report = original
+
+
+@contextmanager
 def _configured_base() -> Iterator[None]:
     replacements: dict[str, Any] = {
         "TRAIT": TRAIT, "FINDINGS": FINDINGS, "DESCRIPTION": DESCRIPTION,
@@ -377,7 +394,7 @@ def build_plan(root: Path = ROOT, campaign: Path = CAMPAIGN) -> dict[str, bytes]
         overlay = Path(directory) / "campaign"
         shutil.copytree(campaign, overlay, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
         _rewrite_shared_blocker(overlay)
-        with _configured_base():
+        with _reviewed_recurring_findings(overlay), _configured_base():
             plan = base.build_plan(root, overlay)
     if set(plan) != set(OWNED_OUTPUTS):
         raise RuntimeError("Paramedic output plan escaped its ownership set")

@@ -151,13 +151,13 @@
     },
     {
       "path": "UT_CORE/test/run_tests.lua",
-      "sha256": "11BFA899D98E5A18180BC6EE9899FBC20A53DEE8C7424DF7A80A295CD0CB491C",
-      "bytes": 191609
+      "sha256": "666DA857248B78A9D1F3603C6E754607AB6BD5E7AB219F8F956A39874D19FECF",
+      "bytes": 213931
     },
     {
       "path": "UniversalTraits/test/run_tests.lua",
-      "sha256": "012945F8B57E00BA200C498CD53AEAFF1B43F658C0A96878089884B8E5DAAD19",
-      "bytes": 454434
+      "sha256": "8B6F1CB3DF56D9D5D141D1982A5EB2F0164522C1CDFAFEF96AC1CCEA0E9E4CE3",
+      "bytes": 454469
     },
     {
       "path": "trait-deep-audit/active/batch/traits/UT_paramedic.md",

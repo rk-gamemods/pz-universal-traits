@@ -41,7 +41,7 @@
     "translation_audit.json"
   ],
   "file_count": 174,
-  "total_bytes": 13767943,
+  "total_bytes": 13770022,
   "files": [
     {
       "path": ".gitattributes",
@@ -223,7 +223,7 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 5938,
-      "sha256": "9C0A39DC3CC91946E11FED874620D9DB42FB7A827975BAD3F070FCE7B154DDD6"
+      "sha256": "2CFA7D5FF370B8654798607D85C97ECB22AAD30BE008168087DA0B95DF414CA8"
     },
     {
       "path": "change-impact/scardycat-panic-lifecycle.json",
@@ -747,8 +747,8 @@
       "path": "tests/test_regenerate_paramedic.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 11889,
-      "sha256": "97AC82518054509866A4DB27F6EBC55073C75702383D896F1DD9E1FF401D9089"
+      "bytes": 13277,
+      "sha256": "931E7F015ED00179C756AEDE6BA5DB7B090C52C540D731B4C1D4674406F94CA1"
     },
     {
       "path": "tests/test_regenerate_scardycat.py",
@@ -1041,8 +1041,8 @@
       "path": "tools/regenerate_paramedic.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 20773,
-      "sha256": "D704BDDD3274E8039FDA959AC2D2BEA8B9159DE18593B59B30EF13CABC69709C"
+      "bytes": 21464,
+      "sha256": "2DC465A3C59A0A5EA66DBF9D9C612E201F54F7CD8454E406D4D15F8423C57E88"
     },
     {
       "path": "tools/regenerate_scardycat.py",

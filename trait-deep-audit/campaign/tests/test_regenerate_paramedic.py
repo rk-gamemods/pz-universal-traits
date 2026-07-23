@@ -56,6 +56,38 @@ class ParamedicGeneratorSafetyTests(unittest.TestCase):
     def _run(self) -> list[str]:
         return GENERATOR.commit_plan(GENERATOR.build_plan(self.root, self.campaign), self.campaign)
 
+    def test_committed_campaign_is_a_cold_first_pass_fixed_point(self) -> None:
+        plan = GENERATOR.build_plan(GENERATOR.ROOT, GENERATOR.CAMPAIGN)
+        self.assertEqual(
+            [],
+            [
+                relative
+                for relative, data in plan.items()
+                if (GENERATOR.CAMPAIGN / relative).read_bytes() != data
+            ],
+        )
+
+    def test_derived_projections_use_reviewed_recurring_findings_and_restore_builder(self) -> None:
+        expected = GENERATOR.build_plan(self.root, self.campaign)
+        original = GENERATOR.remediation.build_report
+        GENERATOR.remediation.build_report = lambda: {
+            "findings": [{
+                "finding_id": "RP-ADVERSARIAL",
+                "severity": "critical",
+                "summary": "must not enter reviewed campaign projections",
+                "evidence_anchors": [],
+                "affected_dimensions": ["events"],
+                "reproduction_evidence": "synthetic opposition fixture",
+                "recommended_correction": "none",
+                "smallest_regression_test": "this test",
+            }],
+        }
+        try:
+            self.assertEqual(expected, GENERATOR.build_plan(self.root, self.campaign))
+        finally:
+            GENERATOR.remediation.build_report = original
+        self.assertIs(GENERATOR.remediation.build_report, original)
+
     def test_exact_owned_output_set_and_non_paramedic_records_are_preserved(self) -> None:
         batch_path = self.campaign / "trait_batches" / "batch_08.jsonl"
         review_path = self.campaign / "independent_reviews" / "traits_05_08.json"
