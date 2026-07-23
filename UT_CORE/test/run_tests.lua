@@ -2754,6 +2754,71 @@ test("Vehicle trait helpers restore the baseline on vehicle exit", function()
     assert_eq(vehicle:getMass(), 1000, "expected mass restored")
 end)
 
+test("Vehicle simple fields reject hostile getter results without inventing baselines", function()
+    local hostileResults = {
+        { name = "string", value = "100" },
+        { name = "boolean", value = true },
+        { name = "NaN", value = 0 / 0 },
+        { name = "positive infinity", value = math.huge },
+        { name = "negative infinity", value = -math.huge },
+        { name = "negative domain value", value = -1 },
+    }
+    for _, hostile in ipairs(hostileResults) do
+        UTCore._vehicleTraitDefs = {}
+        local vehicle = MockVehicle()
+        vehicle.getMaxSpeed = function() return hostile.value end
+        local player = MockPlayer({"UniversalTraits:UT_testdriver"}, { vehicle = vehicle, driving = true })
+        UTCore.registerVehicleTrait("UniversalTraits:UT_testdriver", "UT_testdriverState", {
+            maxSpeed = 1.5,
+        }, 1)
+
+        Events.OnEnterVehicle.fire(player)
+
+        local ownership = vehicle:getModData().UT_vehicleTraitOwnership
+        assert_eq(vehicle._setterCalls.maxSpeed or 0, 0,
+            hostile.name .. " must not trigger a setter from an invented baseline")
+        assert_eq(ownership.fields.maxSpeed, nil,
+            hostile.name .. " must remain unresolved during acquisition")
+    end
+
+    for _, mode in ipairs({ "throwing", "missing" }) do
+        UTCore._vehicleTraitDefs = {}
+        local vehicle = MockVehicle()
+        vehicle.getMaxSpeed = mode == "throwing" and function() error("hostile getter") end or nil
+        local player = MockPlayer({"UniversalTraits:UT_testdriver"}, { vehicle = vehicle, driving = true })
+        UTCore.registerVehicleTrait("UniversalTraits:UT_testdriver", "UT_testdriverState", {
+            maxSpeed = 1.5,
+        }, 1)
+
+        assert_true(pcall(Events.OnEnterVehicle.fire, player), mode .. " getter must be contained")
+        assert_eq(vehicle._setterCalls.maxSpeed or 0, 0,
+            mode .. " getter must not trigger a setter from an invented baseline")
+    end
+end)
+
+test("Vehicle field validation preserves valid float and integer bridge values", function()
+    UTCore._vehicleTraitDefs = {}
+    local vehicle = MockVehicle()
+    vehicle._maxSpeed = 100.5
+    vehicle._brakingForce = 10.25
+    local player = MockPlayer({"UniversalTraits:UT_testdriver"}, { vehicle = vehicle, driving = true })
+    UTCore.registerVehicleTrait("UniversalTraits:UT_testdriver", "UT_testdriverState", {
+        maxSpeed = 1.5,
+        brakingForce = 0.5,
+        engineQuality = 0.5,
+        engineLoudness = 0.5,
+        enginePower = 2,
+    }, 1)
+
+    Events.OnEnterVehicle.fire(player)
+
+    assert_eq(vehicle:getMaxSpeed(), 150.75, "valid simple-field float must remain accepted")
+    assert_eq(vehicle:getBrakingForce(), 5.125, "valid braking float must remain accepted")
+    assert_eq(vehicle:getEngineQuality(), 50, "valid engine integer must remain accepted")
+    assert_eq(vehicle:getEngineLoudness(), 50, "valid loudness integer must remain accepted")
+    assert_eq(vehicle:getEnginePower(), 200, "valid power integer must remain accepted")
+end)
+
 -- ===== ZombieCollisionHook tests =====
 
 local function withCollisionDebugHarness(body)

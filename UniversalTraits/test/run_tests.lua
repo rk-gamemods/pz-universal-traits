@@ -2838,6 +2838,64 @@ test("vehicle grouped restore stops retrying a permanent failing setter", functi
     assert_true(vehicle:getModData().UT_vehicleTraitOwnership ~= nil, "unresolved fields retain ownership evidence")
 end)
 
+local function hostileVehicleGetterCases()
+    return {
+        { name = "string", getter = function() return "hostile" end },
+        { name = "boolean", getter = function() return true end },
+        { name = "NaN", getter = function() return 0 / 0 end },
+        { name = "positive infinity", getter = function() return math.huge end },
+        { name = "negative infinity", getter = function() return -math.huge end },
+        { name = "out-of-domain", getter = function() return -1 end },
+        { name = "throwing", getter = function() error("hostile getter") end },
+        { name = "missing", getter = false },
+    }
+end
+
+test("vehicle simple restore retains evidence across hostile getters without setter retries", function()
+    for _, hostile in ipairs(hostileVehicleGetterCases()) do
+        local vehicle = MockVehicle()
+        local player = MockPlayer({ "UniversalTraits:UT_driver" }, { vehicle = vehicle, driving = true })
+        UTCore.updateVehicleTraitState(player)
+        local callsAfterApply = vehicle._setterCalls.maxSpeed or 0
+        vehicle.getMaxSpeed = hostile.getter or nil
+        player:setVehicle(nil)
+
+        for _ = 1, 20 do UTCore.updateVehicleTraitState(player) end
+
+        local ownership = vehicle:getModData().UT_vehicleTraitOwnership
+        assert_true(ownership ~= nil and ownership.fields.maxSpeed ~= nil,
+            hostile.name .. " simple getter must retain ownership evidence")
+        assert_eq(vehicle._setterCalls.maxSpeed or 0, callsAfterApply,
+            hostile.name .. " simple getter must not spend setter retries")
+    end
+end)
+
+test("vehicle grouped restore classifies every engine getter hostile result as unresolved", function()
+    local getters = {
+        engineQuality = "getEngineQuality",
+        engineLoudness = "getEngineLoudness",
+        enginePower = "getEnginePower",
+    }
+    for field, getterName in pairs(getters) do
+        for _, hostile in ipairs(hostileVehicleGetterCases()) do
+            local vehicle = MockVehicle({ engineQuality = 50, engineLoudness = 100, enginePower = 100 })
+            local player = MockPlayer({ "UniversalTraits:UT_expertdriver" }, { vehicle = vehicle, driving = true })
+            UTCore.updateVehicleTraitState(player)
+            local callsAfterApply = vehicle._setterCalls.engineFeature or 0
+            vehicle[getterName] = hostile.getter or nil
+            player:setVehicle(nil)
+
+            for _ = 1, 20 do UTCore.updateVehicleTraitState(player) end
+
+            local ownership = vehicle:getModData().UT_vehicleTraitOwnership
+            assert_true(ownership ~= nil and ownership.fields[field] ~= nil,
+                field .. " " .. hostile.name .. " getter must retain ownership evidence")
+            assert_eq(vehicle._setterCalls.engineFeature or 0, callsAfterApply,
+                field .. " " .. hostile.name .. " getter must not invoke the grouped setter")
+        end
+    end
+end)
+
 test("vehicle steady state performs no repeated writes", function()
     local vehicle = MockVehicle()
     local player = MockPlayer({ "UniversalTraits:UT_driver" }, { vehicle = vehicle, driving = true })

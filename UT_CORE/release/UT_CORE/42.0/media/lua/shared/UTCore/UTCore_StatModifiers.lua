@@ -514,12 +514,12 @@ local ENGINE_FIELDS = {
     enginePower = true,
 }
 local FIELD_ACCESS = {
-    maxSpeed = { get = "getMaxSpeed", set = "setMaxSpeed" },
-    brakingForce = { get = "getBrakingForce", set = "setBrakingForce" },
-    engineQuality = { get = "getEngineQuality" },
-    engineLoudness = { get = "getEngineLoudness" },
-    enginePower = { get = "getEnginePower" },
-    initialMass = { get = "getInitialMass", set = "setInitialMass" },
+    maxSpeed = { get = "getMaxSpeed", set = "setMaxSpeed", min = 0 },
+    brakingForce = { get = "getBrakingForce", set = "setBrakingForce", min = 0 },
+    engineQuality = { get = "getEngineQuality", min = 0, max = 100 },
+    engineLoudness = { get = "getEngineLoudness", min = 0 },
+    enginePower = { get = "getEnginePower", min = 0 },
+    initialMass = { get = "getInitialMass", set = "setInitialMass", minExclusive = 0 },
 }
 
 local function vehicleCall(receiver, methodName, ...)
@@ -531,7 +531,18 @@ end
 local function readVehicleField(vehicle, field)
     local access = FIELD_ACCESS[field]
     if not access then return false, nil end
-    return vehicleCall(vehicle, access.get)
+    local ok, value = vehicleCall(vehicle, access.get)
+    if not ok
+        or type(value) ~= "number"
+        or value ~= value
+        or value == math.huge
+        or value == -math.huge
+        or (access.min ~= nil and value < access.min)
+        or (access.minExclusive ~= nil and value <= access.minExclusive)
+        or (access.max ~= nil and value > access.max) then
+        return false, nil
+    end
+    return true, value
 end
 
 local function nearestInteger(value)
@@ -736,7 +747,7 @@ end
 local function fenceForeignChanges(vehicle, ownership)
     for field, evidence in pairs(ownership.fields) do
         local ok, current = readVehicleField(vehicle, field)
-        if not ok or current ~= evidence.lastApplied then
+        if ok and current ~= evidence.lastApplied then
             ownership.fields[field] = nil
             ownership.suppressed[field] = true
         end
