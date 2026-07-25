@@ -1,6 +1,5 @@
 name=UT_CORE
-poster=poster.png
 id=UT_CORE
-description=Shared infrastructure library for Universal Traits. Required dependency — enable alongside UniversalTraits. For carry weight above 50 on B42.17+, use Remove Inventory Limits ZombieBuddy Edition (Workshop 3711508756) with ZombieBuddy enabled.
+description=Independently developed shared runtime infrastructure for Universal Traits. Required dependency; enable alongside UniversalTraits. Single-player only. For carry weight above 50 on B42.17+, use Remove Inventory Limits ZombieBuddy Edition (Workshop 3711508756) with ZombieBuddy enabled.
 modversion=1.0
 versionMin=42.0

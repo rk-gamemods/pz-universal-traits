@@ -1,3 +1,6 @@
 # Python interpreter caches are local derived state, never source.
 __pycache__/
 *.py[cod]
+
+# Local third-party reference copies are research inputs, not project source.
+research/installed-mods/

@@ -1,7 +1,6 @@
 name=Universal Traits
-poster=poster.png
 id=UniversalTraits
-description=A comprehensive character-creation trait pack for Build 42. Consolidates and deduplicates content from multiple trait mods into one clean, conflict-free package. All traits use the UT_ prefix — no vanilla overrides, no ID collisions. Single-player only.
+description=An independently developed character-creation trait collection for Project Zomboid Build 42. Requires UT_CORE. Inspired by ideas from the wider trait-modding community; not a source fork. Uses UT_ identifiers and does not override vanilla trait IDs. Single-player only.
 require=UT_CORE
 modversion=1.0
 versionMin=42.0
