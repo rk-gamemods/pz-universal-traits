@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -18,7 +19,7 @@ from evidence_compiler.catalog import (
     render_catalog_json,
 )
 from evidence_compiler.graph import affected_nodes, load_graph, recommended_tests
-from evidence_compiler.status import build_status
+from evidence_compiler.status import _git_provenance, build_status
 from run_campaign_tests import RunnerError, select_tests
 
 
@@ -34,6 +35,10 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(
             sorted(row["trait_id"] for row in catalog["traits"]),
             [row["trait_id"] for row in catalog["traits"]],
+        )
+        self.assertEqual(
+            {"dedicated-file", "no-dedicated-file"},
+            {row["runtime_discovery"] for row in catalog["traits"]},
         )
 
     def test_catalog_rendering_is_byte_deterministic(self) -> None:
@@ -156,6 +161,56 @@ class AtomicWriteTests(unittest.TestCase):
 
 
 class StatusAndSelectionTests(unittest.TestCase):
+    def test_git_provenance_accepts_a_clean_descendant_and_rejects_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+
+            def git(*arguments: str) -> str:
+                completed = subprocess.run(
+                    ["git", *arguments],
+                    cwd=root,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True,
+                    timeout=10,
+                    check=True,
+                )
+                return completed.stdout.strip()
+
+            git("init")
+            git("config", "user.email", "evidence@example.invalid")
+            git("config", "user.name", "Evidence Test")
+            source = root / "UniversalTraits/media"
+            core = root / "UT_CORE/media"
+            source.mkdir(parents=True)
+            core.mkdir(parents=True)
+            (source / "trait.txt").write_text("baseline\n", encoding="utf-8")
+            (core / "service.lua").write_text("baseline\n", encoding="utf-8")
+            git("add", "--", "UniversalTraits/media", "UT_CORE/media")
+            git("commit", "-m", "source baseline")
+            inventory_head = git("rev-parse", "HEAD")
+
+            (root / "audit.txt").write_text("evidence\n", encoding="utf-8")
+            git("add", "--", "audit.txt")
+            git("commit", "-m", "audit evidence")
+            clean = _git_provenance(root, inventory_head)
+            self.assertTrue(clean["worktree_clean"])
+            self.assertTrue(clean["inventory_is_ancestor"])
+            self.assertTrue(clean["source_unchanged"])
+
+            (root / "audit.txt").write_text("dirty\n", encoding="utf-8")
+            self.assertFalse(_git_provenance(root, inventory_head)["worktree_clean"])
+            git("add", "--", "audit.txt")
+            git("commit", "-m", "audit update")
+
+            (source / "trait.txt").write_text("changed\n", encoding="utf-8")
+            git("add", "--", "UniversalTraits/media/trait.txt")
+            git("commit", "-m", "source change")
+            changed = _git_provenance(root, inventory_head)
+            self.assertTrue(changed["worktree_clean"])
+            self.assertTrue(changed["inventory_is_ancestor"])
+            self.assertFalse(changed["source_unchanged"])
+
     def test_status_names_the_views_without_claiming_release_readiness(self) -> None:
         status = build_status()
         self.assertEqual(

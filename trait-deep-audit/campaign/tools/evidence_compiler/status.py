@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import subprocess
+import tempfile
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -56,6 +57,62 @@ def _git_head(root: Path) -> str:
     return completed.stdout.strip()
 
 
+def _git_quiet(root: Path, arguments: list[str]) -> int:
+    completed = subprocess.run(
+        ["git", *arguments],
+        cwd=root,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        timeout=10,
+        check=False,
+    )
+    return completed.returncode
+
+
+def _git_provenance(root: Path, inventory_head: str) -> dict[str, Any]:
+    current_head = _git_head(root)
+    with tempfile.TemporaryFile() as output:
+        status = subprocess.run(
+            ["git", "status", "--porcelain=v1", "--untracked-files=normal"],
+            cwd=root,
+            stdout=output,
+            stderr=subprocess.DEVNULL,
+            timeout=10,
+            check=False,
+        )
+        output.seek(0)
+        dirty = bool(output.read(1))
+
+    ancestor_exit = _git_quiet(
+        root, ["merge-base", "--is-ancestor", inventory_head, current_head]
+    )
+    source_diff_exit = (
+        _git_quiet(
+            root,
+            [
+                "diff",
+                "--quiet",
+                "--exit-code",
+                f"{inventory_head}..{current_head}",
+                "--",
+                "UniversalTraits/media",
+                "UT_CORE/media",
+            ],
+        )
+        if ancestor_exit == 0
+        else 2
+    )
+    return {
+        "current_head": current_head,
+        "worktree_clean": status.returncode == 0 and not dirty,
+        "status_exit": status.returncode,
+        "inventory_is_ancestor": ancestor_exit == 0,
+        "ancestor_exit": ancestor_exit,
+        "source_unchanged": source_diff_exit == 0,
+        "source_diff_exit": source_diff_exit,
+    }
+
+
 def build_status(root: Path = UTMODS_ROOT) -> dict[str, Any]:
     campaign = root / "trait-deep-audit/campaign"
     ledger_rows = _load_jsonl(campaign / FINAL_LEDGER_ROWS_PATH.name)
@@ -88,14 +145,31 @@ def build_status(root: Path = UTMODS_ROOT) -> dict[str, Any]:
     def check(check_id: str, passed: bool, detail: str) -> None:
         gate_checks.append({"id": check_id, "passed": passed, "detail": detail})
 
-    current_head = _git_head(root)
     inventory_head = (
         source_inventory.get("repo_identity", {}).get("git_head", "")
     )
+    provenance = _git_provenance(root, inventory_head)
     check(
-        "source-inventory-current-head",
-        inventory_head == current_head,
-        f"inventory={inventory_head or 'missing'} current={current_head}",
+        "git-worktree-clean",
+        provenance["worktree_clean"],
+        f"status_exit={provenance['status_exit']}",
+    )
+    check(
+        "source-inventory-ancestor",
+        provenance["inventory_is_ancestor"],
+        (
+            f"inventory={inventory_head or 'missing'} "
+            f"current={provenance['current_head']} "
+            f"exit={provenance['ancestor_exit']}"
+        ),
+    )
+    check(
+        "source-inventory-source-unchanged",
+        provenance["source_unchanged"],
+        (
+            "paths=['UniversalTraits/media','UT_CORE/media'] "
+            f"exit={provenance['source_diff_exit']}"
+        ),
     )
     check(
         "catalog-integrity",

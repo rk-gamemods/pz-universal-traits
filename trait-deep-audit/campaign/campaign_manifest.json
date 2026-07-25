@@ -45,7 +45,7 @@
     "translation_audit.json"
   ],
   "file_count": 187,
-  "total_bytes": 14143255,
+  "total_bytes": 14160620,
   "files": [
     {
       "path": ".gitattributes",
@@ -618,8 +618,8 @@
       "path": "tests/test_evidence_compiler.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 7179,
-      "sha256": "312ABCF3DB217147ECB63E03C7FA207C58D63BD0061507AB292387C3D528358A"
+      "bytes": 9685,
+      "sha256": "46D597811EA239C61F7FC745BF63878E81F8CA16B897D2E002110C030AB54345"
     },
     {
       "path": "tests/test_regenerate_albino.py",
@@ -933,8 +933,8 @@
       "path": "tools/evidence_compiler/catalog.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 11757,
-      "sha256": "DFCD7BE3D1C9999F690406859CFFD5A8C8E18A3E55A081D6F8E9D2BB74605BE4"
+      "bytes": 12296,
+      "sha256": "A8CC3534AD3D59A77E131BE403516E8CA611E52C799EDDABAD313CF16EE5907F"
     },
     {
       "path": "tools/evidence_compiler/cli.py",
@@ -961,8 +961,8 @@
       "path": "tools/evidence_compiler/status.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 6882,
-      "sha256": "EB8AA9E4C30D0D26200DAFF1FA0A4CFB8CB4152446C10F587A22822583164DAB"
+      "bytes": 9010,
+      "sha256": "3A9D287F584CFBD4215F840EF70C9B1317FD0977BFA6018509DC591C135F20B3"
     },
     {
       "path": "tools/regenerate_actionhero.py",
@@ -1339,15 +1339,15 @@
       "path": "trait_catalog.csv",
       "kind": "campaign-artifact",
       "byte_semantics": "raw",
-      "bytes": 86342,
-      "sha256": "FFB53FA404CEA6894B518F456AE4C805DA8A60132C4EC37511C0DA91962C875B"
+      "bytes": 89477,
+      "sha256": "D265282BAABCEB932E618E41A40EAEE73964C78348D36B4DF2C896CCC6266138"
     },
     {
       "path": "trait_catalog.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
-      "bytes": 238428,
-      "sha256": "A0B2D8AE4D20F5C3BD2846CE0288DDD3A1F6E6B99741B8BA4E791F686A43BEBE"
+      "bytes": 247485,
+      "sha256": "0753892196286F4D443C207299C9A07E6E37C1D96592B6FF64E6749D1ADA17C7"
     },
     {
       "path": "translation_audit.json",

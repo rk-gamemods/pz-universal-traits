@@ -47,6 +47,7 @@ CSV_FIELDS = (
     "granted_traits",
     "mutual_exclusions",
     "registered",
+    "runtime_discovery",
     "runtime_file",
     "events",
     "utcore_references",
@@ -135,6 +136,7 @@ def _runtime_metadata(short_id: str) -> dict[str, Any]:
     path = RUNTIME_TRAIT_ROOT / f"{short_id}.lua"
     if not path.is_file():
         return {
+            "runtime_discovery": "no-dedicated-file",
             "runtime_file": "",
             "runtime_sha256": "",
             "events": [],
@@ -142,6 +144,7 @@ def _runtime_metadata(short_id: str) -> dict[str, Any]:
         }
     text = path.read_text(encoding="utf-8")
     return {
+        "runtime_discovery": "dedicated-file",
         "runtime_file": path.relative_to(UTMODS_ROOT).as_posix(),
         "runtime_sha256": _sha256(path),
         "events": sorted(set(EVENT_RE.findall(text))),
@@ -179,8 +182,19 @@ def build_catalog(root: Path = UTMODS_ROOT) -> dict[str, Any]:
         errors.append(f"duplicate registrations: {duplicate_registrations}")
     registration_set = set(registrations)
 
+    raw_ledger_rows = _load_jsonl(ledger_path)
+    ledger_ids = [
+        row["trait_id"] for row in raw_ledger_rows if isinstance(row.get("trait_id"), str)
+    ]
+    duplicate_ledger_ids = sorted(
+        item for item, count in Counter(ledger_ids).items() if count > 1
+    )
+    if duplicate_ledger_ids:
+        errors.append(f"duplicate final-ledger trait IDs: {duplicate_ledger_ids}")
     ledger_rows = {
-        row["trait_id"]: row for row in _load_jsonl(ledger_path) if row.get("trait_id")
+        row["trait_id"]: row
+        for row in raw_ledger_rows
+        if isinstance(row.get("trait_id"), str)
     }
     queue_by_trait: dict[str, list[dict[str, Any]]] = defaultdict(list)
     queue_by_id: dict[str, dict[str, Any]] = {}
@@ -255,7 +269,7 @@ def build_catalog(root: Path = UTMODS_ROOT) -> dict[str, Any]:
             errors.append(f"release blocker references missing queue row: {queue_id}")
 
     return {
-        "schema_version": "utmods.trait_catalog.v1",
+        "schema_version": "utmods.trait_catalog.v2",
         "catalog_type": "generated-review-view",
         "authority": {
             "editable_trait_definition": DEFINITION_PATH.relative_to(
