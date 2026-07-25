@@ -1,60 +1,100 @@
 # Trait Change Checklist
 
-Use this for any change to a trait's behavior, cost, description, or exclusivity.
+Use this checklist for one trait at a time. Shared-mechanism work may cover
+multiple traits only when the mechanism itself is the explicit change.
 
-## 1. Runtime Logic
+## 1. Establish the Contract
 
-- [ ] Update the trait Lua file under `UniversalTraits/media/lua/shared/UniversalTraits/traits/`
-- [ ] If the change belongs in shared infrastructure, update the relevant `UT_CORE` hook/helper instead of duplicating logic in the trait
-- [ ] Re-check event choice: `OnCreatePlayer` for ongoing/transient runtime setup, `OnNewGame` only for one-time spawn effects
+- [ ] Read the trait's row in `trait_catalog.csv` or `trait_catalog.json`.
+- [ ] Read existing audit, queue, blocker, and mechanism evidence.
+- [ ] Record the pre-change baseline from the state before the current campaign
+      touched the trait.
+- [ ] State the intended player outcome in one testable sentence.
+- [ ] Separate defect correction from any proposed intent or balance change.
+- [ ] Obtain explicit user approval before changing intent.
+- [ ] Set aside unresolved intent questions. Do not guess.
 
-## 2. Player-Facing Data
+## 2. Plan the Smallest Closure
 
-- [ ] Update the script block in `UniversalTraits/media/scripts/UT_character_traits.txt` if cost, namespace id, or `MutuallyExclusiveTraits` changed
-- [ ] Update the translation text in `UniversalTraits/media/lua/shared/Translate/EN/UI.json`
-- [ ] Make the description specific: exact values, exact conditions, exact disabled interactions
+Run:
 
-## 3. Mutual Exclusivity
-
-- [ ] If the trait gained or lost incompatibilities, update `MutuallyExclusiveTraits` in `UT_character_traits.txt`
-- [ ] Make intended character-creation exclusions explicit on both traits; script-side mutual exclusion is one-way for the pregame UI, so selecting either side should still hide the other side
-- [ ] Treat `UniversalTraits/media/lua/shared/UniversalTraits/UT_MET.lua` as a reference table only; update it for UT runtime grouping or audits, but do not assume it drives character creation by itself
-- [ ] Ensure every `UniversalTraits:` id used in `CharacterTrait`, `GrantedTraits`, and `MutuallyExclusiveTraits` is registered in `media/registries.lua`
-- [ ] For cross-mod exclusions, only use a foreign trait id if that mod is a real hard dependency and you verified the exact namespaced id in that mod's `media/registries.lua`; unknown external ids are a known `isFree of non-table: null` crash path
-- [ ] If the trait belongs to a runtime group table, also update `UniversalTraits/media/lua/shared/UniversalTraits/UT_MET.lua`
-- [ ] If testing exclusivity with a changed mod list, verify `C:\Users\Admin\Zomboid\mods\default.txt` and do a full Exit to Desktop before retesting; `reloadlua` and menu-only reloads can leave stale modules or disabled mods confusing the result
-
-## 4. Tests
-
-- [ ] Update or add trait tests in `UniversalTraits/test/run_tests.lua`
-- [ ] Update or add `UT_CORE/test/run_tests.lua` if shared hooks/helpers changed
-- [ ] Update mocks if new PZ API methods or events were introduced
-- [ ] Ensure the UniversalTraits consistency audit still passes: registries, `UT_character_traits.txt`, `UI.json`, and `traits/UT_*.lua` must all agree
-- [ ] Run the smoke-aware PZ API verifier so the tracked game-facing surface and smoke mappings stay current
-- [ ] Refresh `tools/pz_api_baseline.json` only after the verifier is green and the new inventory is the accepted truth
-- [ ] Validate a live or synthetic smoke log with `tools/check_smoke_log.py` before calling the update-safe gate complete
-- [ ] Run both suites from repo root:
-
-```bash
-"C:\Users\Admin\AppData\Local\Programs\Lua\bin\lua.exe" UT_CORE/test/run_tests.lua
-"C:\Users\Admin\AppData\Local\Programs\Lua\bin\lua.exe" UniversalTraits/test/run_tests.lua
-python tools/verify_pz_api.py --require-smoke-coverage
-python tools/verify_pz_api.py --require-smoke-coverage --write-baseline --baseline-file tools/pz_api_baseline.json
-python tools/check_smoke_log.py --inventory-file tools/pz_api_inventory.json --smoke-log C:/path/to/DebugLog.txt
-python tools/run_update_safe_gate.py --smoke-log C:/path/to/DebugLog.txt
+```powershell
+py -3 tools\utmods_workflow.py plan `
+  --changed-file UniversalTraits/media/lua/shared/UniversalTraits/traits/UT_example.lua
 ```
 
-## 5. Release And Deploy
+- [ ] Identify the exact source, evidence nodes, tests, and package surfaces.
+- [ ] Reuse a family proof only when its hash, lifecycle, API, state, and
+      parameter contract match exactly.
+- [ ] Avoid reopening already proven source paths without a freshness or scope
+      reason.
 
-- [ ] Sync `UT_CORE/release/UT_CORE/42/media/` from `UT_CORE/media/` if UT_CORE changed
-- [ ] Sync `UniversalTraits/release/UniversalTraits/42/media/` from `UniversalTraits/media/`
-- [ ] If translations changed, verify `UI.json` was synced into source, release, and live copies and that no legacy text translation file reappeared
-- [ ] Copy root `mod.info` into each release package root
-- [ ] Deploy live by mirroring the release package root into `C:\Users\Admin\Zomboid\mods\<ModName>\`
-- [ ] Verify source, release, and live hashes match for any runtime file changed
+## 3. Update Every Owning Surface
 
-## 6. Documentation And Commit
+| Change | Owning source | Required dependent review |
+| --- | --- | --- |
+| Cost, XP, grants, exclusions | `UniversalTraits/media/scripts/UT_character_traits.txt` | Description, registration, catalog, tests |
+| English name or description | `UniversalTraits/media/lua/shared/Translate/EN/UI.json` | Definition keys, behavior accuracy, catalog |
+| Trait runtime behavior | Matching source Lua under `UniversalTraits/media/lua/` | UT_CORE contract, cadence, cleanup, tests, release |
+| Shared hook or service | Source Lua under `UT_CORE/media/lua/` | Every consumer, composition, tests, release |
+| Registration | `UniversalTraits/media/registries.lua` | Definition, UI pair, catalog |
+| Mutual exclusion | Script-side `MutuallyExclusiveTraits` | Reverse edge, `UT_MET.lua` reference, grants |
+| Audit state or proof | Owning batch/review/resolution evidence | Ledger, queue, blocker, catalog, manifest |
 
-- [ ] Update `AGENTS.md` only when reusable project knowledge changed
-- [ ] If the process itself changed, update this checklist
-- [ ] Commit after tests, release sync, and deploy are complete
+- [ ] Do not hand-edit `release/` or the live mod.
+- [ ] Do not edit the generated catalog.
+- [ ] Update documentation only when public behavior, intent, or an engineering
+      contract changed.
+
+## 4. Runtime Safety
+
+- [ ] Use current PZCodebase or runtime evidence for every engine event and
+      Java-Lua call.
+- [ ] Preserve Kahlua behavior and Java collection indexing in mocks.
+- [ ] For frequent events, prove bounded work and the slowest acceptable
+      cadence.
+- [ ] For wrappers and shared hooks, prove installation, idempotence,
+      composition, reload, and teardown.
+- [ ] Prove activation, deactivation, player change, and stale-state cleanup
+      where applicable.
+- [ ] Do not add multiplayer or old-save handling.
+
+## 5. Focused Validation
+
+- [ ] Run the changed trait or mechanism tests first.
+- [ ] Run the dependency-selected campaign modules:
+
+  ```powershell
+  py -3 -B trait-deep-audit\campaign\tools\run_campaign_tests.py `
+    --changed-file <repo-relative-path>
+  ```
+
+- [ ] Rebuild and verify the catalog:
+
+  ```powershell
+  py -3 tools\utmods_workflow.py catalog --write
+  py -3 tools\utmods_workflow.py catalog --check
+  ```
+
+- [ ] Run the affected Lua suite.
+- [ ] Run the full campaign suite only at an integration milestone, after
+      shared compiler/runner changes, or before a release decision.
+
+## 6. Package and Evidence Closure
+
+- [ ] Refresh the owning audit evidence once, after the focused work is stable.
+- [ ] Regenerate dependent ledgers, queue views, and the terminal campaign
+      manifest in dependency order.
+- [ ] Verify source and `42.0` release parity when release-affecting work is
+      ready.
+- [ ] Keep unresolved runtime proof visible with an exact validation
+      requirement.
+- [ ] Do not classify an item as proven because it is nonblocking.
+- [ ] Deploy only with explicit authorization.
+
+## 7. Milestone Commit
+
+- [ ] Review the exact diff and `git status`.
+- [ ] Confirm no unrelated or generated transient files are included.
+- [ ] Commit the recoverable milestone on `development`.
+- [ ] Record tests run, generated artifacts refreshed, and remaining risks.

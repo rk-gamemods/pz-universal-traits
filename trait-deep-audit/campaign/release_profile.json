@@ -1,0 +1,22 @@
+{
+  "schema_version": "utmods.release_profile.v1",
+  "profile_id": "single-player-current-build-normal-play",
+  "classification_complete": false,
+  "supported_scope": {
+    "game_line": "Project Zomboid Build 42, current supported snapshot",
+    "package_layout": "42.0",
+    "single_player": true
+  },
+  "explicit_non_goals": {
+    "multiplayer": "Not supported and not on the roadmap.",
+    "prior_save_migration": "Previous saves may be invalidated."
+  },
+  "risk_tiers": {
+    "tier_0": "Load, parser, shared-hook, event, corruption, or package failures reachable in normal play.",
+    "tier_1": "Common supported single-player lifecycle and ordinary trait interaction paths.",
+    "tier_2": "Bounded optional or unusual supported scenarios without a path into tier 0 or tier 1.",
+    "tier_3": "Exhaustive assurance that remains visible but does not independently define normal-play readiness.",
+    "tier_4": "Explicit user-approved non-goal. It is never relabeled proven-correct."
+  },
+  "classification_note": "Release readiness must remain false until every open obligation has an explicit risk tier or approved non-goal disposition."
+}

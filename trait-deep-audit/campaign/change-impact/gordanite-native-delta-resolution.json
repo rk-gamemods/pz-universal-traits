@@ -97,13 +97,13 @@
     },
     {
       "path": "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
-      "sha256": "58C5DE47626CB2E39F87586EA96367B18D53C662F14B7B0F3D9295BCC9FC746F",
-      "bytes": 37141
+      "sha256": "703DAB02EB09267B8320838615556980D993A40BC9255BCB6A9A1A3E21313016",
+      "bytes": 37131
     },
     {
       "path": "UniversalTraits/release/UniversalTraits/42.0/media/lua/shared/Translate/EN/UI.json",
-      "sha256": "58C5DE47626CB2E39F87586EA96367B18D53C662F14B7B0F3D9295BCC9FC746F",
-      "bytes": 37141
+      "sha256": "703DAB02EB09267B8320838615556980D993A40BC9255BCB6A9A1A3E21313016",
+      "bytes": 37131
     },
     {
       "path": "UniversalTraits/media/scripts/UT_character_traits.txt",
@@ -127,13 +127,13 @@
     },
     {
       "path": "UniversalTraits/test/run_tests.lua",
-      "sha256": "171CB838FF380AB42BF327F08FDD256A47859B5B9A7366CFDB6BB051419BEC89",
-      "bytes": 393129
+      "sha256": "8B6F1CB3DF56D9D5D141D1982A5EB2F0164522C1CDFAFEF96AC1CCEA0E9E4CE3",
+      "bytes": 454469
     },
     {
       "path": "UniversalTraits/test/UTTestMocks.lua",
-      "sha256": "82DA5436E39918C94A39117D6D07066AA49A6440A652E6AF9F4F62D37F85E78E",
-      "bytes": 83345
+      "sha256": "8E273E556593CBE9A3C427813112696C567F3531213640FC3E5AF541635E4F67",
+      "bytes": 82248
     },
     {
       "path": "trait-deep-audit/active/batch/traits/UT_gordanite.md",

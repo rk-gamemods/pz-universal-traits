@@ -1,0 +1,172 @@
+{
+  "schema_version": "utmods.artifact_graph.v1",
+  "nodes": [
+    {
+      "id": "trait-catalog",
+      "outputs": [
+        "trait-deep-audit/campaign/trait_catalog.json",
+        "trait-deep-audit/campaign/trait_catalog.csv"
+      ],
+      "direct_inputs": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt",
+        "UniversalTraits/media/registries.lua",
+        "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+        "UniversalTraits/media/lua/shared/UniversalTraits/traits/*.lua",
+        "trait-deep-audit/campaign/final_trait_ledger_rows.jsonl",
+        "trait-deep-audit/campaign/remediation_queue.jsonl",
+        "trait-deep-audit/campaign/release_blocker_queue.json",
+        "trait-deep-audit/campaign/tools/evidence_compiler/atomic.py",
+        "trait-deep-audit/campaign/tools/evidence_compiler/catalog.py",
+        "trait-deep-audit/campaign/tools/evidence_compiler/cli.py",
+        "trait-deep-audit/campaign/tools/evidence_compiler/paths.py",
+        "tools/utmods_workflow.py"
+      ],
+      "depends_on": [
+        "normalized-ledger",
+        "remediation"
+      ],
+      "tests": [
+        "test_evidence_compiler.py"
+      ],
+      "terminal": false
+    },
+    {
+      "id": "source-inventory",
+      "outputs": [
+        "trait-deep-audit/campaign/source_inventory.json"
+      ],
+      "direct_inputs": [
+        "UniversalTraits/media/registries.lua",
+        "UniversalTraits/media/scripts/UT_character_traits.txt",
+        "UniversalTraits/media/lua/shared/Translate/EN/UI.json",
+        "UniversalTraits/media/lua/shared/UniversalTraits/**/*.lua",
+        "UT_CORE/media/lua/**/*.lua"
+      ],
+      "depends_on": [],
+      "tests": [
+        "test_campaign_tools.py"
+      ],
+      "terminal": false
+    },
+    {
+      "id": "translation-audit",
+      "outputs": [
+        "trait-deep-audit/campaign/translation_audit.json"
+      ],
+      "direct_inputs": [
+        "UniversalTraits/media/scripts/UT_character_traits.txt",
+        "UniversalTraits/media/lua/shared/Translate/EN/UI.json"
+      ],
+      "depends_on": [],
+      "tests": [
+        "test_campaign_tools.py"
+      ],
+      "terminal": false
+    },
+    {
+      "id": "normalized-ledger",
+      "outputs": [
+        "trait-deep-audit/campaign/final_trait_ledger.json",
+        "trait-deep-audit/campaign/final_trait_ledger_rows.jsonl",
+        "trait-deep-audit/campaign/dimension_ledger_rows.jsonl"
+      ],
+      "direct_inputs": [
+        "trait-deep-audit/campaign/trait_batches/*.jsonl",
+        "trait-deep-audit/campaign/independent_reviews/*.json",
+        "trait-deep-audit/campaign/resolutions/*.json",
+        "trait-deep-audit/campaign/tools/build_final_trait_ledger.py",
+        "trait-deep-audit/campaign/tools/regenerate_*.py"
+      ],
+      "depends_on": [
+        "source-inventory",
+        "translation-audit"
+      ],
+      "tests": [
+        "test_campaign_tools.py"
+      ],
+      "terminal": false
+    },
+    {
+      "id": "recurring-patterns",
+      "outputs": [
+        "trait-deep-audit/campaign/recurring_pattern_findings.json"
+      ],
+      "direct_inputs": [
+        "UniversalTraits/media/**/*.lua",
+        "UniversalTraits/release/**/*.lua",
+        "UT_CORE/media/**/*.lua",
+        "UT_CORE/release/**/*.lua",
+        "trait-deep-audit/campaign/tools/check_recurring_patterns.py"
+      ],
+      "depends_on": [],
+      "tests": [
+        "test_campaign_tools.py"
+      ],
+      "terminal": false
+    },
+    {
+      "id": "remediation",
+      "outputs": [
+        "trait-deep-audit/campaign/remediation_queue.jsonl",
+        "trait-deep-audit/campaign/remediation_summary.json"
+      ],
+      "direct_inputs": [
+        "trait-deep-audit/campaign/tools/build_remediation_queue.py",
+        "trait-deep-audit/campaign/tools/regenerate_*.py"
+      ],
+      "depends_on": [
+        "normalized-ledger",
+        "recurring-patterns"
+      ],
+      "tests": [
+        "test_campaign_tools.py"
+      ],
+      "terminal": false
+    },
+    {
+      "id": "release-readiness",
+      "outputs": [],
+      "direct_inputs": [
+        "trait-deep-audit/campaign/release_blocker_queue.json",
+        "trait-deep-audit/campaign/release_profile.json",
+        "trait-deep-audit/campaign/tools/evidence_compiler/status.py",
+        "UniversalTraits/release/**",
+        "UT_CORE/release/**"
+      ],
+      "depends_on": [
+        "trait-catalog",
+        "remediation"
+      ],
+      "tests": [
+        "test_evidence_compiler.py",
+        "test_campaign_tools.py"
+      ],
+      "terminal": false
+    },
+    {
+      "id": "campaign-manifest",
+      "outputs": [
+        "trait-deep-audit/campaign/campaign_manifest.json"
+      ],
+      "direct_inputs": [
+        "trait-deep-audit/campaign/tools/*.py",
+        "trait-deep-audit/campaign/tools/**/*.py",
+        "trait-deep-audit/campaign/tests/*.py",
+        "trait-deep-audit/campaign/tests/**/*.py"
+      ],
+      "depends_on": [
+        "trait-catalog",
+        "source-inventory",
+        "translation-audit",
+        "normalized-ledger",
+        "recurring-patterns",
+        "remediation",
+        "release-readiness"
+      ],
+      "tests": [
+        "test_campaign_tools.py"
+      ],
+      "terminal": true
+    }
+  ]
+}

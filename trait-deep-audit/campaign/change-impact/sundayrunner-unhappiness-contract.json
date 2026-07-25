@@ -120,8 +120,8 @@
     },
     {
       "path": "PRD.md",
-      "sha256": "3C01849FB95E6B48ECDEAD22AD1DE491C24B7F3B7983CC9FF8E419367EB6CBD9",
-      "bytes": 54727
+      "sha256": "895D57CE4676B0666F1F60C455FF1BC645576EB0ACC1DA5E842D75A76D83BDC4",
+      "bytes": 4928
     }
   ],
   "runtime_proof": "Unobserved; static and standard-Lua evidence do not establish current-version live gameplay.",

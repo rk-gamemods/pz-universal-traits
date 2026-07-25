@@ -1,76 +1,97 @@
-# Trait Deep Audit Loop Plan
+# Evidence Compiler Migration Plan
 
-This loop is scoped only to `C:\Users\Admin\Documents\GIT\GameMods\PZMods\UTMods\trait-deep-audit`.
-This folder is the plan and the audit system. Do not create audit planning files at the UTMods root.
+Status: active
 
-## Scope Root
+## Goal
 
-- `C:\Users\Admin\Documents\GIT\GameMods\PZMods\UTMods\trait-deep-audit`
+Replace repeated trait-by-trait whole-campaign generation with one
+schema-driven, dependency-aware evidence compiler while preserving every
+existing finding, proof, and historical mapping.
 
-## Canonical Planning Files In Scope
+## Completed Foundation
 
-- `trait-deep-audit/README.md`
-- `trait-deep-audit/active/batch/00_batch_checklist.md`
-- `trait-deep-audit/active/batch/traits/*.md`
-- `trait-deep-audit/plan-parallel-trait-audit.prompt.md`
+- [x] Source-derived 198-trait JSON and CSV catalog.
+- [x] Explicit artifact dependency graph.
+- [x] Changed-file planning and focused campaign test selection.
+- [x] Atomic multi-file catalog writes with rollback test.
+- [x] Named status accounting for traits, queue rows, and blockers.
+- [x] Separate fail-closed single-player release profile.
+- [x] Current documentation authority map and trait change contract.
 
-## Execution Contract
+## Phase 1: Reconcile the Current Generation Epoch
 
-- The audit system is self-contained in this folder.
-- Work is trait-by-trait unless the checklist explicitly tracks a batch-level issue.
-- The checklist is the active backlog and priority map.
-- Trait files under `active/batch/traits/` are the per-unit evidence records.
-- Do not create competing master plans outside this folder.
-- Active `/loop-run` behavior prefers `trait-deep-audit/plan-parallel-trait-audit.prompt.md` and must keep launching parallel trait-audit workers while executable traits remain.
+- [ ] Refresh source inventory provenance against current `development` HEAD.
+- [ ] Regenerate summary counts from actual queue rows.
+- [ ] Reconcile the release-blocker queue digest.
+- [ ] Resolve or declare every blocker dependency identity.
+- [ ] Regenerate the terminal campaign manifest.
 
-## Current State
+No evidence state changes merely to make this phase pass.
 
-- Active batch exists at `trait-deep-audit/active/batch/`
-- Checklist exists and is the current loop tracker
-- Status from checklist: `in progress (107/~170 traits audited)`
-- Priority accounting recorded in the checklist:
-  - P0 inert/broken traits: complete for the audited set
-  - P1 wrong descriptions: partial
-  - P2 balance issues: not addressed
-  - P3 missing mutual exclusions: not addressed
-  - P4 test gaps: addressed for P0-fixed traits only
+## Phase 2: Shared Compiler Primitives
 
-## Next Restart Step
+- [ ] Strict schemas for trait evidence, findings, proofs, obligations, and
+      artifact nodes.
+- [ ] Shared unique-row selectors and state normalization.
+- [ ] Shared canonical JSON/JSONL rendering.
+- [ ] Content fingerprints and cache state outside the manifested campaign
+      tree.
+- [ ] One atomic transaction and rollback implementation.
+- [ ] Pure derivation functions for ledger, dimensions, queue, summary, and
+      manifest.
 
-Resume from `trait-deep-audit/active/batch/00_batch_checklist.md` and take the next explicitly intended slice from that backlog, staying inside this folder's audit workflow.
+## Phase 3: Representative Dual Generation
 
-## Recent Run Log
+Migrate one generator from each structural family:
 
-- 2026-04-04: Created local checkpoint `loop/checkpoint-20260404-171928-sundayrunner-audit` and completed `UT_sundayrunner` audit. Evidence file: `active/batch/traits/UT_sundayrunner.md`. Checklist advanced to `108/~170 traits audited`; key findings were a false Fitness description, missing `UT_sprintdemon` mutual exclusion, and missing behavioral test coverage.
-- 2026-04-04: Added `plan-parallel-trait-audit.prompt.md` as the active prompt-plan override so `/loop-run` treats the remaining trait queue as a massively parallel research checklist instead of stopping after one completed trait.
+- [ ] Standard overlay generator.
+- [ ] External recurring-pattern dependency.
+- [ ] Legacy direct writer.
+- [ ] Custom transaction writer.
 
-## Non-Goals
+For each:
 
-- Do not create planning files at `UTMods/` root
-- Do not treat outside planning docs as the audit contract for this loop
-- Do not mark a trait complete without its trait file evidence
-- Do not collapse P1, P2, P3, and P4 into one vague objective
+- [ ] Compile legacy and shared outputs from the same inputs.
+- [ ] Require byte-equivalent artifact sets.
+- [ ] Prove second-run fixed point.
+- [ ] Prove failure atomicity.
+- [ ] Preserve every old queue ID through a machine-readable mapping.
 
-## Evidence Required
+## Phase 4: Mechanism Proofs and Obligations
 
-- Checklist status updated in `trait-deep-audit/active/batch/00_batch_checklist.md`
-- Per-trait evidence captured in the relevant file under `trait-deep-audit/active/batch/traits/`
-- Any batch-wide findings recorded in the checklist or a batch-local research/artifact file
+- [ ] Add stable `proof_id` and `obligation_id` schemas.
+- [ ] Record implementation hash, game snapshot, lifecycle, API, state, and
+      parameter boundaries.
+- [ ] Map every consumer explicitly.
+- [ ] Expand references back to the old per-trait evidence for reconciliation.
+- [ ] Reject orphan, dangling, duplicate, cyclic, or ambiguous mappings.
 
-## Agent Preflight Matrix
+## Phase 5: Legacy Retirement
 
-| Agent | Required/Conditional | Ready/Issue/Skipped | Trigger or Skip Rationale | Working Doc Status | Notes |
-| --- | --- | --- | --- | --- | --- |
-| product-owner | Required | READY | Checklist already defines active priorities and partial completion state | In-folder docs present | Follow checklist priority tiers |
-| system-architect | Required | READY | README defines audit structure, lanes, and failure conditions | In-folder docs present | Use README as structural contract |
-| software-engineer | Required | READY | Batch/checklist state is clear enough to resume concrete work | In-folder docs present | Stay scoped to chosen backlog slice |
-| sdet-tester | Required | READY | P4 status and missing-proof expectations are explicitly documented | In-folder docs present | Use trait files to capture missing proof |
-| qa-auditor | Required | READY | README defines trait completion failure conditions and evidence model | In-folder docs present | Do not accept checklist-only completion |
-| qa-review | Required | READY | Description integrity and verdict rules are explicitly defined | In-folder docs present | Keep player-facing accuracy central |
-| what-if-analyst | Conditional | SKIPPED | Not needed for loop init | Not created | Revisit only after baseline slice completes |
-| security-engineer | Conditional | SKIPPED | Audit loop does not touch auth, secrets, or trust boundaries by default | Not created | Invoke only if scope changes |
-| performance-engineer | Conditional | SKIPPED | No hot-path or scale decision in loop init | Not created | Invoke only if runtime performance becomes part of the slice |
-| sre-devops | Conditional | SKIPPED | No deployment/runtime-config work in loop init | Not created | Invoke only for deploy parity work |
-| compliance-privacy | Conditional | SKIPPED | No sensitive-data handling change in scope | Not created | Invoke only if scope changes |
-| technical-writer | Conditional | READY | README and checklist already provide the audit contract | In-folder docs present | Keep this file thin and in-scope |
-| workspace-steward | Conditional | READY | Corrected loop control is now placed inside the intended folder | In-folder docs present | Do not create duplicate planning surfaces outside this folder |
+- [ ] Convert migrated scripts to thin compatibility wrappers.
+- [ ] Move generic safety tests into parameterized compiler suites.
+- [ ] Update every documented entrypoint.
+- [ ] Remove wrappers only after no callers remain.
+- [ ] Archive the old batch workflow after bidirectional inventory
+      reconciliation.
+
+## Release Workstream
+
+In parallel with compiler migration:
+
+- [ ] Complete Tier 0 and Tier 1 classification.
+- [ ] Close current normal-play blockers.
+- [ ] Prove translation, event, shared-hook, and package invariants.
+- [ ] Keep Tier 2 and Tier 3 items visible in the exhaustive backlog.
+
+## Stop Conditions
+
+Stop the affected trait or mechanism when:
+
+- intended outcome is uncertain;
+- the pre-campaign baseline cannot be established;
+- a proof boundary does not match;
+- source and generated evidence disagree without a known derivation;
+- a migration would discard or silently relabel evidence.
+
+Continue unrelated safe work.

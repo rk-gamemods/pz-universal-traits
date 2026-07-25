@@ -23,6 +23,8 @@
     "independent_reviews/traits_09_12.json",
     "independent_reviews/ut_core_integration.json",
     "recurring_pattern_findings.json",
+    "release_blocker_queue.json",
+    "release_profile.json",
     "remediation_queue.jsonl",
     "remediation_summary.json",
     "source_inventory.json",
@@ -38,10 +40,12 @@
     "trait_batches/batch_10.jsonl",
     "trait_batches/batch_11.jsonl",
     "trait_batches/batch_12.jsonl",
+    "trait_catalog.csv",
+    "trait_catalog.json",
     "translation_audit.json"
   ],
-  "file_count": 174,
-  "total_bytes": 13770022,
+  "file_count": 187,
+  "total_bytes": 14143255,
   "files": [
     {
       "path": ".gitattributes",
@@ -153,7 +157,7 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 6013,
-      "sha256": "0B6DCBCDEBE9B5C32DDEA8A80E973D6E16986F44B19200B48C05E514265C4B04"
+      "sha256": "01C868157890C4C1713B50ABD0F7D512D308A6495AC6A9A15B87C9F14EA5A3E9"
     },
     {
       "path": "change-impact/gourmand-consumption-contract.json",
@@ -271,8 +275,8 @@
       "path": "change-impact/sundayrunner-unhappiness-contract.json",
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
-      "bytes": 4283,
-      "sha256": "6724BD1D3E518EFB75C303A7E449D51DE713DFDFF84870ACC5ACF90C78DCA524"
+      "bytes": 4282,
+      "sha256": "3627CBBFDE89B563701D992C2EF8DC23E109B5231E5F61EB75214C39D45F0873"
     },
     {
       "path": "change-impact/superimmune-infection-channel-resolution.json",
@@ -286,7 +290,7 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 4005,
-      "sha256": "A453AF27A7235E04E33B2355E4819408C555D8B8F395967493607418CDF4D3AE"
+      "sha256": "B2C2EA2579B554A57ED3CC869940DCA66D1F933B25BB8E2FA13B0C562822B10D"
     },
     {
       "path": "change-impact/thickblood-weighted-bleed-damage.json",
@@ -300,7 +304,7 @@
       "kind": "campaign-artifact",
       "byte_semantics": "utf-8-lf",
       "bytes": 8303,
-      "sha256": "3312A39D10B1783204F4ED0FE0ED6DBA03AE642F542D30115E0B75C2813A2012"
+      "sha256": "8655966FF3EFAC3A7D9A3C9E0F427720D5492E0E18CA06239B230286E40699FB"
     },
     {
       "path": "change-impact/unwavering-copy-resolution.json",
@@ -356,7 +360,7 @@
       "kind": "normalized-ledger",
       "byte_semantics": "utf-8-lf",
       "bytes": 2100278,
-      "sha256": "C7BAFE880DA462661EDD420F7B0769927EDEB8A2FD304C6D00D2FAC19409B3D1"
+      "sha256": "982C74387DBDE81E7781F0B5567D1FAC1322C32447FB7C84BCB61D5EA9A201CB"
     },
     {
       "path": "final_trait_ledger_rows.jsonl",
@@ -398,7 +402,7 @@
       "kind": "independent-review",
       "byte_semantics": "utf-8-lf",
       "bytes": 128316,
-      "sha256": "ED2DC72A60C767E846B44ED6EAEE198F4910FDFC155A36496AB9473EB2807CCA"
+      "sha256": "9DB405EB6FFC51535AC2D3B66DAD1C84B064C2D4B8EB4E36B92D1331D1CA5E08"
     },
     {
       "path": "independent_reviews/ut_core_integration.json",
@@ -420,6 +424,13 @@
       "byte_semantics": "utf-8-lf",
       "bytes": 2861,
       "sha256": "8A55C028FB2D1F22EF94EADA60FAB53E76D6F2962387FE1BBC76D74FE1E1E32E"
+    },
+    {
+      "path": "release_profile.json",
+      "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 1146,
+      "sha256": "6320250A44CA8229B8685F64721F9D63BD41F238C5E82439AB4A7F77E24D6606"
     },
     {
       "path": "remediation_queue.jsonl",
@@ -604,6 +615,13 @@
       "sha256": "9F6C8A5EF82F87E54F25C0515AC8AA81D4BE439871B636D0FC4E9DEEAC451F88"
     },
     {
+      "path": "tests/test_evidence_compiler.py",
+      "kind": "regression-test",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 7179,
+      "sha256": "312ABCF3DB217147ECB63E03C7FA207C58D63BD0061507AB292387C3D528358A"
+    },
+    {
       "path": "tests/test_regenerate_albino.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
@@ -684,8 +702,8 @@
       "path": "tests/test_regenerate_gordanite.py",
       "kind": "regression-test",
       "byte_semantics": "utf-8-lf",
-      "bytes": 12857,
-      "sha256": "853597926FCB9D0A2D4E5CD5E099AC645B3F73D6727F3B9AF8257EBBBFAED1A2"
+      "bytes": 12814,
+      "sha256": "22191B30F0DDFAFD0024905938E996DAA1CD1B03B746D8AFD288AEA8A59CA9AC"
     },
     {
       "path": "tests/test_regenerate_gourmand.py",
@@ -852,8 +870,8 @@
       "path": "tools/build_campaign_manifest.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 6084,
-      "sha256": "6D83B850A4104E01736CEC4A1559BE67C7DC34AC3235912C951BACF98D04A097"
+      "bytes": 6197,
+      "sha256": "75CDA32410CD8CB70185261F6EB08169DE43FE2D4D55896DE422366376F97301"
     },
     {
       "path": "tools/build_final_trait_ledger.py",
@@ -882,6 +900,69 @@
       "byte_semantics": "utf-8-lf",
       "bytes": 20923,
       "sha256": "14E655B78DEE2105E5FD555987C1E2A659C2EB7534D438F98D64867DEC1D5DCE"
+    },
+    {
+      "path": "tools/evidence_compiler/__init__.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 412,
+      "sha256": "698B639B0AA5FF82E7F05D50227952079C587D9681E1D4AB94F5475C1EE38FCD"
+    },
+    {
+      "path": "tools/evidence_compiler/__main__.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 48,
+      "sha256": "935A1C1166B0C1EA35A82256345000BF2C73DED718D77773BC27A71ECCE28F7D"
+    },
+    {
+      "path": "tools/evidence_compiler/artifact_graph.json",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 5208,
+      "sha256": "E17EAC91C5CED091B0B954A3FB68317FE00739D047F07770E6244803D88D511C"
+    },
+    {
+      "path": "tools/evidence_compiler/atomic.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 2673,
+      "sha256": "45DCB91663075B647C9979EFFD17A9B469E0DB6AB7DC02922984A65375643A21"
+    },
+    {
+      "path": "tools/evidence_compiler/catalog.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 11757,
+      "sha256": "DFCD7BE3D1C9999F690406859CFFD5A8C8E18A3E55A081D6F8E9D2BB74605BE4"
+    },
+    {
+      "path": "tools/evidence_compiler/cli.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 5593,
+      "sha256": "30F7A2377F02C5C2CDB79A6F3A61326045658B9D499F3693E268A23A92D9515A"
+    },
+    {
+      "path": "tools/evidence_compiler/graph.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 4457,
+      "sha256": "9494FA6692F504469E4883ADF05081F788B717B66FBD073EDB5BC26367CBB3BC"
+    },
+    {
+      "path": "tools/evidence_compiler/paths.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 1234,
+      "sha256": "FA2632F66FBEC0911F5B89D2C195AF0FA05EFD41F7DEE5672408271C3A2DE157"
+    },
+    {
+      "path": "tools/evidence_compiler/status.py",
+      "kind": "deterministic-tool",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 6882,
+      "sha256": "EB8AA9E4C30D0D26200DAFF1FA0A4CFB8CB4152446C10F587A22822583164DAB"
     },
     {
       "path": "tools/regenerate_actionhero.py",
@@ -1160,8 +1241,8 @@
       "path": "tools/run_campaign_tests.py",
       "kind": "deterministic-tool",
       "byte_semantics": "utf-8-lf",
-      "bytes": 17016,
-      "sha256": "C349DC705336C415F847D42529587D70DA0A5055E4C54E7C040BF916EE44CE30"
+      "bytes": 18821,
+      "sha256": "8D76A5D166FBABDC3B53BA4DE93A2D51A8471947AFA67A15F06B337EDF7CC37F"
     },
     {
       "path": "tools/validate_campaign.py",
@@ -1253,6 +1334,20 @@
       "byte_semantics": "utf-8-lf",
       "bytes": 90841,
       "sha256": "0D668CE4517CD35E208A253B4214905C00C658B5BB97E970D14E1F52FC5DB850"
+    },
+    {
+      "path": "trait_catalog.csv",
+      "kind": "campaign-artifact",
+      "byte_semantics": "raw",
+      "bytes": 86342,
+      "sha256": "FFB53FA404CEA6894B518F456AE4C805DA8A60132C4EC37511C0DA91962C875B"
+    },
+    {
+      "path": "trait_catalog.json",
+      "kind": "campaign-artifact",
+      "byte_semantics": "utf-8-lf",
+      "bytes": 238428,
+      "sha256": "A0B2D8AE4D20F5C3BD2846CE0288DDD3A1F6E6B99741B8BA4E791F686A43BEBE"
     },
     {
       "path": "translation_audit.json",

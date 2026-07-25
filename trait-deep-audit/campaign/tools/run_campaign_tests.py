@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import os
 import re
@@ -16,6 +17,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed, wait
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Iterable
+
+TOOLS_ROOT = Path(__file__).resolve().parent
+if str(TOOLS_ROOT) not in sys.path:
+    sys.path.insert(0, str(TOOLS_ROOT))
+
+from evidence_compiler.graph import recommended_tests
 
 
 CAMPAIGN_ROOT = Path(__file__).resolve().parents[1]
@@ -179,6 +186,51 @@ def discover_tests(test_root: Path = TEST_ROOT) -> list[Path]:
     if not tests:
         raise RunnerError(f"no campaign tests discovered under {test_root}")
     return tests
+
+
+def select_tests(
+    tests: Iterable[Path],
+    modules: Iterable[str] = (),
+    changed_files: Iterable[str] = (),
+) -> list[Path]:
+    """Select an exact safe subset, falling back to the full suite when unmapped."""
+    ordered = list(tests)
+    available = {path.name: path for path in ordered}
+    requested = {
+        name if name.endswith(".py") else f"{name}.py" for name in modules
+    }
+    changed = list(changed_files)
+    if changed:
+        requested.update(recommended_tests(changed))
+    if not requested:
+        return ordered
+    unknown = sorted(requested - set(available))
+    if unknown:
+        if changed and not modules:
+            return ordered
+        raise RunnerError(f"unknown campaign test module(s): {', '.join(unknown)}")
+    return [path for path in ordered if path.name in requested]
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Run bounded campaign tests. With no selectors, run the full suite."
+        )
+    )
+    parser.add_argument(
+        "--module",
+        action="append",
+        default=[],
+        help="exact test module name, with or without .py; repeatable",
+    )
+    parser.add_argument(
+        "--changed-file",
+        action="append",
+        default=[],
+        help="changed repository path used by the evidence dependency graph; repeatable",
+    )
+    return parser.parse_args(argv)
 
 
 def _bounded_reader(
@@ -444,9 +496,12 @@ def result_set_digest(results: Iterable[ModuleResult]) -> str:
     return hashlib.sha256("\n".join(identities).encode("utf-8")).hexdigest()
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     try:
-        tests = discover_tests()
+        args = parse_args([] if argv is None else argv)
+        tests = select_tests(
+            discover_tests(), args.module, args.changed_file
+        )
         with tempfile.TemporaryDirectory(prefix="utmods-campaign-tests-") as directory:
             results = run_suite(tests, Path(directory))
             for result in results:
@@ -471,4 +526,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(main(sys.argv[1:]))
