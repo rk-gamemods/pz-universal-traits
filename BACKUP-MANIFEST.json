@@ -1,0 +1,139 @@
+{
+  "format": "project-recovery-parts-v1",
+  "sourcePlan": {
+    "slug": "pz-utmods",
+    "repo": "rk-gamemods/pz-universal-traits",
+    "allowCreate": false,
+    "sources": [
+      {
+        "root": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\UTMods"
+      },
+      {
+        "root": "C:\\Users\\Admin\\Documents\\GIT\\GameMods\\PZMods\\_utmods-review-18cc718-r139"
+      },
+      {
+        "root": "C:\\wt\\cold-ebc"
+      },
+      {
+        "root": "C:\\wt\\cold-final"
+      },
+      {
+        "root": "C:\\wt\\utgc367"
+      },
+      {
+        "root": "C:\\wt\\utgcebc"
+      }
+    ]
+  },
+  "parts": [
+    {
+      "name": "recovery.tar.gz.part0001",
+      "bytes": 94371840,
+      "sha256": "f4d9aee4da00ac0d2559d0289cd6879f6a312823e158e819bb8974bf18c4ca85"
+    },
+    {
+      "name": "recovery.tar.gz.part0002",
+      "bytes": 7980384,
+      "sha256": "3e6e07f400d89e64d2ebf2ebde92b8ac6d76dbb76476c46eebf04d149969c4a9"
+    }
+  ],
+  "archiveSha256": "38ea053c71aaba52e16dcc4cc70bb491472d2d0af41b4a35665d1d21055a2cc0",
+  "archiveBytes": 102352224,
+  "selectedFiles": 20583,
+  "selectedLogicalBytes": 309926380,
+  "gitRepositories": 5,
+  "excluded": [
+    {
+      "source": 0,
+      "path": "__pycache__",
+      "reason": "rebuildable/test-generated"
+    },
+    {
+      "source": 0,
+      "path": "trait-deep-audit/campaign/tools/__pycache__",
+      "reason": "rebuildable/test-generated"
+    },
+    {
+      "source": 0,
+      "path": "trait-deep-audit/campaign/tools/evidence_compiler/__pycache__",
+      "reason": "rebuildable/test-generated"
+    },
+    {
+      "source": 0,
+      "path": "trait-deep-audit/campaign/tests/__pycache__",
+      "reason": "rebuildable/test-generated"
+    },
+    {
+      "source": 0,
+      "path": "trait-deep-audit/campaign/.pytest_cache",
+      "reason": "rebuildable/test-generated"
+    },
+    {
+      "source": 0,
+      "path": "tools/__pycache__",
+      "reason": "rebuildable/test-generated"
+    },
+    {
+      "source": 0,
+      "path": "tools/tests/__pycache__",
+      "reason": "rebuildable/test-generated"
+    },
+    {
+      "source": 0,
+      "path": ".pytest_cache",
+      "reason": "rebuildable/test-generated"
+    },
+    {
+      "source": 0,
+      "path": ".git",
+      "reason": "rebuildable/test-generated"
+    },
+    {
+      "source": 2,
+      "path": "UTMods/trait-deep-audit/campaign/tools/__pycache__",
+      "reason": "rebuildable/test-generated"
+    },
+    {
+      "source": 2,
+      "path": "UTMods/.git",
+      "reason": "rebuildable/test-generated"
+    },
+    {
+      "source": 3,
+      "path": "UTMods/trait-deep-audit/campaign/tools/__pycache__",
+      "reason": "rebuildable/test-generated"
+    },
+    {
+      "source": 3,
+      "path": "UTMods/.git",
+      "reason": "rebuildable/test-generated"
+    },
+    {
+      "source": 4,
+      "path": "trait-deep-audit/campaign/tools/__pycache__",
+      "reason": "rebuildable/test-generated"
+    },
+    {
+      "source": 4,
+      "path": ".git",
+      "reason": "rebuildable/test-generated"
+    },
+    {
+      "source": 5,
+      "path": "trait-deep-audit/campaign/tools/__pycache__",
+      "reason": "rebuildable/test-generated"
+    },
+    {
+      "source": 5,
+      "path": ".git",
+      "reason": "rebuildable/test-generated"
+    }
+  ],
+  "retained": [
+    {
+      "source": 3,
+      "path": "PZCodebase",
+      "reason": "reparse point"
+    }
+  ]
+}
